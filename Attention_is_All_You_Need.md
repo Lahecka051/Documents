@@ -1,0 +1,918 @@
+# 04. Attention Is All You Need
+
+## 논문 정보
+
+- 원본 파일: `attention_papers_pdf/04_Attention_Is_All_You_Need.pdf`
+- 제목: Attention Is All You Need
+- 저자: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
+- 발표: NeurIPS 2017
+- 주제: Transformer, self-attention, encoder-decoder, sequence transduction
+- 핵심 키워드: scaled dot-product attention, multi-head attention, positional encoding, position-wise FFN, residual connection, layer normalization
+
+## 한눈에 보는 요약
+
+이 논문은 RNN이나 CNN 없이 attention만으로 sequence-to-sequence 문제를 풀 수 있다는 것을 보인 Transformer의 원 논문이다. 이전의 기계번역 모델은 보통 RNN encoder-decoder 구조를 사용했고, 여기에 attention을 보조적으로 붙였다. 반면 Transformer는 recurrent computation 자체를 제거하고, 입력 토큰들 사이의 관계를 self-attention으로 직접 계산한다.
+
+핵심 아이디어는 간단하다. 각 토큰을 하나의 벡터로 보고, 어떤 토큰이 다른 어떤 토큰을 얼마나 참고해야 하는지를 모든 토큰 쌍에 대해 계산한다. 이 관련도 점수에 softmax를 적용해 가중치를 만들고, 그 가중치로 value 벡터들을 weighted sum한다. 이 연산을 여러 head로 병렬 수행하면 서로 다른 의미 관계, 위치 관계, 문법 관계를 동시에 포착할 수 있다.
+
+Transformer는 여전히 encoder-decoder 구조를 따른다. Encoder는 source sentence를 문맥화된 표현들의 sequence로 변환하고, decoder는 target sentence를 왼쪽에서 오른쪽으로 생성한다. 다른 점은 encoder와 decoder 내부의 주된 연산이 RNN hidden state 갱신이 아니라 multi-head attention과 position-wise feed-forward network라는 점이다.
+
+이 리뷰는 논문의 실험 결과보다, 각 구성 요소가 이론적으로 무엇을 의미하며 내부 계산이 어떤 순서로 전개되는지에 초점을 둔다.
+
+## 연구 배경과 문제의식
+
+### 기존 sequence-to-sequence 모델의 흐름
+
+기계번역 같은 sequence transduction 문제는 입력 sequence를 받아 출력 sequence를 생성하는 문제다.
+
+```text
+source sentence: x_1, x_2, ..., x_n
+target sentence: y_1, y_2, ..., y_m
+```
+
+초기 neural machine translation에서는 encoder-decoder 구조가 널리 쓰였다.
+
+- Encoder는 입력 문장 `x_1, ..., x_n`을 읽어 hidden representation을 만든다.
+- Decoder는 encoder가 만든 representation을 조건으로 출력 문장 `y_1, ..., y_m`을 생성한다.
+- Decoder는 보통 autoregressive하게 동작한다. 즉, `y_i`를 예측할 때 이전 target token `y_1, ..., y_{i-1}`을 조건으로 사용한다.
+
+전통적인 RNN 기반 encoder-decoder에서는 시간 순서대로 hidden state를 갱신한다.
+
+```text
+h_t = RNN(h_{t-1}, x_t)
+```
+
+이 구조의 장점은 sequence 순서를 자연스럽게 처리한다는 점이다. 하지만 치명적인 약점도 있다.
+
+- `h_t`를 계산하려면 반드시 `h_{t-1}`이 먼저 계산되어야 한다.
+- 같은 문장 안의 토큰들을 병렬로 처리하기 어렵다.
+- 먼 위치의 단어 사이 정보가 여러 recurrent step을 지나야 하므로 장거리 의존성 학습이 어렵다.
+- 긴 sequence에서는 학습 시간과 메모리 효율이 나빠진다.
+
+### 이 논문의 문제의식
+
+논문이 던지는 질문은 다음과 같다.
+
+```text
+정말 sequence를 이해하려면 반드시 왼쪽에서 오른쪽으로 하나씩 읽어야 하는가?
+```
+
+Transformer의 대답은 아니다. 각 위치의 표현을 만들 때 sequence 전체 위치를 한 번에 참고하면 된다. 즉, recurrence 대신 attention으로 모든 위치 사이의 관계를 직접 연결한다.
+
+RNN에서는 위치 `i`와 위치 `j`가 멀수록 정보가 여러 step을 거쳐야 한다. Transformer의 self-attention에서는 한 layer 안에서 모든 위치가 모든 위치를 직접 볼 수 있다.
+
+```text
+RNN:
+x_1 -> h_1 -> h_2 -> h_3 -> ... -> h_n
+
+Self-attention:
+x_i -> directly attends to x_1, x_2, ..., x_n
+```
+
+이 차이가 Transformer의 병렬성, 장거리 의존성 처리, 확장성의 출발점이다.
+
+## 핵심 아이디어와 방법
+
+### Transformer를 한 문장으로 설명하면
+
+Transformer는 각 token representation을 반복적으로 갱신하는 모델이다. 각 layer에서 다음 두 종류의 계산을 수행한다.
+
+1. Attention: 토큰들 사이의 정보를 섞는다.
+2. FFN: 각 토큰 위치의 feature를 비선형적으로 변환한다.
+
+이 둘을 반복하면 각 token vector는 점점 더 넓은 문맥을 반영한 표현이 된다.
+
+```text
+token embedding
+-> positional encoding 추가
+-> self-attention으로 토큰 간 정보 교환
+-> FFN으로 위치별 feature 변환
+-> 여러 layer 반복
+-> decoder에서 다음 token 확률 계산
+```
+
+### Attention이란 무엇인가
+
+Attention은 필요한 정보를 선택적으로 읽는 연산이다. 수식적으로는 query와 key의 관련도를 계산하고, 그 관련도를 value의 가중합에 사용하는 과정이다.
+
+세 가지 벡터가 중요하다.
+
+- Query `Q`: 지금 정보를 찾는 쪽의 질문 벡터
+- Key `K`: 각 후보 정보가 어떤 특징을 갖는지 나타내는 색인 벡터
+- Value `V`: 실제로 가져올 내용 벡터
+
+직관적으로는 다음과 같다.
+
+```text
+Query: "나는 지금 무엇을 찾고 있는가?"
+Key:   "각 토큰은 어떤 정보로 검색될 수 있는가?"
+Value: "검색되었을 때 실제로 전달할 정보는 무엇인가?"
+```
+
+Attention은 query와 key를 비교해 점수를 만들고, 그 점수를 확률처럼 정규화한 뒤, value들을 평균낸다. 단순 평균이 아니라 관련도가 높은 value에 더 큰 가중치를 주는 weighted sum이다.
+
+### Scaled dot-product attention
+
+논문에서 사용하는 attention은 scaled dot-product attention이다.
+
+```text
+Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
+```
+
+각 기호의 의미는 다음과 같다.
+
+- `Q`: query matrix
+- `K`: key matrix
+- `V`: value matrix
+- `d_k`: key/query 벡터의 차원
+- `QK^T`: query와 key 사이의 dot product score matrix
+- `sqrt(d_k)`: score 크기를 안정화하기 위한 scaling factor
+- `softmax(...)`: 각 query가 key들을 얼마나 볼지 나타내는 attention weight
+- `softmax(...) V`: attention weight로 value를 weighted sum한 결과
+
+한 query vector `q`와 여러 key/value가 있을 때는 다음처럼 볼 수 있다.
+
+```text
+score_j = q · k_j / sqrt(d_k)
+alpha_j = exp(score_j) / sum_l exp(score_l)
+output = sum_j alpha_j v_j
+```
+
+즉, attention output은 value 벡터들의 convex combination에 가깝다. softmax weight가 모두 0 이상이고 합이 1이기 때문이다.
+
+### 왜 `sqrt(d_k)`로 나누는가
+
+query와 key의 각 성분이 평균 0, 분산 1인 독립 변수라고 생각하면 dot product는 다음과 같다.
+
+```text
+q · k = sum_{i=1}^{d_k} q_i k_i
+```
+
+이 값의 분산은 대략 `d_k`에 비례한다. `d_k`가 커질수록 dot product 값의 절댓값이 커지고, softmax 입력이 너무 커진다. 그러면 softmax가 한쪽으로 지나치게 뾰족해지고 gradient가 작아진다.
+
+따라서 `sqrt(d_k)`로 나누면 score의 scale을 안정화할 수 있다.
+
+```text
+raw score:     q · k
+scaled score: (q · k) / sqrt(d_k)
+```
+
+이것이 scaled dot-product attention의 핵심이다.
+
+## 모델/알고리즘 구조
+
+### 전체 구조
+
+Transformer는 encoder stack과 decoder stack으로 구성된다.
+
+```text
+source tokens
+-> source embeddings + positional encodings
+-> encoder layer x 6
+-> encoder memory
+
+target tokens shifted right
+-> target embeddings + positional encodings
+-> decoder layer x 6
+-> linear projection
+-> softmax
+-> next token probabilities
+```
+
+논문의 base model 설정은 다음과 같다.
+
+| 항목 | 값 |
+| --- | ---: |
+| encoder layer 수 `N` | 6 |
+| decoder layer 수 `N` | 6 |
+| model dimension `d_model` | 512 |
+| attention head 수 `h` | 8 |
+| head별 key dimension `d_k` | 64 |
+| head별 value dimension `d_v` | 64 |
+| FFN inner dimension `d_ff` | 2048 |
+| dropout | 0.1 |
+| label smoothing | 0.1 |
+
+중요한 설계 원칙은 모든 sub-layer의 입력과 출력 차원을 `d_model = 512`로 맞춘다는 점이다. 그래야 residual connection을 쉽게 적용할 수 있다.
+
+```text
+output = LayerNorm(x + Sublayer(x))
+```
+
+### Encoder란 무엇인가
+
+Encoder는 입력 sequence를 받아 각 위치별 문맥 표현을 만드는 모듈이다.
+
+입력 문장이 다음과 같다고 하자.
+
+```text
+x_1, x_2, ..., x_n
+```
+
+Encoder는 이를 다음과 같은 continuous representation sequence로 바꾼다.
+
+```text
+z_1, z_2, ..., z_n
+```
+
+각 `z_i`는 단순히 `x_i`만 표현하지 않는다. 여러 self-attention layer를 지나면서 문장 전체 정보를 반영한다. 즉, `z_i`는 위치 `i`의 토큰을 중심으로 하되 전체 문맥을 압축한 벡터다.
+
+Transformer encoder layer 하나는 두 sub-layer로 구성된다.
+
+1. Multi-head self-attention
+2. Position-wise feed-forward network
+
+각 sub-layer 뒤에는 residual connection과 layer normalization이 붙는다.
+
+```text
+H'  = LayerNorm(H + MultiHeadSelfAttention(H))
+H'' = LayerNorm(H' + FFN(H'))
+```
+
+여기서 `H`는 현재 layer에 들어온 전체 sequence representation matrix다.
+
+### Decoder란 무엇인가
+
+Decoder는 출력 sequence를 생성하는 모듈이다. 기계번역에서는 target sentence를 한 단어씩 만든다.
+
+```text
+p(y_i | y_1, ..., y_{i-1}, x)
+```
+
+여기서 중요한 점은 decoder가 미래 target token을 보면 안 된다는 것이다. 예를 들어 세 번째 단어를 예측할 때 네 번째 정답 단어를 보면 안 된다. 그래서 decoder self-attention에는 causal mask가 들어간다.
+
+Transformer decoder layer 하나는 세 sub-layer로 구성된다.
+
+1. Masked multi-head self-attention
+2. Encoder-decoder attention, 또는 cross-attention
+3. Position-wise feed-forward network
+
+계산 흐름은 다음과 같다.
+
+```text
+T'   = LayerNorm(T + MaskedSelfAttention(T))
+T''  = LayerNorm(T' + CrossAttention(query=T', key=Z, value=Z))
+T''' = LayerNorm(T'' + FFN(T''))
+```
+
+여기서 `T`는 decoder 쪽 target representation이고, `Z`는 encoder output이다.
+
+### Encoder-decoder 구조의 의미
+
+Encoder-decoder 구조는 source sequence와 target sequence의 길이가 다를 수 있는 문제에 적합하다.
+
+```text
+source length n: x_1, ..., x_n
+target length m: y_1, ..., y_m
+```
+
+Encoder는 source 쪽을 충분히 읽어 memory `Z`를 만든다. Decoder는 그 memory를 참고하면서 target을 생성한다.
+
+Transformer에서 encoder-decoder attention은 다음 역할을 한다.
+
+- Query는 decoder의 현재 target 위치 표현에서 온다.
+- Key와 value는 encoder output, 즉 source memory에서 온다.
+- 따라서 target의 각 위치는 source의 모든 위치를 참고할 수 있다.
+
+수식적으로는 다음과 같다.
+
+```text
+Q = T W_Q
+K = Z W_K
+V = Z W_V
+
+CrossAttention(T, Z) = softmax(QK^T / sqrt(d_k)) V
+```
+
+이 구조는 Bahdanau attention이나 Luong attention의 아이디어를 Transformer 방식으로 일반화한 것이다. Decoder가 현재 target을 만들기 위해 source memory에서 필요한 정보를 검색한다는 점은 같다.
+
+## Attention 계산 전개
+
+### Shape로 보는 self-attention
+
+batch size를 `B`, sequence length를 `n`, model dimension을 `d_model`이라고 하자. Encoder의 어떤 layer 입력을 `H`라고 하면 shape는 다음과 같다.
+
+```text
+H: [B, n, d_model]
+```
+
+base Transformer에서는 `d_model = 512`, head 수 `h = 8`, head별 차원 `d_k = d_v = 64`다.
+
+각 head마다 세 projection matrix를 학습한다.
+
+```text
+W_Q: [d_model, d_k]
+W_K: [d_model, d_k]
+W_V: [d_model, d_v]
+```
+
+입력 `H`를 query, key, value로 선형 변환한다.
+
+```text
+Q = H W_Q   -> [B, n, d_k]
+K = H W_K   -> [B, n, d_k]
+V = H W_V   -> [B, n, d_v]
+```
+
+그 다음 모든 query와 모든 key의 dot product를 계산한다.
+
+```text
+S = Q K^T / sqrt(d_k)   -> [B, n, n]
+```
+
+`S[i, j]`는 위치 `i`가 위치 `j`를 얼마나 참고할지에 대한 score다.
+
+softmax는 보통 마지막 key dimension 방향으로 적용한다.
+
+```text
+A = softmax(S)   -> [B, n, n]
+```
+
+`A[i, :]`는 위치 `i`가 모든 위치 `1..n`을 보는 attention distribution이다.
+
+마지막으로 value를 weighted sum한다.
+
+```text
+O = A V   -> [B, n, d_v]
+```
+
+`O[i]`는 위치 `i`가 sequence 전체에서 필요한 정보를 모아 만든 새 표현이다.
+
+### 작은 예시로 보는 attention
+
+문장이 세 토큰으로 이루어졌다고 하자.
+
+```text
+tokens: [I, love, NLP]
+```
+
+어떤 layer에서 `love` 위치의 query가 세 key와 dot product를 만든다.
+
+```text
+score(love -> I)    = 0.2
+score(love -> love) = 1.5
+score(love -> NLP)  = 1.1
+```
+
+softmax를 적용하면 예를 들어 다음과 같은 가중치가 된다.
+
+```text
+alpha = [0.14, 0.51, 0.35]
+```
+
+그러면 `love` 위치의 새 표현은 다음과 같다.
+
+```text
+new_love = 0.14 * V_I + 0.51 * V_love + 0.35 * V_NLP
+```
+
+즉, self-attention은 각 위치의 표현을 자기 자신과 주변 위치들의 value 조합으로 갱신한다. 이 과정을 모든 위치에 대해 동시에 수행한다.
+
+### Multi-head attention
+
+단일 attention head만 쓰면 하나의 방식으로만 토큰 관계를 본다. 하지만 문장 안에는 여러 종류의 관계가 동시에 존재한다.
+
+- 주어와 동사의 관계
+- 명사와 수식어의 관계
+- 대명사와 선행사의 관계
+- 가까운 위치 관계
+- 먼 위치 관계
+- 번역에서 source-target 정렬 관계
+
+Multi-head attention은 query, key, value를 여러 개의 subspace로 projection해서 attention을 병렬로 수행한다.
+
+```text
+head_i = Attention(Q W_i^Q, K W_i^K, V W_i^V)
+```
+
+각 head의 결과를 concatenate한 뒤 다시 선형 변환한다.
+
+```text
+MultiHead(Q, K, V) = Concat(head_1, ..., head_h) W^O
+```
+
+base model에서는 다음과 같다.
+
+```text
+h = 8
+d_model = 512
+d_k = d_v = 512 / 8 = 64
+```
+
+각 head는 64차원 공간에서 attention을 계산한다. 8개 head를 합치면 다시 512차원이 된다.
+
+```text
+head_1: [B, n, 64]
+...
+head_8: [B, n, 64]
+Concat: [B, n, 512]
+W^O:    [512, 512]
+output: [B, n, 512]
+```
+
+Multi-head attention의 이론적 의미는 하나의 큰 attention을 여러 관점의 attention으로 분해하는 것이다. 각 head는 서로 다른 representation subspace에서 관련도를 계산하므로, 모델이 다양한 관계를 동시에 표현할 수 있다.
+
+### Masked self-attention
+
+Decoder self-attention에서는 미래 token을 보면 안 된다. 이를 위해 score matrix에 mask를 적용한다.
+
+target 길이가 4라면 허용되는 attention 구조는 다음과 같다.
+
+```text
+position 1 can attend to: 1
+position 2 can attend to: 1, 2
+position 3 can attend to: 1, 2, 3
+position 4 can attend to: 1, 2, 3, 4
+```
+
+미래 위치는 softmax 전에 `-inf`로 만든다.
+
+```text
+S_masked[i, j] = -inf  if j > i
+S_masked[i, j] = S[i, j] otherwise
+```
+
+softmax를 적용하면 `-inf` 위치의 확률은 0이 된다.
+
+```text
+softmax(-inf) = 0
+```
+
+이렇게 하면 학습 중에도 decoder는 미래 정답을 훔쳐보지 않고, 실제 생성 시점과 같은 조건에서 다음 token을 예측한다.
+
+### Padding mask
+
+문장을 batch로 묶으면 길이가 다르기 때문에 padding token이 들어간다.
+
+```text
+sentence A: [I, love, NLP, <pad>, <pad>]
+sentence B: [Attention, is, all, you, need]
+```
+
+`<pad>`는 실제 단어가 아니므로 attention 대상에서 제외해야 한다. 이를 위해 padding 위치도 score 단계에서 `-inf`로 masking한다.
+
+```text
+attention score to pad position = -inf
+attention weight to pad position = 0
+```
+
+masking은 attention이 단순한 weighted sum이면서도 실제 sequence 구조를 지키게 해주는 중요한 장치다.
+
+## FFN이란 무엇인가
+
+### Position-wise feed-forward network의 역할
+
+Transformer layer에는 attention 뒤에 FFN이 있다. 논문에서는 position-wise fully connected feed-forward network라고 부른다.
+
+수식은 다음과 같다.
+
+```text
+FFN(x) = max(0, xW_1 + b_1) W_2 + b_2
+```
+
+여기서 `max(0, ...)`는 ReLU activation이다.
+
+base model의 차원은 다음과 같다.
+
+```text
+x:       [d_model] = [512]
+W_1:     [512, 2048]
+b_1:     [2048]
+hidden:  [2048]
+W_2:     [2048, 512]
+b_2:     [512]
+output:  [512]
+```
+
+sequence 전체로 보면 다음 shape가 된다.
+
+```text
+H:        [B, n, 512]
+H W_1:    [B, n, 2048]
+ReLU:     [B, n, 2048]
+... W_2:  [B, n, 512]
+```
+
+### Attention과 FFN의 차이
+
+Attention과 FFN은 하는 일이 다르다.
+
+Attention은 위치 사이의 정보를 섞는다.
+
+```text
+position i output = weighted sum of values from positions 1..n
+```
+
+FFN은 각 위치를 독립적으로 변환한다.
+
+```text
+position i output = MLP(position i vector)
+```
+
+즉, attention은 sequence dimension을 따라 정보를 섞고, FFN은 feature dimension을 따라 정보를 변환한다.
+
+```text
+Attention:
+[token 1, token 2, token 3] 사이의 관계를 계산
+
+FFN:
+각 token vector 내부의 feature를 비선형 변환
+```
+
+두 연산을 함께 쓰면 다음과 같은 역할 분담이 생긴다.
+
+- Self-attention: 다른 토큰에서 필요한 정보를 가져온다.
+- FFN: 가져온 정보를 바탕으로 각 위치의 표현을 더 복잡하게 가공한다.
+
+논문은 FFN을 kernel size 1인 convolution 두 개로 볼 수도 있다고 설명한다. 모든 위치에 같은 가중치 `W_1`, `W_2`를 적용하기 때문이다.
+
+### 왜 FFN이 필요한가
+
+Attention만 있으면 각 위치의 output은 value들의 가중합이다. 물론 projection과 multi-head 구조가 있지만, attention의 핵심은 정보를 섞는 것이다. 비선형 feature 변환 능력을 충분히 주려면 각 위치별 MLP가 필요하다.
+
+FFN은 다음 기능을 담당한다.
+
+- feature 차원을 512에서 2048로 확장해 더 넓은 표현 공간을 사용한다.
+- ReLU로 비선형성을 추가한다.
+- 다시 512차원으로 줄여 다음 layer와 residual 구조에 맞춘다.
+- 모든 위치에 동일한 변환을 적용해 parameter sharing을 유지한다.
+
+요약하면, attention이 "어디에서 정보를 가져올지"를 정한다면 FFN은 "가져온 정보를 어떻게 해석하고 변환할지"를 담당한다.
+
+## Positional Encoding
+
+### 왜 위치 정보가 필요한가
+
+Transformer는 RNN도 CNN도 사용하지 않는다. 따라서 기본 self-attention만 보면 token 순서에 대한 정보가 없다.
+
+예를 들어 단순 self-attention은 다음 두 입력을 구분하기 어렵다.
+
+```text
+The dog bit the man
+The man bit the dog
+```
+
+단어 집합은 같지만 순서가 다르므로 의미가 완전히 달라진다. 그래서 Transformer는 token embedding에 positional encoding을 더한다.
+
+```text
+input representation = token embedding + positional encoding
+```
+
+### Sinusoidal positional encoding
+
+논문에서는 sine과 cosine을 사용한 fixed positional encoding을 사용한다.
+
+```text
+PE(pos, 2i)     = sin(pos / 10000^(2i / d_model))
+PE(pos, 2i + 1) = cos(pos / 10000^(2i / d_model))
+```
+
+여기서:
+
+- `pos`: sequence 안의 위치
+- `i`: embedding dimension index
+- `d_model`: model dimension
+
+짝수 차원에는 sine, 홀수 차원에는 cosine을 넣는다. 차원마다 다른 주파수를 사용하므로, 각 위치는 여러 주기 신호의 조합으로 표현된다.
+
+### 왜 sine/cosine인가
+
+논문이 제시하는 중요한 직관은 상대 위치 학습 가능성이다. 삼각함수의 덧셈 정리에 의해 `PE(pos + k)`는 `PE(pos)`의 선형 변환으로 표현될 수 있다. 따라서 모델이 "현재 위치에서 k칸 떨어진 위치" 같은 상대적 관계를 배우기 쉬워질 수 있다.
+
+또한 learned positional embedding과 달리 sinusoidal encoding은 학습 때 보지 못한 더 긴 길이에도 계산할 수 있다.
+
+## Residual Connection과 Layer Normalization
+
+### Residual connection
+
+Transformer의 각 sub-layer는 다음 형태를 사용한다.
+
+```text
+LayerNorm(x + Sublayer(x))
+```
+
+`x + Sublayer(x)`가 residual connection이다. 이는 입력을 그대로 다음 단계로 보낼 수 있는 경로를 만든다.
+
+Residual connection의 장점은 다음과 같다.
+
+- 깊은 네트워크에서 gradient 흐름을 돕는다.
+- sub-layer가 전체 표현을 새로 만들 필요 없이 필요한 변화량만 학습할 수 있다.
+- attention이나 FFN이 초기 학습에서 불안정해도 원래 정보가 보존된다.
+
+### Layer normalization
+
+Layer normalization은 각 token vector 내부 feature 차원에 대해 평균과 분산을 정규화한다.
+
+개념적으로는 다음과 같다.
+
+```text
+mu = mean(x)
+sigma = std(x)
+LayerNorm(x) = gamma * (x - mu) / sigma + beta
+```
+
+Transformer에서는 각 sub-layer 출력에 layer normalization을 적용해 학습을 안정화한다.
+
+원 논문의 구조는 현재 많이 쓰이는 pre-norm Transformer와 달리 post-norm 형태다.
+
+```text
+post-norm: LayerNorm(x + Sublayer(x))
+pre-norm:  x + Sublayer(LayerNorm(x))
+```
+
+원 논문은 post-norm을 사용한다.
+
+## 내부 계산 흐름 전체 정리
+
+### 1단계: token embedding
+
+source token id가 들어오면 embedding lookup으로 벡터를 얻는다.
+
+```text
+source ids: [B, n]
+embedding matrix: [vocab_size, d_model]
+source embedding X: [B, n, d_model]
+```
+
+논문은 embedding에 `sqrt(d_model)`을 곱한다.
+
+```text
+X = Embedding(source_ids) * sqrt(d_model)
+```
+
+이후 positional encoding을 더한다.
+
+```text
+H_0 = X + PE
+```
+
+### 2단계: encoder self-attention
+
+각 encoder layer에서 먼저 self-attention을 계산한다.
+
+```text
+Q = H W_Q
+K = H W_K
+V = H W_V
+S = Q K^T / sqrt(d_k)
+A = softmax(S)
+O = A V
+```
+
+multi-head이면 이 과정을 head마다 수행한다.
+
+```text
+head_i = Attention(H W_i^Q, H W_i^K, H W_i^V)
+MHA = Concat(head_1, ..., head_8) W^O
+```
+
+residual과 normalization을 적용한다.
+
+```text
+H_attn = LayerNorm(H + Dropout(MHA))
+```
+
+### 3단계: encoder FFN
+
+각 위치에 같은 FFN을 적용한다.
+
+```text
+F = ReLU(H_attn W_1 + b_1) W_2 + b_2
+H_next = LayerNorm(H_attn + Dropout(F))
+```
+
+이것을 6번 반복하면 encoder output `Z`가 나온다.
+
+```text
+Z = Encoder(source)
+Z shape: [B, n, d_model]
+```
+
+### 4단계: decoder masked self-attention
+
+target sequence는 한 칸 오른쪽으로 shift된 상태로 들어간다.
+
+```text
+decoder input: <bos>, y_1, y_2, ..., y_{m-1}
+prediction:    y_1, y_2, y_3, ..., y_m
+```
+
+decoder self-attention에서는 causal mask를 적용한다.
+
+```text
+S = Q K^T / sqrt(d_k)
+S[j > i] = -inf
+A = softmax(S)
+O = A V
+```
+
+이렇게 하면 위치 `i`는 `i`보다 뒤의 target token을 볼 수 없다.
+
+### 5단계: encoder-decoder attention
+
+decoder는 masked self-attention을 거친 뒤 source memory를 조회한다.
+
+```text
+Q = decoder_state W_Q
+K = encoder_output W_K
+V = encoder_output W_V
+
+O = softmax(QK^T / sqrt(d_k)) V
+```
+
+여기서 query는 target 쪽에서 오고, key/value는 source 쪽에서 온다. 따라서 target 위치마다 source sequence 전체를 다르게 참고할 수 있다.
+
+### 6단계: decoder FFN
+
+cross-attention 결과에 다시 position-wise FFN을 적용한다.
+
+```text
+D_next = LayerNorm(D_cross + FFN(D_cross))
+```
+
+decoder layer도 6번 반복한다.
+
+### 7단계: output softmax
+
+마지막 decoder output을 vocabulary 크기로 projection한다.
+
+```text
+logits = D_final W_vocab^T + b
+probs = softmax(logits)
+```
+
+각 위치에서 다음 token 확률 분포를 얻는다.
+
+```text
+probs shape: [B, m, vocab_size]
+```
+
+학습에서는 정답 target token에 대한 cross-entropy loss를 최소화한다. 논문은 label smoothing도 사용한다.
+
+## 학습 설정과 실험 결과
+
+### 학습 데이터
+
+논문은 주로 WMT 2014 기계번역 태스크에서 성능을 평가한다.
+
+- English-German: 약 4.5M sentence pairs
+- English-French: 약 36M sentence pairs
+- English-German에는 BPE 기반 약 37k shared vocabulary 사용
+- English-French에는 약 32k word-piece vocabulary 사용
+
+### Optimizer와 learning rate schedule
+
+Optimizer는 Adam을 사용한다.
+
+```text
+beta_1 = 0.9
+beta_2 = 0.98
+epsilon = 1e-9
+```
+
+Learning rate schedule은 다음과 같다.
+
+```text
+lrate = d_model^(-0.5) * min(step_num^(-0.5),
+                             step_num * warmup_steps^(-1.5))
+```
+
+`warmup_steps = 4000`이다.
+
+이 schedule은 처음에는 learning rate를 선형 증가시키고, warmup 이후에는 step 수의 inverse square root에 비례해 감소시킨다.
+
+### 주요 결과
+
+논문의 큰 주장은 Transformer가 RNN/CNN 기반 모델보다 더 빠르게 학습되면서도 높은 번역 품질을 얻는다는 것이다.
+
+대표 결과는 다음과 같다.
+
+| 모델 | EN-DE BLEU | EN-FR BLEU |
+| --- | ---: | ---: |
+| Transformer base | 27.3 | 38.1 |
+| Transformer big | 28.4 | 41.8 |
+
+English-German에서는 당시 최고 수준 모델과 ensemble을 넘어서는 성능을 보였고, English-French에서도 single model 기준 강한 성능을 보였다. 중요한 점은 성능뿐 아니라 학습 비용이 크게 낮았다는 것이다.
+
+## Self-attention의 이론적 장점
+
+논문은 self-attention을 RNN, CNN과 비교하면서 세 가지 기준을 본다.
+
+1. layer당 계산 복잡도
+2. 병렬화 가능성
+3. 장거리 의존성을 연결하는 path length
+
+요약하면 다음과 같다.
+
+| layer type | layer당 복잡도 | sequential operations | maximum path length |
+| --- | ---: | ---: | ---: |
+| self-attention | `O(n^2 d)` | `O(1)` | `O(1)` |
+| recurrent | `O(n d^2)` | `O(n)` | `O(n)` |
+| convolutional | `O(k n d^2)` | `O(1)` | `O(log_k n)` |
+
+여기서:
+
+- `n`: sequence length
+- `d`: representation dimension
+- `k`: convolution kernel size
+
+Self-attention의 장점은 모든 위치가 한 layer 안에서 직접 연결된다는 것이다. 따라서 최대 path length가 `O(1)`이다. 이는 장거리 의존성 학습에 유리하다.
+
+반면 단점도 있다. 모든 위치 쌍을 비교하므로 sequence length에 대해 `O(n^2)` 비용이 든다. 짧거나 중간 길이 문장에서는 문제가 작지만, 아주 긴 문서, 이미지, 비디오, 고해상도 feature map에서는 큰 병목이 된다. 이후 Longformer, Reformer, Linformer, Performer, BigBird, FlashAttention 같은 연구는 대부분 이 비용 문제를 다룬다.
+
+## 장점과 기여
+
+이 논문의 가장 큰 기여는 attention을 보조 장치가 아니라 sequence modeling의 중심 연산으로 끌어올렸다는 점이다.
+
+주요 기여는 다음과 같다.
+
+- RNN과 CNN 없이 attention만으로 강한 sequence transduction 모델을 만들었다.
+- Self-attention을 통해 sequence 내부 모든 위치의 관계를 직접 계산했다.
+- Multi-head attention으로 서로 다른 representation subspace의 관계를 병렬로 학습했다.
+- Positional encoding으로 recurrence 없이 순서 정보를 주입했다.
+- Encoder-decoder attention을 query-key-value 구조로 깔끔하게 정식화했다.
+- Attention과 FFN을 교대로 쌓는 단순하고 확장 가능한 block 구조를 제시했다.
+- 병렬 학습 효율을 크게 개선했다.
+
+현재 관점에서 보면 Transformer block의 기본 공식은 다음 한 줄로 요약된다.
+
+```text
+context mixing by attention + feature transformation by FFN
+```
+
+이 구조가 이후 BERT, GPT, T5, ViT, DETR 등 거의 모든 현대 대형 모델의 기본 단위가 되었다.
+
+## 한계와 비판적 관점
+
+첫 번째 한계는 self-attention의 `O(n^2)` 비용이다. 모든 token pair를 비교하기 때문에 sequence length가 길어질수록 메모리와 계산량이 빠르게 증가한다. 이 논문 자체도 긴 입력에 대해서는 restricted attention을 future work로 언급한다.
+
+두 번째 한계는 위치 정보가 외부에서 주입된다는 점이다. RNN이나 CNN은 구조 자체에 순서 또는 locality bias가 있다. Transformer는 positional encoding 없이는 순서를 모른다. 이 때문에 위치 표현 방식은 이후 중요한 연구 주제가 되었다. 예를 들어 relative positional encoding, RoPE, ALiBi 같은 방법들이 등장했다.
+
+세 번째 한계는 data와 compute가 충분할 때 특히 강하다는 점이다. Transformer는 inductive bias가 상대적으로 약하고 유연한 구조이므로, 작은 데이터에서는 RNN/CNN의 구조적 bias가 더 도움이 되는 경우도 있다.
+
+네 번째로 attention weight를 해석할 때 주의가 필요하다. 논문은 attention head가 장거리 의존성이나 문법 구조와 관련된 패턴을 보인다고 설명하지만, attention weight가 항상 인간이 생각하는 설명과 일치한다고 단정할 수는 없다.
+
+마지막으로 decoder는 여전히 autoregressive하다. 학습은 병렬화가 가능하지만, 생성 시에는 `y_1`을 만든 뒤 `y_2`를 만들고, 그 다음 `y_3`을 만드는 순차성이 남아 있다. 논문도 generation을 덜 sequential하게 만드는 것을 향후 과제로 언급한다.
+
+## 후속 논문과의 연결점
+
+이 논문 이후 attention 연구는 크게 두 방향으로 확장된다.
+
+첫 번째는 position과 context length 문제다.
+
+- Relative Position Representations: 절대 위치보다 상대 거리 정보를 attention에 반영한다.
+- Transformer-XL: segment recurrence와 relative position으로 긴 문맥을 다룬다.
+- RoPE, ALiBi, xPos, YaRN, LongRoPE: 길이 extrapolation과 위치 표현을 개선한다.
+
+두 번째는 attention 효율 문제다.
+
+- Sparse Transformer, Longformer, BigBird: 모든 위치를 보지 않고 sparse pattern을 사용한다.
+- Linformer, Performer, Nyströmformer: attention matrix를 근사하거나 linear attention으로 바꾼다.
+- FlashAttention: attention의 수학은 유지하되 GPU memory access를 최적화한다.
+- Multi-query attention, grouped-query attention: decoder inference에서 key/value cache 비용을 줄인다.
+
+Computer vision 쪽으로도 흐름이 이어진다.
+
+- Non-local neural networks: feature map 위치 사이의 장거리 관계를 attention처럼 계산한다.
+- ViT: 이미지를 patch sequence로 보고 Transformer encoder를 적용한다.
+- DETR: object detection을 set prediction과 Transformer encoder-decoder 문제로 재정의한다.
+
+## 개인 학습/연구 메모
+
+이 논문을 공부할 때 가장 중요한 것은 Transformer를 하나의 마법 같은 구조로 외우지 않는 것이다. 내부 계산은 매우 규칙적이다.
+
+핵심 흐름은 다음과 같다.
+
+```text
+1. token을 vector로 바꾼다.
+2. 위치 정보를 더한다.
+3. 각 위치에서 Q, K, V를 만든다.
+4. QK^T로 위치 간 관련도를 계산한다.
+5. sqrt(d_k)로 scale을 맞춘다.
+6. mask가 필요한 위치는 -inf로 막는다.
+7. softmax로 attention weight를 만든다.
+8. attention weight로 V를 weighted sum한다.
+9. 여러 head 결과를 합치고 선형 변환한다.
+10. residual과 layer norm을 적용한다.
+11. FFN으로 각 위치의 feature를 비선형 변환한다.
+12. 이 과정을 encoder와 decoder에서 여러 번 반복한다.
+13. decoder output을 vocabulary softmax로 바꿔 다음 token을 예측한다.
+```
+
+Attention은 "어떤 정보를 볼 것인가"의 문제이고, FFN은 "본 정보를 어떻게 가공할 것인가"의 문제다. Encoder는 source를 읽어 memory를 만들고, decoder는 target을 생성하면서 self-attention으로 이전 target 문맥을 보고 cross-attention으로 source memory를 조회한다.
+
+이 관점으로 보면 Transformer의 세 가지 attention도 자연스럽게 구분된다.
+
+```text
+encoder self-attention:
+source token이 source token들을 본다.
+
+decoder masked self-attention:
+target token이 과거 target token들을 본다.
+
+encoder-decoder attention:
+target token이 source token들을 본다.
+```
+
+결국 Transformer는 sequence를 순서대로 읽는 모델이라기보다, sequence 안의 모든 위치가 서로를 검색하고 정보를 교환하는 모델이다. 이 전환이 "Attention Is All You Need"라는 제목의 의미다.
+
