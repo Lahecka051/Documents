@@ -1,1 +1,1 @@
-# AI Generate Markdown Viwer
+# AI Generate Markdown Viewer
