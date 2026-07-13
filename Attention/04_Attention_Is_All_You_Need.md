@@ -119,6 +119,10 @@ Attention은 query와 key를 비교해 점수를 만들고, 그 점수를 확률
 Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
 ```
 
+![세 attention 유형과 scaled dot-product attention 계산](assets/04_qkv_attention_types_and_computation.png)
+
+그림의 (a)는 encoder-decoder attention, (b)는 encoder self-attention, (c)는 decoder self-attention에서 `Q`, `K`, `V`가 오는 위치를 나타낸다. (d)는 원논문 Figure 2의 `MatMul -> Scale -> Mask (opt.) -> SoftMax -> MatMul` 순서를 수식과 함께 펼친 것이다.
+
 각 기호의 의미는 다음과 같다.
 
 - `Q`: query matrix
@@ -391,6 +395,10 @@ head_i = Attention(Q W_i^Q, K W_i^K, V W_i^V)
 MultiHead(Q, K, V) = Concat(head_1, ..., head_h) W^O
 ```
 
+![QKV projection과 multi-head attention 결합](assets/04_qkv_multihead_projection.png)
+
+그림의 (a)는 head `i`에서 `Q`, `K`, `V`에 서로 다른 learned linear projection을 적용하는 과정이고, (b)는 `h`개 head를 concatenate한 뒤 `W^O`로 다시 `d_model` 차원에 projection하는 과정이다. 그림의 함수와 parameter 표기는 원논문 Section 3.2.2를 따른다.
+
 base model에서는 다음과 같다.
 
 ```text
@@ -558,28 +566,171 @@ The man bit the dog
 input representation = token embedding + positional encoding
 ```
 
-### Sinusoidal positional encoding
-
-논문에서는 sine과 cosine을 사용한 fixed positional encoding을 사용한다.
+원논문 Section 3.5의 표현을 따르면 positional encoding은 encoder stack과 decoder stack의 가장 아래에서 input embedding에 더해진다. 두 행렬의 마지막 차원은 모두 `d_model`이므로 원소별 덧셈이 가능하다.
 
 ```text
-PE(pos, 2i)     = sin(pos / 10000^(2i / d_model))
-PE(pos, 2i + 1) = cos(pos / 10000^(2i / d_model))
+X  : [n, d_model]
+PE : [n, d_model]
+
+H = X + PE
+H : [n, d_model]
 ```
 
-여기서:
+여기서 `H = X + PE`는 계산 구조를 설명하기 위한 표기다. 원논문은 이 관계를 별도의 기호 `H`로 정의하지 않고, positional encodings를 input embeddings에 더한다고 서술한다.
 
-- `pos`: sequence 안의 위치
-- `i`: embedding dimension index
-- `d_model`: model dimension
+### Sinusoidal positional encoding
 
-짝수 차원에는 sine, 홀수 차원에는 cosine을 넣는다. 차원마다 다른 주파수를 사용하므로, 각 위치는 여러 주기 신호의 조합으로 표현된다.
+논문에서는 서로 다른 주파수를 갖는 sine과 cosine 함수로 fixed positional encoding을 구성한다. 아래 수식은 원논문에 사용된 함수와 기호를 그대로 일반 텍스트로 옮긴 것이다.
+
+```text
+PE_(pos,2i)   = sin(pos / 10000^(2i/d_model))
+PE_(pos,2i+1) = cos(pos / 10000^(2i/d_model))
+```
+
+![Sinusoidal positional encoding의 정의와 차원 배치](assets/04_positional_encoding_definition.png)
+
+그림의 (a)는 embedding과 positional encoding의 원소별 덧셈, (b)는 Section 3.5의 두 함수, (c)는 `d_model=512`일 때 `2i`와 `2i+1`이 차원에 배치되는 방법을 나타낸다.
+
+### 원논문의 기호 표
+
+| 원논문 표기 | 정확한 역할 | `d_model=512`에서의 값 또는 범위 |
+|---|---|---|
+| `pos` | sequence 안에서 token이 놓인 position | `0, 1, ..., n-1` |
+| `i` | 원논문에서 dimension이라고 부르는 인덱스. 구현 관점에서는 sine/cosine 차원 쌍의 인덱스 | `0, 1, ..., 255` |
+| `2i` | sine 함수를 사용하는 짝수 dimension | `0, 2, 4, ..., 510` |
+| `2i+1` | cosine 함수를 사용하는 홀수 dimension | `1, 3, 5, ..., 511` |
+| `d_model` | embedding과 positional encoding이 공유하는 model dimension | `512` |
+| `PE_(pos,2i)` | position `pos`의 짝수 dimension 값 | `[-1, 1]` |
+| `PE_(pos,2i+1)` | position `pos`의 홀수 dimension 값 | `[-1, 1]` |
+| `PE_pos` | position `pos`에서의 positional encoding vector 전체 | `[512]` |
+| `PE` | 모든 position의 positional encoding을 쌓은 행렬 | `[n, 512]` |
+
+`i` 하나는 두 개의 model dimension을 만든다.
+
+```text
+i = 0   -> dimension 0: sine, dimension 1: cosine
+i = 1   -> dimension 2: sine, dimension 3: cosine
+i = 2   -> dimension 4: sine, dimension 5: cosine
+...
+i = 255 -> dimension 510: sine, dimension 511: cosine
+```
+
+따라서 `d_model=512`이면 총 256개의 sine/cosine 쌍이 만들어지고, 이들을 이어 붙여 position 하나당 512차원 vector를 구성한다.
+
+### 분모와 주파수가 결정되는 과정
+
+두 함수가 공유하는 핵심은 다음 분모다.
+
+```text
+10000^(2i/d_model)
+```
+
+`i`가 증가하면 이 값이 커진다. 같은 `pos`를 더 큰 값으로 나누므로 sine과 cosine에 입력되는 각도가 더 천천히 변한다.
+
+```text
+작은 i -> 작은 분모 -> 빠른 진동 -> 짧은 파장
+큰 i   -> 큰 분모 -> 느린 진동 -> 긴 파장
+```
+
+원논문은 각 dimension의 파장이 다음 범위에서 등비수열을 이룬다고 설명한다.
+
+```text
+2π  ->  10000 · 2π
+```
+
+즉 낮은 dimension은 가까운 position 변화에 민감하고, 높은 dimension은 긴 범위에서 천천히 변한다. 한 position은 이처럼 서로 다른 시간 척도를 가진 신호들을 동시에 갖게 된다.
+
+### 실제 값 계산: `d_model=512`
+
+`pos=1`, `i=0`인 첫 번째 차원 쌍은 다음과 같이 계산된다.
+
+```text
+10000^(2·0/512) = 1
+
+PE_(1,0) = sin(1/1) = 0.841471
+PE_(1,1) = cos(1/1) = 0.540302
+```
+
+`pos=1`, `i=1`인 두 번째 차원 쌍은 다음과 같다.
+
+```text
+10000^(2·1/512) = 10000^(2/512)
+
+PE_(1,2) = sin(1 / 10000^(2/512)) = 0.821856
+PE_(1,3) = cos(1 / 10000^(2/512)) = 0.569695
+```
+
+처음 네 position과 처음 여덟 dimension을 실제로 계산하면 다음 표가 된다.
+
+| `pos` | `PE_(pos,0)` | `PE_(pos,1)` | `PE_(pos,2)` | `PE_(pos,3)` | `PE_(pos,4)` | `PE_(pos,5)` | `PE_(pos,6)` | `PE_(pos,7)` |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 0.000000 | 1.000000 | 0.000000 | 1.000000 | 0.000000 | 1.000000 | 0.000000 | 1.000000 |
+| 1 | 0.841471 | 0.540302 | 0.821856 | 0.569695 | 0.801962 | 0.597375 | 0.781887 | 0.623420 |
+| 2 | 0.909297 | -0.416147 | 0.936415 | -0.350895 | 0.958144 | -0.286285 | 0.974888 | -0.222695 |
+| 3 | 0.141120 | -0.989992 | 0.245085 | -0.969501 | 0.342782 | -0.939415 | 0.433643 | -0.901085 |
+
+`pos=0`에서는 모든 sine dimension이 `sin(0)=0`, 모든 cosine dimension이 `cos(0)=1`이 된다. 따라서 첫 position의 vector가 전부 0인 것은 아니다.
+
+### 전체 PE 행렬에서 나타나는 패턴
+
+![Sinusoidal positional encoding의 전체 행렬과 주파수별 곡선](assets/04_positional_encoding_patterns.png)
+
+위 그림은 원논문의 함수를 `d_model=512`, `pos=0,...,127`에 직접 적용한 결과다.
+
+- (a)의 가로축은 dimension `0,...,511`, 세로축은 `pos=0,...,127`이다.
+- 색 범위는 `-1`에서 `1`이다.
+- 낮은 dimension에서는 position이 변할 때 값이 빠르게 진동한다.
+- 높은 dimension에서는 파장이 길어져 128개 position 안에서 값이 거의 변하지 않을 수도 있다.
+- 짝수 dimension과 홀수 dimension은 같은 주파수의 sine/cosine 쌍이므로 위상이 90도 다르다.
 
 ### 왜 sine/cosine인가
 
-논문이 제시하는 중요한 직관은 상대 위치 학습 가능성이다. 삼각함수의 덧셈 정리에 의해 `PE(pos + k)`는 `PE(pos)`의 선형 변환으로 표현될 수 있다. 따라서 모델이 "현재 위치에서 k칸 떨어진 위치" 같은 상대적 관계를 배우기 쉬워질 수 있다.
+논문이 제시하는 핵심 가설은 고정된 offset `k`에 대해 `PE_(pos+k)`를 `PE_pos`의 선형함수로 표현할 수 있다는 것이다.
 
-또한 learned positional embedding과 달리 sinusoidal encoding은 학습 때 보지 못한 더 긴 길이에도 계산할 수 있다.
+한 차원 쌍의 각도 증가율을 설명하기 위해 다음 기호를 보조적으로 정의해 보자. 이 `ω_i` 표기는 원논문의 수식을 전개하기 위한 리뷰상의 보조 표기다.
+
+```text
+ω_i = 1 / 10000^(2i/d_model)
+```
+
+그러면 한 차원 쌍은 다음과 같이 쓸 수 있다.
+
+```text
+PE_(pos,2i)   = sin(pos · ω_i)
+PE_(pos,2i+1) = cos(pos · ω_i)
+```
+
+offset `k`만큼 이동하면 삼각함수의 덧셈 정리에 의해 다음 계산이 성립한다.
+
+```text
+sin((pos+k)ω_i)
+= sin(pos·ω_i)cos(k·ω_i) + cos(pos·ω_i)sin(k·ω_i)
+
+cos((pos+k)ω_i)
+= cos(pos·ω_i)cos(k·ω_i) - sin(pos·ω_i)sin(k·ω_i)
+```
+
+이를 2차원 vector와 행렬로 정리하면 다음과 같다.
+
+```text
+[ sin((pos+k)ω_i) ]   [  cos(kω_i)  sin(kω_i) ] [ sin(posω_i) ]
+[ cos((pos+k)ω_i) ] = [ -sin(kω_i)  cos(kω_i) ] [ cos(posω_i) ]
+```
+
+오른쪽의 회전행렬은 `pos`와 무관하고 offset `k`와 frequency `ω_i`에만 의존한다. 따라서 고정된 상대 거리 `k`만큼 이동한 positional encoding은 현재 positional encoding에 일정한 선형변환을 적용한 것으로 나타낼 수 있다. 이것이 원논문의 다음 문장을 계산으로 풀어 쓴 의미다.
+
+```text
+for any fixed offset k,
+PE_(pos+k) can be represented as a linear function of PE_pos
+```
+
+이 구조가 상대 위치를 자동으로 보장하거나 모델이 반드시 상대 거리를 학습한다는 뜻은 아니다. 논문은 모델이 상대 위치에 따라 attend하는 방법을 쉽게 학습할 수 있을 것이라는 가설로 이를 제시한다.
+
+### Fixed encoding을 선택한 이유
+
+논문은 learned positional embedding도 실험했고 두 방식이 거의 동일한 결과를 냈다고 보고한다. 최종적으로 sinusoidal version을 선택한 이유는 학습 중 경험한 sequence length보다 긴 길이에도 함숫값을 계산하여 extrapolate할 가능성이 있기 때문이다.
+
+다만 이는 긴 길이에서 성능이 자동으로 유지된다는 보장은 아니다. 위치값 자체를 생성할 수 있다는 것과, 모델이 학습 범위를 넘어 안정적으로 동작한다는 것은 구분해야 한다.
 
 ## Residual Connection과 Layer Normalization
 
