@@ -2,185 +2,657 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\03_Show_Attend_and_Tell.pdf`
+- 원본 파일: `03_Show_Attend_and_Tell.pdf`
 - 제목: Show, Attend and Tell: Neural Image Caption Generation with Visual Attention
-- 저자: Kelvin Xu et al.
+- 저자: Kelvin Xu, Jimmy Ba, Ryan Kiros, Kyunghyun Cho, Aaron Courville, Ruslan Salakhutdinov, Richard Zemel, Yoshua Bengio
 - 발표: ICML 2015
-- 주제: 이미지 captioning에서 spatial visual attention의 이론화
-- 핵심 키워드: visual attention, image captioning, soft attention, hard attention, doubly stochastic regularization
+- 주제: spatial CNN feature에 soft/hard attention을 적용해 caption word마다 다른 image region을 보는 모델
+- 핵심 키워드: visual attention, image captioning, soft attention, hard attention, REINFORCE, doubly stochastic regularization, CNN-LSTM
 
 ## 한눈에 보는 요약
 
-이 논문은 attention을 machine translation 밖으로 확장해 image captioning에 적용한다.
+이전 image captioning model은 CNN이 image 전체를 하나의 global vector로 압축하고, LSTM이 그 vector를 조건으로 sentence를 생성하는 경우가 많았다. 이 구조는 Bahdanau 이전 NMT의 fixed-length bottleneck과 닮았다.
 
-CNN feature map의 각 spatial location을 annotation으로 보고, LSTM decoder가 단어를 생성할 때마다 이미지의 어느 위치를 볼지 결정한다.
+이 논문은 convolutional feature map의 spatial structure를 유지한다.
 
-Soft attention은 differentiable weighted sum이고, hard attention은 위치를 sampling하는 stochastic attention이다.
+```text
+image
+-> CNN feature map [14, 14, 512]
+-> 196 spatial annotations a_1, ..., a_196
+```
+
+Caption word `y_t`를 생성할 때마다 이전 LSTM hidden state `h_(t-1)`로 각 image location의 score를 계산한다.
+
+```text
+e_(t,i) = f_att(a_i, h_(t-1))
+alpha_(t,:) = softmax(e_(t,:))
+```
+
+이후 두 가지 attention을 비교한다.
+
+```text
+soft attention:
+z_t = sum_i alpha_(t,i) a_i
+
+hard attention:
+s_t ~ Categorical(alpha_t)
+z_t = a_(s_t)
+```
+
+Soft attention은 모든 location의 expected feature를 사용하므로 standard backpropagation으로 학습한다. Hard attention은 location 하나를 sampling하므로 discrete latent variable과 REINFORCE가 필요하다.
+
+Caption이 진행되면서 attention map도 바뀐다. 예를 들어 `bird`, `water`, `stop sign` 같은 word를 생성할 때 해당 image region에 높은 weight가 나타난다. 이 논문은 attention이 language translation뿐 아니라 spatial vision-language alignment에도 적용될 수 있음을 보여 준 대표적인 초기 연구다.
 
 ## 연구 배경과 문제의식
 
-이미지를 하나의 global vector로 압축해 caption decoder에 넣으면, 단어별로 어떤 이미지 영역을 참조했는지 표현하기 어렵다.
+### Global image vector의 병목
 
-이 논문은 CNN feature map의 각 spatial location을 annotation으로 보고, LSTM decoder가 단어를 생성할 때마다 다른 image region을 보게 만든다.
-
-중요한 이론적 구분은 soft attention과 hard attention이다. 하나는 weighted average라 미분 가능하고, 다른 하나는 stochastic location selection이라 sampling 기반 학습이 필요하다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `이미지 captioning에서 spatial visual attention의 이론화`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-기본 CNN-caption 모델과 비교하면 차이는 이미지 표현을 하나의 vector로 압축하느냐, spatial memory로 남겨두느냐에 있다.
+초기 neural image captioning은 보통 마지막 fully connected CNN feature를 image representation으로 사용했다.
 
 ```text
-global image vector:
-image -> CNN -> v_image -> LSTM decoder
-
-visual attention:
-image -> CNN -> a_1 ... a_L
-decoder state h_t queries image regions
-z_t = sum_i alpha_ti a_i
+image -> one vector v -> LSTM -> caption
 ```
 
-이 차이 때문에 attention 모델은 단어별로 다른 이미지 영역을 볼 수 있다.
-
-## 핵심 개념 상세 해설
-
-### Soft attention과 hard attention
-
-Soft attention은 모든 image location을 확률 가중합한다. 그래서 context `z_t`가 미분 가능하고 일반적인 backpropagation으로 학습된다.
-
-Hard attention은 하나의 위치를 sampling한다. 실제 시선 이동처럼 해석하기 쉽지만, sampling은 미분 불가능하므로 variational lower bound나 REINFORCE류 estimator가 필요하다.
+이 방식에서는 image의 모든 object, attribute, relation, background를 하나의 vector에 압축해야 한다. 또한 caption의 모든 word가 동일한 image representation을 받는다.
 
 ```text
-soft: z_t = sum_i alpha_ti a_i
-hard: s_t ~ Categorical(alpha_t), z_t = a_{s_t}
+word "dog"   sees v
+word "floor" sees v
+word "red"   sees v
 ```
 
-### Doubly stochastic regularization
+하지만 서로 다른 word는 서로 다른 visual evidence를 필요로 한다.
 
-Caption 전체를 생성하는 동안 특정 image region만 계속 보는 것을 막기 위해, 각 region이 어느 정도 attention을 받도록 regularization을 둔다.
+- Noun은 object region이 중요하다.
+- Adjective는 object의 local attribute가 중요하다.
+- Preposition과 relation은 여러 region의 배치가 중요하다.
+- Background word는 넓은 scene context가 중요하다.
 
-직관적으로는 `모든 중요한 영역을 한 번쯤 훑어보라`는 제약이다. 이 항은 visual attention이 단어별 glimpse로만 흩어지지 않고 이미지 전체 coverage를 갖게 한다.
-
-## Tensor shape와 자료구조
-
-CNN feature map을 `L`개의 spatial annotation으로 펼친다고 하자. 예를 들어 `14 x 14` feature map이면 `L = 196`개의 image region memory가 생긴다.
+논문의 핵심 질문은 다음과 같다.
 
 ```text
-image feature map: [H, W, C]
-flattened annotations: a_1, ..., a_L
-a_i shape: [C]
-decoder hidden h_t: [d]
-attention scores e_t: [L]
-visual context z_t: [C]
+Caption을 생성하는 동안 model이 word마다 image의 다른 부분을 볼 수 있는가?
 ```
 
-Caption decoder 입장에서는 source sentence가 아니라 image region sequence를 읽는 셈이다. 그래서 수식은 NMT attention과 거의 같고, memory의 의미만 달라진다.
+### Object detector 없이 latent alignment를 학습한다
 
-## 수식과 계산 전개
+당시 일부 captioning system은 object detector의 region proposal이나 visual concept detector를 사용했다. 이 논문은 별도 object label이나 region-word alignment supervision 없이 caption likelihood만으로 spatial attention을 학습한다.
 
-### 위치별 score
+Attention target은 반드시 object box일 필요도 없다. Texture, background, 관계 영역처럼 명확한 object가 아닌 region도 볼 수 있다.
+
+## 전체 모델 구조
+
+### Encoder: convolutional annotations
+
+Pre-trained Oxford VGGNet의 convolutional layer에서 spatial feature map을 추출한다. 논문 설정은 다음과 같다.
 
 ```text
-e_ti = f_att(a_i, h_{t-1})
-alpha_ti = softmax_i(e_ti)
+feature map: 14 x 14 x 512
+L = 196 locations
+D = 512 feature dimension
 ```
 
-Decoder hidden state가 현재 단어를 만들기 위해 image region과 얼마나 관련되는지 계산한다.
-
-### Soft context
+Spatial axis를 flatten해 annotation set을 만든다.
 
 ```text
-z_t = sum_i alpha_ti a_i
+A = {a_1, a_2, ..., a_L}
+a_i in R^D
 ```
 
-모든 region feature의 weighted sum이다. NMT attention의 source annotation을 image annotation으로 바꾼 것과 같다.
+Fully connected feature와 달리 각 `a_i`는 image의 특정 receptive field에 대응한다. 이 대응 관계가 attention map을 다시 image 위에 시각화할 수 있게 한다.
+
+### Decoder: LSTM
+
+Caption은 vocabulary size `K`의 one-hot word sequence다.
+
+```text
+y = {y_1, ..., y_C}
+y_t in R^K
+```
+
+LSTM은 세 입력을 사용한다.
+
+```text
+previous word embedding E y_(t-1)
+previous hidden state h_(t-1)
+current visual context z_t_hat
+```
+
+Gate 계산을 단순화해 쓰면 다음과 같다.
+
+```text
+[i_t, f_t, o_t, g_t]
+= [sigmoid, sigmoid, sigmoid, tanh](
+    W [E y_(t-1); h_(t-1); z_t_hat]
+)
+
+c_t = f_t * c_(t-1) + i_t * g_t
+h_t = o_t * tanh(c_t)
+```
+
+Visual context가 매 step LSTM gate 계산에 직접 들어간다.
+
+### Initial state
+
+LSTM의 초기 memory와 hidden state는 annotation의 평균에서 별도 MLP로 예측한다.
+
+```text
+a_mean = (1/L) sum_i a_i
+
+c_0 = f_init,c(a_mean)
+h_0 = f_init,h(a_mean)
+```
+
+즉 attention 이전에도 image 전체의 global summary가 decoder initialization에 사용된다.
+
+### Output word probability
+
+다음 word는 이전 word embedding, current LSTM state, visual context를 결합한 deep output layer에서 예측한다.
+
+```text
+p(y_t | y_<t, A)
+proportional to
+exp(L_o(E y_(t-1) + L_h h_t + L_z z_t_hat))
+```
+
+Visual context는 state update뿐 아니라 output prediction에도 직접 연결된다.
+
+## Attention score
+
+### Location별 energy
+
+각 location `i`의 annotation과 previous hidden state를 MLP `f_att`로 scoring한다.
+
+```text
+e_(t,i) = f_att(a_i, h_(t-1))
+```
+
+Bahdanau additive attention 형태로 쓰면 다음과 같다.
+
+```text
+e_(t,i)
+= v_a^T tanh(W_a a_i + W_h h_(t-1) + b)
+```
+
+Previous hidden state는 지금까지 생성한 caption history를 요약한다. 따라서 다음에 어디를 볼지는 이미 생성한 word sequence에 따라 달라진다.
+
+### Spatial distribution
+
+Location 축으로 softmax한다.
+
+```text
+alpha_(t,i)
+= exp(e_(t,i)) / sum_k exp(e_(t,k))
+```
+
+각 time step에서 다음이 성립한다.
+
+```text
+alpha_(t,i) >= 0
+sum_i alpha_(t,i) = 1
+```
+
+`Alpha` 전체를 모으면 caption time과 image location 사이 alignment matrix가 된다.
+
+```text
+Alpha: [caption_length, 196]
+```
+
+## Deterministic soft attention
+
+### Expected context
+
+Soft attention은 annotation의 weighted average를 사용한다.
+
+```text
+z_t_hat = sum_i alpha_(t,i) a_i
+```
+
+이는 categorical location variable 아래 expected annotation이다.
+
+```text
+z_t_hat = E_(s_t ~ alpha_t)[a_(s_t)]
+```
+
+모든 연산이 smooth하고 differentiable하므로 caption negative log-likelihood를 standard backpropagation으로 최적화한다.
+
+### 장점
+
+- Sampling이 없어 gradient variance가 낮다.
+- 한 word가 여러 region을 동시에 참고할 수 있다.
+- GPU에서 weighted sum으로 효율적으로 구현할 수 있다.
+- Attention map을 probability-like heatmap으로 시각화할 수 있다.
+
+### 한계
+
+- 서로 다른 object feature가 평균되어 흐려질 수 있다.
+- 실제로 location 하나를 선택하는 hard glimpse보다 계산량이 크다.
+- Expected feature를 nonlinear LSTM에 넣는 것이 모든 hard trajectory의 exact marginal과 같지는 않다.
+
+논문은 first-order Taylor approximation과 normalized weighted geometric mean을 통해 soft model이 hard location marginal을 근사한다고 설명한다. 그러나 이는 exact equality가 아니라 nonlinear network에 대한 근사적 해석이다.
+
+## Stochastic hard attention
+
+### Discrete location variable
+
+Hard attention은 one-hot location variable `s_t`를 sampling한다.
+
+```text
+s_t ~ Multinoulli(alpha_t)
+s_(t,i) in {0,1}
+sum_i s_(t,i) = 1
+```
+
+Context는 선택된 annotation 하나다.
+
+```text
+z_t_hat = sum_i s_(t,i) a_i
+        = a_(selected location)
+```
+
+Inference 한 step에서 image region 하나만 읽는다는 의미에서 hard하다.
+
+### Variational lower bound
+
+Location trajectory `s`를 latent variable로 보면 caption marginal likelihood는 모든 trajectory를 합해야 한다. 논문은 다음 lower bound를 최적화한다.
+
+```text
+L_s = sum_s p(s | A) log p(y | s, A)
+    <= log p(y | A)
+```
+
+가능한 trajectory 수가 `L^C`이므로 정확한 합은 불가능하다. Monte Carlo sample로 gradient를 근사한다.
+
+### REINFORCE gradient
+
+Gradient에는 두 부분이 있다.
+
+```text
+1. sampled path에서 caption model의 ordinary gradient
+2. log p(y | s, A)를 reward로 사용하는 attention policy gradient
+```
+
+개념적으로 다음 형태다.
+
+```text
+grad L
+approx
+grad log p(y | sampled_s, A)
++ (reward - baseline) grad log p(sampled_s | A)
+```
+
+논문은 variance reduction을 위해 다음을 사용한다.
+
+- Moving-average reward baseline
+- Attention distribution entropy regularization
+- 확률 0.5로 sampled location 대신 expected alpha 사용
+
+이 학습 규칙은 REINFORCE와 동등한 형태다.
+
+### Hard attention의 trade-off
+
+```text
+advantage:
+selective computation and discrete glimpse
+
+cost:
+high-variance gradient and more difficult optimization
+```
+
+Hard attention은 이름과 달리 학습 과정에서 완전히 deterministic한 one-hot decision을 직접 미분하는 것이 아니다. Sampling과 policy gradient를 통해 expected reward를 최적화한다.
+
+## Soft와 hard attention 비교
+
+| 항목 | Soft attention | Hard attention |
+| --- | --- | --- |
+| Context | 모든 annotation weighted sum | sampled annotation 하나 |
+| Forward | deterministic | stochastic during training |
+| Gradient | standard backpropagation | REINFORCE/Monte Carlo |
+| Variance | 낮음 | 높음 |
+| 한 step 계산 | 모든 location 사용 | 선택 location 사용 가능 |
+| Multi-region 결합 | 자연스러움 | 한 sample에서는 불가능 |
+| 해석 | continuous heatmap | discrete glimpse trajectory |
+
+두 방식은 동일한 attention score network와 spatial annotations를 공유하고 context 함수 `phi`만 다르다.
+
+```text
+phi_soft(A, alpha) = sum_i alpha_i a_i
+phi_hard(A, alpha) = a_s, s ~ Categorical(alpha)
+```
+
+## Doubly stochastic regularization
+
+### Row normalization
+
+Softmax 때문에 각 caption step에서는 location weight 합이 1이다.
+
+```text
+sum_i alpha_(t,i) = 1
+```
+
+### Column coverage도 장려한다
+
+논문은 caption 전체에 걸쳐 각 image location이 대략 한 번씩 attention을 받도록 regularization한다.
+
+```text
+sum_t alpha_(t,i) approx 1
+```
+
+Loss는 다음과 같다.
+
+```text
+L_d
+= -log p(y | A)
+  + lambda * sum_i (1 - sum_t alpha_(t,i))^2
+```
+
+행과 열 양쪽 합을 제어한다는 의미에서 doubly stochastic attention이라 부른다.
+
+다만 엄밀히 말하면 column sum이 정확히 1이 되도록 projection하는 것이 아니라 penalty로 장려할 뿐이다. Caption length와 location 수가 다르므로 모든 row와 column 합을 동시에 정확히 1로 만들 수도 없다.
+
+### Visual sentinel과 비슷한 gate
+
+Soft model은 previous hidden state에서 scalar gate `beta_t`도 예측한다.
+
+```text
+beta_t = sigmoid(f_beta(h_(t-1)))
+z_t_hat = beta_t * sum_i alpha_(t,i) a_i
+```
+
+모든 word가 동일한 정도의 visual evidence를 필요로 하지 않는다는 점을 반영한다. Function word에서는 image context를 줄이고 object word에서는 높일 수 있다.
+
+## Tensor shape와 계산
+
+논문 설정을 batch 형태로 쓰면 다음과 같다.
+
+```text
+A: [B, L=196, D=512]
+h_(t-1): [B, H]
+```
+
+Additive attention hidden dimension을 `d_a`라 하면:
+
+```text
+A_proj = A W_a
+shape: [B, 196, d_a]
+
+h_proj = h_(t-1) W_h
+shape: [B, d_a]
+
+E_hidden = tanh(A_proj + h_proj[:, None, :])
+shape: [B, 196, d_a]
+
+e_t = E_hidden v_a
+shape: [B, 196]
+
+alpha_t = softmax(e_t, dim=location)
+shape: [B, 196]
+```
+
+Soft context:
+
+```text
+z_t = alpha_t[:, None, :] @ A
+shape: [B, 512]
+```
+
+Hard context:
+
+```text
+index_t ~ Categorical(alpha_t)
+z_t = gather(A, index_t)
+shape: [B, 512]
+```
+
+전체 caption의 attention map은 다음 shape다.
+
+```text
+Alpha: [B, C, 196]
+-> reshape each row to [14,14]
+-> upsample to image resolution
+```
+
+## 전체 알고리즘 흐름
+
+### Soft attention
+
+```text
+1. CNN extracts A = [196,512]
+2. mean(A) initializes LSTM h_0 and c_0
+3. for caption step t:
+   a. score every spatial annotation with h_(t-1)
+   b. softmax -> alpha_t
+   c. z_t = weighted sum of annotations
+   d. update LSTM with previous word and z_t
+   e. predict next word
+4. minimize caption NLL + coverage penalty
+```
 
 ### Hard attention
 
 ```text
-s_t ~ Categorical(alpha_t)
-z_t = a_{s_t}
+1. CNN extracts spatial annotations
+2. for caption step t:
+   a. compute alpha_t
+   b. sample one location s_t
+   c. use selected annotation as z_t
+   d. update LSTM and predict word
+3. optimize variational lower bound with REINFORCE
+4. use baseline and entropy terms to reduce variance
 ```
 
-위치를 하나 선택한다. 학습에는 stochastic gradient estimator가 필요하다.
+## Attention visualization
 
-## 전체 알고리즘 흐름
+![Caption word별 soft/hard visual attention과 object alignment](https://github.com/user-attachments/assets/36dfdb3b-a7e8-41b7-8c11-c1d734b528ab)
 
-1. 이미지를 CNN에 넣어 spatial feature map을 만든다.
-2. Feature map을 위치별 annotation sequence로 펼친다.
-3. LSTM decoder가 이전 단어와 hidden state를 사용해 attention score를 만든다.
-4. Image location 방향 softmax로 visual attention distribution을 만든다.
-5. Weighted sum으로 visual context를 만들고 다음 단어 분포를 예측한다.
+Caption word가 바뀔 때 bright region도 이동한다.
 
-## 작은 예시로 보는 직관
+- `bird`에서는 bird body 주변
+- `water`에서는 image 아래 수면
+- `dog`에서는 curtain 아래 dog
+- `stop sign`에서는 표지판
+- `trees`에서는 giraffe 주변 background
 
-이미지 caption에서 `a dog chasing a ball`을 생성한다고 하자. `dog`를 만들 때는 동물 영역, `ball`을 만들 때는 공 영역, `chasing`을 만들 때는 두 객체 사이의 관계 영역이 중요할 수 있다.
+Hard attention은 한 location의 bright spot으로 나타나고 soft attention은 여러 overlapping receptive field가 섞인 부드러운 heatmap으로 나타난다.
 
-```text
-t = dog:  alpha high on dog region
-t = ball: alpha high on ball region
-t = chasing: alpha spread over dog and ball regions
-```
+Visual attention은 오류 분석에도 도움이 된다. Model이 `clock`을 잘못 생성했을 때 attention이 실제로 손 주변의 비슷한 pattern을 보고 있었는지, language model prior만으로 word를 낸 것인지 단서를 제공한다.
 
-Soft attention은 이런 영역 선택을 확률분포로 표현한다.
+그러나 heatmap은 receptive field가 크게 겹치는 14x14 feature를 upsample한 것이다. Pixel-level segmentation이나 인과 설명과 동일하게 해석하면 안 된다.
 
-## 계산 복잡도와 병목
+## 실험 설정
 
-- Hard attention은 variance가 큰 gradient estimator를 사용해야 해서 학습 안정성이 낮다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+### 데이터
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+- Flickr8k: 8,000 image
+- Flickr30k: 30,000 image
+- MS COCO: 82,783 image
+- Image당 reference caption: Flickr는 5개, COCO도 비교 일관성을 위해 5개만 사용
+- Vocabulary size: 10,000
 
-## 구현할 때 확인할 부분
+### Visual encoder와 학습
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+- Oxford VGGNet pre-trained on ImageNet
+- Fourth convolutional layer before max pooling
+- `14 x 14 x 512` annotations
+- CNN은 fine-tuning하지 않음
+- Flickr8k: RMSProp
+- Flickr30k/COCO: Adam
+- Minibatch 64, caption length별로 bucket
+- Dropout과 BLEU-based early stopping
+- COCO soft attention: Titan Black 한 장에서 3일 미만
 
-## 자주 헷갈리는 지점
+Length bucket은 batch에서 가장 긴 caption에 맞춘 padding 계산 낭비를 줄인다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Soft alignment는 hard word alignment와 다르다. 여러 source 위치를 동시에 볼 수 있고, 언어학적 정렬과 완전히 같지는 않다.
+## 실험 결과
 
-## 관련 방법과 비교
+![Flickr8k, Flickr30k, COCO captioning 결과](https://github.com/user-attachments/assets/1edd5288-487a-42be-8d03-858413bfc431)
 
-| 관점 | 설명 |
-| --- | --- |
-| Query | 정보를 찾는 현재 representation |
-| Key | 검색 대상의 index representation |
-| Value | 실제로 가져올 content representation |
+### Flickr8k
 
-## 실험 결과를 읽는 관점
+| 모델 | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | METEOR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Soft attention | 67.0 | 44.8 | 29.9 | 19.5 | 18.93 |
+| Hard attention | 67.0 | 45.7 | 31.4 | 21.3 | 20.30 |
 
-실험은 제안한 이론적 병목이 실제 성능 또는 효율 차이로 이어지는지를 확인하는 근거로 읽으면 된다.
+Hard attention이 BLEU-2 이후와 METEOR에서 높다.
 
-## 장점과 기여
+### Flickr30k
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+| 모델 | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | METEOR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Soft attention | 66.7 | 43.4 | 28.8 | 19.1 | 18.49 |
+| Hard attention | 66.9 | 43.9 | 29.6 | 19.9 | 18.46 |
+
+Hard attention이 BLEU에서는 조금 높지만 METEOR는 soft가 `0.03` 높다. 차이가 작아 한 방식의 일관된 우위라고 보기 어렵다.
+
+### MS COCO
+
+| 모델 | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | METEOR |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Log Bilinear | 70.8 | 48.9 | 34.4 | 24.3 | 20.03 |
+| Soft attention | 70.7 | 49.2 | 34.4 | 24.3 | 23.90 |
+| Hard attention | 71.8 | 50.4 | 35.7 | 25.0 | 23.04 |
+
+Hard attention이 BLEU 전반에서 높고 soft attention이 METEOR에서 높다. Soft attention의 METEOR 향상은 doubly stochastic regularization과 lower convolutional feature의 영향도 함께 포함한다.
+
+### 결과를 읽을 때 주의할 점
+
+논문도 당시 비교의 어려움을 명시한다.
+
+- CNN backbone이 AlexNet, GoogLeNet, VGG로 다르다.
+- Single model과 ensemble 결과가 섞여 있다.
+- Flickr30k와 COCO split이 완전히 표준화되지 않았다.
+- BLEU 구현과 tokenization 차이가 있다.
+- 이 논문 결과는 single model이지만 일부 baseline은 ensemble이다.
+
+따라서 attention의 정확한 기여는 같은 encoder와 decoder에서 soft/hard variant를 비교한 부분이 가장 신뢰할 만하다.
+
+## 장점과 핵심 기여
+
+### 1. Spatial feature map을 differentiable memory로 만들었다
+
+CNN의 각 location feature를 annotation으로 보고 language decoder가 필요할 때 조회한다.
+
+### 2. Visual-language latent alignment를 end-to-end 학습했다
+
+Region label이나 word-region alignment 없이 caption loss만으로 attention이 학습된다.
+
+### 3. Soft와 hard attention을 한 framework에서 비교했다
+
+Expected context와 sampled glimpse라는 두 선택을 동일한 score model 위에서 이론적으로 정리했다.
+
+### 4. Hard attention에 policy gradient를 적용했다
+
+Discrete visual glimpse 선택을 variational lower bound와 REINFORCE로 학습하는 구체적 방법을 제시했다.
+
+### 5. Attention visualization을 model diagnosis에 사용했다
+
+단순 성능 metric 외에 word 생성과 visual region 사이의 관계를 관찰하는 방법을 보여 줬다.
+
+### 6. NMT attention을 vision-language로 확장했다
+
+Sequence position alignment를 spatial region alignment로 일반화해 attention의 범용성을 입증했다.
 
 ## 한계와 비판적 관점
 
-- Hard attention은 gradient variance가 크다.
-- Spatial resolution은 CNN feature map 해상도에 제한된다.
-- Attention map이 사람의 시선 또는 진짜 설명이라고 보기는 어렵다.
+### 1. Spatial resolution이 낮다
 
-## 후속 논문과의 연결점
+14x14 grid는 작은 object와 정밀한 boundary를 표현하기 어렵다. Upsampled heatmap은 원래 feature의 overlapping receptive field를 부드럽게 확대한 것이다.
 
-이후 visual attention은 non-local networks, attention augmented convolution, Vision Transformer, DETR로 이어진다.
+### 2. CNN을 fine-tuning하지 않았다
+
+ImageNet classification용 feature가 captioning에 최적화되지 않는다. Attention decoder의 이득과 visual encoder의 한계를 분리해야 한다.
+
+### 3. Soft attention은 feature averaging을 일으킨다
+
+멀리 떨어진 두 region에 weight가 있으면 서로 다른 visual evidence가 한 vector에 섞인다. Multi-head 또는 object-query 구조가 후속 대안이 된다.
+
+### 4. Hard attention gradient variance가 높다
+
+Moving baseline, entropy, soft substitution을 사용해도 REINFORCE optimization은 불안정하고 sample 효율이 낮다.
+
+### 5. Doubly stochastic prior가 모든 caption에 적절하지 않다
+
+Image의 모든 region을 한 번씩 볼 필요는 없다. Background가 넓거나 salient object가 하나인 image에서는 균등 coverage가 불필요할 수 있다.
+
+### 6. Attention map과 설명은 동일하지 않다
+
+높은 weight는 해당 location이 weighted sum에 크게 기여했음을 보여 주지만, 그 region이 word 생성의 유일한 원인이라는 반사실적 증거는 아니다.
+
+### 7. Autoregressive language prior가 강하다
+
+Caption dataset의 빈번한 문장 pattern 때문에 image를 충분히 보지 않고도 그럴듯한 caption을 생성할 수 있다. Attention visualization만으로 grounding이 완전하다고 결론 내릴 수 없다.
+
+## Bahdanau attention과의 대응
+
+| NMT | Image captioning |
+| --- | --- |
+| source annotations `h_j` | spatial CNN annotations `a_i` |
+| decoder state `s_(t-1)` | LSTM hidden state `h_(t-1)` |
+| source word position | image grid location |
+| alignment weight `alpha_(t,j)` | spatial attention `alpha_(t,i)` |
+| context `sum alpha h` | visual context `sum alpha a` |
+| target translation word | caption word |
+
+핵심 연산은 같다.
+
+```text
+query-conditioned scoring
+-> softmax over memory locations
+-> weighted retrieval
+```
+
+차이는 memory가 1D source sequence가 아니라 2D image feature grid라는 점이다.
+
+## 후속 연구와의 연결
+
+이 논문의 spatial attention은 다음 흐름으로 이어진다.
+
+- Bottom-up attention: grid 대신 object region feature를 memory로 사용
+- Visual sentinel/adaptive attention: image를 볼지 language state만 쓸지 더 명시적으로 결정
+- Transformer captioning: LSTM 대신 self-attention/cross-attention을 사용
+- ViT: image patch 자체를 token sequence로 만들어 global self-attention 수행
+- DETR: learned object query가 image feature memory를 cross-attention으로 검색
+- Vision-language model: text token과 image patch/region 사이 대규모 cross-attention
+
+Show, Attend and Tell의 `caption query -> spatial memory` 구조는 DETR의 `object query -> image memory`와 목적은 다르지만 memory retrieval 관점에서 연결된다.
+
+## 구현 체크리스트
+
+```text
+1. CNN feature가 [B,14,14,512]에서 [B,196,512]로 올바르게 flatten되는가?
+2. Flatten order와 heatmap reshape order가 일치하는가?
+3. Attention query가 h_t가 아니라 논문대로 h_(t-1)인가?
+4. Softmax 축이 196 location 축인가?
+5. Soft attention alpha 합이 step마다 1인가?
+6. Initial h_0/c_0가 annotation mean의 서로 다른 MLP에서 계산되는가?
+7. beta gate가 context 전체에 scalar로 적용되는가?
+8. Coverage penalty에서 time과 location 축을 뒤집지 않았는가?
+9. Hard attention log-probability가 REINFORCE loss에 포함되는가?
+10. Reward baseline이 gradient를 받지 않도록 처리하는가?
+11. Entropy regularization 부호가 exploration을 장려하는 방향인가?
+12. Attention visualization이 receptive field center와 맞는가?
+```
 
 ## 개인 학습/연구 메모
 
-이 논문은 `단어 위치` attention을 `이미지 위치` attention으로 바꾸면 같은 수식이 다른 modality에서도 작동한다는 점을 보여주는 좋은 예다.
+이 논문은 Bahdanau attention의 추상 구조가 modality에 독립적임을 보여 준다.
 
+```text
+memory item = source word annotation
+or
+memory item = image region annotation
+```
+
+기억해야 할 식은 두 개다.
+
+```text
+soft:
+z_t = sum_i alpha_(t,i) a_i
+
+hard:
+s_t ~ Categorical(alpha_t)
+z_t = a_(s_t)
+```
+
+두 식의 차이가 deterministic backpropagation과 stochastic policy gradient라는 전혀 다른 학습 문제를 만든다.

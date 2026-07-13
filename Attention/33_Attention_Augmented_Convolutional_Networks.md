@@ -2,196 +2,231 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\33_Attention_Augmented_Convolutional_Networks.pdf`
-- 제목: Attention Augmented Convolutional Networks
+- 제목: **Attention Augmented Convolutional Networks**
 - 저자: Irwan Bello, Barret Zoph, Ashish Vaswani, Jonathon Shlens, Quoc V. Le
 - 발표: ICCV 2019
-- 주제: Attention Augmented Convolution의 local-global 결합
-- 핵심 키워드: attention augmented convolution, 2D relative position, convolution-attention hybrid
+- 핵심 키워드: attention augmentation, 2D relative self-attention, convolution, global context, vision attention
 
 ## 한눈에 보는 요약
 
-이 논문은 convolution feature와 self-attention feature를 concatenate해 CNN에 global context modeling을 추가한다.
-
-Convolution은 local pattern을 잘 잡고, attention은 long-range interaction을 잘 잡는다는 상보성을 활용한다.
-
-이미지의 2D 구조를 반영하기 위해 height와 width 방향 relative positional embedding을 attention score에 넣는다.
-
-## 연구 배경과 문제의식
-
-CNN은 translation equivariance와 local inductive bias가 강하지만, 먼 위치 간 직접 interaction은 약하다.
-
-Convolution output과 self-attention output을 channel 방향으로 결합해 local pattern과 global relation을 함께 사용한다.
-
-Self-attention은 global interaction이 가능하지만 이미지에서 local pattern bias가 부족하고 비용이 크다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Attention Augmented Convolution의 local-global 결합`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-CNN과 vision attention의 차이는 feature aggregation 범위다.
+이 논문은 convolution을 channel/spatial gate로 재가중하는 대신, convolution branch와 self-attention branch가 **서로 다른 output feature map을 직접 생성**하고 channel 방향으로 concatenate하는 Attention-Augmented Convolution(AAConv)을 제안한다.
 
 ```text
-convolution:
-output at position i uses local neighborhood around i
-
-visual attention:
-output at position/query i may use distant positions,
-channels, patches, or object-level memory slots
+AAConv(X) = Concat[Conv(X), MHA_2D_relative(X)]
 ```
 
-다만 vision에서는 local structure가 강하므로 attention이 항상 convolution을 대체해야 하는 것은 아니다. 많은 논문은 둘을 결합하거나, 충분한 data scale에서만 순수 Transformer를 사용한다.
+Convolution은 local pattern과 translation equivariance라는 강한 inductive bias를 제공하고, self-attention은 image 전체의 content-dependent long-range interaction을 제공한다. 두 연산을 경쟁시키기보다 output channel budget을 나눠 병렬 결합한다.
 
-## 핵심 개념 상세 해설
+Vision에 맞게 attention score에 relative height와 relative width embedding을 별도로 추가한다. ResNet-50에서 ImageNet top-1은 `76.4 → 77.7`, RetinaNet R50의 COCO AP는 `36.8 → 38.2`로 개선됐으며 parameter 수는 거의 유지됐다.
 
-### Vision attention의 핵심 수식
+![Attention-Augmented Convolution의 convolution·relative attention 병렬 구조](https://github.com/user-attachments/assets/1e374bcf-d976-41f5-a6da-075335d94fff)
 
-Attention augmented convolution은 convolution output과 attention output을 channel dimension에서 붙인다.
+## 기존 attention module과 차이
+
+SE와 CBAM은 convolution이 만든 feature `F`에 gate를 곱한다.
 
 ```text
-O_conv = Conv(X)
-O_attn = MultiHeadAttention(X)
-O = Concat(O_conv, O_attn)
+F_out = gate(F) ⊗ F
 ```
 
-Convolution은 local pattern, attention은 long-range relation을 담당한다.
-
-## Tensor shape와 자료구조
-
-Vision attention은 입력을 어떤 sequence로 보느냐에 따라 shape가 달라진다. CNN feature map은 `[B, C, H, W]`이고, ViT/DETR에서는 이를 token sequence로 펼친다.
+AAConv의 attention branch는 value를 global weighted sum해 **새 feature channel**을 만든다.
 
 ```text
-CNN feature: [B, C, H, W]
-spatial tokens: [B, H*W, C]
-image patches: [B, N, P*P*C]
-patch embeddings: [B, N, D]
-object queries: [B, num_queries, D]
+F_attn = softmax(QK^T + relative_bias) V
+F_out  = concat(F_conv, F_attn)
 ```
 
-SE/CBAM은 token-token attention이 아니라 channel/spatial gate를 만든다. ViT/DETR은 patch 또는 object query를 Transformer token처럼 다룬다. 따라서 같은 `attention`이라는 말이지만 계산 대상이 상당히 다르다.
+따라서 단순 feature selection보다 표현력이 크고, 위치 간 정보를 실제로 이동시킨다.
 
-## 수식과 계산 전개
+## Multi-head self-attention on 2D feature
 
-### Convolution branch
+Input `X ∈ R^{H×W×C_in}`를 `N=HW` sequence로 펼친다.
 
 ```text
-Feature map `[H, W, C]`를 `N = H * W`개 위치 token으로 본다.
+Q = X W_q     # [N,d_k]
+K = X W_k     # [N,d_k]
+V = X W_v     # [N,d_v]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Attention branch
+`N_h` head로 나누어 head별 score와 output을 계산한다.
 
 ```text
-`Q = XW_Q`, `K = XW_K`, `V = XW_V`를 만든다.
+O_h = softmax(Q_h K_h^T / sqrt(d_k^h)) V_h
+MHA(X) = W_o Concat_h(O_h)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Score는 `[N,N]`이라 global attention cost는 `O((HW)²)`. 논문은 주로 28×28 이하 stage에 적용해 비용을 관리한다.
 
-### 2D relative position
+## 2D relative position embedding
+
+Content dot product만 사용하면 permutation에 대해 equivariant하고 2D 위치 관계를 알기 어렵다. Absolute position은 image resolution 변화와 translation에 불리할 수 있다. 논문은 query position `i=(i_y,i_x)`, key `j=(j_y,j_x)`의 상대 차이를 height와 width로 분리한다.
 
 ```text
-Attention logit은 content term `q_i^T k_j`에 2D relative position term을 더한다.
+logit(i,j) = q_i^T k_j
+           + q_i^T r^H_{j_y-i_y}
+           + q_i^T r^W_{j_x-i_x}
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+- `r^H`: relative vertical displacement embedding
+- `r^W`: relative horizontal displacement embedding
 
-### Channel concatenation
+전체 2D offset마다 embedding을 두는 대신 두 1D table을 합쳐 parameter를 줄인다. Spatial relation이 translation에 따라 보존되며 resolution별 relative range를 interpolation할 수 있다.
+
+## Memory-efficient relative logits
+
+Naive하게 모든 `(i,j)` pair의 relative vector를 만들면 `[H,W,H,W,d]` tensor가 필요하다. 논문은 1D relative-to-absolute indexing trick을 height와 width에 각각 적용해 explicit pair tensor 없이 logits를 만든다.
 
 ```text
-상대 위치는 height offset과 width offset embedding으로 분해해 `r_{h}`와 `r_{w}`를 사용한다.
+relative_logits_width(Q, r_W)
+relative_logits_height(Q, r_H)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+각 연산은 einsum과 reshape/padding으로 모든 query-key 상대 offset을 효율적으로 배치한다. 그래도 attention weight 자체 `[HW,HW]` memory는 남는다.
 
-### Hybrid block
+## Attention-Augmented Convolution
+
+원 convolution output channel을 `F_out`이라 하자. 그중 `d_v` channel을 attention에 배정하고 convolution은 `F_out-d_v` channel을 만든다.
 
 ```text
-Attention output `O_attn`과 convolution output `O_conv`를 `Concat(O_conv, O_attn)`으로 합친다.
+conv_out = Conv_k×k(X, channels=F_out-d_v)
+attn_out = MHA_relative(X, value_channels=d_v)
+
+AAConv(X) = Concat(conv_out, attn_out)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Attention이 단순 추가 branch가 아니라 convolution channel 일부를 대체하므로 parameter budget을 비슷하게 유지할 수 있다.
 
-## 전체 알고리즘 흐름
+## Hyperparameter `κ`와 `υ`
 
-1. 이미지 또는 CNN feature를 patch, spatial token, channel descriptor, object query 입력으로 바꾼다.
-2. Attention 또는 gate score를 계산한다.
-3. Feature를 재가중하거나 token representation을 갱신한다.
-4. 분류, captioning, detection 등 task head로 output을 만든다.
-
-## 작은 예시로 보는 직관
-
-이미지에서 강아지와 공이 멀리 떨어져 있어도 `chasing`이라는 관계를 이해하려면 두 영역이 상호작용해야 한다. Convolution만 쓰면 여러 layer를 거쳐야 하지만 attention은 두 위치를 직접 연결할 수 있다.
+논문은 channel ratio를 다음처럼 정의한다.
 
 ```text
-dog patch query -> attends to ball patch key
-object query -> attends to dog region and ball region
-channel gate -> emphasizes object-related channels
+κ = d_k / F_out
+υ = d_v / F_out
 ```
 
-Vision attention은 이처럼 공간, channel, object slot 중 어떤 축에서 상호작용을 만들지에 따라 성격이 달라진다.
+- `κ`: query/key dimension 비율
+- `υ`: attention output channel 비율
 
-## 계산 복잡도와 병목
+대부분 ResNet 실험에서 `κ=2υ=0.2`, 즉 `d_k=0.2F_out`, `d_v=0.1F_out`에 가까운 설정을 사용한다. Attention ratio가 커지면 global branch capacity와 quadratic compute/memory가 늘고 convolution local bias는 줄어든다.
 
-- Spatial resolution이 높으면 full attention 비용이 여전히 크다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+## Downsampling
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+Stride convolution을 대체할 때 attention branch는 query output resolution을 맞춰야 한다. 논문은 attention output을 average pooling하거나 필요한 resolution로 downsample한 뒤 convolution output과 concatenate한다.
 
-## 구현할 때 확인할 부분
+Relative embedding도 feature resolution에 맞춰 bilinear interpolation한다. Branch의 spatial shape가 정확히 같아야 한다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+## Parameter 비교
 
-## 자주 헷갈리는 지점
+Standard `k×k` convolution parameter는
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Vision attention이 항상 CNN보다 낫다는 뜻은 아니다. 데이터 크기와 local inductive bias가 큰 영향을 준다.
-- Channel attention, spatial attention, token self-attention은 모두 attention이라고 불리지만 계산 대상이 다르다.
+```text
+k² C_in F_out
+```
 
-## 관련 방법과 비교
+이다. AAConv는 convolution output channel을 줄이는 대신 Q/K/V/output projection을 추가한다. 적절한 `d_k,d_v`에서는 3×3 convolution channel을 attention으로 대체하면서 전체 parameter가 오히려 약간 감소할 수 있다.
 
-| 방법 | Attention 대상 | 역할 |
-| --- | --- | --- |
-| SE | channel | feature channel 재가중 |
-| CBAM | channel + spatial | 무엇과 어디를 순차 강조 |
-| Non-local | spatial/space-time position | global relation modeling |
-| ViT | image patch token | Transformer encoder classification |
-| DETR | object query와 image memory | set prediction detection |
+FLOPs는 attention의 `(HW)²` 항 때문에 stage에 따라 늘지만 late stage에서는 H,W가 작아 manageable하다. Parameter 수와 compute가 반드시 함께 움직이지 않는 구조다.
 
-## 실험 결과를 읽는 관점
+## CIFAR-100 결과
 
-Vision 논문에서는 attention이 CNN 대비 어떤 inductive bias를 잃고 어떤 global modeling 능력을 얻는지 봐야 한다.
+| 모델 | Params | GFLOPs | Top-1 | Top-5 |
+| --- | ---: | ---: | ---: | ---: |
+| Wide-ResNet-28-10 | 36.3M | 10.4 | 80.3 | 95.0 |
+| GE-Wide-ResNet | 36.3M | 10.4 | 79.8 | 95.0 |
+| SE-Wide-ResNet | 36.5M | 10.4 | 81.0 | **95.3** |
+| AA-Wide-ResNet | 36.2M | 10.9 | **81.6** | 95.2 |
 
-ImageNet classification, detection, segmentation, video understanding 결과를 볼 때는 input resolution, pretraining data scale, backbone 차이를 함께 확인해야 공정한 비교가 된다.
+같은 parameter 규모에서 global feature generation이 channel reweighting보다 top-1에서 강했다.
+
+## ImageNet 결과
+
+| 모델 | GFLOPs | Params | Top-1 | Top-5 |
+| --- | ---: | ---: | ---: | ---: |
+| ResNet-34 | 7.4 | 21.8M | 73.6 | 91.5 |
+| AA-ResNet-34 | 7.1 | 20.7M | **74.7** | **92.0** |
+| ResNet-50 | 8.2 | 25.6M | 76.4 | 93.1 |
+| SE-ResNet-50 | 8.2 | 28.1M | 77.5 | 93.7 |
+| AA-ResNet-50 | 8.3 | 25.8M | **77.7** | **93.8** |
+| ResNet-101 | 15.6 | 44.5M | 77.9 | 94.0 |
+| AA-ResNet-101 | 16.1 | 45.4M | **78.7** | **94.4** |
+
+AA-ResNet-50은 baseline보다 top-1 1.3%p 높고 더 깊은 ResNet-101에 근접한다. Parameter는 SE-ResNet-50보다 작다.
+
+## COCO RetinaNet 결과
+
+| Backbone | GFLOPs | Params | AP | AP50 | AP75 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ResNet-50 | 182 | 33.4M | 36.8 | 54.5 | 39.5 |
+| SE-ResNet-50 | 183 | 35.9M | 36.5 | 54.0 | 39.1 |
+| AA-ResNet-50 | 182 | 33.1M | **38.2** | **56.5** | **40.7** |
+| ResNet-101 | 243 | 52.4M | 38.5 | 56.4 | 41.2 |
+| AA-ResNet-101 | 245 | 51.7M | **39.2** | **57.8** | **41.9** |
+
+R50에서 AP가 1.4%p 개선됐다. 이 실험에서는 ImageNet pretrained backbone 없이 RetinaNet을 scratch에서 학습해 attention augmentation의 detection 학습 효과를 보였다.
+
+## Attention ratio와 full attention
+
+Attention output 비율을 높여 convolution channel을 줄여도 상당히 robust했다. `κ=υ=1`에 가까운 fully attentional ResNet-50 변형도 경쟁적인 ImageNet accuracy를 보였다.
+
+그러나 best result는 convolution과 attention 혼합에서 나왔다. Local inductive bias와 global content interaction이 상호보완적이라는 논문의 중심 결론이다.
+
+## Position encoding ablation
+
+| 모델 | Position | Top-1 | Top-5 |
+| --- | --- | ---: | ---: |
+| AA-ResNet-50 | 없음 | 77.5 | 93.7 |
+| AA-ResNet-50 | 2D sine | 77.5 | 93.7 |
+| AA-ResNet-50 | CoordConv | 77.5 | 93.8 |
+| AA-ResNet-50 | Relative | **77.7** | **93.8** |
+
+혼합 모델에서는 차이가 작지만 attention 비율이 커질수록 relative position의 중요성이 커진다. Fully attentional 변형은 relative encoding으로 top-1이 2.8%p 개선됐다. Convolution branch가 줄면 공간 inductive bias를 position encoding이 대신해야 한다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- Convolution과 attention output channel을 병렬 concatenate하는 명확한 hybrid primitive를 제시했다.
+- Height/width 분리 2D relative self-attention을 효율적으로 구현했다.
+- Parameter budget을 유지하면서 global feature channel을 추가했다.
+- ResNet, MnasNet, CIFAR, ImageNet, COCO에서 일관된 improvement를 보였다.
+- Gate형 attention과 feature-generating self-attention의 차이를 분명히 했다.
 
 ## 한계와 비판적 관점
 
-- Spatial resolution이 높으면 full attention 비용이 여전히 크다.
-- Convolution과 attention channel 비율, head 수, positional embedding 설계가 성능에 영향을 준다.
-- ViT처럼 완전히 token 기반으로 가는 접근과 비교하면 구조가 혼합적이라 단순성은 떨어진다.
+### 1. Quadratic spatial memory
 
-## 후속 논문과의 연결점
+Attention map이 `[HW,HW]`라 early high-resolution stage에 적용하기 어렵다. 논문도 마지막 3 stage에 주로 사용한다.
 
-ViT는 convolution을 거의 제거하고 patch token Transformer로 이미지를 처리하며, DETR은 detection에 encoder-decoder attention을 적용한다.
+### 2. Branch balance hyperparameter
 
-## 개인 학습/연구 메모
+`κ,υ`를 architecture와 resolution에 맞춰 조정해야 한다. Attention channel이 너무 적으면 효과가 작고, 너무 많으면 local bias와 efficiency를 잃는다.
 
-Attention augmented convolution은 `conv는 local, attention은 global, 둘을 channel로 붙인다`고 기억하면 된다.
+### 3. Relative implementation 복잡도
 
+2D relative-to-absolute indexing과 resize가 off-by-one 오류에 민감하다. Variable resolution deployment 검증이 필요하다.
+
+### 4. Parameter와 latency 불일치
+
+Parameter가 비슷해도 global attention은 convolution보다 memory access가 크고 hardware kernel 지원이 약할 수 있다.
+
+### 5. Modern architecture에서의 위치
+
+ViT/Swin/ConvNeXt 이후 pure/hierarchical Transformer와 stronger CNN이 발전했다. AAConv의 절대 성능보다 local-global hybrid 원칙이 더 지속적인 공헌이다.
+
+## 구현 체크리스트
+
+- Flatten한 `(h,w)`와 relative height/width index가 일치하는가?
+- `d_k,d_v`가 head 수로 나누어지는가?
+- Convolution output channel이 정확히 `F_out-d_v`인가?
+- Stride block에서 두 branch의 H,W가 같은가?
+- Relative embedding resize가 offset 중심을 보존하는가?
+- Early stage에서 `[HW,HW]` peak memory를 확인했는가?
+
+## 온디바이스 관점
+
+AAConv는 local convolution과 global attention을 한 block에서 병렬 실행해 operator fusion이 어렵고 high-resolution memory가 크다. Mobile backbone 실험은 가능성을 보였지만 실제 NPU latency는 attention kernel 지원에 크게 좌우된다.
+
+온디바이스에서는 attention을 late low-resolution stage에만 넣고 `υ`를 작게 유지하거나 window attention으로 제한하는 구성이 현실적이다. Relative bias는 resolution generalization에 유리하지만 interpolation cost를 compile-time에 처리하는 편이 좋다.
+
+## 최종 평가
+
+Attention-Augmented Convolution은 convolution을 버리거나 단순 gate로 보정하는 대신, **local convolution feature와 global self-attention feature를 동일한 output 안에서 병렬적으로 공존**시킨다. 2D relative position과 channel-budget 대체를 통해 parameter를 유지하면서 ImageNet·COCO를 개선했다. Quadratic spatial cost는 한계지만, 이후 vision model의 local-global hybrid 설계를 선명하게 예고한 연구다.

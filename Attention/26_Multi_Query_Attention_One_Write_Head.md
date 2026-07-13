@@ -2,201 +2,242 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\26_Multi_Query_Attention_One_Write_Head.pdf`
-- 제목: Fast Transformer Decoding: One Write-Head is All You Need
+- 제목: **Fast Transformer Decoding: One Write-Head is All You Need**
 - 저자: Noam Shazeer
 - 발표: 2019
-- 주제: Multi-Query Attention의 decode cache 절감
-- 핵심 키워드: multi-query attention, MQA, fast decoding, KV cache
+- 핵심 키워드: multi-query attention, incremental decoding, KV cache, memory bandwidth, shared key-value heads
 
 ## 한눈에 보는 요약
 
-Multi-query attention은 여러 query head가 하나의 shared key/value head를 사용하도록 만들어 autoregressive decoding을 빠르게 한다.
-
-학습 FLOPs보다 inference 때 KV cache memory bandwidth가 병목인 상황을 겨냥한다.
-
-품질 손실을 작게 유지하면서 key/value cache 크기와 read bandwidth를 크게 줄인다.
-
-## 연구 배경과 문제의식
-
-Autoregressive decoding에서는 매 step마다 과거 token의 key/value cache를 읽어 현재 query와 attention한다.
-
-여러 query head가 하나의 key/value head를 공유해 autoregressive decoding의 KV cache bandwidth를 줄인다.
-
-Multi-head attention은 head마다 별도 K/V를 저장하므로 head 수만큼 cache가 커진다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Multi-Query Attention의 decode cache 절감`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-Serving 최적화 논문들은 Transformer layer의 수식보다 decode-time state를 바꾼다.
+Multi-Query Attention(MQA)은 query head는 여러 개 유지하되 모든 head가 **하나의 key head와 value head를 공유**한다. Multi-Head Attention(MHA)의 KV cache는 head 수 `H`에 비례하지만 MQA는 head 축이 사라져 cache와 decode memory traffic이 약 `H`배 줄어든다.
 
 ```text
-training view:
-all tokens processed in parallel
-attention over full prefix matrix
-
-serving view:
-one new token at a time
-read old K/V cache
-compute attention for current query
-append new K/V cache
+MHA: H query heads, H key heads, H value heads
+MQA: H query heads, 1 key head, 1 value head
 ```
 
-따라서 이 계열에서는 FLOPs보다 KV cache size, memory bandwidth, fragmentation, batching efficiency가 더 중요해질 수 있다.
+Autoregressive decode에서는 매 step query가 하나뿐이라 계산 parallelism이 작고, 각 layer가 긴 과거 KV cache를 HBM에서 반복 읽는다. 이 과정은 compute보다 memory bandwidth에 제한되기 쉽다. MQA는 score 개수 자체를 줄이지 않지만 읽어야 할 key/value byte를 크게 줄여 latency와 batch throughput을 개선한다.
 
-## 핵심 개념 상세 해설
+논문 실험에서 WMT14 translation의 품질 손실은 작았고, TPUv2 greedy decoder 부분 비용은 token당 `46 μs → 3.8 μs`로 크게 감소했다. 대신 여러 value subspace를 head별로 유지하던 MHA의 capacity가 줄어드는 것이 핵심 trade-off다.
 
-### KV cache 관점의 핵심
+![Multi-Head Attention과 Multi-Query Attention의 KV cache 비교](https://github.com/user-attachments/assets/022a9c7c-1806-4822-b844-45deafa84f58)
 
-MQA는 query head는 여러 개 유지하지만 key/value head를 하나로 공유한다.
+## Training과 incremental decoding의 차이
+
+Training에서는 전체 sequence의 query를 한 번에 계산한다.
 
 ```text
-MHA: O_h = softmax(Q_h K_h^T)V_h
-MQA: O_h = softmax(Q_h K_shared^T)V_shared
+Q,K,V : [B,H,N,D_h]
+score : [B,H,N,N]
 ```
 
-각 head의 query가 다르므로 attention distribution은 head마다 다를 수 있지만, 읽는 memory content는 공유된다.
-
-## Tensor shape와 자료구조
-
-Serving 계열에서는 training-time tensor보다 decode-time KV cache shape가 중요하다. Layer 수를 `L`, query head 수를 `H_q`, KV head 수를 `H_kv`, head dimension을 `d`, 현재 길이를 `n`이라고 하자.
+큰 GEMM으로 병렬화할 수 있어 accelerator utilization이 높다. 반면 decoding step `t`에서는 새 query가 head마다 하나다.
 
 ```text
-MHA KV cache per layer: [n, H_q, d] for K and [n, H_q, d] for V
-MQA KV cache per layer: [n, 1, d] for K and [n, 1, d] for V
-GQA KV cache per layer: [n, H_kv, d], where 1 < H_kv < H_q
-MLA cache per layer: [n, d_latent] plus positional components
-PagedAttention: logical [n, ...] mapped to physical KV blocks
+q_t      : [B,H,1,D_h]
+K_cache  : [B,H,t,D_h]
+V_cache  : [B,H,t,D_h]
 ```
 
-즉, attention score 수식보다 cache의 head dimension과 layout이 실제 throughput을 결정한다. 긴 context에서는 `n`이 커지므로 cache 절감 효과가 매우 커진다.
+각 step마다 모든 layer의 `K_cache,V_cache`를 읽어 score와 weighted sum을 계산한다. Arithmetic intensity가 낮아지고 batch가 작을수록 memory bandwidth가 지배한다.
 
-## 수식과 계산 전개
+## Multi-Head Attention의 KV cache
 
-### MHA K/V cache
+MHA는 head별 projection을 사용한다.
 
 ```text
-MHA는 head `h`마다 `Q_h = XW_Q^h`, `K_h = XW_K^h`, `V_h = XW_V^h`를 만든다.
+q_h = W_h^Q x_t
+k_h = W_h^K x_t
+v_h = W_h^V x_t
+
+o_h = softmax(q_h K_h^T / sqrt(D_h)) V_h
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Shared K/V projection
+Layer당 sequence 길이 `N`의 KV cache element 수는
 
 ```text
-MQA는 `Q_h = XW_Q^h`는 유지하지만 `K = XW_K`, `V = XW_V`를 모든 head가 공유한다.
+2 × B × H × N × D_h
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+이다. 총 hidden dimension `D=H D_h`라면 token당 `2D` element를 layer마다 저장한다.
 
-### MQA head output
+## Multi-Query Attention 수식
+
+MQA에서는 query projection은 head별로 유지하지만 key/value projection은 하나다.
 
 ```text
-각 head output은 `O_h = softmax(Q_h K^T / sqrt(d)) V`다.
+q_h = W_h^Q x_t              # h = 1...H
+k   = W^K x_t                # shared
+v   = W^V x_t                # shared
+
+o_h = softmax(q_h K^T / sqrt(D_h)) V
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+여기서 모든 query head가 같은 cached `K,V`를 보지만 score는 query가 다르므로 head마다 다르다. 즉 attention pattern의 다양성은 남고, key/value representation의 다양성만 공유된다.
 
-### Incremental decoding
+Cache element 수는
 
 ```text
-Decode step에서는 새 token의 shared K/V만 cache에 append한다.
+2 × B × N × D_h
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+로 줄어 MHA 대비 정확히 `H`분의 1이다.
 
-### Cache size reduction
+## Tensor shape
 
 ```text
-Cache 크기는 대략 `num_heads`배 줄어든다.
+MHA
+Q : [B,N,H,D_h]
+K : [B,N,H,D_h]
+V : [B,N,H,D_h]
+
+MQA
+Q : [B,N,H,D_h]
+K : [B,N,1,D_h]
+V : [B,N,1,D_h]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Attention kernel은 shared K/V를 head 축으로 논리적으로 broadcast한다. 실제 tensor를 `H`번 복제하면 cache 절감은 유지돼도 read traffic과 temporary memory가 다시 늘 수 있으므로, stride-0 broadcast나 MQA 전용 kernel이 필요하다.
 
-## 전체 알고리즘 흐름
+## 왜 head 수를 그냥 줄이는 것보다 낫나
 
-1. 현재 token hidden state로 query를 만든다.
-2. 과거 token의 K/V cache를 shared, grouped, latent, paged layout에 맞게 읽는다.
-3. 현재 query와 과거 key 사이 attention score를 계산한다.
-4. 과거 value를 weighted sum해 현재 output을 만든다.
-5. 현재 token의 K/V 또는 latent cache를 cache에 append한다.
+KV cache를 줄이는 단순한 방법은 전체 attention head 수를 1로 줄이거나 head dimension을 작게 하는 것이다. 그러나 그러면 query와 output subspace의 수도 함께 줄어든다.
 
-## 작은 예시로 보는 직관
-
-사용자가 prompt 3000 token을 넣고 모델이 1 token을 생성한다고 하자. 새 token의 query는 과거 3000개 token의 K/V를 모두 읽는다.
+MQA는 다음을 분리한다.
 
 ```text
-decode step t:
-q_t: [H_q, d]
-K_cache: [t, H_kv, d]
-V_cache: [t, H_kv, d]
-attention reads K_cache and V_cache every step
+query/output diversity : H개 유지
+stored memory vectors  : 1개로 축소
 ```
 
-그래서 `H_kv`를 줄이거나 cache layout을 개선하면 실제 응답 속도가 크게 달라진다.
+논문 실험에서도 1/2/4-head MHA를 parameter-matched하게 만든 baseline보다 MQA가 품질을 더 잘 유지했다. Memory traffic에 직접 관련된 KV head만 줄이는 것이 효율적이라는 증거다.
 
-## 계산 복잡도와 병목
+## Decode memory bandwidth 분석
 
-- 모든 query head가 같은 K/V를 보므로 head별 memory subspace 다양성이 줄어든다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+한 token을 생성할 때 layer마다 `K,V` 전체 prefix를 읽는다. MHA의 대략적인 byte는
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+```text
+bytes ≈ 2 × B × H × N × D_h × bytes_per_element
+```
 
-## 구현할 때 확인할 부분
+이다. MQA는
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+```text
+bytes ≈ 2 × B × N × D_h × bytes_per_element
+```
 
-## 자주 헷갈리는 지점
+이므로 ideal bandwidth-bound 구간에서는 attention decode가 `H`배까지 빨라질 여지가 있다. 실제 latency에는 model weight read, Q projection, softmax, output projection, framework overhead가 있어 전체 속도는 그보다 작다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- MQA/GQA/MLA는 학습 FLOPs보다 decoding cache bandwidth를 겨냥한다.
-- KV cache 최적화는 모델 구조와 serving scheduler가 함께 맞아야 효과가 크다.
+MQA가 training FLOPs를 같은 비율로 줄이지 않는 이유도 여기 있다. Training에서는 Q head가 모두 있고 score `[H,N,N]`를 계산하므로 attention score 연산은 여전히 head 수에 비례한다. 큰 이득은 cache write/read가 지배하는 incremental inference에 집중된다.
 
-## 관련 방법과 비교
+## Encoder self-attention과 cross-attention
 
-| 방법 | KV cache 전략 | 장점 |
-| --- | --- | --- |
-| MHA | head별 K/V 저장 | 표현력 높음, cache 큼 |
-| MQA | 모든 query head가 K/V 공유 | cache 최소화 |
-| GQA | group별 K/V 공유 | 품질/효율 절충 |
-| MLA | latent KV 저장 후 복원 | cache 압축과 head 표현력 절충 |
-| PagedAttention | block table로 KV 관리 | fragmentation 감소, prefix sharing |
+원 논문은 encoder self-attention, decoder self-attention, encoder-decoder attention을 모두 MQA로 바꾼 모델을 실험한다. 하지만 효율 동기는 주로 decoder의 반복 read다.
 
-## 실험 결과를 읽는 관점
+- Encoder self-attention은 한 번 병렬 계산되므로 bandwidth 이득이 제한적이다.
+- Decoder self-attention은 매 생성 step prefix KV를 읽으므로 가장 큰 이득이다.
+- Cross-attention은 encoder K/V를 모든 decoder step에서 반복 읽으므로 역시 MQA가 유리하다.
 
-Serving 논문의 실험은 perplexity보다 throughput, latency, batch 처리량, GPU memory 사용량이 핵심이다.
+후속 GQA 논문은 encoder에는 적용하지 않고 decoder self/cross attention에 집중한다.
 
-MQA/GQA/MLA는 품질 손실과 cache 절감의 trade-off를 보고, PagedAttention은 실제 request workload에서 fragmentation과 scheduling 효율을 본다.
+## 실험 설정
+
+WMT14 English→German encoder-decoder Transformer를 사용한다. Baseline은 6 layer, `d_model=1024`, head 8개, head dimension 128이다. Parameter 수를 비슷하게 맞추기 위해 MQA 모델은 FFN dimension을 조정한다.
+
+Billion Word language modeling에서도 decoder-only 모델을 비교한다. 품질과 속도를 같은 parameter budget 안에서 평가한다.
+
+## 실험 결과: WMT14 품질
+
+| Attention | dev ln(PPL) | dev BLEU | test BLEU beam 1 / 4 |
+| --- | ---: | ---: | ---: |
+| Multi-head, 8 heads | **1.424** | **26.7** | 27.7 / 28.4 |
+| Multi-query, 8 query heads | 1.439 | 26.5 | 27.5 / **28.5** |
+| Multi-head local | 1.427 | 26.6 | 27.5 / 28.3 |
+| Multi-query local | 1.437 | 26.5 | 27.6 / 28.2 |
+
+MQA의 dev perplexity와 BLEU는 약간 나쁘지만 차이는 작고, beam-4 test BLEU는 오히려 28.5로 가장 높았다. Local attention과 MQA를 함께 써도 동작해 두 최적화가 직교함을 보였다.
+
+Head 수 또는 dimension만 줄인 MHA baseline은 dev BLEU가 약 25.8~26.2로 더 크게 하락했다.
+
+## 실험 결과: Decode 속도
+
+Sequence length 128, TPUv2에서 token당 amortized 비용은 다음과 같다.
+
+| Attention | Training | Greedy inference: encoder + decoder | Beam-4: encoder + decoder |
+| --- | ---: | ---: | ---: |
+| Multi-head | 13.2 μs | 1.7 + 46 μs | 2.0 + 203 μs |
+| Multi-query | 13.0 μs | 1.5 + **3.8 μs** | 1.6 + **32 μs** |
+| Multi-head local | 13.2 μs | 1.7 + 23 μs | 1.9 + 47 μs |
+| Multi-query local | 13.0 μs | 1.5 + **3.3 μs** | 1.6 + **16 μs** |
+
+Training time은 거의 같지만 decoder incremental step은 greedy에서 약 `12×`, beam-4에서 약 `6×` 빨라졌다. 논문의 bandwidth 분석과 일치한다.
+
+## 실험 결과: Billion Word LM
+
+| Attention | dev perplexity |
+| --- | ---: |
+| MHA, 8 heads | **29.9** |
+| MQA, 8 query heads | 30.2 |
+| Reduced-head MHA variants | 30.9~31.2 |
+
+MQA는 baseline보다 0.3 PPL 나쁘지만 cache 절감을 위해 전체 head 수를 줄이는 방법보다 훨씬 낫다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- Decode 병목을 FLOPs가 아니라 KV cache memory bandwidth로 정확히 진단했다.
+- Query head와 KV head 수를 분리하는 간단한 architecture를 제안했다.
+- KV cache 크기와 read traffic을 head 수 `H`배 줄였다.
+- Training 비용은 거의 유지하면서 translation decode를 크게 가속했다.
+- 이후 PaLM, GQA, 현대 LLM inference 설계의 출발점이 되었다.
 
 ## 한계와 비판적 관점
 
-- 모든 query head가 같은 K/V를 보므로 head별 memory subspace 다양성이 줄어든다.
-- 모델 크기와 task에 따라 품질 저하가 발생할 수 있다.
-- 기존 MHA checkpoint를 바로 MQA로 바꾸기는 쉽지 않아 재학습 또는 변환이 필요하다.
+### 1. KV 표현력 감소
 
-## 후속 논문과의 연결점
+모든 query head가 같은 key/value basis를 공유한다. 특히 value head 하나는 head별로 다른 정보를 저장하는 MHA보다 capacity가 낮다.
 
-Grouped-query attention은 MHA와 MQA 사이의 절충안으로, query head 여러 개가 group별 K/V를 공유한다.
+### 2. 품질 손실과 training instability
 
-## 개인 학습/연구 메모
+원 실험에서는 작지만 일관된 perplexity 하락이 있다. 모델·task가 커지면 MQA가 MHA에 비해 hard benchmark에서 더 크게 떨어질 수 있으며 GQA가 이를 보완한다.
 
-MQA는 `Q head는 여러 개, K/V head는 하나`라고 기억하면 된다.
+### 3. 전용 kernel 필요
 
+Framework가 K/V를 head 수만큼 물리적으로 expand하면 bandwidth 이득이 사라진다. Shared KV broadcast를 직접 지원해야 한다.
+
+### 4. Prefill 가속과 decode 가속은 다르다
+
+긴 prompt prefill은 여전히 여러 query head의 quadratic score를 계산한다. MQA의 주 이득은 token-by-token decode와 cache capacity다.
+
+### 5. Cache가 유일한 병목은 아니다
+
+Batch가 작으면 model weight read도 지배한다. MQA만으로 end-to-end latency가 ideal `H×` 개선되지는 않는다.
+
+## MHA·MQA·GQA 관계
+
+```text
+MHA: KV heads = H
+GQA: KV heads = G, 1 < G < H
+MQA: KV heads = 1
+```
+
+MQA는 가장 작은 cache, MHA는 가장 큰 capacity, GQA는 그 사이의 조절 가능한 절충이다.
+
+## 구현 체크리스트
+
+- K/V projection output에 head 축이 실제로 1인가?
+- Cache allocator도 `[B,N,1,D_h]` 기준으로 줄었는가?
+- Attention kernel이 K/V를 물리적으로 H번 복제하지 않는가?
+- Query head `h`가 올바른 shared K/V에 broadcast되는가?
+- Tensor parallel에서 shared KV head가 중복 저장/통신되지 않는가?
+- Prefill과 decode latency를 분리해 측정했는가?
+- Quality 비교에서 parameter 수와 training compute를 맞췄는가?
+
+## 온디바이스 관점
+
+온디바이스 LLM은 memory capacity와 DRAM bandwidth가 모두 작으므로 MQA의 이득이 직접적이다. KV cache가 `H`배 줄면 더 긴 context나 더 큰 batch를 같은 RAM에 넣을 수 있고, 매 token의 DRAM read energy도 감소한다. 구현도 irregular sparsity 없이 dense dot product와 broadcast로 구성할 수 있다.
+
+반면 quality budget이 엄격한 assistant나 vision-language model에서는 KV head 하나가 병목이 될 수 있다. 소수 GQA group 또는 MLA와 latency·quality를 함께 비교하는 것이 실용적이다.
+
+## 최종 평가
+
+Multi-Query Attention의 공헌은 간단하지만 영향력이 크다. Autoregressive inference가 compute-bound가 아니라 **과거 K/V를 다시 읽는 memory-bandwidth-bound workload**라는 점을 짚고, query diversity는 유지하면서 cache의 head dimension만 제거했다. 약간의 품질 손실로 매우 큰 decode speedup을 얻으며, 이후 GQA와 MLA가 발전시킨 KV-cache 압축 연구의 기준점이 되었다.

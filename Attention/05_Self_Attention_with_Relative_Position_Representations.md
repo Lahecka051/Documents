@@ -2,182 +2,577 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\05_Self_Attention_with_Relative_Position_Representations.pdf`
+- 원본 파일: `05_Self_Attention_with_Relative_Position_Representations.pdf`
 - 제목: Self-Attention with Relative Position Representations
 - 저자: Peter Shaw, Jakob Uszkoreit, Ashish Vaswani
 - 발표: NAACL 2018
-- 주제: Transformer 위치 정보를 token 속성이 아니라 token 쌍의 관계로 모델링
-- 핵심 키워드: relative position, relation-aware self-attention, clipping distance
+- 주제: self-attention의 key와 value에 query-key 상대 거리 embedding을 결합하는 방법
+- 핵심 키워드: relative position representation, relation-aware self-attention, clipped distance, relative key, relative value
 
 ## 한눈에 보는 요약
 
-이 논문은 Transformer의 absolute positional encoding을 보완해 token 간 상대 거리를 attention 계산 안에 직접 넣는다.
+기본 Transformer는 input embedding에 absolute position encoding을 더한다.
 
-Query-key score와 value aggregation 양쪽에 relative position embedding을 추가한다.
+```text
+x_i = token_embedding_i + absolute_position_i
+```
 
-중요한 변화는 위치 정보를 입력 embedding에 한 번 더하는 것이 아니라, attention edge `i -> j`의 relation feature로 모델링한다는 점이다.
+이 논문은 위치 정보를 input에 한 번 더하는 대신, self-attention에서 position `i`가 position `j`를 볼 때 두 위치의 상대 거리 `j-i`를 직접 사용한다.
+
+```text
+relative distance = j - i
+```
+
+Query `q_i`와 key `k_j`의 compatibility를 계산할 때 거리별 vector `a^K_(i,j)`를 key에 더한다.
+
+```text
+e_(i,j)
+= q_i (k_j + a^K_(i,j))^T / sqrt(d_z)
+```
+
+Value를 합산할 때도 별도의 거리 vector `a^V_(i,j)`를 더할 수 있다.
+
+```text
+z_i = sum_j alpha_(i,j) (v_j + a^V_(i,j))
+```
+
+거리 종류가 sequence length만큼 무한히 늘어나지 않도록 `[-k,k]` 범위로 clipping한다.
+
+```text
+r_(i,j) = clip(j-i, k)
+```
+
+따라서 학습할 vector는 key용 `2k+1`개, value용 `2k+1`개다. 방향이 있으므로 `-3`과 `+3`은 다른 relation이다.
+
+WMT 2014 translation에서 absolute sinusoidal encoding을 relative representation으로 완전히 교체했을 때 BLEU가 향상됐다. Absolute와 relative를 같이 사용해도 추가 이득은 없었다. Ablation에서는 value-side relative vector를 제거해도 성능이 유지되고, score에 들어가는 relative key가 더 중요했다.
+
+이 논문은 sequence를 labeled directed complete graph로 보고 relative position을 edge label로 해석한다. 이 관점은 이후 graph relation attention과 다양한 relative bias 연구로 이어진다.
 
 ## 연구 배경과 문제의식
 
-기본 Transformer는 token embedding에 absolute positional encoding을 더한다. 하지만 self-attention score 자체는 두 위치 사이 상대 거리를 직접 알지 못한다.
+### Transformer는 순서에 불변이다
 
-언어에서는 절대 위치보다 상대 위치가 중요한 경우가 많다. 예를 들어 현재 단어 바로 앞의 단어, 두 칸 뒤의 단어 같은 관계가 문법적으로 의미가 있다.
-
-Shaw et al.은 self-attention을 fully connected directed graph로 보고, edge `i -> j`마다 relative position representation을 부여한다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Transformer 위치 정보를 token 속성이 아니라 token 쌍의 관계로 모델링`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-기본 Transformer는 위치 정보를 입력 embedding에 더한 뒤 attention을 한다. 위치 표현 논문들은 이 위치 정보가 들어가는 위치를 바꾼다.
+Position 정보가 없는 self-attention은 token 순서를 바꾸면 출력도 같은 방식으로 순열되는 permutation-equivariant 연산이다.
 
 ```text
-absolute position:
-X = token_embedding + position_embedding
-S = QK^T
+Q = X W_Q
+K = X W_K
+V = X W_V
 
-relative/bias/rotary variants:
-Q, K = position-aware projection or rotation
-S_ij = content_score(i,j) + position_term(i,j)
+Attention(X) = softmax(QK^T / sqrt(d)) V
 ```
 
-따라서 이 계열을 비교할 때는 `position_term(i,j)`가 table lookup인지, 회전인지, 선형 bias인지, scaling된 position index인지 보면 된다.
+RNN은 recurrence 순서로, CNN은 kernel의 local offset으로 상대 위치를 구조 안에 포함한다. Transformer는 recurrence와 convolution이 없으므로 별도 position signal이 필요하다.
 
-## 핵심 개념 상세 해설
+### Absolute position의 한계
 
-### 상대 위치를 edge feature로 보기
-
-기본 Transformer에서는 위치 정보가 token embedding에 더해진다. Shaw et al.은 위치를 token의 속성으로 보지 않고, token `i`가 token `j`를 볼 때의 edge relation으로 본다.
+원 Transformer는 sinusoidal position vector를 token embedding에 더한다.
 
 ```text
-e_ij = (x_i W_Q)(x_j W_K + a^K_{ij})^T / sqrt(d)
-z_i = sum_j alpha_ij (x_j W_V + a^V_{ij})
+x_i = word_i + p_i
 ```
 
-여기서 `a^K_{ij}`와 `a^V_{ij}`는 상대 거리 `j - i`에 의해 결정된다. 즉, 같은 단어라도 어느 위치에서 보느냐에 따라 다른 relation embedding이 붙는다.
+Self-attention이 상대 거리 패턴을 사용하려면 `p_i`와 `p_j`에서 `j-i` 관계를 간접적으로 학습해야 한다.
 
-## Tensor shape와 자료구조
-
-위치 표현 논문들은 대개 Transformer의 기본 shape는 유지한다. 입력 hidden state `X`는 `[B, n, d_model]`이고, attention head마다 Q/K/V를 만든다.
+하지만 sequence 관계에서 중요한 것은 종종 절대 index보다 상대 offset이다.
 
 ```text
-X: [B, n, d_model]
-Q = X W_Q: [B, h, n, d_k]
-K = X W_K: [B, h, n, d_k]
-V = X W_V: [B, h, n, d_v]
-score S: [B, h, n, n]
-output O: [B, h, n, d_v]
+"previous word": -1
+"next word":     +1
+"two tokens ago": -2
 ```
 
-차이는 `S = QK^T / sqrt(d_k)`를 그대로 쓰지 않는다는 점이다. 상대 위치 embedding, relative bias, rotary transformation, linear bias, interpolation scaling 등이 `Q`, `K`, 또는 `S`에 들어간다.
+같은 syntactic pattern이 sentence의 어느 absolute 위치에 나타나든 같은 relative relation으로 처리하는 편이 자연스럽다.
 
-## 수식과 계산 전개
+### 논문의 목표
 
-### 기본 self-attention
+Self-attention의 pairwise interaction 자체가 position relation을 받게 만든다.
 
 ```text
-e_ij = (x_i W_Q)(x_j W_K)^T / sqrt(d)
+node feature: token representation x_i
+edge feature: relative position relation between i and j
 ```
 
-기본식은 content query와 content key의 내적만 사용한다.
+이를 sequence 전용 trick이 아니라 arbitrary relation-aware self-attention의 한 사례로 제시한다.
 
-### Relative key 추가
+## 기본 self-attention
+
+Input sequence를 다음과 같이 두자.
 
 ```text
-e_ij = (x_i W_Q)(x_j W_K + a^K_ij)^T / sqrt(d)
+X = (x_1, ..., x_n)
+x_i in R^(d_x)
 ```
 
-`a^K_ij`는 상대 거리 `j - i`에 의해 선택되는 embedding이다.
-
-### Relative value 추가
+한 attention head의 query, key, value는 다음과 같다.
 
 ```text
-z_i = sum_j alpha_ij (x_j W_V + a^V_ij)
+q_i = x_i W_Q
+k_j = x_j W_K
+v_j = x_j W_V
 ```
 
-Value aggregation에도 상대 위치 정보를 넣는다.
-
-## 전체 알고리즘 흐름
-
-1. Token embedding을 만들고 필요한 경우 absolute/relative position 정보를 준비한다.
-2. 각 layer에서 Q/K/V를 projection한다.
-3. 논문별 방식에 따라 Q/K를 회전, 위치 bias 추가, relative embedding 결합, position scaling 등을 적용한다.
-4. 수정된 score로 softmax attention을 수행한다.
-5. Value를 합산하고 residual/FFN을 거쳐 다음 layer로 넘긴다.
-
-## 작은 예시로 보는 직관
-
-문장 `not very good`에서 `good`은 바로 앞의 `very`, 두 칸 앞의 `not`과 관계가 있다. 절대 위치 17, 18, 19보다 중요한 것은 `good` 기준으로 -1, -2 위치라는 상대 관계다.
+Shape는 다음과 같다.
 
 ```text
-absolute: position(good) = 19
-relative: distance(good, very) = -1
-relative: distance(good, not) = -2
+W_Q, W_K, W_V: [d_x, d_z]
+q_i, k_j, v_j: [d_z]
 ```
 
-Relative position, RoPE, ALiBi 계열은 이런 상대 거리 정보를 attention score가 직접 느끼게 만든다.
+기본 score와 output은 다음이다.
 
-## 계산 복잡도와 병목
+```text
+e_(i,j) = q_i k_j^T / sqrt(d_z)
 
-- 모든 위치 쌍에 relative relation을 고려하므로 구현 복잡도가 증가한다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+alpha_(i,j) = softmax_j(e_(i,j))
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+z_i = sum_j alpha_(i,j) v_j
+```
 
-## 구현할 때 확인할 부분
+## Relation-aware self-attention
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+### Directed edge representation
 
-## 자주 헷갈리는 지점
+Position `i`에서 `j`로 향하는 edge에 두 vector를 둔다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- 긴 position index를 계산할 수 있다는 것과 모델이 그 길이에서 잘 일반화한다는 것은 다르다.
-- RoPE scaling은 attention 비용을 줄이지 않는다. 위치 일반화를 개선할 뿐이다.
+```text
+a^K_(i,j): score/key에 사용하는 relation vector
+a^V_(i,j): output/value에 사용하는 relation vector
+```
 
-## 관련 방법과 비교
+두 vector를 별도로 두는 이유는 key와 value의 역할이 다르기 때문이다.
 
-| 방법 | 위치 정보가 들어가는 곳 | 긴 길이 일반화 관점 |
-| --- | --- | --- |
-| Absolute embedding | input embedding | 학습 위치 밖 취약 |
-| Relative position | attention score 또는 value | 상대 거리 표현에 강함 |
-| RoPE | Q/K rotation | 상대 phase를 dot product에 내장 |
-| ALiBi | score bias | position table 없이 거리 penalty |
-| PI/YaRN/LongRoPE | RoPE position scaling | 기존 RoPE LLM context 확장 |
+- `a^K`: 어떤 node를 얼마나 볼지 바꾼다.
+- `a^V`: 선택한 relation 자체의 정보를 output에 전달한다.
 
-## 실험 결과를 읽는 관점
+### Relative key를 포함한 score
 
-위치 표현 논문의 실험은 보통 두 가지를 본다. 첫째, 같은 길이 또는 학습 길이 안에서 성능이 좋아지는가. 둘째, 학습보다 긴 context에서 extrapolation이 되는가.
+```text
+e_(i,j)
+= q_i (k_j + a^K_(i,j))^T / sqrt(d_z)
+```
 
-특히 RoPE scaling 계열에서는 짧은 context 성능 보존과 긴 context perplexity 개선을 동시에 봐야 한다. 긴 길이만 좋아지고 짧은 길이가 무너지면 실용적인 확장이라고 보기 어렵다.
+전개하면 두 항이다.
 
-## 장점과 기여
+```text
+e_(i,j)
+= [q_i k_j^T + q_i (a^K_(i,j))^T]
+  / sqrt(d_z)
+```
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+첫 항은 content-to-content compatibility이고 둘째 항은 query-to-relation compatibility다.
+
+```text
+content term:  q_i k_j^T
+position term: q_i a^K_(i,j)^T
+```
+
+같은 거리라도 query content가 다르면 position term이 달라진다. 단순 scalar distance bias보다 content-dependent하다.
+
+### Relative value를 포함한 output
+
+```text
+z_i
+= sum_j alpha_(i,j) (v_j + a^V_(i,j))
+```
+
+Output에는 두 종류의 정보가 합쳐진다.
+
+```text
+sum_j alpha_(i,j) v_j
++
+sum_j alpha_(i,j) a^V_(i,j)
+```
+
+첫 항은 선택한 token content, 둘째 항은 선택한 edge/relation의 weighted summary다.
+
+## Relative distance embedding
+
+### Clipping
+
+Sequence에서 edge label은 signed relative distance다.
+
+```text
+distance(i,j) = j - i
+```
+
+큰 거리는 최대 절댓값 `k`로 clipping한다.
+
+```text
+clip(x,k) = max(-k, min(k,x))
+
+r_(i,j) = clip(j-i, k)
+```
+
+Distance embedding은 다음 table에서 조회한다.
+
+```text
+a^K_(i,j) = w^K_(r_(i,j))
+a^V_(i,j) = w^V_(r_(i,j))
+```
+
+Learned label 수는 각각 `2k+1`개다.
+
+```text
+-k, ..., -2, -1, 0, +1, +2, ..., +k
+```
+
+![상대 거리를 directed edge label로 사용하는 self-attention](https://github.com/user-attachments/assets/9e954718-4245-48b8-a5dc-9f5cabde2729)
+
+### 방향성이 중요하다
+
+`j-i`를 사용하므로 왼쪽과 오른쪽 relation이 다르다.
+
+```text
+j = i-1 -> -1 -> one token to the left
+j = i+1 -> +1 -> one token to the right
+```
+
+Implementation에서 `i-j`를 사용해도 convention 전체가 일관되면 학습은 가능하지만, checkpoint와 수식 convention은 호환되지 않는다.
+
+### 왜 먼 거리를 하나로 묶는가
+
+논문은 일정 거리 이상에서는 정확한 offset이 덜 중요하다고 가정한다.
+
+```text
+distance +20, +30, +100
+-> all mapped to +k
+```
+
+장점은 다음과 같다.
+
+- Parameter 수가 sequence length와 무관하다.
+- 학습보다 긴 sequence에도 같은 edge label을 적용할 수 있다.
+- 가까운 local order는 정밀하게 표현한다.
+
+단점은 `k` 밖의 모든 거리가 구분되지 않는다는 점이다.
+
+## Tensor shape와 구현
+
+Batch `B`, head `H`, length `N`, head dimension `d_z`를 사용하자.
+
+```text
+Q, K, V: [B, H, N, d_z]
+```
+
+Relative table은 다음 shape다.
+
+```text
+W_rel_K: [2k+1, d_z]
+W_rel_V: [2k+1, d_z]
+```
+
+Position pair별 index matrix를 만든다.
+
+```text
+I[i,j] = clip(j-i, k) + k
+shape: [N,N]
+```
+
+Gather하면 pairwise relation tensor가 된다.
+
+```text
+A_K = W_rel_K[I]
+A_V = W_rel_V[I]
+shape: [N,N,d_z]
+```
+
+Naive하게 batch와 head로 복제하면 메모리가 커진다.
+
+```text
+naive broadcast:
+[B,H,N,N,d_z]
+```
+
+논문은 relation tensor를 batch와 head 사이에 공유하고 reshape/matmul로 계산한다.
+
+### Score 분해
+
+```text
+score_content = Q K^T
+shape: [B,H,N,N]
+```
+
+Relative term은 query position별로 다음을 계산한다.
+
+```text
+score_relative[b,h,i,j]
+= dot(Q[b,h,i,:], A_K[i,j,:])
+```
+
+두 score를 더하고 scaling한다.
+
+```text
+E = (score_content + score_relative) / sqrt(d_z)
+```
+
+Value aggregation도 두 항으로 나눌 수 있다.
+
+```text
+Z_content = Alpha V
+
+Z_relative[b,h,i,:]
+= sum_j Alpha[b,h,i,j] A_V[i,j,:]
+```
+
+현대 framework에서는 `einsum`이나 skew/relative-shift 계열 trick으로 구현할 수 있다.
+
+## 메모리와 성능 비용
+
+논문은 relation을 head 사이에 공유하면 edge representation 저장을 다음처럼 줄일 수 있다고 설명한다.
+
+```text
+from O(H N^2 d_z)
+to   O(N^2 d_z)
+```
+
+전체 self-attention activation 관점에서는 다음 항이 추가된다.
+
+```text
+base:     O(B H N d_z)
+relative: + O(N^2 d_a)
+```
+
+실험 구현에서는 P100 기준 training steps/sec가 약 7% 감소했지만 같은 model/batch size를 유지했다.
+
+논문은 공유가 가능하다고 설명하지만 실제 실험 설정은 model size에 따라 다르다.
+
+- Base: layer와 head별 unique relation representation
+- Big: layer별 unique representation, head 사이 공유
+
+따라서 parameter/memory 수를 재현할 때 어느 축으로 share하는지 확인해야 한다.
+
+## 작은 예시
+
+Clipping distance `k=2`, query position `i=3`이라고 하자.
+
+| Key position `j` | `j-i` | clipped label |
+| ---: | ---: | ---: |
+| 0 | -3 | -2 |
+| 1 | -2 | -2 |
+| 2 | -1 | -1 |
+| 3 | 0 | 0 |
+| 4 | +1 | +1 |
+| 5 | +2 | +2 |
+| 6 | +3 | +2 |
+
+Position 0과 1은 정확한 거리는 다르지만 모두 far-left relation `-2`를 사용한다. Position 5와 6은 far-right `+2`를 사용한다.
+
+Score는 content와 relation을 함께 본다.
+
+```text
+score(i=3,j=4)
+= q_3 k_4^T
+  + q_3 w^K_(+1)^T
+```
+
+같은 token content가 왼쪽에 있을 때와 오른쪽에 있을 때 다른 score가 나온다.
+
+## 실험 설정
+
+### 데이터
+
+- WMT 2014 English-German: 약 4.5M sentence pair
+- WMT 2014 English-French: 약 36M sentence pair
+- WordPiece vocabulary: 32,768
+- Beam size: 4
+- Length penalty: 0.6
+- Adam `beta_1=0.9`, `beta_2=0.98`, `epsilon=1e-9`
+- Warmup: 4,000 step
+- Label smoothing: 0.1
+
+Baseline도 같은 code/library 설정으로 다시 학습해 position method의 영향을 분리한다.
+
+### Model 설정
+
+Base model:
+
+```text
+layers: 6 encoder + 6 decoder
+d_model: 512
+heads: 8
+head dimension: 64
+FFN inner dimension: 1024
+k: 16
+training: 100k steps on 8 K40
+```
+
+Big model:
+
+```text
+d_model: 1024
+heads: 16
+head dimension: 64
+FFN inner dimension: 4096
+k: 8
+training: 300k steps on 8 P100
+last 20 checkpoints averaged
+```
+
+## 실험 결과
+
+| 모델 | Position 정보 | EN-DE BLEU | EN-FR BLEU |
+| --- | --- | ---: | ---: |
+| Transformer base | Absolute | 26.5 | 38.2 |
+| Transformer base | Relative | 26.8 | 38.7 |
+| Transformer big | Absolute | 27.9 | 41.2 |
+| Transformer big | Relative | 29.2 | 41.5 |
+
+Relative-only model의 향상은 다음과 같다.
+
+```text
+base EN-DE: +0.3
+base EN-FR: +0.5
+big EN-DE:  +1.3
+big EN-FR:  +0.3
+```
+
+Absolute sinusoidal encoding을 relative representation과 함께 사용해도 추가 이득은 없었다. 적어도 이 translation 설정에서는 relative relation만으로 필요한 order signal을 제공할 수 있었다.
+
+## Clipping distance ablation
+
+Base model, EN-DE development set 결과다.
+
+| `k` | BLEU |
+| ---: | ---: |
+| 0 | 12.5 |
+| 1 | 25.5 |
+| 2 | 25.8 |
+| 4 | 25.9 |
+| 16 | 25.8 |
+| 64 | 25.9 |
+| 256 | 25.8 |
+
+`k=0`은 모든 pair가 같은 relation label을 사용하므로 position 구분이 사라져 성능이 무너진다. `k>=2`에서는 차이가 작다.
+
+이 결과를 "거리 2 이상은 항상 필요 없다"로 해석하면 안 된다.
+
+- 여러 layer를 쌓으면 local relation이 전파될 수 있다.
+- Translation sentence length와 task 특성에 의존한다.
+- 긴 context language modeling에서는 다른 결과가 나올 수 있다.
+
+## Relative key/value ablation
+
+| `a^V` | `a^K` | EN-DE BLEU |
+| --- | --- | ---: |
+| Yes | Yes | 25.8 |
+| No | Yes | 25.8 |
+| Yes | No | 25.3 |
+| No | No | 12.5 |
+
+핵심 관찰은 다음이다.
+
+```text
+relative key only = full model
+```
+
+Value-side relation을 제거해도 BLEU가 유지된다. 반면 key-side relation이 없으면 성능이 떨어진다. Position 정보는 무엇을 볼지 정하는 compatibility에 들어가는 것이 더 중요했다.
+
+이 결과는 이후 T5 relative bias, Transformer-XL, RoPE처럼 주로 attention score에 position을 넣는 방법과 연결된다.
+
+## 장점과 핵심 기여
+
+### 1. Relative position을 attention pair에 직접 넣었다
+
+Input embedding이 아니라 query-key relation 자체가 거리 정보를 갖는다.
+
+### 2. 방향 있는 거리 표현이다
+
+왼쪽 `-r`과 오른쪽 `+r`을 다른 label로 처리한다.
+
+### 3. 길이에 독립적인 parameterization이다
+
+`2k+1`개 table만 사용하므로 learned absolute table처럼 최대 index별 parameter가 필요하지 않다.
+
+### 4. Relation-aware graph view를 제시했다
+
+Relative position을 edge label로 보고 arbitrary directed labeled graph로 확장 가능한 framework를 제안했다.
+
+### 5. Key/value 역할을 ablation했다
+
+Score-side relative key가 핵심이고 relative value는 translation에서 필수가 아님을 보였다.
 
 ## 한계와 비판적 관점
 
-- 모든 위치 쌍에 relation embedding을 적용하므로 구현이 복잡해진다.
-- Clipping 범위 밖의 거리 차이는 구분하지 못한다.
-- Attention 비용 자체의 `O(n^2)` 문제는 해결하지 않는다.
+### 1. Pairwise relation tensor가 크다
 
-## 후속 논문과의 연결점
+Parameter table은 작지만 length `N`의 pair index와 relation contribution은 `N^2`에 해당한다. Long sequence memory 문제를 해결하지 않는다.
 
-Transformer-XL은 relative position을 segment recurrence와 결합하고, T5는 logit에 scalar relative position bias를 더하는 단순한 방식을 사용한다.
+### 2. Clipping 밖 거리를 구분하지 못한다
+
+`k`보다 먼 모든 왼쪽/오른쪽 거리가 각각 하나의 label로 합쳐진다. Fine-grained long-distance pattern을 표현하기 어렵다.
+
+### 3. Translation 중심의 증거다
+
+`k>=2` 안정성이나 relative value 불필요성은 다른 task에 그대로 일반화되지 않을 수 있다.
+
+### 4. Cross-attention relation은 자연스럽지 않다
+
+같은 sequence 안의 self-attention은 `j-i`가 명확하지만 source와 target의 index 차이는 직접적인 언어학적 거리가 아니다. 논문의 핵심 적용 범위는 self-attention이다.
+
+### 5. 길이 extrapolation을 보장하지 않는다
+
+새 길이에서 edge label을 계산할 수는 있지만 clipping된 relation과 model content computation이 긴 sequence에서 잘 일반화한다는 정리는 아니다.
+
+### 6. Head/layer sharing 설정이 복잡하다
+
+Relation table을 head 또는 layer마다 둘지 공유할지에 따라 parameter와 inductive bias가 달라진다.
+
+## 후속 논문과의 연결
+
+이 논문의 score를 다시 쓰면 다음과 같다.
+
+```text
+score_(i,j)
+= q_i k_j^T
+  + q_i a^K_(j-i)^T
+```
+
+후속 연구는 이 position term을 여러 방식으로 바꾼다.
+
+- Transformer-XL: content/position term을 분해하고 relative shift를 사용
+- T5: query-dependent vector 대신 distance bucket scalar bias 사용
+- DeBERTa: content-to-position과 position-to-content를 분리
+- RoPE: Q/K를 회전해 dot product에 상대 phase를 내장
+- ALiBi: distance에 비례하는 head별 linear scalar bias
+
+공통 질문은 같다.
+
+```text
+relative position should enter Q, K, V, or the score bias?
+```
+
+## 구현 체크리스트
+
+```text
+1. Relative distance가 j-i convention인지 확인했는가?
+2. Clipping이 [-k,k] 양쪽에서 대칭적인가?
+3. Table index offset +k를 적용했는가?
+4. Causal mask와 relative distance sign을 혼동하지 않는가?
+5. Padding pair의 score를 mask하는가?
+6. Relative table이 head/layer 중 어느 축에서 공유되는가?
+7. a^K term에도 sqrt(d_z) scaling이 함께 적용되는가?
+8. a^V가 attention weight 적용 후 합산되는가?
+9. [N,N,d] relation tensor를 batch/head로 불필요하게 복제하지 않는가?
+10. Sequence length가 바뀔 때 index matrix를 재생성하는가?
+```
 
 ## 개인 학습/연구 메모
 
-이 논문은 `위치도 token의 속성인가, token 쌍의 관계인가`라는 질문에서 후자를 택한 논문이다.
+기억해야 할 핵심은 self-attention을 node-only 연산에서 edge-aware 연산으로 확장했다는 점이다.
 
+```text
+before:
+score depends on x_i and x_j
+
+after:
+score depends on x_i, x_j, and relation(i,j)
+```
+
+가장 중요한 식은 다음이다.
+
+```text
+e_(i,j) = q_i (k_j + a^K_(j-i))^T / sqrt(d)
+```
+
+이 한 줄이 content와 directed relative distance를 attention compatibility 안에서 결합한다.

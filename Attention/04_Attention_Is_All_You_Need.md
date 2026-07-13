@@ -119,7 +119,7 @@ Attention은 query와 key를 비교해 점수를 만들고, 그 점수를 확률
 Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
 ```
 
-![세 attention 유형과 scaled dot-product attention 계산](assets/04_qkv_attention_types_and_computation.png)
+![세 attention 유형과 scaled dot-product attention 계산](https://github.com/user-attachments/assets/6636fc8e-302c-4272-af7d-cf70baafcf01)
 
 그림의 (a)는 encoder-decoder attention, (b)는 encoder self-attention, (c)는 decoder self-attention에서 `Q`, `K`, `V`가 오는 위치를 나타낸다. (d)는 원논문 Figure 2의 `MatMul -> Scale -> Mask (opt.) -> SoftMax -> MatMul` 순서를 수식과 함께 펼친 것이다.
 
@@ -395,7 +395,7 @@ head_i = Attention(Q W_i^Q, K W_i^K, V W_i^V)
 MultiHead(Q, K, V) = Concat(head_1, ..., head_h) W^O
 ```
 
-![QKV projection과 multi-head attention 결합](assets/04_qkv_multihead_projection.png)
+![QKV projection과 multi-head attention 결합](https://github.com/user-attachments/assets/79644a1a-2d88-4fb7-bdce-86c3ae9fbf8d)
 
 그림의 (a)는 head `i`에서 `Q`, `K`, `V`에 서로 다른 learned linear projection을 적용하는 과정이고, (b)는 `h`개 head를 concatenate한 뒤 `W^O`로 다시 `d_model` 차원에 projection하는 과정이다. 그림의 함수와 parameter 표기는 원논문 Section 3.2.2를 따른다.
 
@@ -587,7 +587,7 @@ PE_(pos,2i)   = sin(pos / 10000^(2i/d_model))
 PE_(pos,2i+1) = cos(pos / 10000^(2i/d_model))
 ```
 
-![Sinusoidal positional encoding의 정의와 차원 배치](assets/04_positional_encoding_definition.png)
+![Sinusoidal positional encoding의 정의와 차원 배치](https://github.com/user-attachments/assets/d568c45e-eb55-4f58-bb67-5176e87ec9f5)
 
 그림의 (a)는 embedding과 positional encoding의 원소별 덧셈, (b)는 Section 3.5의 두 함수, (c)는 `d_model=512`일 때 `2i`와 `2i+1`이 차원에 배치되는 방법을 나타낸다.
 
@@ -673,7 +673,7 @@ PE_(1,3) = cos(1 / 10000^(2/512)) = 0.569695
 
 ### 전체 PE 행렬에서 나타나는 패턴
 
-![Sinusoidal positional encoding의 전체 행렬과 주파수별 곡선](assets/04_positional_encoding_patterns.png)
+![Sinusoidal positional encoding의 전체 행렬과 주파수별 곡선](https://github.com/user-attachments/assets/22883c0e-82dc-4066-a6f3-3f02046dca4b)
 
 위 그림은 원논문의 함수를 `d_model=512`, `pos=0,...,127`에 직접 적용한 결과다.
 

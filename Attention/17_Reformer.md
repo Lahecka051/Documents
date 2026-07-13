@@ -2,206 +2,273 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\17_Reformer.pdf`
-- 제목: Reformer: The Efficient Transformer
-- 저자: Nikita Kitaev, Lukasz Kaiser, Anselm Levskaya
+- 제목: **Reformer: The Efficient Transformer**
+- 저자: Nikita Kitaev, Łukasz Kaiser, Anselm Levskaya
 - 발표: ICLR 2020
-- 주제: Reformer의 LSH attention과 reversible memory 절약
-- 핵심 키워드: LSH attention, reversible layers, memory efficient Transformer
+- 핵심 키워드: locality-sensitive hashing, LSH attention, reversible residual layer, activation recomputation, long sequence
 
 ## 한눈에 보는 요약
 
-Reformer는 긴 sequence Transformer의 시간/메모리 비용을 줄이기 위해 LSH attention과 reversible residual layer를 사용한다.
+Reformer는 Transformer의 두 가지 메모리 병목을 서로 다른 방법으로 해결한다.
 
-LSH attention은 비슷한 query/key를 같은 bucket에 넣고 bucket 내부에서만 attention을 계산한다.
+1. attention score의 `O(n²)` 문제는 **LSH attention**으로 줄인다.
+2. layer activation을 모두 저장하는 `O(nL)` 문제는 **reversible residual layer**로 줄인다.
 
-Reversible layer는 activation을 모두 저장하지 않고 backward 때 입력을 재구성해 메모리를 줄인다.
+LSH attention은 query와 key를 content 기반 hash bucket으로 묶고 같은 bucket의 token끼리만 attention한다. 유사한 vector가 같은 bucket에 들어갈 확률이 높다는 locality-sensitive hashing을 사용해 approximate nearest-neighbor search를 attention에 적용한다. 정렬 비용을 포함한 복잡도는 대략 `O(n log n)`이다.
 
-## 연구 배경과 문제의식
+Reversible layer는 출력으로부터 입력을 복원할 수 있게 residual block을 설계한다. backward에서 이전 activation을 저장하는 대신 다시 계산하므로 memory를 크게 줄인다. 여기에 feed-forward를 position chunk로 나누는 기법까지 결합해 수만 길이 sequence를 처리한다.
 
-Full attention의 `O(n^2)` 비용과 deep Transformer의 activation memory는 긴 sequence 학습의 큰 병목이다.
+![Reformer의 LSH attention과 reversible residual 구조](https://github.com/user-attachments/assets/8c587cfe-91fd-4a0c-bc92-e09edeb4094f)
 
-비슷한 token을 hashing bucket으로 묶어 attention 후보를 줄이고, reversible layer로 activation memory를 줄인다.
+## 표준 Transformer의 세 메모리 항
 
-Attention에서 중요한 것은 모든 pair가 아니라 높은 dot product를 가질 가능성이 큰 pair일 수 있다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Reformer의 LSH attention과 reversible memory 절약`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-표준 attention과 효율 attention의 차이는 `n x n` 행렬을 얼마나 직접 다루는지에 있다.
+길이 `n`, hidden dimension `d`, layer 수 `L`인 Transformer의 학습 memory를 단순화하면 다음 세 항으로 볼 수 있다.
 
 ```text
-standard:
-S = QK^T                  # [n, n]
-P = softmax(S)            # [n, n]
-O = P V
-
-efficient:
-avoid or approximate S by
-- sparse subset
-- low-rank projection
-- random feature kernel
-- landmark approximation
+attention logits/weights : O(L n²)
+layer activations        : O(L n d)
+feed-forward activations : O(L n d_ff)
 ```
 
-이때 중요한 질문은 `P`를 정확히 보존하는가이다. 보존하지 않는다면 그 방법은 속도를 얻는 대신 attention 분포를 바꾼다.
+긴 sequence에서는 `n²`이 먼저 병목이지만, attention을 선형화한 뒤에도 깊은 layer의 activation 저장이 남는다. Reformer는 이 항들을 각각 LSH, reversible layer, chunking으로 대응한다.
 
-## 핵심 개념 상세 해설
+## LSH attention의 출발점
 
-### 효율 attention의 핵심 수식
+표준 self-attention은 query `q_i`와 모든 key `k_j`의 내적을 계산한다. softmax는 큰 내적을 가진 key에 질량을 집중시키므로, 출력에 가장 큰 영향을 주는 것은 query와 가까운 key다. Reformer는 모든 pair를 검사하는 대신 approximate nearest neighbor를 먼저 찾는다.
 
-Reformer의 LSH attention은 content가 비슷한 token끼리 같은 bucket에 들어가도록 hash한다. Full attention에서 큰 score를 가질 가능성이 높은 pair만 계산하려는 것이다.
+논문은 query와 key projection을 공유한다.
 
 ```text
-hash(q_i) = bucket id
-attend only within same or nearby buckets
-multiple hashing rounds reduce missed neighbors
+Q = K projection
+k_j = q_j / ||q_j||
 ```
 
-또한 reversible layer를 사용해 forward activation을 저장하지 않고 backward 때 복원한다. 이는 attention 근사와 별개의 memory saving 장치다.
+이렇게 하면 query와 key가 같은 공간에 있고 angular similarity 기반 LSH를 사용할 수 있다. 자기 자신은 항상 가장 가까운 vector이므로, 다른 token을 찾도록 self-attention score를 보통 mask한다.
 
-## Tensor shape와 자료구조
+## Angular locality-sensitive hashing
 
-효율 attention의 shape는 어떤 차원을 줄이느냐에 따라 달라진다. 표준 attention은 `[n, n]` score matrix를 만들지만, sparse/low-rank/kernel 방식은 이 matrix를 직접 만들지 않는다.
+무작위 rotation matrix `R`을 만들고 다음 hash를 사용한다.
 
 ```text
-standard:
-Q: [n, d], K: [n, d], V: [n, d_v]
-S = QK^T: [n, n]
-O = softmax(S)V: [n, d_v]
-
-linear/low-rank examples:
-K' or landmark: [k, d] where k << n
-score: [n, k] or implicit kernel aggregate
-output: [n, d_v]
+h(x) = argmax([xR ; -xR])
 ```
 
-따라서 이 계열을 읽을 때는 `n x n` 행렬이 어디에서 사라지는지 추적해야 한다. 사라지는 방식이 곧 논문의 이론적 가정이다.
+`xR`의 각 coordinate와 부호 반전 값을 이어 붙인 뒤 가장 큰 항의 index를 bucket으로 삼는다. 방향이 비슷한 vector는 같은 최대 coordinate를 가질 가능성이 높다.
 
-## 수식과 계산 전개
+한 번의 hash는 충돌 운에 민감하므로 `n_hashes`개의 독립 rotation을 사용한다. 여러 hash에서 같은 bucket에 들어간 key들의 합집합이 query의 candidate set이 된다.
 
-### LSH bucket assignment
+## Hash → sort → chunk
+
+각 token을 hash bucket id와 원래 sequence index로 정렬한다. 같은 bucket의 token이 memory에서 연속되므로 고정 길이 chunk 단위 dense attention으로 계산할 수 있다.
 
 ```text
-Hash function은 random rotation 등을 이용해 vector를 bucket id로 바꾼다.
+1. 모든 q/k vector를 bucket id로 hash
+2. (bucket id, sequence position) 기준 sort
+3. 정렬된 sequence를 길이 m의 chunk로 분할
+4. 각 chunk가 자기 chunk와 이전 chunk를 attention
+5. 결과를 원래 순서로 unsort
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+왜 이전 chunk도 보는가? 하나의 bucket이 chunk 경계에서 잘릴 수 있기 때문이다. 같은 bucket token이 인접 두 chunk에 나뉘어도 서로 만날 수 있게 한다.
 
-### Bucket 내부 attention
+논문은 bucket 수를 `n_buckets`, 평균 bucket 크기를 `n/n_buckets`라 할 때 chunk 길이 `m ≈ 2n/n_buckets`를 사용한다. 너무 큰 bucket은 연산을 늘리고, 너무 작은 bucket은 중요한 neighbor가 boundary 밖으로 빠질 위험을 높인다.
+
+## Causal LSH attention
+
+Autoregressive modeling에서는 정렬 후에도 원래 sequence의 미래 token을 보지 않도록 해야 한다. bucket 정렬은 시간 순서를 섞으므로 causal mask는 **정렬된 index가 아니라 원래 position index**를 비교해 적용한다.
 
 ```text
-Token들을 bucket id 기준으로 정렬한 뒤, bucket 내부에서 causal/local attention을 수행한다.
+allow(i,j) = same candidate bucket
+             and original_position(j) <= original_position(i)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+동일 pair가 여러 hash round에서 선택되면 softmax normalization과 output을 중복 보정해야 한다. 구현의 정확성이 단순 local attention보다 훨씬 까다로운 이유다.
 
-### Multi-round hashing
+## LSH attention의 계산 복잡도
+
+대략적인 비용은 다음과 같다.
 
 ```text
-복수 hash round를 사용하면 중요한 pair가 적어도 한 번 같은 bucket에 들어갈 가능성이 커진다.
+hash projection      : O(n d n_hashes)
+bucket sorting       : O(n log n)
+chunk attention      : O(n m d n_hashes)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+bucket/chunk 크기를 상수 또는 `O(log n)` 수준으로 관리하면 전체를 `O(n log n)`으로 볼 수 있다. 그러나 실제 wall-clock은 sort, permutation, gather/scatter, 여러 hash round의 중복에 좌우된다. dense attention보다 FLOPs가 적어도 sequence가 짧으면 정렬 overhead가 더 클 수 있다.
 
-### Reversible residual block
+## Approximation 품질을 좌우하는 요소
+
+### Hash round 수
+
+round가 많을수록 유사 pair가 최소 한 번 같은 bucket에 들어갈 확률이 커진다. 품질은 좋아지지만 계산과 memory가 비례해 늘어난다.
+
+### Bucket 크기
+
+큰 bucket은 candidate recall이 높지만 chunk attention이 비싸다. 작은 bucket은 빠르지만 충돌 누락과 경계 효과가 커진다.
+
+### Shared Q/K
+
+hashing을 쉽게 하지만 표준 attention처럼 query와 key가 독립 projection을 갖는 표현력은 포기한다.
+
+### Randomness와 redraw
+
+random rotation에 따라 candidate가 달라진다. seed, 학습/평가 시 hash 처리, distributed replica 간 일관성을 관리해야 한다.
+
+## Reversible residual layer
+
+일반 residual layer는
 
 ```text
-Reversible block은 `y_1 = x_1 + F(x_2)`, `y_2 = x_2 + G(y_1)`로 계산한다.
+y = x + F(x)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Chunked feed-forward
+이며 `F`의 입력을 backward에 사용하려고 `x`를 저장한다. Reformer는 hidden state를 두 부분 `x1, x2`로 나누고 다음 coupling을 사용한다.
 
 ```text
-Backward에서는 `x_2 = y_2 - G(y_1)`, `x_1 = y_1 - F(x_2)`로 activation을 복원한다.
+y1 = x1 + F(x2)
+y2 = x2 + G(y1)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-## 전체 알고리즘 흐름
-
-1. Q/K/V를 만든다.
-2. Full `n x n` score를 만들지 않기 위한 sparse set, projection, random feature, landmark를 구성한다.
-3. 제한되거나 근사된 attention score 또는 kernel aggregate를 계산한다.
-4. Normalization을 적용한다.
-5. Value aggregation으로 output representation을 만든다.
-
-## 작은 예시로 보는 직관
-
-길이 10,000 문서에서 full attention은 한 head마다 1억 개 score를 만든다. 하지만 문서 이해에 모든 token pair가 같은 중요도를 갖지는 않는다.
+`F`는 attention, `G`는 feed-forward network다. 출력 `y1,y2`가 있으면 입력을 정확히 재구성할 수 있다.
 
 ```text
-full score count: n^2 = 10000^2 = 100,000,000
-local window w=256: n*w = 2,560,000
-landmarks k=256: n*k = 2,560,000
+x2 = y2 - G(y1)
+x1 = y1 - F(x2)
 ```
 
-효율 attention은 이 차이를 이용한다. 다만 줄인 score가 실제 필요한 관계를 충분히 포함해야 한다.
+따라서 각 layer의 activation을 저장하지 않고 최종 activation만 유지한 채, backward에서 `G`와 `F`를 다시 실행해 입력과 gradient를 복원한다.
 
-## 계산 복잡도와 병목
+### Memory와 compute trade-off
 
-- Hashing과 sorting 과정이 구현 복잡도를 높이고 하드웨어 효율을 제한할 수 있다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+activation storage는 layer 수에 거의 선형으로 늘지 않지만, backward에서 forward 연산을 다시 하므로 계산량이 증가한다. dropout mask나 random hash처럼 stochastic 연산은 재계산 시 같은 결과를 재현해야 하므로 RNG state 관리가 필요하다. low precision에서는 반복적인 덧셈·뺄셈의 수치 오차도 점검해야 한다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+## Feed-forward chunking
 
-## 구현할 때 확인할 부분
+Transformer의 FFN은 각 position에 독립적으로 적용된다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+```text
+FFN(X)[i] = W2 activation(W1 X[i])
+```
 
-## 자주 헷갈리는 지점
+따라서 모든 `n` position의 `d_ff` activation을 동시에 만들 필요가 없다. sequence를 여러 chunk로 나누어 FFN을 실행하고 결과를 concatenate한다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Linear complexity라고 해서 항상 실제 wall-clock이 빠른 것은 아니다. GPU kernel, memory layout, batch shape가 중요하다.
-- Approximate attention은 exact softmax attention과 같은 결과를 내지 않는다. 성능 비교에서 품질 손실을 함께 봐야 한다.
+```python
+ys = []
+for x_chunk in split(x, chunk_size, dim=sequence):
+    ys.append(ffn(x_chunk))
+y = concat(ys, dim=sequence)
+```
 
-## 관련 방법과 비교
+출력은 동일하고 peak memory만 줄어든다. 대신 kernel launch 수가 늘고 작은 GEMM의 효율이 낮아질 수 있다.
 
-| 방법 | 줄이는 대상 | Exact 여부 |
-| --- | --- | --- |
-| Sparse/Longformer/BigBird | attention edge 수 | sparse graph 기준 exact, full attention은 아님 |
-| Linformer | sequence dimension rank | 근사 |
-| Performer | softmax kernel | random feature 근사 |
-| Nyströmformer | attention matrix rank | landmark 근사 |
-| FlashAttention | HBM IO와 저장량 | full attention exact |
+## 전체 계산 흐름
 
-## 실험 결과를 읽는 관점
+```text
+input embedding + position encoding
+  ↓ split channels
+LSH attention F(x2)
+  ↓ reversible update y1
+chunked FFN G(y1)
+  ↓ reversible update y2
+repeat without storing every layer input
+  ↓
+final normalization and output
+```
 
-효율 attention 실험은 점수와 복잡도를 함께 봐야 한다. 근사 방식은 속도와 메모리를 줄일 수 있지만, attention distribution이 바뀌므로 task 성능이 손상될 수 있다.
+Reformer의 “효율성”은 하나의 magic attention이 아니라 세 memory 기법의 결합이다.
 
-또한 이론적 `O(n)` 또는 `O(n log n)` 복잡도가 실제 GPU wall-clock speedup으로 이어지는지 확인해야 한다. Sparse 또는 low-rank 알고리즘은 kernel 구현의 영향을 크게 받는다.
+## 실험 결과
+
+### Synthetic duplication task
+
+Sequence 앞부분의 symbol을 뒤에서 복사하는 synthetic task로 LSH recall을 분석한다. full attention으로 학습한 모델을 평가 시 LSH로 바꾸면 손실이 생기지만, LSH로 학습한 모델은 여러 hash round를 사용했을 때 거의 완벽하게 문제를 해결한다. 특히 4회 hash에서 성능이 크게 회복되고, 평가 때 hash 수를 늘리면 추가 개선되는 경향을 보인다.
+
+이는 approximation을 학습 중부터 노출하면 모델이 hash 구조에 적응할 수 있음을 뜻한다. 반대로 pretrained full-attention weight를 무조건 LSH로 치환하면 같은 품질을 기대하기 어렵다.
+
+### WMT machine translation
+
+문장 길이가 대체로 128보다 짧아 translation 실험에서는 LSH를 사용하지 않고 reversible Transformer 자체를 비교한다. Base/Big 설정에서 일반 Transformer와 비슷한 BLEU를 유지하면서 activation memory를 줄인다. 이 실험은 LSH 품질보다 reversible architecture가 표준 task에서도 큰 손실 없이 작동하는지 확인하는 역할을 한다.
+
+### Enwik8
+
+최대 약 64K character context를 사용하는 모델에서 12-layer Reformer가 약 `1.05 bits/dim`을 기록한다. 당시 매우 긴 context를 단일 example로 처리하면서 경쟁력 있는 성능을 보였다는 의미가 크다.
+
+### ImageNet 64×64
+
+RGB channel을 sequence로 펼치면 길이가 약 12K가 된다. 6-layer Reformer가 12-layer baseline 계열과 경쟁적인 density modeling 결과를 보이며, 긴 image sequence에서도 LSH attention을 적용할 수 있음을 보였다.
+
+## 실험을 읽는 관점
+
+Reformer의 가장 강한 증거는 “표준 attention과 완전히 동일한 품질”이 아니라, 기존 GPU memory로 불가능하던 긴 input을 처리하면서 합리적인 품질을 얻었다는 점이다. 실험마다 LSH, reversibility, chunking이 모두 같은 정도로 사용된 것은 아니므로 기여를 분리해 읽어야 한다.
+
+또한 이후 exact attention kernel과 long-context benchmark가 크게 발전했다. 당시의 속도 비교를 현대 GPU에 그대로 적용하기보다, sorting 기반 sparse attention의 구조적 장단점을 보는 것이 적절하다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- content-based LSH로 dense pair search를 approximate nearest-neighbor 문제로 바꿨다.
+- hash bucket을 sort/chunk해 GPU에서 처리 가능한 계산 형태로 만들었다.
+- reversible residual로 layer activation 저장을 제거했다.
+- FFN chunking까지 결합해 attention 외 메모리 병목도 다뤘다.
+- 수만 길이 text와 image sequence를 실제 학습으로 시연했다.
 
 ## 한계와 비판적 관점
 
-- Hashing과 sorting 과정이 구현 복잡도를 높이고 하드웨어 효율을 제한할 수 있다.
-- 비슷한 token이 같은 bucket에 들어가지 않으면 중요한 attention edge를 놓칠 수 있다.
-- 현대 GPU에서는 FlashAttention 같은 exact attention 최적화가 더 실용적인 경우도 많다.
+### 1. Exact softmax attention이 아니다
 
-## 후속 논문과의 연결점
+다른 bucket의 key는 score가 아무리 높아도 후보가 되지 않는다. 여러 hash round가 recall을 높이지만 비용도 함께 증가한다.
 
-LSH attention은 sparse/approximate attention 계열이고, reversible network 아이디어는 memory-efficient training 기법과 연결된다.
+### 2. Sorting과 permutation overhead
 
-## 개인 학습/연구 메모
+이론 복잡도는 낮지만 GPU에서 radix sort, gather, unsort가 필요하다. 짧거나 중간 길이에서는 잘 최적화된 dense attention보다 느릴 수 있다.
 
-Reformer는 `비슷한 token끼리만 attention하고, activation은 다시 계산해서 저장을 줄인다`로 요약할 수 있다.
+### 3. Randomness와 재현성
 
+hash rotation과 bucket collision이 결과에 영향을 준다. reversible recomputation에서는 동일 random state를 복원해야 한다.
+
+### 4. Shared Q/K의 제약
+
+query와 key projection을 공유하는 것은 LSH를 단순화하지만 표준 attention의 자유도를 줄인다. self-score를 별도로 mask해야 하는 부작용도 있다.
+
+### 5. Reversibility는 compute를 memory로 교환한다
+
+activation을 저장하지 않는 대신 backward에서 attention과 FFN을 재실행한다. memory가 충분한 환경에서는 학습 시간이 더 중요할 수 있다.
+
+### 6. Autoregressive inference 이점이 제한적일 수 있다
+
+한 token씩 생성할 때 KV cache의 모든 key를 다시 sort/hash하는 비용과 bucket 관리를 고려해야 한다. training의 긴 parallel sequence 효율이 decode latency 개선과 동일하지 않다.
+
+## 후속 연구와의 연결
+
+- **Routing Transformer**는 clustering/routing으로 content-based sparse neighbor를 찾는다.
+- **Reversible networks**는 이후 memory-efficient deep model에 널리 사용된다.
+- **Performer/Linformer**는 sorting 대신 kernel 또는 low-rank factorization으로 선형화를 시도한다.
+- **FlashAttention**은 approximate neighbor selection 없이 exact attention을 tile 단위로 계산한다.
+
+현대 모델에서 Reformer 전체 구조가 표준이 되지는 않았지만, content-aware sparsity와 activation recomputation이라는 두 아이디어는 계속 재사용된다.
+
+## 구현 체크리스트
+
+- hash bucket 계산이 query/key에 동일하게 적용되는가?
+- bucket boundary를 위해 이전 chunk까지 포함하는가?
+- causal mask가 원래 position 기준으로 적용되는가?
+- 여러 hash에서 중복된 pair의 확률을 보정하는가?
+- reversible recomputation에서 dropout/RNG가 동일하게 재현되는가?
+- FP16 재구성 오차가 layer 깊이에 따라 누적되지 않는가?
+- sort/gather 비용을 포함한 wall-clock을 측정했는가?
+
+## 온디바이스 관점
+
+LSH attention은 theoretical memory는 좋지만 sort와 dynamic gather가 많은 점이 mobile NPU에 불리하다. 고정 local window보다 compiler 최적화가 어렵고, 입력마다 bucket 분포가 달라 execution shape가 불규칙해질 수 있다. 반면 reversible block과 FFN chunking은 memory가 제한된 training 또는 edge adaptation에서 여전히 유용하다.
+
+실제 온디바이스 추론이라면 다음을 비교해야 한다.
+
+```text
+LSH의 sort/gather latency
+local-window attention의 정적 kernel
+FlashAttention류 exact tiled kernel 지원
+recompute로 절약되는 RAM과 늘어나는 전력
+```
+
+## 최종 평가
+
+Reformer는 attention 하나만 바꾼 논문이라기보다, 긴 sequence를 막는 memory 항을 해부하고 각각에 다른 해법을 붙인 시스템적 연구다. LSH attention은 nearest-neighbor 후보만 계산해 quadratic score를 피하고, reversible layer는 깊이에 따른 activation 저장을 없앤다. approximation과 sorting overhead 때문에 오늘날 모든 모델의 기본 구조가 되지는 않았지만, 긴 context 문제를 알고리즘·architecture·memory scheduling의 결합으로 풀어야 한다는 점을 매우 선명하게 보여준다.

@@ -1,208 +1,284 @@
-# 22. Nyströmformer: A Nyström-based Algorithm for Approximating Self-Attention
+# 22. Nyströmformer: A Nyström-Based Algorithm for Approximating Self-Attention
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\22_Nystromformer.pdf`
-- 제목: Nyströmformer: A Nyström-based Algorithm for Approximating Self-Attention
+- 제목: **Nyströmformer: A Nyström-Based Algorithm for Approximating Self-Attention**
 - 저자: Yunyang Xiong et al.
 - 발표: AAAI 2021
-- 주제: Nyströmformer의 landmark attention 근사
-- 핵심 키워드: Nyströmformer, landmark approximation, low-rank attention
+- 핵심 키워드: Nyström approximation, landmark attention, pseudo-inverse, linear attention, long sequence
 
 ## 한눈에 보는 요약
 
-Nyströmformer는 self-attention matrix를 Nyström method로 근사한다.
-
-전체 token을 몇 개의 landmark로 요약하고, query-landmark, landmark-landmark, landmark-key 관계를 이용해 full attention을 복원한다.
-
-Linformer처럼 low-rank 관점을 쓰지만, projection matrix 대신 landmark 기반 matrix approximation을 사용한다.
-
-## 연구 배경과 문제의식
-
-Softmax attention matrix는 `[n, n]`이라 길이가 길면 비용이 크다.
-
-Nyström method로 attention matrix를 landmark 기반 low-rank 구조로 근사한다.
-
-Nyström method는 큰 kernel matrix를 일부 landmark point를 통해 근사하는 고전적 방법이다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Nyströmformer의 landmark attention 근사`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-표준 attention과 효율 attention의 차이는 `n x n` 행렬을 얼마나 직접 다루는지에 있다.
+Nyströmformer는 `[n,n]` softmax attention matrix를 `m`개의 landmark를 이용한 세 개의 작은 행렬 곱으로 근사한다.
 
 ```text
-standard:
-S = QK^T                  # [n, n]
-P = softmax(S)            # [n, n]
-O = P V
-
-efficient:
-avoid or approximate S by
-- sparse subset
-- low-rank projection
-- random feature kernel
-- landmark approximation
+token -> landmark
+landmark core pseudo-inverse
+landmark -> token
 ```
 
-이때 중요한 질문은 `P`를 정확히 보존하는가이다. 보존하지 않는다면 그 방법은 속도를 얻는 대신 attention 분포를 바꾼다.
-
-## 핵심 개념 상세 해설
-
-### 효율 attention의 핵심 수식
-
-Nyströmformer는 전체 attention matrix를 landmark를 통해 근사한다.
+Query와 key를 sequence segment별 평균으로 압축해 landmark `Q_tilde,K_tilde ∈ R^{m×d}`를 만들고 다음 근사를 사용한다.
 
 ```text
-A approx F A_tilde^+ B
-F = attention(query, landmarks)
-A_tilde = attention(landmarks, landmarks)
-B = attention(landmarks, keys)
+softmax(Q K^T)
+≈ softmax(Q K_tilde^T)
+  [softmax(Q_tilde K_tilde^T)]^+
+  softmax(Q_tilde K^T)
 ```
 
-Landmark는 sequence의 대표점이고, query는 landmark를 경유해 전체 key와 상호작용한다.
+각 factor의 shape은 `[n,m]`, `[m,m]`, `[m,n]`이다. 전체 `[n,n]`을 materialize하지 않고 오른쪽에서부터 `V`와 곱하면 memory를 줄일 수 있다. `m`을 64처럼 작은 상수로 두면 sequence length `n`에 대해 선형에 가까워진다.
 
-## Tensor shape와 자료구조
+핵심 trade-off는 landmark가 전체 attention structure를 얼마나 잘 대표하는지, 그리고 중앙 `m×m` matrix의 pseudo-inverse를 얼마나 안정적으로 근사하는지다.
 
-효율 attention의 shape는 어떤 차원을 줄이느냐에 따라 달라진다. 표준 attention은 `[n, n]` score matrix를 만들지만, sparse/low-rank/kernel 방식은 이 matrix를 직접 만들지 않는다.
+![Nyströmformer의 landmark factorization](https://github.com/user-attachments/assets/dd15528b-c15f-4813-864f-d6aec487728a)
+
+## Nyström method의 직관
+
+Nyström method는 큰 kernel matrix의 일부 column과 row를 샘플링해 전체 matrix를 재구성하는 고전적인 low-rank approximation이다. 대칭 kernel matrix `S`에서 landmark index 집합을 고르면 개념적으로 다음 형태를 사용한다.
 
 ```text
-standard:
-Q: [n, d], K: [n, d], V: [n, d_v]
-S = QK^T: [n, n]
-O = softmax(S)V: [n, d_v]
-
-linear/low-rank examples:
-K' or landmark: [k, d] where k << n
-score: [n, k] or implicit kernel aggregate
-output: [n, d_v]
+S ≈ C W^+ C^T
 ```
 
-따라서 이 계열을 읽을 때는 `n x n` 행렬이 어디에서 사라지는지 추적해야 한다. 사라지는 방식이 곧 논문의 이론적 가정이다.
+- `C`: 모든 point와 landmark 사이 kernel
+- `W`: landmark끼리의 kernel
+- `W^+`: Moore–Penrose pseudo-inverse
 
-## 수식과 계산 전개
+Self-attention은 row-wise softmax 때문에 단순 대칭 kernel matrix가 아니고 query와 key가 다를 수 있다. Nyströmformer는 token-to-landmark와 landmark-to-token factor를 분리해 이를 attention에 맞게 변형한다.
 
-### Landmark 생성
+## Landmark 생성
+
+Sequence 길이 `n`을 `m`개의 contiguous segment로 균등 분할한다. 각 segment의 query와 key 평균을 landmark로 사용한다.
 
 ```text
-Landmark query/key를 `Q_tilde`, `K_tilde`라고 한다.
+l = n / m
+
+Q_tilde_j = (1/l) sum_{i=(j-1)l+1}^{jl} Q_i
+K_tilde_j = (1/l) sum_{i=(j-1)l+1}^{jl} K_i
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Query-landmark attention
+shape은 다음과 같다.
 
 ```text
-`A = softmax(Q K^T)`를 직접 계산하지 않는다.
+Q,K                 : [n,d]
+Q_tilde,K_tilde     : [m,d]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Segment mean은 추가 parameter가 없고 연산이 싸며 순서를 보존한다. 하지만 중요한 token과 배경 token을 같은 segment에서 평균내면 landmark가 희석될 수 있다. `n`이 `m`으로 나누어지지 않을 때 padding과 segment 경계를 일관되게 처리해야 한다.
 
-### Landmark-landmark pseudo-inverse
+## Attention factorization
+
+Scaled score를 포함해 세 factor를 정의한다.
 
 ```text
-대신 `F = softmax(Q K_tilde^T)`, `B = softmax(Q_tilde K^T)`, `A_tilde = softmax(Q_tilde K_tilde^T)`를 계산한다.
+F = softmax(Q K_tilde^T / sqrt(d))
+    # [n,m], each token -> landmark key
+
+A = softmax(Q_tilde K_tilde^T / sqrt(d))
+    # [m,m], landmark core
+
+B = softmax(Q_tilde K^T / sqrt(d))
+    # [m,n], landmark query -> every token
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Landmark-key attention
+전체 attention approximation은
 
 ```text
-Attention matrix를 `A ≈ F A_tilde^+ B`로 근사한다.
+S_hat = F A^+ B
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Nyström output
+이고 output은
 
 ```text
-최종 output은 `O ≈ F A_tilde^+ B V`로 계산된다.
+Y = F [A^+ (B V)]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-## 전체 알고리즘 흐름
-
-1. Q/K/V를 만든다.
-2. Full `n x n` score를 만들지 않기 위한 sparse set, projection, random feature, landmark를 구성한다.
-3. 제한되거나 근사된 attention score 또는 kernel aggregate를 계산한다.
-4. Normalization을 적용한다.
-5. Value aggregation으로 output representation을 만든다.
-
-## 작은 예시로 보는 직관
-
-길이 10,000 문서에서 full attention은 한 head마다 1억 개 score를 만든다. 하지만 문서 이해에 모든 token pair가 같은 중요도를 갖지는 않는다.
+순서로 계산한다.
 
 ```text
-full score count: n^2 = 10000^2 = 100,000,000
-local window w=256: n*w = 2,560,000
-landmarks k=256: n*k = 2,560,000
+B V          : [m,n] @ [n,d_v] = [m,d_v]
+A^+ (B V)    : [m,m] @ [m,d_v] = [m,d_v]
+F (...)      : [n,m] @ [m,d_v] = [n,d_v]
 ```
 
-효율 attention은 이 차이를 이용한다. 다만 줄인 score가 실제 필요한 관계를 충분히 포함해야 한다.
+따라서 `[n,n]` `S_hat`을 실제로 만들 필요가 없다.
 
-## 계산 복잡도와 병목
+## 왜 pseudo-inverse가 필요한가
 
-- Landmark 수가 적으면 중요한 세부 token interaction을 놓칠 수 있다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+Token-to-landmark factor `F`와 landmark-to-token factor `B`를 단순 곱하면 landmark 사이 관계가 중복되거나 왜곡된다. 중앙 core `A`가 landmark space의 metric을 나타내며, `A^+`가 이 중복을 보정한다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+`A`가 full rank square matrix라면 inverse를 쓸 수 있지만, softmax core는 singular하거나 condition number가 클 수 있다. Moore–Penrose pseudo-inverse는 rank-deficient matrix에도 정의되지만 정확한 SVD는 `O(m³)`이고 GPU pipeline에 부담이다.
 
-## 구현할 때 확인할 부분
+## Iterative pseudo-inverse approximation
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+논문은 Razavi 계열의 iterative method를 사용한다. 초기값을
 
-## 자주 헷갈리는 지점
+```text
+Z_0 = A^T / (||A||_1 ||A||_∞)
+```
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Linear complexity라고 해서 항상 실제 wall-clock이 빠른 것은 아니다. GPU kernel, memory layout, batch shape가 중요하다.
-- Approximate attention은 exact softmax attention과 같은 결과를 내지 않는다. 성능 비교에서 품질 손실을 함께 봐야 한다.
+로 두고 다음 고차 iteration을 반복한다.
 
-## 관련 방법과 비교
+```text
+Z_{j+1} = 1/4 Z_j [13I - A Z_j(15I - A Z_j(7I - A Z_j))]
+```
 
-| 방법 | 줄이는 대상 | Exact 여부 |
-| --- | --- | --- |
-| Sparse/Longformer/BigBird | attention edge 수 | sparse graph 기준 exact, full attention은 아님 |
-| Linformer | sequence dimension rank | 근사 |
-| Performer | softmax kernel | random feature 근사 |
-| Nyströmformer | attention matrix rank | landmark 근사 |
-| FlashAttention | HBM IO와 저장량 | full attention exact |
+`Z_j`가 `A^+`로 수렴하도록 하며 논문 구현은 보통 6회 iteration을 사용한다. 모든 연산이 `m×m` matrix multiplication이므로 batch/head 단위 GPU 연산으로 실행할 수 있다.
 
-## 실험 결과를 읽는 관점
+### 수치 안정성
 
-효율 attention 실험은 점수와 복잡도를 함께 봐야 한다. 근사 방식은 속도와 메모리를 줄일 수 있지만, attention distribution이 바뀌므로 task 성능이 손상될 수 있다.
+- `A`의 condition number가 크면 수렴이 느리거나 오차가 커질 수 있다.
+- FP16에서 반복 matrix multiplication 오차가 누적될 수 있다.
+- 초기 scaling의 norm 계산이 정확해야 한다.
+- fixed iteration은 input마다 다른 수렴 상태를 남길 수 있다.
 
-또한 이론적 `O(n)` 또는 `O(n log n)` 복잡도가 실제 GPU wall-clock speedup으로 이어지는지 확인해야 한다. Sparse 또는 low-rank 알고리즘은 kernel 구현의 영향을 크게 받는다.
+실무에서는 pseudo-inverse residual `||A Z A - A||`를 확인하거나 핵심 계산을 FP32로 수행하는 것이 안전하다.
+
+## Value residual convolution
+
+Landmark approximation은 global low-rank structure를 잘 포착할 수 있지만 local detail을 평균내기 쉽다. 논문은 value에 depthwise 1D convolution을 적용해 output에 residual로 더한다.
+
+```text
+Y_final = NyströmAttention(Q,K,V) + DWConv(V)
+```
+
+channel마다 local neighborhood를 convolution해 근접 정보를 보강한다. 이는 attention approximation 자체의 수학에는 필요 없지만 empirical 성능에 중요한 architecture 요소다. 비교 시 convolution이 주는 이득과 landmark factorization의 이득을 분리해 봐야 한다.
+
+## 계산량과 메모리
+
+세 factor와 pseudo-inverse를 모두 고려하면 주요 비용은 다음과 같다.
+
+```text
+F, B 계산             : O(n m d)
+landmark core          : O(m² d)
+pseudo-inverse 반복    : O(t m³)
+factor-value 곱        : O(n m d_v + m² d_v)
+```
+
+요약하면 `O(nm² + nmd_v + m³)`로 기술할 수 있고 구현 방식에 따라 `nmd` 항이 지배한다. `m`을 고정하고 `m << n`이면 `n`에 대해 선형이지만, 정확도를 위해 `m`을 `n`과 함께 키우면 선형성이 약해진다.
+
+메모리는 대략
+
+```text
+F/B 또는 streaming factor : O(nm)
+core                      : O(m²)
+activations               : O(nd)
+```
+
+이다. `F`와 `B`를 둘 다 보관하지 않고 곱 순서와 recomputation을 조정하면 peak memory를 더 줄일 수 있다.
+
+## Exactness 조건
+
+Landmark가 모든 query/key를 포함해 `m=n`이고 landmark가 원본과 동일하면 원래 attention을 재구성할 수 있는 조건에 가까워진다. 일반 `m<<n`에서는 low-rank approximation이다.
+
+논문은 landmark가 attention matrix의 주요 column/row space를 잘 span하면 근사가 좋다는 방향의 이론을 제시한다. 그러나 softmax를 세 factor에 각각 적용한 행렬은 원본 row-softmax matrix와 단순 Nyström sample이 완전히 같지 않다. 실용 알고리즘은 kernel approximation과 attention-specific normalization을 결합한 것으로 이해하는 편이 정확하다.
+
+## 실험 결과: 효율
+
+길이 8,192에서 논문이 보고한 한 예는 다음과 같다.
+
+| 모델 | Landmark/window | Memory | Time |
+| --- | ---: | ---: | ---: |
+| Transformer | full | 10,233 MB | 155.4 ms |
+| Linformer | 256 | 635 MB | 11.3 ms |
+| Longformer | 257 | 455 MB | 36.2 ms |
+| Nyströmformer | 64 | 450 MB | 12.3 ms |
+| Nyströmformer | 32 | **383 MB** | 11.5 ms |
+
+Nyströmformer-64는 Longformer와 비슷한 memory로 더 짧은 시간, Linformer와 비슷한 시간으로 더 적은 memory를 보였다. 다만 측정은 당시 특정 PyTorch/CUDA 구현에 해당하며, 최신 kernel과 동일 조건 비교가 필요하다.
+
+## 실험 결과: GLUE
+
+BERT-base 구조의 attention을 Nyströmformer로 바꾼 뒤 pretraining/fine-tuning한 결과는 여러 GLUE task에서 경쟁적이다. 예를 들어 SST-2는 BERT-base 약 `90.0`에 비해 Nyströmformer 약 `91.4`로 높았지만, QNLI는 `90.3` 대비 `88.7` 정도로 낮았다.
+
+즉 평균적으로 근접한 품질을 보이지만 모든 task에서 exact attention을 일관되게 능가하지는 않는다. Convolution residual과 training variation이 함께 있으므로 단일 숫자보다 task별 편차를 봐야 한다.
+
+## 실험 결과: Long Range Arena
+
+논문의 PyTorch 재구현 기준 평균 결과는 다음과 같다.
+
+| 모델 | LRA 평균 |
+| --- | ---: |
+| Standard Transformer | 58.77 |
+| Reformer | 55.04 |
+| Linformer | 55.59 |
+| Performer | 53.63 |
+| Nyströmformer | **58.95** |
+
+Nyströmformer가 exact baseline과 비슷하거나 약간 높은 평균을 기록했다. 다만 LRA는 구현과 hyperparameter에 민감하며, 논문별 원래 code가 아니라 동일 framework 재구현 수치라는 점을 고려해야 한다.
+
+## Landmark 수 ablation
+
+Landmark 수를 늘리면 일반적으로 approximation error가 줄지만 다음 비용이 증가한다.
+
+```text
+token-landmark scores : O(nm)
+core                   : O(m²)
+pseudo-inverse         : O(m³)
+```
+
+논문에서는 `m=64`가 여러 task에서 좋은 균형을 보였다. 그러나 optimal `m`은 input length뿐 아니라 attention rank, task, head dimension에 따라 다르다. 모든 layer/head에 같은 `m`을 쓰는 것이 최적이라는 보장은 없다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- 고전 Nyström low-rank approximation을 self-attention에 맞게 세 factor로 구성했다.
+- segment mean landmark로 parameter 추가 없이 sequence를 압축했다.
+- pseudo-inverse를 iterative matrix multiplication으로 근사해 GPU에서 실행 가능하게 했다.
+- local convolution residual로 low-rank approximation의 detail 손실을 보완했다.
+- BERT/GLUE, LRA, 긴 sequence의 memory/time을 함께 검증했다.
 
 ## 한계와 비판적 관점
 
-- Landmark 수가 적으면 중요한 세부 token interaction을 놓칠 수 있다.
-- Pseudo-inverse 근사와 iterative computation이 구현 복잡도를 만든다.
-- Causal autoregressive attention에 바로 적용하기보다는 encoder-style long sequence에 더 자연스럽다.
+### 1. Landmark 품질
 
-## 후속 논문과의 연결점
+Contiguous segment mean은 단순하고 빠르지만 content 중요도를 반영하지 않는다. 중요한 token 하나가 긴 segment 평균에서 사라질 수 있다.
 
-Nyströmformer는 Linformer, Performer와 함께 full attention matrix를 저차원 구조로 근사하는 효율 attention 계열이다.
+### 2. Segment boundary
 
-## 개인 학습/연구 메모
+같은 local pattern도 segment 경계에 걸리면 서로 다른 landmark로 나뉜다. length와 padding에 따라 representation이 달라질 수 있다.
 
-Nyströmformer는 `전체 token 대신 landmark token을 경유해 attention matrix를 근사한다`고 기억하면 된다.
+### 3. Pseudo-inverse 안정성
 
+Core matrix가 ill-conditioned하면 fixed iteration approximation이 부정확할 수 있다. `m³` 비용도 `m`을 크게 늘리는 것을 제한한다.
+
+### 4. Causal attention의 어려움
+
+Segment landmark가 미래 token 평균을 포함하면 autoregressive leak가 발생한다. 위치별 causal landmark와 triangular factorization이 필요하므로 원래 bidirectional algorithm을 그대로 decoder에 적용할 수 없다.
+
+### 5. Exact attention이 아니다
+
+세 softmax factor의 곱은 원본 `softmax(QK^T)`와 다르다. retrieval과 sharp alignment에서 approximation error가 중요할 수 있다.
+
+### 6. Convolution의 영향
+
+성능 일부는 depthwise convolution의 local inductive bias에서 올 수 있다. 순수 attention approximation 비교에서는 residual 유무를 통제해야 한다.
+
+## 관련 방법과 비교
+
+| 방법 | Representative basis | Basis 선택 | 핵심 보정 |
+| --- | --- | --- | --- |
+| Linformer | `k` latent sequence slot | learned projection | 없음 |
+| Performer | `r` kernel feature | random/orthogonal | normalized feature sum |
+| Nyströmformer | `m` landmarks | segment mean | core pseudo-inverse |
+
+Nyströmformer는 token-like landmark를 유지해 해석이 직관적이지만, 중앙 inverse 계산이 추가된다는 차이가 있다.
+
+## 구현 체크리스트
+
+- `n`이 `m`으로 나뉘지 않을 때 segment mean이 padding을 제외하는가?
+- 세 softmax의 axis가 각각 마지막 token/landmark 축인가?
+- `F A^+ B`를 직접 `[n,n]`으로 만들지 않고 `V`부터 곱하는가?
+- pseudo-inverse 초기값의 `L1/L∞` norm이 올바른가?
+- iteration을 FP32로 수행할 필요가 있는가?
+- depthwise convolution의 padding이 sequence length를 보존하는가?
+- landmark 수별 품질·memory·latency·inverse residual을 측정했는가?
+
+## 온디바이스 관점
+
+Nyströmformer는 random sort나 irregular sparse graph 없이 dense GEMM과 pooling으로 구성할 수 있어 accelerator 친화적인 면이 있다. 하지만 작은 `m×m` matrix multiplication을 여러 번 반복하는 pseudo-inverse는 mobile GPU/NPU에서 kernel launch와 synchronization overhead가 될 수 있다.
+
+Vision patch에서는 segment mean보다 2D spatial pooling landmark가 더 자연스러울 수 있다. flatten 순서의 contiguous segment가 이미지에서 이상한 영역을 묶지 않도록 해야 한다. 고정 resolution과 고정 `m`에서는 static compilation이 쉽지만, 다양한 해상도에서는 landmark partition 규칙이 달라진다.
+
+## 최종 평가
+
+Nyströmformer는 attention matrix를 **token-landmark-core-landmark-token**의 세 단계로 분해해 global interaction을 낮은 비용으로 유지한다. segment mean과 iterative pseudo-inverse라는 구체적 구현 덕분에 개념이 실제 모델로 연결되었고, 긴 sequence에서 경쟁력 있는 memory/time을 보였다. 반면 landmark 대표성, pseudo-inverse 안정성, causal 적용이 주요 한계다. low-rank attention을 학습된 projection이 아닌 data-dependent landmark로 구성한다는 점에서 Linformer와 Performer 사이의 중요한 대안이다.

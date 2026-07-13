@@ -1,197 +1,224 @@
-# 34. An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale
+# 34. An Image is Worth 16×16 Words: Transformers for Image Recognition at Scale
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\34_Vision_Transformer_ViT.pdf`
-- 제목: An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale
+- 제목: **An Image is Worth 16×16 Words: Transformers for Image Recognition at Scale**
 - 저자: Alexey Dosovitskiy et al.
 - 발표: ICLR 2021
-- 주제: Vision Transformer의 patch sequence modeling
-- 핵심 키워드: Vision Transformer, image patches, class token, Transformer encoder
+- 핵심 키워드: Vision Transformer, patch embedding, class token, large-scale pretraining, transfer learning
 
 ## 한눈에 보는 요약
 
-ViT는 이미지를 fixed-size patch sequence로 바꾸고, 표준 Transformer encoder를 적용해 image classification을 수행한다.
-
-CNN의 강한 local inductive bias 없이도 대규모 pretraining data가 있으면 Transformer가 vision에서 강력하게 작동함을 보였다.
-
-이미지 patch를 NLP의 token처럼 다루는 관점이 핵심이다.
-
-## 연구 배경과 문제의식
-
-기존 vision model은 convolution을 기본 연산으로 사용했다. Convolution은 local receptive field와 weight sharing을 통해 이미지 구조에 강한 bias를 준다.
-
-이미지를 patch token sequence로 바꾸고 Transformer encoder로 image classification을 수행한다.
-
-Transformer는 이러한 bias가 약하지만, 모든 patch 사이 global interaction을 직접 모델링할 수 있다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Vision Transformer의 patch sequence modeling`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-ViT가 CNN과 근본적으로 다른 점은 이미지를 처음부터 patch sequence로 본다는 것이다. CNN은 작은 kernel을 sliding하면서 local feature를 쌓고, ViT는 patch token들 사이의 전역 상호작용을 Transformer encoder에 맡긴다.
+Vision Transformer(ViT)는 image를 fixed-size patch로 나누고 각 patch를 word token처럼 다뤄, 거의 수정하지 않은 표준 Transformer encoder로 classification한다.
 
 ```text
-CNN:
-image -> local convolution -> hierarchical feature map -> classifier
-
-ViT:
-image -> fixed-size patches -> linear patch embeddings
-     -> Transformer encoder -> class token classifier
+image H×W×C
+ -> N = HW/P² patches of P×P×C
+ -> linear patch embeddings
+ -> prepend [class] token + position embeddings
+ -> Transformer encoder
+ -> class-token representation -> classifier
 ```
 
-따라서 ViT는 convolution의 translation equivariance와 locality bias를 상당 부분 내려놓는다. 대신 충분한 pretraining data가 있으면 patch들 사이의 관계를 더 유연하게 학습할 수 있다.
+ViT의 핵심 주장은 vision-specific convolution 없이도 충분히 큰 data로 pretrain하면 Transformer가 강력한 image representation을 학습한다는 것이다. ImageNet 규모만으로 학습할 때는 비슷한 크기의 ResNet보다 몇 %p 낮지만, ImageNet-21k나 JFT-300M으로 pretrain하면 CNN baseline을 넘고 transfer efficiency가 좋아진다.
 
-## 핵심 개념 상세 해설
+JFT-300M pretrained ViT-H/14는 ImageNet `88.55%`, ImageNet-ReaL `90.72%`, CIFAR-100 `94.55%`, VTAB 평균 `77.63%`를 기록했다. 논문의 진짜 공헌은 단일 수치보다 **data scale이 inductive bias 부족을 상쇄한다**는 경험 법칙이다.
 
-### Vision attention의 핵심 수식
+![ViT의 patch tokenization과 Transformer encoder](https://github.com/user-attachments/assets/e64f227d-d434-4757-8ec4-69c7dfdc6a7b)
 
-ViT는 이미지를 patch sequence로 바꾼다. Patch 하나가 NLP의 token에 해당한다.
+## Image를 token sequence로 만들기
+
+Input image `x ∈ R^{H×W×C}`를 `P×P` patch로 나눈다. Patch 수는
 
 ```text
-image -> patches x_p^1, ..., x_p^N
-z_0 = [x_class; x_p^1 E; ...; x_p^N E] + E_pos
-z_l = TransformerEncoder(z_{l-1})
-classification = MLP(z_L^class)
+N = H W / P²
 ```
 
-Class token은 전체 image 정보를 모으는 learnable summary token처럼 동작한다.
-
-## Tensor shape와 자료구조
-
-Vision attention은 입력을 어떤 sequence로 보느냐에 따라 shape가 달라진다. CNN feature map은 `[B, C, H, W]`이고, ViT/DETR에서는 이를 token sequence로 펼친다.
+이다. 각 patch를 flatten하면
 
 ```text
-CNN feature: [B, C, H, W]
-spatial tokens: [B, H*W, C]
-image patches: [B, N, P*P*C]
-patch embeddings: [B, N, D]
-object queries: [B, num_queries, D]
+x_p ∈ R^{N × (P²C)}
 ```
 
-SE/CBAM은 token-token attention이 아니라 channel/spatial gate를 만든다. ViT/DETR은 patch 또는 object query를 Transformer token처럼 다룬다. 따라서 같은 `attention`이라는 말이지만 계산 대상이 상당히 다르다.
-
-## 수식과 계산 전개
-
-### Patchification
+이고 trainable projection `E ∈ R^{(P²C)×D}`로 hidden dimension `D`에 보낸다.
 
 ```text
-이미지 `x`를 `N = HW / P^2`개의 patch `x_p^1, ..., x_p^N`으로 나눈다.
+x_p E ∈ R^{N×D}
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Patchify + linear projection은 kernel size와 stride가 모두 P인 convolution으로 동일하게 구현할 수 있다. 차이는 이후 모든 patch가 global self-attention으로 상호작용한다는 점이다.
 
-### Patch embedding
+## Class token과 position embedding
+
+BERT의 `[CLS]`처럼 learned vector `x_class`를 sequence 앞에 붙인다.
 
 ```text
-입력 token은 `z_0 = [x_class; x_p^1 E; ...; x_p^N E] + E_pos`다.
+z_0 = [x_class ; x_p^1 E ; ... ; x_p^N E] + E_pos
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+`E_pos ∈ R^{(N+1)×D}`는 learned 1D absolute position embedding이다. 2D-aware embedding도 실험했지만 주 setting에서 큰 이득이 없어 단순 1D를 사용했다.
 
-### Class token
+최종 encoder layer의 class-token state `z_L^0`만 classification head에 넣는다. Patch token은 image evidence를 담고 class token이 self-attention을 통해 전체 정보를 모은다.
+
+## Transformer encoder
+
+Pre-LayerNorm block을 사용한다.
 
 ```text
-각 layer는 `z'_l = MSA(LN(z_{l-1})) + z_{l-1}`를 계산한다.
+z'_l = MSA(LN(z_{l-1})) + z_{l-1}
+z_l  = MLP(LN(z'_l)) + z'_l
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+MLP는 두 linear layer와 GELU로 구성된다. Encoder 내부는 NLP Transformer와 동일하며 2D convolution, pooling hierarchy가 없다.
 
-### Transformer encoder block
+Self-attention score는 patch 수에 대해 `[N,N]`이므로 complexity는
 
 ```text
-이후 `z_l = MLP(LN(z'_l)) + z'_l`로 FFN을 적용한다.
+O(N²D) = O((HW/P²)² D)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+이다. Patch size를 절반으로 줄이면 token 수가 4배, attention FLOPs는 약 16배가 된다.
 
-### Classification head
+## Model variants
+
+| 모델 | Layers | Hidden D | MLP | Heads | Params |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| ViT-Base | 12 | 768 | 3072 | 12 | 86M |
+| ViT-Large | 24 | 1024 | 4096 | 16 | 307M |
+| ViT-Huge | 32 | 1280 | 5120 | 16 | 632M |
+
+`ViT-L/16`은 Large model과 16×16 patch, `ViT-H/14`는 Huge와 14×14 patch를 뜻한다. Smaller patch는 더 세밀하지만 compute가 훨씬 크다.
+
+## Inductive bias
+
+CNN은 architecture에 다음 bias를 내장한다.
+
+- Locality: small convolution kernel
+- Translation equivariance: 같은 filter를 모든 위치에 공유
+- Hierarchy: stage별 resolution 감소와 receptive field 증가
+
+ViT에는 이 bias가 훨씬 적다.
+
+- Patch extraction 단계에만 local/2D structure가 명시된다.
+- Self-attention은 모든 patch pair를 동등하게 볼 수 있다.
+- Position embedding을 제외하면 spatial relation을 data에서 학습해야 한다.
+
+이 때문에 small/medium dataset에서는 sample efficiency가 낮지만, data가 충분하면 더 약한 bias가 오히려 flexible scaling을 가능하게 한다.
+
+## Higher-resolution fine-tuning
+
+Pretraining보다 높은 resolution로 fine-tune하면 patch size를 유지하므로 token 수가 늘어난다. Learned position embedding 길이가 맞지 않으므로 원 2D grid로 reshape해 bilinear interpolation하고 새 grid에 맞춘다. Class token position은 별도로 유지한다.
 
 ```text
-분류는 `y = MLP(LN(z_L^0))`로 class token 위치의 output을 사용한다.
+pretrain grid: 14×14
+fine-tune grid: 24×24
+E_pos patch part -> 2D interpolate
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+이 절차는 절대 position embedding을 variable resolution에 사용하는 실용적 방법이지만, training 범위를 크게 벗어난 aspect ratio나 resolution에서는 distortion이 생길 수 있다.
 
-## 전체 알고리즘 흐름
+## Hybrid model
 
-1. 이미지 또는 CNN feature를 patch, spatial token, channel descriptor, object query 입력으로 바꾼다.
-2. Attention 또는 gate score를 계산한다.
-3. Feature를 재가중하거나 token representation을 갱신한다.
-4. 분류, captioning, detection 등 task head로 output을 만든다.
+Raw patch 대신 ResNet feature map을 token sequence로 사용할 수 있다. CNN stage output의 각 spatial location을 1×1 patch처럼 projection해 Transformer에 넣는다.
 
-## 작은 예시로 보는 직관
+Hybrid는 convolution inductive bias와 Transformer global interaction을 결합한다. 작은 compute/data regime에서는 유리할 수 있지만 large-scale에서 pure ViT가 더 단순하고 잘 scale한다는 것이 논문의 경향이다.
 
-224x224 이미지를 16x16 patch로 나누면 한 축에 14개 patch가 생기고 전체 patch 수는 196개다. 여기에 class token 1개를 더해 Transformer에는 197개 token이 들어간다.
+## Pretraining dataset
+
+- ImageNet-1k: 1.3M image
+- ImageNet-21k: 약 14M image, 21K class
+- JFT-300M: 약 300M image, noisy multi-label
+
+같은 model을 data scale별로 pretrain해 transfer를 비교한다. 이 controlled scaling 실험이 논문의 중심이다.
+
+## Data 규모에 따른 결과
+
+ImageNet만으로 pretrain하면 ViT-L이 ViT-B보다 오히려 나쁘고 comparable ResNet에 뒤진다. ImageNet-21k에서는 격차가 줄고, JFT-300M에서 Large/Huge model의 capacity가 본격적으로 드러난다.
 
 ```text
-image size: 224 x 224
-patch size: 16 x 16
-num patches: (224 / 16) * (224 / 16) = 196
-sequence length with class token: 197
+small data  : convolutional bias가 sample efficiency에 유리
+large data  : ViT의 약한 bias와 scale이 더 높은 ceiling 제공
 ```
 
-Patch 크기를 32로 키우면 sequence는 짧아지지만 세밀한 공간 정보가 줄어든다. Patch 크기를 8로 줄이면 세밀해지지만 attention 비용이 크게 증가한다.
+따라서 “ViT가 CNN보다 항상 낫다”가 아니라 pretraining data와 regularization이 architecture 성능을 결정한다.
 
-## 계산 복잡도와 병목
+## State-of-the-art transfer 결과
 
-- 데이터가 작을 때는 CNN보다 inductive bias가 약해 성능이 떨어질 수 있다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+| 모델 | Pretrain | ImageNet | ImageNet-ReaL | CIFAR-100 | VTAB | TPUv3 core-days |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| ViT-H/14 | JFT | **88.55** | **90.72** | **94.55** | **77.63** | 2.5K |
+| ViT-L/16 | JFT | 87.76 | 90.54 | 93.90 | 76.28 | 0.68K |
+| ViT-L/16 | ImageNet-21k | 85.30 | 88.62 | 93.25 | 72.72 | **0.23K** |
+| BiT-L R152×4 | JFT | 87.54 | 90.54 | 93.51 | 76.29 | 9.9K |
+| Noisy Student | JFT unlabeled+IN | 88.4/88.5 | 90.55 | - | - | 12.3K |
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+ViT-L/16은 같은 JFT를 사용한 BiT-L보다 모든 listed task에서 높고 pretraining core-days는 약 14분의 1이다. ViT-H/14는 ImageNet 당시 최고 수준과 경쟁하면서 VTAB transfer도 강했다.
 
-## 구현할 때 확인할 부분
+## Training compute 관점
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+ViT는 동일 parameter 수에서 CNN보다 항상 싸다는 뜻은 아니다. Patch 수와 model 크기에 따라 FLOPs가 크다. 논문의 효율 주장은 대규모 pretraining에서 **목표 transfer accuracy에 도달하는 compute**가 BiT ResNet보다 낮다는 empirical scaling curve에 근거한다.
 
-## 자주 헷갈리는 지점
+Batch 4096, Adam, high weight decay 0.1, warmup/linear decay 등 large-scale recipe가 사용된다. Fine-tuning은 SGD momentum과 높은 resolution을 사용한다. Architecture 비교와 training recipe를 분리해 읽어야 한다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Vision attention이 항상 CNN보다 낫다는 뜻은 아니다. 데이터 크기와 local inductive bias가 큰 영향을 준다.
-- Channel attention, spatial attention, token self-attention은 모두 attention이라고 불리지만 계산 대상이 다르다.
+## Learned representation 분석
 
-## 관련 방법과 비교
+### Patch embedding filters
 
-| 모델 | 기본 단위 | Inductive bias | 장점 | 약점 |
-| --- | --- | --- | --- | --- |
-| CNN | pixel/local patch convolution | locality, translation equivariance | 적은 데이터에서도 강함 | 장거리 관계는 깊은 layer 필요 |
-| ViT | fixed-size image patch token | 상대적으로 약함 | 전역 patch 관계를 유연하게 학습 | 대규모 pretraining 필요 |
-| Hybrid ViT | CNN feature + Transformer | 중간 | local feature와 global modeling 결합 | 구조가 복잡 |
+첫 projection weight를 시각화하면 edge/color blob 같은 low-level basis가 나타나 CNN 초기 filter와 유사하다.
 
-## 실험 결과를 읽는 관점
+### Position embedding
 
-Vision 논문에서는 attention이 CNN 대비 어떤 inductive bias를 잃고 어떤 global modeling 능력을 얻는지 봐야 한다.
+Learned position embedding cosine similarity를 보면 같은 row/column 또는 가까운 2D 위치가 유사해진다. 1D table로 시작해도 data에서 2D image topology를 회복한다.
 
-ImageNet classification, detection, segmentation, video understanding 결과를 볼 때는 input resolution, pretraining data scale, backbone 차이를 함께 확인해야 공정한 비교가 된다.
+### Attention distance
+
+초기 layer 일부 head는 local neighbor를, 다른 head는 image 전체를 본다. 깊은 layer에서는 attention distance가 전반적으로 커진다. CNN의 고정 local-to-global hierarchy와 달리 ViT는 layer 1부터 global head를 가질 수 있다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- Image를 patch token으로 바꾸는 최소 수정만으로 표준 Transformer를 vision에 적용했다.
+- CNN 없이도 large-scale pretraining에서 SOTA급 transfer를 달성했다.
+- Dataset scale과 inductive bias의 관계를 체계적으로 분석했다.
+- Simple architecture가 accelerator에서 효율적으로 scale함을 보였다.
+- 이후 vision backbone 연구의 중심을 convolution에서 Transformer로 이동시켰다.
 
 ## 한계와 비판적 관점
 
-- 데이터가 작을 때는 CNN보다 inductive bias가 약해 성능이 떨어질 수 있다.
-- Patch 크기가 크면 세밀한 local detail을 잃고, 작으면 sequence length가 증가해 attention 비용이 커진다.
-- 고해상도 dense prediction에는 hierarchical 구조나 local attention 변형이 필요하다.
+### 1. Data hunger
 
-## 후속 논문과의 연결점
+ImageNet 규모에서는 strong CNN보다 낮다. JFT-300M 같은 비공개 대규모 data 의존은 재현성과 접근성의 한계다.
 
-Swin Transformer, DeiT, MAE, DINO, DETR 계열 등 vision Transformer 연구의 출발점이다.
+### 2. Quadratic token attention
 
-## 개인 학습/연구 메모
+고해상도 dense prediction에서는 patch 수가 커져 full attention이 비싸다. 원 ViT는 hierarchical/local attention이 없다.
 
-ViT는 `이미지를 patch token 문장으로 바꾼 뒤 Transformer encoder를 그대로 쓴다`는 관점이 핵심이다.
+### 3. Patch boundary와 fine detail
 
+큰 patch는 내부 spatial detail을 한 vector로 압축한다. Small object와 pixel-level task에는 불리할 수 있다.
+
+### 4. Absolute position interpolation
+
+Resolution/aspect ratio 변화에 interpolation이 필요하고 training grid를 크게 벗어난 generalization이 보장되지 않는다.
+
+### 5. Classification 중심
+
+원 논문은 주로 image-level transfer다. Detection/segmentation에는 feature pyramid와 multi-scale adaptation이 추가로 필요하다.
+
+## 구현 체크리스트
+
+- `N=HW/P²`이고 H,W가 patch size로 정확히 나누어지는가?
+- Patch flatten channel order와 projection weight가 일치하는가?
+- Class token이 position embedding과 함께 sequence 첫 위치에 들어가는가?
+- Pre-LN residual 순서가 논문과 맞는가?
+- Resolution 변경 시 class token을 제외한 patch position만 2D interpolation하는가?
+- Patch size별 attention memory와 FLOPs를 실제 profiler로 확인했는가?
+
+## 온디바이스 관점
+
+ViT는 convolution hierarchy가 없어 patch token 수가 곧 memory/compute를 결정한다. `P=16/32`는 token을 줄여 mobile deployment에 유리하지만 small object detail을 잃는다. Dense GEMM과 LayerNorm은 NPU에 맞을 수 있으나 softmax와 dynamic resolution 지원이 중요하다.
+
+온디바이스에서는 DeiT-style distillation, smaller patch/token pruning, window attention, hybrid stem, quantization을 함께 고려해야 한다. 모델 parameter뿐 아니라 attention activation peak를 측정해야 한다.
+
+## 최종 평가
+
+ViT는 image classification에 필요한 vision-specific architecture를 극단적으로 줄이고, patch token과 표준 Transformer만으로 대규모 data의 힘을 보여줬다. Small data에서는 CNN bias가 유리하지만 data와 compute가 커질수록 ViT가 더 효율적으로 scale하고 transfer한다. 이후 vision Transformer 전체 계보를 만든 기준점이며, 동시에 data 의존성과 quadratic high-resolution cost라는 명확한 한계를 남겼다.

@@ -2,212 +2,223 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\24_FlashAttention_2.pdf`
-- 제목: FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning
+- 제목: **FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning**
 - 저자: Tri Dao
 - 발표: 2023
-- 주제: FlashAttention-2의 병렬화와 work partitioning
-- 핵심 키워드: FlashAttention-2, GPU parallelism, work partitioning, exact attention
+- 핵심 키워드: exact attention, GPU occupancy, work partitioning, warp communication, online softmax
 
 ## 한눈에 보는 요약
 
-FlashAttention-2는 FlashAttention의 exact IO-aware attention을 유지하면서 GPU 병렬성과 work partitioning을 개선한다.
+FlashAttention-2(FA2)는 FlashAttention의 IO-aware tiling과 정확한 softmax를 유지하면서 GPU 작업 배치를 다시 설계한다. 1세대가 `[N,N]` HBM materialization을 없애 memory 병목을 해결했다면, 2세대는 그 kernel이 A100 peak의 25~40%만 사용하던 이유를 분석해 다음 세 부분을 개선한다.
 
-Non-matmul FLOPs를 줄이고, sequence length 방향 병렬화를 더 잘 활용한다.
+1. online softmax를 재배열해 느린 non-matmul FP32 연산을 줄인다.
+2. batch와 head뿐 아니라 sequence의 query block 방향으로 thread block을 병렬화한다.
+3. 한 thread block 안에서 warp가 Q block을 나눠 갖게 해 shared-memory communication을 줄인다.
 
-특히 긴 sequence, 작은 batch/head 조건에서 GPU occupancy를 높이는 것이 핵심이다.
+출력은 표준 attention과 동일하고 memory도 sequence 길이에 선형이다. A100에서 FlashAttention 대비 약 `2×`, theoretical peak의 `50~73%`를 달성했으며 GPT-style model 학습에서 GPU당 최대 `225 TFLOPs/s`, 약 72% model FLOPs utilization을 보고한다.
 
-## 연구 배경과 문제의식
+![FlashAttention-2의 parallelism과 warp work partitioning](https://github.com/user-attachments/assets/dd68c453-b6ee-48a3-a954-1cac7630552d)
 
-FlashAttention은 memory IO를 줄였지만, 모든 shape에서 GPU compute를 완전히 활용하지는 못했다.
+## 왜 FlashAttention-1도 충분히 빠르지 않았는가
 
-FlashAttention의 exact algorithm을 더 나은 GPU 병렬 작업 분할로 빠르게 만든다.
+FA1은 HBM IO를 크게 줄였지만 fused kernel 내부에서 다음 병목이 남았다.
 
-Attention kernel은 matmul과 softmax, rescaling, masking 같은 non-matmul operation이 섞여 있다.
+- batch×head 수가 GPU SM 수보다 작으면 thread block이 부족해 occupancy가 낮다.
+- warp 사이에서 partial output을 합치느라 shared memory read/write가 많다.
+- softmax의 max, exp, rescale 같은 FP32 scalar/vector operation이 Tensor Core GEMM보다 훨씬 느리다.
 
-## 이 논문에서 먼저 잡아야 할 이론적 축
+A100의 theoretical throughput 예를 들면 FP16/BF16 matmul은 약 `312 TFLOPs/s`, FP32 non-matmul은 약 `19.5 TFLOPs/s`다. 같은 FLOP 하나라도 후자가 약 16배 비싼 셈이다. 따라서 총 FLOP 중 작은 비율인 softmax/rescale가 전체 kernel을 막을 수 있다.
 
-이 논문의 중심축은 `FlashAttention-2의 병렬화와 work partitioning`이다.
+## 기본 attention과 online softmax
 
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-FlashAttention 계열은 Linformer나 Performer처럼 attention을 근사하지 않는다. 표준 attention과 같은 수학적 결과를 내되, 중간 matrix를 저장하지 않는 실행 알고리즘을 설계한다.
+FA2도 다음 exact output을 계산한다.
 
 ```text
-approximate efficient attention:
-change attention math to reduce pairwise interactions
-
-FlashAttention:
-keep exact softmax attention
-change memory access pattern and tiling
+S = Q K^T / sqrt(d)
+P = softmax(S)
+O = P V
 ```
 
-따라서 FlashAttention의 핵심 이론은 모델링 이론이라기보다 IO complexity와 online softmax 알고리즘이다.
-
-## 핵심 개념 상세 해설
-
-### Online softmax
-
-FlashAttention의 핵심은 softmax를 tile 단위로 나누어도 정확히 계산할 수 있다는 점이다. 각 row에 대해 현재까지 본 score의 maximum `m`과 exp sum `l`을 유지한다.
+Q/K/V tile을 SRAM에 올리고 row별 running maximum `m`과 sum `l`을 유지한다. 새 key block `j`에 대해
 
 ```text
-m_new = max(m_old, max(S_tile))
-l_new = exp(m_old - m_new) * l_old
-      + sum(exp(S_tile - m_new))
-
-acc_new = exp(m_old - m_new) * acc_old
-        + exp(S_tile - m_new) @ V_tile
-output = acc_final / l_final
+m_new = max(m_old, rowmax(S_ij))
+l_new = exp(m_old-m_new) l_old
+        + rowsum(exp(S_ij-m_new))
 ```
 
-이 update를 쓰면 tile을 여러 번 나누어 보더라도 전체 row에 softmax를 한 것과 같은 결과가 나온다.
+로 exact softmax를 합친다는 원리는 같다.
 
-### IO-aware attention
+## 개선 1: Non-matmul FLOPs 줄이기
 
-표준 구현은 `S`와 `P`를 큰 tensor로 HBM에 저장한다. FlashAttention은 Q/K/V tile을 SRAM에 올려 계산하고, 중간 attention probability를 저장하지 않는다.
+FA1은 매 block마다 normalized output `O`를 유지하면서 기존 accumulator를 `l`과 max 변화에 따라 여러 번 rescale한다. FA2는 unnormalized output accumulator를 더 오래 유지하고 normalization을 뒤로 미뤄 rescale 연산을 줄인다.
 
-FlashAttention-2는 work partitioning을 개선하고, FlashAttention-3는 Hopper GPU의 asynchronous pipeline과 low precision을 활용한다. 하지만 세 논문의 공통점은 attention 수학을 바꾸지 않는다는 것이다.
-
-## Tensor shape와 자료구조
-
-FlashAttention 계열은 tensor shape를 줄이는 것이 아니라 중간 행렬을 저장하지 않는다. 논리적으로는 `[B, h, n, n]` attention을 계산하지만, 실제 메모리에 전체 matrix를 materialize하지 않는다.
+개념적으로는
 
 ```text
-logical computation:
-S = QK^T: [B, h, n, n]
-P = softmax(S): [B, h, n, n]
-O = P V: [B, h, n, d_v]
+O_tilde_new = exp(m_old-m_new) O_tilde_old
+              + exp(S_ij-m_new) V_j
 
-FlashAttention execution:
-Q block: [B_q, d]
-K/V block: [B_k, d]
-running max m: [B_q]
-running normalizer l: [B_q]
-running output acc: [B_q, d_v]
+O = O_tilde_final / l_final
 ```
 
-여기서 핵심 tensor는 `m`, `l`, `acc`다. 이 세 값을 tile마다 업데이트하면 전체 softmax matrix 없이도 정확한 output을 만들 수 있다.
+형태다. Matmul FLOPs는 거의 그대로지만 FP32 multiply/divide와 memory movement가 줄어든다. 이 변경은 approximation이 아니라 algebraic 재배열이다.
 
-## 수식과 계산 전개
+## 개선 2: Sequence 방향 thread-block parallelism
 
-### FlashAttention base algorithm
+### FA1의 병렬 단위
+
+주로 `(batch, head)`마다 하나의 thread block을 배치한다. Batch가 작거나 head가 적으면 활성 block 수가 GPU SM 수보다 적어 많은 SM이 빈다.
 
 ```text
-기본 online softmax 통계 `m_i`, `l_i`를 유지한다는 점은 FlashAttention과 같다.
+parallel blocks ≈ batch × heads
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+### FA2의 병렬 단위
 
-### Non-matmul FLOPs 감소
+각 head의 query sequence도 여러 row block으로 나눠 독립 thread block에 할당한다.
 
 ```text
-Tile 순회와 output 누적 과정에서 불필요한 rescaling 횟수를 줄인다.
+parallel blocks ≈ batch × heads × ceil(N / B_r)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+각 Q block의 output row는 서로 독립이므로 forward에서 synchronization 없이 병렬화할 수 있다. 특히 long sequence, small batch, few heads setting에서 occupancy가 크게 높아진다.
 
-### Sequence parallelism
+Backward에서도 sequence 축 병렬화를 강화한다. `dQ`와 `dK,dV`의 write conflict를 피하도록 work를 분배하고 필요한 reduction을 schedule한다.
+
+## 개선 3: Thread block 내부 warp partitioning
+
+FA1은 warp들이 K/V column 방향으로 일을 나누고 각자 partial output을 계산한 뒤 shared memory에서 합치는 `split-K`에 가까운 구성을 사용했다. Partial output communication이 비싸다.
+
+FA2는 warp들이 Q row를 나눠 갖는다.
 
 ```text
-Backward에서는 query block과 key/value block 사이의 gradient 계산을 더 균형 있게 분할한다.
+all warps share K_j, V_j tile
+warp 0 owns subset of Q_i rows and O_i rows
+warp 1 owns another subset
+...
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+각 warp가 자신의 output row를 끝까지 유지하므로 warp 간 output reduction이 사라진다. Q tile도 가능한 한 register에 유지하고 K/V만 shared memory를 통해 공유한다. 이 변경이 shared-memory read/write와 synchronization을 줄인다.
 
-### Backward work partitioning
+## Causal attention 최적화
+
+Query block row index와 key block column index를 비교하면 세 영역이 생긴다.
 
 ```text
-Head dimension, sequence length, batch size에 따라 더 많은 CTAs가 동시에 작업하도록 한다.
+key block entirely in future -> skip tile GEMM
+diagonal boundary            -> apply causal mask
+key block entirely in past   -> no element mask
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+미래 절반 block을 아예 계산하지 않으므로 causal attention은 non-causal보다 이론 FLOPs가 절반에 가깝다. FA2는 diagonal 한 block에만 fine-grained mask를 적용하고 나머지를 skip/normal GEMM으로 처리해 약 `1.7~1.8×` speedup을 얻는다.
 
-### Exact output 유지
+## Forward algorithm의 shape
 
 ```text
-수학적 output은 여전히 `softmax(QK^T / sqrt(d))V`와 동일하다.
+Q_i          : [B_r,d]
+K_j,V_j      : [B_c,d]
+S_ij         : [B_r,B_c]
+m_i,l_i      : [B_r]
+O_tilde_i    : [B_r,d]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+FA2에서는 Q block 하나를 thread block이 담당해 모든 K/V block을 순회한다. 이는 FA1의 loop order와 work ownership을 조정한 것으로, output row가 하나의 block에 귀속되어 parallel write conflict를 피한다.
 
-## 전체 알고리즘 흐름
+## 정확성·memory 복잡도
 
-1. Q/K/V를 tile 단위로 나눈다.
-2. Q tile 하나에 대해 K/V tile들을 순회한다.
-3. 각 tile score를 계산하고 running max와 normalizer를 update한다.
-4. Value contribution을 output accumulator에 더한다.
-5. 모든 tile을 본 뒤 accumulator를 normalizer로 나누어 output을 쓴다.
+- Online softmax recurrence는 exact하다.
+- 표준 scaled dot-product attention과 수치 오차 범위에서 같은 출력을 낸다.
+- `[N,N]` score/probability는 HBM에 저장하지 않는다.
+- 추가 memory는 row logsumexp와 output 등 `O(N)`이다.
+- FLOPs는 dense attention과 같은 `O(N²d)`다.
 
-## 작은 예시로 보는 직관
+즉 FA2의 성능 향상은 model architecture나 근사 품질과 관계없이 kernel scheduling에서 나온다.
 
-길이 8192 attention에서 `8192 x 8192` probability matrix를 저장하면 매우 큰 메모리가 필요하다. FlashAttention은 한 번에 예를 들어 128개 query와 128개 key tile만 SRAM에서 처리한다.
+## 성능 결과: Attention kernel
 
-```text
-process Q[0:128] with K[0:128], K[128:256], ...
-keep running max/sum/output for Q[0:128]
-never store full P[8192, 8192]
-```
+Sequence length 512~16K, head dimension 64/128, causal/non-causal 조건에서 A100 성능을 측정했다. FA2는 최대 약 `230 TFLOPs/s`, A100 FP16/BF16 theoretical peak의 `73%`에 도달한다. FA1 대비 대체로 약 `2×` 빠르며, batch×head가 작고 sequence가 길어 sequence parallelism이 필요한 구간에서 이득이 크다.
 
-결과는 full softmax attention과 같지만, 중간 matrix를 저장하지 않는다.
+Head dimension 128은 register와 SRAM pressure가 커 tile 선택이 제한된다. Causal mask 여부에 따라서도 effective FLOP 계산과 speed가 달라진다. 하나의 숫자보다 shape별 kernel curve를 봐야 한다.
 
-## 계산 복잡도와 병목
+## End-to-end GPT training
 
-- 성능 이득은 GPU 아키텍처와 tensor shape에 의존한다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+8×A100 환경의 논문 표를 요약하면 다음과 같다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+| 모델 | Context | Baseline | FlashAttention | FlashAttention-2 |
+| --- | ---: | ---: | ---: | ---: |
+| GPT3-1.3B | 2K | 142 | 189 | **196 TFLOPs/s** |
+| GPT3-1.3B | 8K | 72 | 170 | **220 TFLOPs/s** |
+| GPT3-2.7B | 2K | 149 | 189 | **205 TFLOPs/s** |
+| GPT3-2.7B | 8K | 80 | 175 | **225 TFLOPs/s** |
 
-## 구현할 때 확인할 부분
+8K context에서 baseline 대비 최대 약 `2.8×`, FA1 대비 약 `1.3×` end-to-end speedup이다. Kernel 단독 `2×`가 전체 모델에서 `1.3×`가 되는 이유는 MLP, communication, optimizer 등 attention 밖의 시간이 남기 때문이다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+최대 `225 TFLOPs/s/GPU`는 저자 정의에서 약 `72% model FLOPs utilization`에 해당한다.
 
-## 자주 헷갈리는 지점
+## H100 초기 결과와 논문의 경계
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- FlashAttention은 sparse attention이나 linear attention이 아니다. Exact attention을 더 효율적으로 계산하는 kernel이다.
-- 메모리를 덜 쓴다고 해서 이론적 `O(n^2)` pairwise score 성격이 사라지는 것은 아니다.
+FA2를 H100에서 기존 instruction 방식으로 실행했을 때 최대 약 `335 TFLOPs/s`를 보고한다. 논문은 Hopper의 TMA와 4세대 Tensor Core를 직접 활용하면 추가 `1.5~2×` 가능하다고 예상했으며, 이것이 FlashAttention-3의 출발점이 된다.
 
-## 관련 방법과 비교
-
-| 방법 | 수학적 attention | 줄이는 병목 | 품질 영향 |
-| --- | --- | --- | --- |
-| 표준 attention | Exact | `S`, `P` materialization으로 HBM IO 큼 | 기준 |
-| Linear/low-rank attention | 근사 또는 변형 | `n x n` pairwise 계산 | 근사 오차 가능 |
-| FlashAttention | Exact | HBM read/write와 peak memory | 동일 precision에서 동일 결과 |
-| FlashAttention-2/3 | Exact 또는 저정밀 경로 | 병렬화, pipeline, hardware utilization | 저정밀 사용 시 검증 필요 |
-
-## 실험 결과를 읽는 관점
-
-FlashAttention 계열은 모델 품질 실험보다 kernel throughput, memory footprint, sequence length별 속도 비교가 중요하다. Exact attention이므로 같은 precision 조건에서는 모델 output이 표준 attention과 같아야 한다.
-
-따라서 실험을 볼 때는 `얼마나 빠른가`, `얼마나 긴 sequence를 메모리에 올릴 수 있는가`, `backward까지 포함했는가`, `어떤 GPU에서 측정했는가`를 확인해야 한다.
+따라서 FA2는 hardware-independent 최종 algorithm이라기보다 A100/Ampere의 execution model에 맞춘 scheduling 개선이다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- FA1의 정확성과 linear activation memory를 유지했다.
+- FLOP 종류별 hardware throughput 차이를 고려해 non-matmul 연산을 줄였다.
+- sequence block 병렬화로 small batch/few-head의 occupancy를 개선했다.
+- warp별 Q ownership으로 shared-memory communication을 줄였다.
+- attention kernel뿐 아니라 GPT training에서 높은 model utilization을 보였다.
 
 ## 한계와 비판적 관점
 
-- 성능 이득은 GPU 아키텍처와 tensor shape에 의존한다.
-- Low-level kernel 최적화라 구현 유지보수가 쉽지 않다.
-- Quadratic attention의 이론적 연산량 자체는 줄이지 않는다.
+### 1. Dense quadratic compute
 
-## 후속 논문과의 연결점
+FA1과 마찬가지로 memory는 줄지만 `N²d` GEMM은 남는다. context가 극단적으로 길어지면 compute 한계가 지배한다.
 
-FlashAttention-3는 Hopper GPU의 asynchronous execution과 FP8 Tensor Core를 더 적극적으로 활용한다.
+### 2. GPU architecture 특화
 
-## 개인 학습/연구 메모
+Warp, shared memory, Tensor Core throughput 비율에 맞춘 설계다. 다른 GPU 세대나 NPU에서는 optimal work partitioning이 다르다.
 
-FlashAttention-2는 `같은 exact attention을 더 많은 GPU core가 놀지 않게 나눠 계산한다`로 이해하면 된다.
+### 3. Shape별 tuning
 
+Head dimension, sequence length, causal 여부에 따라 tile과 warp 수를 선택해야 한다. 범용 kernel 하나로 peak를 내기 어렵다.
+
+### 4. Register pressure와 occupancy trade-off
+
+Q/O를 warp register에 오래 유지하면 communication은 줄지만 register 사용량이 늘어 resident block 수를 제한할 수 있다.
+
+### 5. End-to-end 이득의 상한
+
+Attention이 전체 시간의 일부일 때 kernel speedup은 Amdahl's law에 제한된다. Distributed communication과 MLP가 병목이면 FA2 추가 개선 폭이 작다.
+
+## FA1과 FA2 비교
+
+| 축 | FlashAttention | FlashAttention-2 |
+| --- | --- | --- |
+| 핵심 문제 | HBM IO와 N² activation | occupancy와 on-chip work partition |
+| 정확성 | exact | exact |
+| 추가 memory | `O(N)` | `O(N)` |
+| 병렬 단위 | 주로 batch×head | batch×head×Q blocks |
+| Warp work | K/V 방향 분할·reduction | Q row 소유·K/V 공유 |
+| 성능 | A100 peak 25~40% | 50~73% |
+
+## 구현 체크리스트
+
+- normalized output과 unnormalized accumulator 수식이 섞이지 않았는가?
+- final `O/l` normalization이 정확한가?
+- Q block별 thread block이 같은 output을 중복 write하지 않는가?
+- K/V shared load와 Q/O register ownership이 warp layout과 맞는가?
+- causal future tile이 실제 GEMM 전에 skip되는가?
+- head dimension별 register spill과 occupancy를 profiler로 확인했는가?
+- kernel TFLOPs와 실제 tokens/s를 구분해 보고했는가?
+
+## 온디바이스 관점
+
+FA2의 직접 CUDA 구현은 mobile NPU로 옮길 수 없지만 원칙은 적용된다. Local scratchpad에 어떤 tile을 남기고, output row를 어떤 processing element가 소유하며, expensive scalar operation을 얼마나 줄이는지가 중요하다. 정적 sequence shape에서는 compile-time tile scheduling이 가능하다.
+
+다만 edge accelerator는 exp/div throughput, SRAM 크기, thread/warp model이 다르다. GPU용 work partition을 복사하기보다 device의 matrix engine과 vector unit을 동시에 사용하도록 algorithm을 다시 배치해야 한다.
+
+## 최종 평가
+
+FlashAttention-2는 새로운 attention 수식을 제안하지 않는다. 대신 exact IO-aware attention을 **GPU에서 실제 peak에 가깝게 실행하려면 누가 어떤 output을 소유하고, 어느 축을 병렬화하며, 어떤 FLOP를 줄여야 하는가**를 해결한다. FA1이 memory hierarchy를 attention algorithm의 일부로 만들었다면, FA2는 occupancy와 warp communication까지 algorithm 설계에 포함시켰다. Long-context training의 사실상 표준 kernel로 발전한 이유를 잘 보여주는 시스템 논문이다.

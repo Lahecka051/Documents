@@ -2,202 +2,582 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\13_YaRN_Context_Window_Extension.pdf`
-- 제목: YaRN: Efficient Context Window Extension of Large Language Models
-- 저자: Bowen Peng et al.
-- 발표: 2023
-- 주제: YaRN의 RoPE 주파수별 context 확장
-- 핵심 키워드: YaRN, RoPE scaling, context extension, attention temperature
+- 제목: **YaRN: Efficient Context Window Extension of Large Language Models**
+- 저자: Bowen Peng, Jeffrey Quesnelle, Honglu Fan, Enrico Shippole
+- 최초 공개: 2023년
+- 현재 제공된 PDF: arXiv v3, 2026-02-06
+- 원본 PDF: [13_YaRN_Context_Window_Extension.pdf](./13_YaRN_Context_Window_Extension.pdf)
+- 핵심 키워드: `YaRN`, NTK-by-parts, RoPE scaling, attention temperature, Dynamic Scaling
 
 ## 한눈에 보는 요약
 
-YaRN은 RoPE 기반 LLM의 context window를 효율적으로 확장하기 위한 주파수별 scaling 방법이다.
+Position Interpolation(PI)은 RoPE의 모든 주파수를 같은 비율로 압축한다. 안정적이지만 확장 배율 $s$가 커질수록 local position을 구분하는 고주파 성분까지 약해진다.
 
-단순 Position Interpolation이 모든 RoPE 차원을 같은 비율로 압축하는 것과 달리, YaRN은 차원별로 interpolation과 extrapolation을 혼합한다.
+YaRN(Yet another RoPE extensioN method)은 RoPE dimension을 wavelength에 따라 세 구간으로 나눈다.
 
-또한 긴 context에서 attention score scale이 달라지는 문제를 temperature 조정으로 보완한다.
+```text
+high frequency   -> interpolation하지 않고 local resolution 보존
+transition band  -> extrapolation과 interpolation을 연속적으로 혼합
+low frequency    -> 목표 길이에 맞춰 full interpolation
+```
+
+그리고 긴 context에서 달라진 attention entropy를 보정하기 위해 softmax 전 logit temperature를 조절한다.
+
+$$
+\operatorname{softmax}\left(
+\frac{q_m^\top k_n}{t\sqrt{d_h}}
+\right).
+$$
+
+논문에서 말하는 YaRN은 정확히 다음 두 요소의 결합이다.
+
+$$
+\boxed{
+\text{YaRN}
+=
+\text{NTK-by-parts frequency scaling}
++
+\text{attention temperature scaling}
+}
+$$
+
+LLaMA/Llama 2에서는 다음 경험식을 권장한다.
+
+$$
+\sqrt{\frac1t}=0.1\ln(s)+1.
+$$
+
+논문은 Llama 2의 4k context를 64k/128k로 확장하면서, PI보다 약 2.5배 적은 steps와 10배 적은 token으로 경쟁력 있는 성능을 얻었다. 또한 64k 길이 data로 학습한 128k 모델이 128k까지 extrapolate하는 결과를 보였다.
+
+![YaRN의 RoPE 주파수 band와 attention temperature 보정](https://github.com/user-attachments/assets/b0b12130-5e6b-4fbf-987e-cc1b89888cc4)
 
 ## 연구 배경과 문제의식
 
-RoPE의 각 차원 pair는 서로 다른 주파수를 갖는다. 고주파 차원은 짧은 거리 구분에 민감하고, 저주파 차원은 긴 거리 패턴에 관여한다.
+### PI가 해결한 것과 남긴 것
 
-모든 RoPE 차원을 같은 비율로 압축하지 않고 주파수별 ramp와 temperature 보정으로 긴 context 적응을 안정화한다.
+PI는 original context $L$을 target $L'=sL$로 늘릴 때 position을 $m/s$로 줄인다.
 
-모든 차원을 같은 방식으로 scaling하면 짧은 거리 성능이나 긴 거리 성능 중 하나가 손상될 수 있다.
+$$
+m\theta_d
+\quad\longrightarrow\quad
+\frac{m}{s}\theta_d.
+$$
 
-## 이 논문에서 먼저 잡아야 할 이론적 축
+Direct extrapolation의 out-of-distribution phase를 피한다는 점은 강력하다. 하지만 모든 $\theta_d$를 $1/s$로 줄이면 high-frequency 성분도 사라진다. 확장 배율이 커질수록 인접 token의 phase 차이가 너무 작아져 모델이 local order를 구분하기 어려워진다.
 
-이 논문의 중심축은 `YaRN의 RoPE 주파수별 context 확장`이다.
+논문은 PI fine-tuning이 대략 $s\approx8$을 넘어가면 품질이 악화되는 사례를 문제로 든다.
 
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
+### RoPE dimension은 서로 같은 정보를 담지 않는다
 
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
+RoPE의 각 complex dimension은 서로 다른 frequency를 갖는다.
 
-## 기존 방식과 무엇이 다른가
+$$
+\theta_d=b^{-2d/|D|},
+\qquad b=10000.
+$$
 
-기본 Transformer는 위치 정보를 입력 embedding에 더한 뒤 attention을 한다. 위치 표현 논문들은 이 위치 정보가 들어가는 위치를 바꾼다.
+이에 대응하는 wavelength는 다음과 같다.
+
+$$
+\lambda_d=\frac{2\pi}{\theta_d}
+=
+2\pi b^{2d/|D|}.
+$$
+
+작은 wavelength는 original context 안에서 여러 번 회전한다. 이 차원은 동일 phase가 반복되므로 주로 **relative/local position**을 표현한다. 큰 wavelength는 original context 안에서 한 바퀴도 돌지 않을 수 있다. 이 경우 각 position의 phase가 사실상 고유해 **absolute-like position**으로 사용될 수 있다.
+
+따라서 모든 dimension에 같은 interpolation을 적용하는 것은 각 차원의 역할 차이를 무시한다.
+
+### Attention entropy도 바뀐다
+
+Context가 길어지면 softmax에서 경쟁하는 key 수가 늘고, RoPE phase scaling으로 logit 분포도 달라진다. Position frequency만 조정해도 긴 context의 attention concentration이 original model과 같다는 보장은 없다.
+
+YaRN은 이 문제를 별도의 attention temperature로 보정한다.
+
+## RoPE와 통일된 표기
+
+Hidden dimension 집합의 크기를 $|D|$, token position을 $m$이라 하자. RoPE는 complex coordinate에서 다음과 같다.
+
+$$
+f_W(x_m,m,\theta)
+=
+e^{im\theta}Wx_m.
+$$
+
+논문은 다양한 scaling 방법을 다음 두 함수로 통일한다.
+
+$$
+f_W'(x_m,m,\theta)
+=
+f_W(x_m,g(m),h(\theta)).
+$$
+
+- $g(m)$: position index를 바꾸는 함수
+- $h(\theta)$: frequency를 바꾸는 함수
+
+Position을 $m/s$로 줄이는 것과 모든 frequency를 $\theta/s$로 줄이는 것은 angle $m\theta$ 관점에서 동등하다.
+
+## YaRN으로 이어지는 방법들
+
+### 1. Position Interpolation
+
+PI는 모든 frequency를 균일하게 줄인다.
+
+$$
+h_{PI}(\theta_d)=\frac{\theta_d}{s}.
+$$
+
+장점은 모든 target phase를 pretrained 범위 안으로 넣는 안정성이다. 단점은 local high-frequency 정보 손실이다.
+
+### 2. NTK-aware interpolation
+
+NTK-aware 방법은 RoPE base $b$를 바꿔 interpolation pressure를 dimension 전체에 비균일하게 분배한다.
+
+$$
+b'
+=
+b\cdot s^{|D|/(|D|-2)}.
+$$
+
+새 frequency는 다음과 같다.
+
+$$
+h_{NTK}(\theta_d)
+=
+b'^{-2d/|D|}.
+$$
+
+최고 frequency는 거의 유지하고 최저 frequency는 PI에 가깝게 줄인다. Fine-tuning 없이 PI보다 잘 작동할 수 있지만 일부 dimension이 원래 범위 밖으로 extrapolate하고, 원하는 실제 extension에 맞는 base를 경험적으로 찾기 어렵다.
+
+### 3. NTK-by-parts interpolation
+
+YaRN의 핵심 frequency scaling이다. 먼저 original context $L$에서 특정 dimension이 몇 번 회전하는지 계산한다.
+
+$$
+r(d)
+=
+\frac{L}{\lambda_d}.
+$$
+
+$r(d)$가 크면 wavelength가 짧아 학습 구간 안에서 여러 번 회전한 고주파다. $r(d)$가 작으면 wavelength가 길어 한 번도 충분히 회전하지 않은 저주파다.
+
+두 경계 $\alpha$, $\beta$를 두고 ramp를 정의한다.
+
+$$
+\gamma(r)=
+\begin{cases}
+0,&r<\alpha\\
+1,&r>\beta\\
+\dfrac{r-\alpha}{\beta-\alpha},&\text{otherwise}.
+\end{cases}
+$$
+
+최종 frequency는 다음과 같다.
+
+$$
+h(\theta_d)
+=
+\left(1-\gamma(r(d))\right)\frac{\theta_d}{s}
++\gamma(r(d))\theta_d.
+$$
+
+세 구간의 의미는 다음과 같다.
+
+| 조건 | 해석 | 적용 |
+| --- | --- | --- |
+| $r(d)<\alpha$ | original context에서 회전이 매우 적음 | full PI, $\theta_d/s$ |
+| $\alpha\le r(d)\le\beta$ | 중간 wavelength | ramp blend |
+| $r(d)>\beta$ | 여러 번 회전하는 고주파 | no interpolation, $\theta_d$ |
+
+LLaMA 계열에서 논문이 제시한 좋은 기본값은 다음이다.
+
+$$
+\alpha=1,
+\qquad
+\beta=32.
+$$
+
+이 방식은 high frequency의 local resolution을 보존하면서 low frequency의 out-of-distribution absolute-like phase를 target range 안으로 압축한다.
+
+## Attention temperature
+
+### Softmax logit 보정
+
+YaRN은 NTK-by-parts만 쓰지 않고 attention logit의 temperature $t$를 조정한다.
+
+$$
+A_{m,n}
+=
+\operatorname{softmax}_n\left(
+\frac{q_m^\top k_n}{t\sqrt{|D|}}
+\right).
+$$
+
+$t<1$이면 logit magnitude가 커져 softmax가 더 sharp해진다. Target context가 길어지면서 분산되는 attention을 보정하려는 목적이다.
+
+### RoPE vector scaling으로 구현
+
+Attention kernel 자체에 새 temperature 인자를 넣지 않고, query와 key 모두에 $\sqrt{1/t}$를 곱할 수 있다.
+
+$$
+(\sqrt{1/t}\,q)^\top(\sqrt{1/t}\,k)
+=
+\frac1t q^\top k.
+$$
+
+Cos/sin RoPE cache에 이 scale을 미리 포함하면 attention code를 수정하지 않고 같은 효과를 얻는다. 고정 context에서는 cache가 모든 forward에 재사용되므로 추가 runtime overhead가 거의 없다.
+
+### 경험식
+
+LLaMA와 Llama 2에서 extension scale $s$에 따른 추천값은 다음이다.
+
+$$
+\sqrt{\frac1t}
+=
+0.1\ln(s)+1.
+$$
+
+이 식은 이론적으로 유도한 상수가 아니라 여러 LLaMA model size에서 lowest perplexity를 주는 값을 fitting한 경험식이다. 다른 architecture나 학습 recipe에서는 재검증이 필요하다.
+
+## Dynamic Scaling
+
+### 고정 scale의 문제
+
+Target $L'$를 기준으로 항상 $s=L'/L$을 쓰면 sequence가 아직 짧을 때도 position을 압축한다. 예를 들어 128k 모델이 2k prompt를 처리할 때부터 32배 scaling을 적용하면 original short-context resolution를 불필요하게 잃을 수 있다.
+
+또한 sequence가 target $L'$를 넘으면 다시 abrupt failure가 생길 수 있다.
+
+### 현재 길이에 따른 scale
+
+Dynamic Scaling은 현재 sequence length $\ell$을 사용한다.
+
+$$
+s_{dynamic}
+=
+\max\left(1,\frac{\ell}{L}\right).
+$$
 
 ```text
-absolute position:
-X = token_embedding + position_embedding
-S = QK^T
-
-relative/bias/rotary variants:
-Q, K = position-aware projection or rotation
-S_ij = content_score(i,j) + position_term(i,j)
+current length <= L : use original RoPE
+current length >  L : increase scaling only as needed
 ```
 
-따라서 이 계열을 비교할 때는 `position_term(i,j)`가 table lookup인지, 회전인지, 선형 bias인지, scaling된 position index인지 보면 된다.
+Fine-tuning하지 않은 base Llama 2에서도 Dynamic-YaRN이 Dynamic-PI보다 긴 길이 perplexity를 안정적으로 유지하는 결과를 보인다.
 
-## 핵심 개념 상세 해설
+### KV cache의 중요한 함정
 
-### YaRN의 RoPE 확장 관점
+Autoregressive decode에서 $s_{dynamic}$은 token이 추가될 때 변한다. 그러면 과거 token의 RoPE angle도 새 scale 기준으로 달라진다.
 
-이 논문은 RoPE의 핵심 성질을 유지하면서 학습 context length 밖에서 score 분포가 깨지는 문제를 다룬다.
+이미 RoPE를 적용한 key를 cache하면 과거 key는 옛 scale, 새 key는 새 scale을 사용해 dot product가 일관되지 않는다. 논문은 dynamic scaling과 KV cache를 함께 쓸 때 **RoPE 적용 전 K/V representation을 cache**하고 필요할 때 현재 scale로 변환해야 한다고 지적한다.
 
-RoPE는 긴 position index에 대해 회전 angle이 계속 커지므로, 학습 때 보지 못한 phase 조합이 생긴다. Context extension 방법들은 이 angle을 압축하거나, 차원별로 다르게 조정하거나, scale을 보정한다.
+이는 메모리와 compute trade-off를 만든다. 현대 inference engine에서 dynamic RoPE를 구현할 때 가장 중요한 검증 지점 중 하나다.
+
+## Tensor shape와 구현
 
 ```text
-base RoPE angle: p * theta_i
-uniform interpolation: (p / s) * theta_i
-dimension-wise scaling: p * theta'_i
-query/key scaling: scale(p) * R_p q, scale(p)^-1 * R_p k
+Q, K, V                    [B, H, N, d_h]
+inv_freq                   [d_h / 2]
+wavelength                 [d_h / 2]
+r = L / wavelength         [d_h / 2]
+ramp gamma                 [d_h / 2]
+scaled inv_freq            [d_h / 2]
+cos, sin                   [N, d_h]
+rotated Q, K               [B, H, N, d_h]
 ```
 
-핵심 trade-off는 길이를 늘리면 위치 resolution이 줄어든다는 점이다. 좋은 방법은 짧은 거리 resolution과 긴 거리 안정성을 동시에 보존해야 한다.
+### 단순화한 frequency 계산
 
-## Tensor shape와 자료구조
+```python
+def yarn_inv_freq(inv_freq, original_len, factor,
+                  alpha=1.0, beta=32.0):
+    wavelength = 2 * math.pi / inv_freq
+    rotations = original_len / wavelength
 
-위치 표현 논문들은 대개 Transformer의 기본 shape는 유지한다. 입력 hidden state `X`는 `[B, n, d_model]`이고, attention head마다 Q/K/V를 만든다.
-
-```text
-X: [B, n, d_model]
-Q = X W_Q: [B, h, n, d_k]
-K = X W_K: [B, h, n, d_k]
-V = X W_V: [B, h, n, d_v]
-score S: [B, h, n, n]
-output O: [B, h, n, d_v]
+    ramp = ((rotations - alpha) / (beta - alpha)).clamp(0, 1)
+    interpolated = inv_freq / factor
+    scaled = (1 - ramp) * interpolated + ramp * inv_freq
+    return scaled
 ```
 
-차이는 `S = QK^T / sqrt(d_k)`를 그대로 쓰지 않는다는 점이다. 상대 위치 embedding, relative bias, rotary transformation, linear bias, interpolation scaling 등이 `Q`, `K`, 또는 `S`에 들어간다.
+### Temperature까지 포함
 
-## 수식과 계산 전개
+```python
+scaled_inv_freq = yarn_inv_freq(inv_freq, L, factor)
+angles = position_ids[:, None] * scaled_inv_freq[None, :]
 
-### RoPE 주파수별 해석
+rope_gain = 0.1 * math.log(factor) + 1.0  # sqrt(1/t)
+cos = angles.cos() * rope_gain
+sin = angles.sin() * rope_gain
 
-```text
-기본 RoPE angle은 `p * theta_i`다.
+q = apply_rope(q, cos, sin)
+k = apply_rope(k, cos, sin)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Correction range
-
-```text
-Position Interpolation은 이를 `(p / s) * theta_i`로 uniform scaling한다.
-```
-
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Ramp interpolation
-
-```text
-YaRN은 dimension `i`마다 effective scaling을 다르게 적용해 `p * theta'_i`를 만든다.
-```
-
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Attention temperature 보정
-
-```text
-Ramp mask는 특정 주파수 구간에서 interpolation과 extrapolation을 연속적으로 섞는다.
-```
-
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Long sequence objective
-
-```text
-Attention temperature 또는 magnitude scaling은 `qk` score의 scale을 보정해 긴 context fine-tuning을 안정화한다.
-```
-
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+실제 library는 `attention_factor`, `beta_fast`, `beta_slow`처럼 다른 이름을 쓸 수 있다. Eq. 15의 scale이 이미 Q/K 양쪽에 적용되는지, 최종 logit에 한 번만 적용되는지 확인해야 한다. 중복 적용하면 $1/t^2$에 가까운 잘못된 scale이 된다.
 
 ## 전체 알고리즘 흐름
 
-1. Token embedding을 만들고 필요한 경우 absolute/relative position 정보를 준비한다.
-2. 각 layer에서 Q/K/V를 projection한다.
-3. 논문별 방식에 따라 Q/K를 회전, 위치 bias 추가, relative embedding 결합, position scaling 등을 적용한다.
-4. 수정된 score로 softmax attention을 수행한다.
-5. Value를 합산하고 residual/FFN을 거쳐 다음 layer로 넘긴다.
+1. Original context $L$과 target factor $s=L'/L$을 정한다.
+2. 각 RoPE dimension의 wavelength $\lambda_d$를 계산한다.
+3. Original context 안의 회전 횟수 $r(d)=L/\lambda_d$를 계산한다.
+4. $\alpha$, $\beta$ 사이에서 ramp $\gamma(r)$를 만든다.
+5. 고주파는 original frequency, 저주파는 $1/s$ frequency, 중간은 두 값을 blend한다.
+6. $\sqrt{1/t}=0.1\ln(s)+1$로 attention scale을 정한다.
+7. 수정된 cos/sin cache로 Q/K를 회전한다.
+8. 일반 causal attention과 next-token prediction fine-tuning을 수행한다.
+9. Dynamic mode라면 현재 sequence length에 따라 $s$를 갱신하고 cache 일관성을 보장한다.
 
-## 작은 예시로 보는 직관
+## 실험 설정
 
-문장 `not very good`에서 `good`은 바로 앞의 `very`, 두 칸 앞의 `not`과 관계가 있다. 절대 위치 17, 18, 19보다 중요한 것은 `good` 기준으로 -1, -2 위치라는 상대 관계다.
+### 64k와 128k 모델
 
-```text
-absolute: position(good) = 19
-relative: distance(good, very) = -1
-relative: distance(good, not) = -2
-```
+- Base: Llama 2 7B, 13B
+- Original context: 4k
+- $s=16$: 64k context
+- $s=32$: 128k context
+- $s=16$ 모델: PG19를 64k segment로 나눠 400 steps fine-tuning
+- $s=32$ 모델: 64k data만 사용하고 $s=16$ checkpoint에서 추가 200 steps
+- learning rate $2\times10^{-5}$
+- AdamW, $\beta_1=0.9$, $\beta_2=0.95$
+- global batch 64, FlashAttention 2와 FSDP
 
-Relative position, RoPE, ALiBi 계열은 이런 상대 거리 정보를 attention score가 직접 느끼게 만든다.
+128k 모델이 64k training sequence만 보고 128k에서 잘 동작하는지는 `train short, test long` 성질을 검증하는 핵심이다.
 
-## 계산 복잡도와 병목
+### 32k ablation
 
-- Correction range, scaling factor, temperature 등 선택할 요소가 많다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+LLaMA 7B를 2k에서 32k로 $s=16$ 확장하고 PG19 32k segment로 400 steps 학습한다. PI, NTK-aware, NTK-by-parts, YaRN을 같은 예산으로 비교한다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+### 평가
 
-## 구현할 때 확인할 부분
+- Proof-pile과 GovReport sliding-window perplexity
+- Passkey retrieval
+- ARC-Challenge, HellaSwag, MMLU, TruthfulQA
+- Fine-tuning 없는 Dynamic Scaling 평가
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+## 주요 실험 결과
 
-## 자주 헷갈리는 지점
+### 64k training에서 128k evaluation
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- 긴 position index를 계산할 수 있다는 것과 모델이 그 길이에서 잘 일반화한다는 것은 다르다.
-- RoPE scaling은 attention 비용을 줄이지 않는다. 위치 일반화를 개선할 뿐이다.
+Proof-pile 10개 128k 문서의 sliding-window PPL은 다음과 같다.
 
-## 관련 방법과 비교
+| 모델 | 학습 단계 | 8k | 16k | 32k | 64k | 128k |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Llama 2 7B YaRN $s=16$ | 400 | 3.51 | 2.99 | 2.65 | 2.42 | $>10^1$ |
+| Llama 2 7B YaRN $s=32$ | 400+200 | 3.56 | 3.04 | 2.70 | 2.45 | **2.37** |
+| Llama 2 13B YaRN $s=16$ | 400 | 3.25 | 2.79 | 2.50 | 2.29 | $>10^1$ |
+| Llama 2 13B YaRN $s=32$ | 400+200 | 3.29 | 2.83 | 2.53 | 2.31 | **2.24** |
 
-| 방법 | 위치 정보가 들어가는 곳 | 긴 길이 일반화 관점 |
-| --- | --- | --- |
-| Absolute embedding | input embedding | 학습 위치 밖 취약 |
-| Relative position | attention score 또는 value | 상대 거리 표현에 강함 |
-| RoPE | Q/K rotation | 상대 phase를 dot product에 내장 |
-| ALiBi | score bias | position table 없이 거리 penalty |
-| PI/YaRN/LongRoPE | RoPE position scaling | 기존 RoPE LLM context 확장 |
+$s=32$ 모델은 64k data로만 추가 학습했지만 128k에서 낮은 perplexity를 보였다. Progressive transfer와 length extrapolation가 함께 작동한 결과다.
 
-## 실험 결과를 읽는 관점
+### 동일 400-step budget의 방법 비교
 
-위치 표현 논문의 실험은 보통 두 가지를 본다. 첫째, 같은 길이 또는 학습 길이 안에서 성능이 좋아지는가. 둘째, 학습보다 긴 context에서 extrapolation이 되는가.
+LLaMA 7B를 2k에서 32k로 확장한 경우 32k PPL은 다음과 같다.
 
-특히 RoPE scaling 계열에서는 짧은 context 성능 보존과 긴 context perplexity 개선을 동시에 봐야 한다. 긴 길이만 좋아지고 짧은 길이가 무너지면 실용적인 확장이라고 보기 어렵다.
+| 방법 | Fine-tuning | 32k PPL |
+| --- | ---: | ---: |
+| PI | 없음 | $>10^2$ |
+| NTK-aware | 없음 | $>10^1$ |
+| NTK-by-parts | 없음 | $>10^1$ |
+| YaRN | 없음 | 3.45 |
+| PI | 400 steps | 3.57 |
+| NTK-aware | 400 steps | 8.49 |
+| NTK-by-parts | 400 steps | 2.81 |
+| YaRN | 400 steps | **2.77** |
 
-## 장점과 기여
+Temperature를 포함한 YaRN이 fine-tuned/non-fine-tuned 조건 모두에서 강했다. 특히 큰 scaling에서 PI의 local-frequency 손실을 줄였다.
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+### PI 대비 학습 효율
+
+Llama 2 7B를 4k에서 8k로 확장한 비교다.
+
+| 방법 | Steps | 2k | 4k | 6k | 8k |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| PI | 1000 | 3.92 | 3.51 | 3.51 | **3.34** |
+| YaRN | 400 | **3.91** | **3.50** | 3.51 | 3.35 |
+
+YaRN은 2.5배 적은 steps로 거의 같은 결과를 얻었다. 논문은 전체 fine-tuning token도 이전 PI 연구보다 약 10배 적다고 강조한다.
+
+### Passkey retrieval
+
+| 모델 | Training data context | 평가 context | 평균 정확도 |
+| --- | ---: | ---: | ---: |
+| YaRN 7B $s=16$ | 64k | 64k | 96.3% |
+| YaRN 7B $s=32$ | 64k | 128k | 99.4% |
+| YaRN 13B $s=16$ | 64k | 64k | 97.5% |
+| YaRN 13B $s=32$ | 64k | 128k | 99.4% |
+
+128k sequence로 fine-tuning하지 않았는데도 128k에서 높은 retrieval 정확도를 기록했다.
+
+논문은 중요한 경고도 한다. Code Llama 13B는 100k 이후 perplexity가 증가하지만 128k passkey는 잘 찾았다. 즉 **perplexity 하나만으로 effective context를 결정할 수 없다.** Generation 품질과 retrieval 능력은 서로 다를 수 있다.
+
+### Original benchmark 보존
+
+| 모델 | ARC-c | HellaSwag | MMLU | TruthfulQA |
+| --- | ---: | ---: | ---: | ---: |
+| Llama 2 7B | 53.1 | 77.8 | 43.8 | 39.0 |
+| YaRN 7B 64k | 52.3 | 78.8 | 42.5 | 38.2 |
+| YaRN 7B 128k | 52.1 | 78.4 | 41.7 | 37.3 |
+| Llama 2 13B | 59.4 | 82.1 | 55.8 | 37.4 |
+| YaRN 13B 128k | 58.0 | 82.2 | 51.9 | 37.3 |
+
+Short-context 성능은 대체로 보존되지만 MMLU 등 일부 지표는 하락한다. 64k에서 128k로 늘릴 때 평균 약 0.49% 추가 하락이 있었다고 논문은 보고한다.
+
+### Compute 비교
+
+| 모델 | 확장 | 학습 A100-hours |
+| --- | ---: | ---: |
+| LLaMA 7B YaRN | 2k → 32k | 128 |
+| Llama 2 7B YaRN | 4k → 64k | 256 |
+| Llama 2 7B YaRN | 4k → 128k | 256 + 128 |
+| PI 7B 사례 | 2k → 16k | 640 |
+| Code Llama NTK | 4k → 약 100k | 6400 |
+
+서로 다른 data와 recipe의 공개 모델을 비교하므로 완전히 통제된 표는 아니다. 그래도 YaRN이 적은 adaptation budget을 목표로 했음을 보여준다.
+
+## 계산 복잡도와 메모리
+
+고정 scale의 YaRN은 cos/sin cache를 미리 만들 수 있어 RoPE 단계의 추가 비용이 거의 없다.
+
+$$
+\text{position transform}=O(Nd).
+$$
+
+그러나 dense attention은 그대로다.
+
+$$
+\text{attention}=O(N^2d),
+\qquad
+\text{KV cache}=O(NHd_h).
+$$
+
+128k model을 학습·서빙할 수 있게 만드는 핵심은 YaRN만이 아니라 FlashAttention 2, distributed training, 충분한 memory다.
+
+Dynamic Scaling은 scale이 바뀔 때 과거 key를 재회전해야 할 수 있어 고정 scaling보다 시스템 overhead가 커질 수 있다. “YaRN은 zero overhead”라는 표현은 주로 **고정 target scale과 cached RoPE** 조건에서 읽어야 한다.
+
+## Position extension 방법 비교
+
+| 방법 | High frequency | Low frequency | Attention scale | Fine-tuning 없는 동작 |
+| --- | --- | --- | --- | --- |
+| PI | $1/s$로 압축 | $1/s$로 압축 | 그대로 | 큰 배율 취약 |
+| NTK-aware | 거의 보존 | 강하게 압축 | 그대로 | 비교적 강함, 실제 배율 불명확 |
+| NTK-by-parts | 보존 | $1/s$로 압축 | 그대로 | PI보다 강함 |
+| YaRN | 보존 | $1/s$로 압축 | temperature 보정 | 가장 강한 결과 |
+| Dynamic-YaRN | 현재 길이에 따라 변경 | 현재 길이에 따라 변경 | 동적 | base model 즉시 적용 가능 |
+
+## 장점과 핵심 기여
+
+### 1. PI의 resolution 손실을 dimension 역할로 설명했다
+
+RoPE wavelength가 original context 안에서 몇 번 회전하는지를 기준으로 local-relative와 absolute-like 차원을 구분한다.
+
+### 2. 사람의 직관을 연속 ramp로 구현했다
+
+Frequency를 세 hard group으로 잘라 불연속적으로 바꾸지 않고 transition band에서 blend한다.
+
+### 3. Position scaling과 attention entropy를 분리했다
+
+Frequency correction만으로 충분하지 않고 softmax scale도 보정해야 한다는 실험적 관찰을 추가했다.
+
+### 4. 적은 fine-tuning budget
+
+수백 steps와 짧은 long-context data로 64k/128k를 달성해 PI 계열의 실용성을 높였다.
+
+### 5. 학습 길이 밖 extrapolation
+
+64k data로 추가 학습한 $s=32$ 모델이 128k에서 낮은 PPL과 높은 passkey accuracy를 보였다.
+
+### 6. Dynamic inference 가능성
+
+고정 target context의 short-context 손실을 줄이고, fine-tuning 없는 base model에도 적용할 경로를 제시했다.
 
 ## 한계와 비판적 관점
 
-- Correction range, scaling factor, temperature 등 선택할 요소가 많다.
-- Position scaling 방법이므로 attention 자체의 quadratic cost나 KV cache 증가를 해결하지 않는다.
-- 모델 구조와 기존 RoPE 설정에 따라 최적 scaling이 달라질 수 있다.
+### 1. $\alpha$, $\beta$와 temperature가 경험적이다
+
+$\alpha=1$, $\beta=32$, $0.1\ln(s)+1$은 LLaMA 계열에서 찾은 값이다. Architecture, head dimension, RoPE base, pretraining length가 바뀌면 최적값도 달라질 수 있다.
+
+### 2. 세 구간 가정이 최적임을 보장하지 않는다
+
+RoPE dimension의 실제 learned 역할은 layer와 head마다 다를 수 있다. 하나의 global ramp를 모든 layer/head에 적용하는 것은 여전히 coarse heuristic이다. LongRoPE는 이 한계를 search로 다룬다.
+
+### 3. Dynamic Scaling과 KV cache가 복잡하다
+
+Scale 변화가 과거 key의 RoPE를 바꾸기 때문에 일반적인 post-RoPE KV cache와 바로 호환되지 않는다.
+
+### 4. 128k의 dense attention 비용
+
+Position encoding이 안정적이어도 실제 128k prefill과 training은 비싸다. YaRN은 sparse attention이나 KV compression이 아니다.
+
+### 5. Perplexity와 retrieval이 서로 다른 신호를 준다
+
+논문 자체가 이를 보여준다. Long-context 품질은 PPL, passkey, multi-needle, reasoning, original benchmark를 함께 평가해야 한다.
+
+### 6. Fine-tuning data domain의 영향
+
+PG19 book data는 original Llama pretraining distribution 및 downstream benchmark와 다르다. Original capability 하락 중 일부는 position scaling뿐 아니라 data adaptation에서 올 수 있다.
+
+### 7. 매우 큰 extension의 안정성은 제한적이다
+
+128k는 당시 강한 결과지만 million-token 수준에서는 scale heuristic만으로 충분하지 않다. Progressive extension과 더 세밀한 scaling이 필요하다.
+
+## 자주 헷갈리는 지점
+
+### YaRN은 단순히 RoPE base를 키우는가
+
+아니다. Base change는 NTK-aware 방법이다. YaRN은 wavelength 기반 ramp로 original frequency와 interpolated frequency를 섞고 attention temperature를 추가한다.
+
+### High frequency를 왜 interpolation하지 않는가
+
+Original context 안에서 이미 여러 번 반복된 relative phase이므로 긴 position에서도 새로운 unique phase가 아니다. 이를 보존해야 인접 token resolution를 유지할 수 있다.
+
+### Low frequency를 왜 interpolation하는가
+
+Original context에서 한 바퀴도 돌지 않았다면 각 phase가 absolute position처럼 unique할 수 있다. 긴 길이의 새 phase는 OOD이므로 target range 안으로 압축한다.
+
+### Temperature는 RoPE frequency인가
+
+아니다. Frequency는 phase를 바꾸고 temperature는 QK logit magnitude를 바꾼다. 서로 다른 문제를 보정한다.
+
+### YaRN이 attention code를 변경하는가
+
+수학적으로는 temperature를 바꾸지만, Q/K 양쪽 RoPE vector scale에 흡수하면 기존 attention kernel을 유지할 수 있다.
+
+### Dynamic-YaRN에서 회전된 key를 cache해도 되는가
+
+Scale이 계속 바뀐다면 안전하지 않다. 과거 key도 현재 scale에 맞춰야 하므로 pre-RoPE cache 또는 재계산 전략이 필요하다.
+
+## 온디바이스 및 비전 관점
+
+### 온디바이스 LLM
+
+고정 YaRN은 model parameter를 늘리지 않고 cos/sin cache 생성만 바꿔 배포가 쉽다. 하지만 64k/128k KV cache는 edge memory에 매우 크다. GQA, KV quantization, paged cache, sliding-window를 함께 써야 한다.
+
+Dynamic Scaling은 short prompt 품질에 유리하지만 cache 재회전 비용이 모바일 NPU/GPU에서 부담이 될 수 있다. 여러 fixed profile(예: 4k/16k/32k)을 준비하는 방식이 더 단순할 수 있다.
+
+### Vision
+
+Image의 row/column RoPE에서도 spatial frequency마다 interpolation 비율을 다르게 줄 수 있다. High spatial frequency는 local patch order를 보존하고 low frequency는 큰 resolution에 맞춰 압축하는 식이다. 다만 language의 causal direction과 달리 2D bidirectional geometry이므로 row와 column, aspect ratio를 별도로 설계해야 한다.
 
 ## 후속 논문과의 연결점
 
-LongRoPE는 YaRN보다 더 넓은 context extension을 위해 비균일 interpolation factor 탐색과 progressive extension을 사용한다.
+LongRoPE는 YaRN이 수작업으로 만든 frequency group/ramp를 더 일반화한다.
+
+- 각 RoPE dimension의 scale $\lambda_i$를 별도로 탐색한다.
+- 초기 몇 token은 interpolation하지 않는 token-position non-uniformity를 추가한다.
+- 128k/256k로 fine-tuning한 뒤 다시 search해 2048k로 progressive extension한다.
+
+즉 PI가 “모두 동일 압축”, YaRN이 “주파수 band별 압축”, LongRoPE가 “차원별 탐색 압축”으로 이어진다.
 
 ## 개인 학습/연구 메모
 
-YaRN은 `RoPE의 모든 주파수를 똑같이 압축하지 말자`는 관점으로 이해하면 쉽다.
+YaRN을 다음처럼 기억하면 된다.
 
+```text
+Do not compress every RoPE frequency equally.
+Keep local high frequencies.
+Compress long wavelengths.
+Blend the middle.
+Then correct the attention temperature.
+```
+
+핵심은 RoPE를 하나의 position signal로 보지 않고, 서로 다른 역할을 가진 **frequency bank**로 해석한 데 있다.

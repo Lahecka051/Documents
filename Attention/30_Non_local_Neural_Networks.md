@@ -2,195 +2,253 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\30_Non_local_Neural_Networks.pdf`
-- 제목: Non-local Neural Networks
+- 제목: **Non-local Neural Networks**
 - 저자: Xiaolong Wang, Ross Girshick, Abhinav Gupta, Kaiming He
 - 발표: CVPR 2018
-- 주제: Non-local Neural Networks의 global dependency modeling
-- 핵심 키워드: non-local operation, self-attention in vision, video understanding
+- 핵심 키워드: non-local operation, global dependency, space-time attention, video recognition, residual block
 
 ## 한눈에 보는 요약
 
-Non-local Neural Networks는 CNN의 local receptive field 한계를 보완하기 위해 feature map의 모든 위치 사이 관계를 직접 계산한다.
-
-수식은 self-attention과 거의 같으며, 한 위치의 output을 모든 위치 feature의 weighted sum으로 만든다.
-
-Vision/video에서 장거리 의존성을 모델링하는 대표적인 초기 attention 계열 논문이다.
-
-## 연구 배경과 문제의식
-
-Convolution은 local kernel을 사용하므로 먼 위치 정보는 여러 layer를 거쳐야 전달된다.
-
-CNN feature map의 모든 위치 쌍 관계를 계산해 local convolution의 한계를 보완한다.
-
-이미지와 비디오에서는 멀리 떨어진 객체, 프레임 간 같은 물체, 장면 전체 context가 중요할 수 있다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Non-local Neural Networks의 global dependency modeling`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-CNN과 vision attention의 차이는 feature aggregation 범위다.
+Non-local Neural Networks는 convolution과 recurrence가 local neighborhood를 반복해 장거리 정보를 전달하는 한계를 해결하기 위해, 한 위치의 출력을 **모든 위치 feature의 weighted sum**으로 계산하는 generic non-local operation을 제안한다.
 
 ```text
-convolution:
-output at position i uses local neighborhood around i
-
-visual attention:
-output at position/query i may use distant positions,
-channels, patches, or object-level memory slots
+y_i = 1/C(x) * sum_j f(x_i,x_j) g(x_j)
 ```
 
-다만 vision에서는 local structure가 강하므로 attention이 항상 convolution을 대체해야 하는 것은 아니다. 많은 논문은 둘을 결합하거나, 충분한 data scale에서만 순수 Transformer를 사용한다.
+`f`는 위치 `i,j`의 affinity, `g`는 value transformation이다. Embedded Gaussian을 쓰면 식은 사실상 dot-product self-attention과 같다. 이 non-local response를 projection하고 원 입력에 residual로 더해 기존 CNN/I3D에 삽입한다.
 
-## 핵심 개념 상세 해설
+논문은 video의 space-time 전체, image의 spatial 전체에서 global interaction을 한 block으로 계산한다. Kinetics에서 5-block Non-local I3D가 ResNet-101 기준 `74.4 → 76.0` top-1로 개선되었고, COCO detection·segmentation·keypoint에도 일관된 이득을 보였다.
 
-### Vision attention의 핵심 수식
+![Non-local block의 affinity·global aggregation·residual 흐름](https://github.com/user-attachments/assets/c655dffc-8c4e-491a-9e58-8f88458c5122)
 
-Non-local block은 vision feature map에서 모든 위치 쌍의 관계를 계산한다.
+## 문제의식
+
+Convolution의 receptive field는 layer를 쌓으면 커지지만 먼 두 위치 정보가 만나려면 여러 hop을 거쳐야 한다. Video에서 서로 떨어진 frame의 같은 object, image에서 멀리 떨어진 body part 관계는 local filter만으로 직접 모델링하기 어렵다.
+
+Recurrent model도 time step을 순차적으로 지나므로 dependency path가 길다. Non-local operation은 거리와 무관하게 모든 위치 pair를 한 layer에서 연결한다.
+
+## Generic non-local operation
+
+입력 `x`의 position index는 image의 `(h,w)` 또는 video의 `(t,h,w)`를 펼친 값이다.
 
 ```text
-y_i = 1 / C(x) * sum_j f(x_i, x_j) g(x_j)
+y_i = 1/C(x) sum_{∀j} f(x_i,x_j) g(x_j)
+```
+
+- `i`: output을 만들 query 위치
+- `j`: 모든 source 위치
+- `f`: pairwise affinity scalar
+- `g`: source feature의 value transform
+- `C(x)`: normalization factor
+
+Convolution과 달리 `j` 집합이 local kernel에 제한되지 않는다. Output size는 input과 같고, 위치 수를 `N`이라 하면 pairwise map은 `[N,N]`이다.
+
+## Pairwise function의 네 가지 형태
+
+### Gaussian
+
+```text
+f(x_i,x_j) = exp(x_i^T x_j)
+C(x) = sum_j f(x_i,x_j)
+```
+
+Feature projection 없이 원 feature 내적을 softmax-like normalization한다.
+
+### Embedded Gaussian
+
+```text
+theta(x_i) = W_theta x_i
+phi(x_j)   = W_phi x_j
+
+f(x_i,x_j) = exp(theta(x_i)^T phi(x_j))
+C(x)       = sum_j f(x_i,x_j)
+```
+
+Row normalization을 적용하면
+
+```text
+y = softmax(theta(x) phi(x)^T) g(x)
+```
+
+가 되어 Transformer의 scaled dot-product 이전 형태와 거의 같다. 논문은 이 관계를 명시하며 self-attention을 더 일반적인 non-local family의 special case로 본다.
+
+### Dot product
+
+```text
+f(x_i,x_j) = theta(x_i)^T phi(x_j)
+C(x) = N
+```
+
+Exponential/softmax 없이 위치 수로 scaling한다. Weight가 음수일 수 있다.
+
+### Concatenation
+
+```text
+f(x_i,x_j) = ReLU(w_f^T [theta(x_i), phi(x_j)])
+```
+
+Query/key feature를 concatenate한 learned compatibility다. 계산은 더 복잡하지만 generic pair function의 범위를 보여준다.
+
+## Non-local block
+
+Non-local output을 channel projection하고 residual로 더한다.
+
+```text
 z_i = W_z y_i + x_i
 ```
 
-Embedded Gaussian `f`를 쓰면 Transformer self-attention과 거의 같은 구조가 된다.
-
-## Tensor shape와 자료구조
-
-Vision attention은 입력을 어떤 sequence로 보느냐에 따라 shape가 달라진다. CNN feature map은 `[B, C, H, W]`이고, ViT/DETR에서는 이를 token sequence로 펼친다.
+`W_z` 뒤에 BatchNorm을 두고 BN scale을 0으로 초기화한다. 처음 삽입했을 때 `z=x`인 identity block이 되므로 pretrained CNN을 깨뜨리지 않고 fine-tune할 수 있다.
 
 ```text
-CNN feature: [B, C, H, W]
-spatial tokens: [B, H*W, C]
-image patches: [B, N, P*P*C]
-patch embeddings: [B, N, D]
-object queries: [B, num_queries, D]
+input x
+ ├─ theta -> Q
+ ├─ phi   -> K
+ └─ g     -> V
+QK^T -> normalization -> weighted V -> W_z -> + x
 ```
 
-SE/CBAM은 token-token attention이 아니라 channel/spatial gate를 만든다. ViT/DETR은 patch 또는 object query를 Transformer token처럼 다룬다. 따라서 같은 `attention`이라는 말이지만 계산 대상이 상당히 다르다.
+이 zero-init residual 전략은 이후 attention block을 pretrained backbone에 넣는 일반적인 기법으로 이어진다.
 
-## 수식과 계산 전개
+## Efficient modification
 
-### Non-local 일반식
+Channel cost를 줄이기 위해 `theta,phi,g`의 output channel을 원 channel의 절반으로 설정한다. 또한 `phi(x)`와 `g(x)` path에 spatial/temporal subsampling을 적용할 수 있다.
 
 ```text
-일반식은 `y_i = 1/C(x) sum_j f(x_i, x_j) g(x_j)`다.
+Q positions : N
+K/V positions after pooling : N/2 or N/4
+attention map : [N, N/s]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+모든 query가 subsampled global positions를 보므로 non-local 성질은 유지하지만 fine detail은 줄 수 있다. Pairwise cost는 여전히 position 수의 곱이다.
 
-### Pairwise function
+## Space, time, spacetime
+
+Video tensor에서 index `j`의 범위를 바꿔 세 구성을 만들 수 있다.
+
+- Space-only: 각 frame 안의 모든 spatial 위치
+- Time-only: 같은 spatial location의 여러 frame
+- Spacetime: 모든 frame의 모든 spatial 위치
+
+Spacetime은 움직이는 object가 frame마다 위치를 바꿔도 content affinity로 직접 연결할 수 있다. 3D convolution의 고정 local kernel과 다른 점이다.
+
+## 계산 복잡도와 memory
+
+Position 수 `N=THW`, projected channel `d`라 하면
 
 ```text
-Embedded Gaussian은 `f(x_i, x_j) = exp(theta(x_i)^T phi(x_j))`를 사용한다.
+affinity compute : O(N²d)
+attention memory : O(N²)
+value aggregation: O(N²d_v)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Subsampling은 key/value `N`을 `N/s`로 줄여 `O(N²/s)`로 낮춘다. 그러나 고해상도 feature의 quadratic 병목은 남으므로 논문은 주로 res3/res4처럼 downsample된 stage에 block을 배치한다.
 
-### Unary value transform
+## Kinetics ablation: Pairwise function
 
-```text
-Softmax normalization을 쓰면 Transformer attention의 `softmax(QK^T)V`와 동일한 형태가 된다.
-```
+ResNet-50 C2D baseline과 non-local block 하나의 결과다.
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+| 구성 | Top-1 | Top-5 |
+| --- | ---: | ---: |
+| C2D baseline | 71.8 | 89.7 |
+| Gaussian | 72.5 | 90.2 |
+| Embedded Gaussian | 72.7 | 90.5 |
+| Dot product | **72.9** | 90.3 |
+| Concatenation | 72.8 | **90.5** |
 
-### Residual output
+형태 차이는 작고 모두 baseline보다 낫다. 특정 similarity 식보다 global aggregation 자체가 주된 이득이라는 저자 해석을 뒷받침한다.
 
-```text
-`z_i = W_z y_i + x_i`로 residual connection을 적용한다.
-```
+## Block 수와 stage
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+| Backbone | 구성 | Top-1 | Top-5 |
+| --- | --- | ---: | ---: |
+| R50 | baseline | 71.8 | 89.7 |
+| R50 | 1 block | 72.7 | 90.5 |
+| R50 | 5 blocks | 73.8 | 91.0 |
+| R50 | 10 blocks | **74.3** | **91.2** |
+| R101 | baseline | 73.1 | 91.0 |
+| R101 | 5 blocks | **75.1** | **91.7** |
 
-### Space-time 적용
+한 block을 res2, res3, res4에 넣으면 top-1이 72.7~72.9로 비슷했고, res5는 72.3으로 이득이 작았다. 너무 늦은 저해상도 stage보다 spatial structure가 남은 중간 stage가 유리하다.
 
-```text
-위치 index `i,j`는 이미지의 spatial position 또는 비디오의 space-time position이 될 수 있다.
-```
+## Space-time ablation
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+5-block R50에서
 
-## 전체 알고리즘 흐름
+| 범위 | Top-1 | Top-5 |
+| --- | ---: | ---: |
+| Baseline | 71.8 | 89.7 |
+| Space-only | 72.9 | 90.8 |
+| Time-only | 73.1 | 90.5 |
+| Spacetime | **73.8** | **91.0** |
 
-1. 이미지 또는 CNN feature를 patch, spatial token, channel descriptor, object query 입력으로 바꾼다.
-2. Attention 또는 gate score를 계산한다.
-3. Feature를 재가중하거나 token representation을 갱신한다.
-4. 분류, captioning, detection 등 task head로 output을 만든다.
+공간 또는 시간 한 축만으로도 개선되지만 전체 spacetime 연결이 가장 좋았다.
 
-## 작은 예시로 보는 직관
+## 3D convolution과 비교·결합
 
-이미지에서 강아지와 공이 멀리 떨어져 있어도 `chasing`이라는 관계를 이해하려면 두 영역이 상호작용해야 한다. Convolution만 쓰면 여러 layer를 거쳐야 하지만 attention은 두 위치를 직접 연결할 수 있다.
+R101 기준 5-block NL-C2D는 baseline 대비 parameter/FLOPs 약 `1.2×/1.2×`로 top-1 `75.1`을 기록했다. I3D 3×3×3은 `1.5×/1.8×` 비용으로 74.1이었다.
 
-```text
-dog patch query -> attends to ball patch key
-object query -> attends to dog region and ball region
-channel gate -> emphasizes object-related channels
-```
+또한 I3D에 non-local block을 추가하면 R50 `73.3 → 74.9`, R101 `74.4 → 76.0`으로 개선됐다. 3D convolution의 local motion modeling과 non-local global relation이 상호보완적임을 보여준다.
 
-Vision attention은 이처럼 공간, channel, object slot 중 어떤 축에서 상호작용을 만들지에 따라 성격이 달라진다.
+긴 128-frame clip에서는 NL-I3D R101이 `77.7/93.3` top-1/top-5를 기록했다.
 
-## 계산 복잡도와 병목
+## Charades와 COCO
 
-- 모든 space-time 위치 쌍을 비교하면 비용이 크다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+Charades에서도 5-block NL-I3D가 strong I3D baseline보다 classification mAP를 개선했다. COCO에서는 Mask R-CNN backbone에 non-local block 하나를 넣어 R50/R101/ResNeXt의 box와 mask AP를 일관되게 높였다. Keypoint head에 4개 block을 넣었을 때도 long-range body-part relation 덕분에 AP가 개선됐다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
-
-## 구현할 때 확인할 부분
-
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
-
-## 자주 헷갈리는 지점
-
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Vision attention이 항상 CNN보다 낫다는 뜻은 아니다. 데이터 크기와 local inductive bias가 큰 영향을 준다.
-- Channel attention, spatial attention, token self-attention은 모두 attention이라고 불리지만 계산 대상이 다르다.
-
-## 관련 방법과 비교
-
-| 방법 | Attention 대상 | 역할 |
-| --- | --- | --- |
-| SE | channel | feature channel 재가중 |
-| CBAM | channel + spatial | 무엇과 어디를 순차 강조 |
-| Non-local | spatial/space-time position | global relation modeling |
-| ViT | image patch token | Transformer encoder classification |
-| DETR | object query와 image memory | set prediction detection |
-
-## 실험 결과를 읽는 관점
-
-Vision 논문에서는 attention이 CNN 대비 어떤 inductive bias를 잃고 어떤 global modeling 능력을 얻는지 봐야 한다.
-
-ImageNet classification, detection, segmentation, video understanding 결과를 볼 때는 input resolution, pretraining data scale, backbone 차이를 함께 확인해야 공정한 비교가 된다.
+COCO의 single block은 baseline 계산의 5% 미만을 추가했다. 다만 고해상도 feature에 직접 적용하면 비용이 급증하므로 배치 stage가 중요하다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- Local operation을 반복하지 않고 모든 위치 dependency를 한 block에서 모델링했다.
+- Pairwise function을 generic family로 정리하고 self-attention과 연결했다.
+- Zero-init residual로 pretrained CNN에 안전하게 삽입했다.
+- Video space-time, image detection, segmentation, pose에서 범용성을 보였다.
+- Transformer 이전/동시기에 vision global attention의 대표 구조가 되었다.
 
 ## 한계와 비판적 관점
 
-- 모든 space-time 위치 쌍을 비교하면 비용이 크다.
-- 기본 non-local block은 위치 encoding이나 multi-head 구조가 Transformer만큼 체계화되어 있지 않다.
-- 고해상도 feature map에서는 downsampling이나 제한된 위치 적용이 필요하다.
+### 1. Quadratic position cost
 
-## 후속 논문과의 연결점
+Feature map이 크면 `[THW,THW]` affinity가 memory를 지배한다. Subsampling과 중간 stage 배치가 필요하다.
 
-Attention augmented convolution, ViT, DETR은 vision에서 attention을 더 중심적인 구조로 발전시킨다.
+### 2. Positional information이 약하다
 
-## 개인 학습/연구 메모
+Affinity는 content similarity 중심이고 explicit relative position bias가 없다. 멀리 있는 비슷한 pattern을 잘 연결하지만 공간 관계 자체를 학습하기 어렵다.
 
-Non-local block의 핵심식 `sum_j f(i,j)g(j)`는 vision 버전 self-attention으로 보면 된다.
+### 3. 여러 instantiation 차이가 작다
 
+Pairwise function의 이론적 차이보다 experimental 차이가 작다. Genericity는 장점이지만 어떤 form이 언제 필요한지 명확한 원칙은 부족하다.
+
+### 4. Attention map의 해석
+
+시각화에서 같은 object 영역에 weight가 모여도 causal explanation은 아니다. Feature routing pattern으로 봐야 한다.
+
+### 5. 현대 kernel과 resolution
+
+당시 custom implementation 기준 비용이며, 현대 FlashAttention이나 window attention과 같은 조건에서 재평가가 필요하다.
+
+## 관련 연구와 연결
+
+- **Transformer self-attention**: Embedded Gaussian non-local operation과 거의 같은 수식이다.
+- **Attention-Augmented Convolution**: Convolution feature와 relative self-attention feature를 병렬 concatenate한다.
+- **ViT**: CNN 내부 일부 block이 아니라 patch sequence 전체를 Transformer로 처리한다.
+- **Efficient attention**: Non-local `[N,N]` memory를 줄이기 위한 linear/low-rank 연구가 뒤따른다.
+
+## 구현 체크리스트
+
+- Flatten 순서가 `(T,H,W)` positional mapping과 일치하는가?
+- Softmax가 key position `j` 축에 적용되는가?
+- `theta,phi,g` channel projection과 transpose shape가 맞는가?
+- Subsampling이 K와 V에 같은 위치 mapping으로 적용되는가?
+- `W_z`/BN zero-init으로 초기 block이 identity인가?
+- High-resolution stage에서 affinity peak memory를 측정했는가?
+
+## 온디바이스·비전 관점
+
+Non-local block은 global relation을 제공하지만 high-resolution mobile vision에는 `[N,N]` memory가 부담이다. 낮은 resolution stage에 1개 block만 넣거나 key/value pooling, window+global token, linear attention으로 대체하는 것이 현실적이다.
+
+고정 feature size에서는 dense GEMM으로 구현 가능해 irregular sparsity보다 NPU 친화적일 수 있다. 그러나 DRAM traffic과 attention map materialization을 피하려면 fused tiled kernel이 필요하다.
+
+## 최종 평가
+
+Non-local Neural Networks는 vision의 장거리 관계를 **모든 위치의 content-weighted aggregation**이라는 간결한 식으로 정리했다. Embedded Gaussian form은 self-attention과 직접 연결되며, residual block으로 CNN/I3D에 쉽게 삽입해 video와 COCO에서 효과를 보였다. Quadratic spatial cost와 약한 positional bias는 한계지만, 현대 vision attention의 출발점 중 하나다.

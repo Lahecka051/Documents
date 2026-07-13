@@ -2,196 +2,207 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\31_Squeeze_and_Excitation_Networks.pdf`
-- 제목: Squeeze-and-Excitation Networks
+- 제목: **Squeeze-and-Excitation Networks**
 - 저자: Jie Hu, Li Shen, Samuel Albanie, Gang Sun, Enhua Wu
-- 발표: CVPR 2018
-- 주제: Squeeze-and-Excitation의 channel recalibration
-- 핵심 키워드: SE block, channel attention, squeeze, excitation
+- 발표: CVPR 2018 / TPAMI
+- 핵심 키워드: channel attention, squeeze, excitation, global average pooling, feature recalibration
 
 ## 한눈에 보는 요약
 
-Squeeze-and-Excitation(SE) block은 CNN feature의 channel 중요도를 동적으로 재가중한다.
-
-Spatial dimension을 global average pooling으로 squeeze해 channel descriptor를 만들고, 작은 MLP로 channel gate를 계산한다.
-
-Attention을 token pair가 아니라 channel selection 관점에서 적용한 대표적인 구조다.
-
-## 연구 배경과 문제의식
-
-CNN convolution은 local spatial pattern을 잘 잡지만, 각 channel이 현재 입력에서 얼마나 중요한지는 명시적으로 조절하지 않는다.
-
-Global context로 channel별 gate를 계산해 CNN feature channel 중요도를 동적으로 조절한다.
-
-Feature channel은 서로 다른 semantic detector처럼 볼 수 있다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Squeeze-and-Excitation의 channel recalibration`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-CNN과 vision attention의 차이는 feature aggregation 범위다.
+Squeeze-and-Excitation(SE) block은 CNN feature map의 channel마다 input-dependent gate를 예측해 중요한 channel은 키우고 덜 중요한 channel은 줄인다.
 
 ```text
-convolution:
-output at position i uses local neighborhood around i
-
-visual attention:
-output at position/query i may use distant positions,
-channels, patches, or object-level memory slots
+Squeeze:    C×H×W -> C        # global average pooling
+Excitation: C -> C/r -> C     # two FC layers, ReLU, sigmoid
+Scale:      U_c <- s_c U_c
 ```
 
-다만 vision에서는 local structure가 강하므로 attention이 항상 convolution을 대체해야 하는 것은 아니다. 많은 논문은 둘을 결합하거나, 충분한 data scale에서만 순수 Transformer를 사용한다.
+Convolution이 local receptive field 안에서 spatial·channel 정보를 섞지만, channel 간 dependency를 명시적으로 모델링하지 않는다는 문제의식에서 출발한다. SE는 image 전체 spatial context를 한 vector로 압축하고 그 vector로 모든 channel의 gate를 공동 예측한다.
 
-## 핵심 개념 상세 해설
+`r=16`에서 계산 overhead는 매우 작고 다양한 ResNet/ResNeXt/MobileNet/ShuffleNet에 일관된 개선을 보였다. SE-ResNet-50은 ImageNet top-5 error를 `7.48% → 6.62%`로 낮췄고, SENet ensemble은 ILSVRC 2017에서 top-5 error `2.251%`로 1위를 기록했다.
 
-### Vision attention의 핵심 수식
+![SE block의 squeeze·excitation·channel scaling](https://github.com/user-attachments/assets/58bb9cff-54be-44b7-bfcb-c6193beb054d)
 
-SE block은 spatial 정보를 global average pooling으로 압축한 뒤 channel gate를 만든다.
+## 문제의식: Channel dependency
+
+Convolution output `U ∈ R^{C×H×W}`에서 각 output channel은 여러 input channel을 local kernel로 조합한다. 그러나 filter response가 어떤 image에서는 중요하고 다른 image에서는 불필요할 수 있어도 convolution weight 자체는 입력에 따라 바뀌지 않는다.
+
+SE block은 global image context를 보고 channel response를 동적으로 recalibrate한다. Spatial location마다 다른 weight를 만드는 것이 아니라 channel 하나에 scalar 하나를 적용한다.
+
+## Squeeze: Global information embedding
+
+Feature map channel `u_c`를 global average pooling한다.
 
 ```text
-z_c = 1/(H W) sum_i sum_j U_c(i,j)
+z_c = F_sq(u_c)
+    = 1/(H W) sum_{i=1}^H sum_{j=1}^W u_c(i,j)
+```
+
+결과 `z ∈ R^C`는 각 channel의 전체 image response를 요약한다. Local convolution만으로는 멀리 떨어진 spatial 위치를 여러 layer에 걸쳐 모아야 하지만 GAP은 한 번에 global receptive field를 제공한다.
+
+Average를 쓰므로 spatial arrangement는 사라진다. “어디”가 중요한지는 표현하지 않고 “어떤 channel이 전체적으로 활성화되었는가”를 담는다.
+
+## Excitation: Adaptive channel gate
+
+Descriptor `z`를 bottleneck MLP에 넣는다.
+
+```text
 s = sigmoid(W_2 ReLU(W_1 z))
-U'_c = s_c U_c
+
+W_1 ∈ R^{C/r × C}
+W_2 ∈ R^{C × C/r}
+s   ∈ (0,1)^C
 ```
 
-이는 token-token attention이 아니라 channel-wise reweighting이다.
+첫 FC는 channel을 `C/r`로 줄이고 두 번째가 다시 `C`로 확장한다. Reduction ratio `r`은 parameter와 capacity를 조절한다.
 
-## Tensor shape와 자료구조
+Sigmoid는 channel마다 독립 gate를 허용한다. Softmax를 쓰면 channel끼리 합 1을 경쟁해야 하지만, SE는 여러 channel이 동시에 중요할 수 있다고 본다.
 
-Vision attention은 입력을 어떤 sequence로 보느냐에 따라 shape가 달라진다. CNN feature map은 `[B, C, H, W]`이고, ViT/DETR에서는 이를 token sequence로 펼친다.
+## Scale
 
 ```text
-CNN feature: [B, C, H, W]
-spatial tokens: [B, H*W, C]
-image patches: [B, N, P*P*C]
-patch embeddings: [B, N, D]
-object queries: [B, num_queries, D]
+x_tilde_c = s_c · u_c
 ```
 
-SE/CBAM은 token-token attention이 아니라 channel/spatial gate를 만든다. ViT/DETR은 patch 또는 object query를 Transformer token처럼 다룬다. 따라서 같은 `attention`이라는 말이지만 계산 대상이 상당히 다르다.
+Scalar `s_c`를 `H×W` 전체에 broadcast한다. 같은 channel의 모든 spatial position이 동일 비율로 조정된다.
 
-## 수식과 계산 전개
-
-### Squeeze operation
+Residual network에서는 보통 residual branch의 convolution 뒤, skip connection과 더하기 전에 SE를 넣는다.
 
 ```text
-입력 feature `U`의 shape가 `[C, H, W]`라고 하자.
+residual = ConvBlock(x)
+residual = SE(residual)
+y = x + residual
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+따라서 identity path는 유지되고 residual feature만 input-dependent하게 gate된다.
 
-### Excitation MLP
+## Parameter와 FLOPs
+
+Excitation MLP parameter는 bias를 제외하면
 
 ```text
-Squeeze는 `z_c = (1 / HW) sum_i sum_j U_c(i,j)`로 channel별 global average pooling을 한다.
+C(C/r) + (C/r)C = 2C²/r
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+이다. Spatial 크기와 무관하고 convolution FLOPs에 비해 작다. 모든 block에 넣으면 channel이 큰 late stage에서 parameter가 늘어난다.
 
-### Channel gate
+논문에서 ResNet-50은 약 `3.86 GFLOPs`, SE-ResNet-50은 `3.87 GFLOPs`다. Training batch 256의 forward는 190ms에서 209ms, single-image inference는 164ms에서 167ms로 보고된다. FLOPs overhead는 작지만 작은 FC와 GAP의 실제 latency는 hardware에 따라 다르다.
 
-```text
-Excitation은 `s = sigmoid(W_2 ReLU(W_1 z))`로 channel gate를 만든다.
-```
+## Reduction ratio `r`
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+작은 `r`은 bottleneck이 넓어 표현력과 parameter가 크고, 큰 `r`은 가볍지만 channel interaction capacity가 줄어든다. 논문은 `r=16`을 기본으로 사용한다.
 
-### Feature scaling
+ImageNet ablation에서 넓은 범위의 `r`이 baseline을 개선했고 performance가 비교적 robust했다. Accuracy를 거의 유지하면서 late stage의 SE parameter를 줄이는 변형도 가능했다. 따라서 16은 이론적 최적값이 아니라 실용적 절충이다.
 
-```text
-Scale은 `tilde_U_c = s_c U_c`로 각 channel을 재가중한다.
-```
+## 왜 GAP인가
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Global max pooling과 비교했을 때 average pooling이 더 좋은 ImageNet error를 보였다. Max는 가장 강한 위치 하나만 남겨 sparse evidence에 민감하고, average는 object의 전체 response distribution을 반영한다.
 
-### Reduction ratio
+후속 CBAM은 average와 max를 함께 사용해 상호보완적 descriptor를 만들지만, SE의 핵심은 하나의 안정적인 global descriptor로 channel dependency를 학습하는 것이다.
 
-```text
-Reduction ratio `r`은 MLP hidden dimension을 `C/r`로 줄여 parameter를 절약한다.
-```
+## Excitation nonlinearity
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Sigmoid 대신 단순 linear, ReLU, tanh 등을 비교한다. Gate가 channel 간 nonlinear relation을 모델링하고 여러 channel을 독립적으로 활성화해야 하므로 `ReLU bottleneck + sigmoid output`이 가장 안정적이다.
 
-## 전체 알고리즘 흐름
+너무 단순한 excitation은 baseline 아래로 떨어질 수 있어, 개선이 parameter 추가만이 아니라 gating function의 선택에 의존함을 보인다.
 
-1. 이미지 또는 CNN feature를 patch, spatial token, channel descriptor, object query 입력으로 바꾼다.
-2. Attention 또는 gate score를 계산한다.
-3. Feature를 재가중하거나 token representation을 갱신한다.
-4. 분류, captioning, detection 등 task head로 output을 만든다.
+## ImageNet 결과
 
-## 작은 예시로 보는 직관
+대표 결과는 다음과 같다.
 
-이미지에서 강아지와 공이 멀리 떨어져 있어도 `chasing`이라는 관계를 이해하려면 두 영역이 상호작용해야 한다. Convolution만 쓰면 여러 layer를 거쳐야 하지만 attention은 두 위치를 직접 연결할 수 있다.
+| 모델 | Top-1 error | Top-5 error | GFLOPs |
+| --- | ---: | ---: | ---: |
+| ResNet-50 | 24.80 | 7.48 | 3.86 |
+| SE-ResNet-50 | **23.29** | **6.62** | 3.87 |
 
-```text
-dog patch query -> attends to ball patch key
-object query -> attends to dog region and ball region
-channel gate -> emphasizes object-related channels
-```
+SE-ResNet-50은 계산량을 거의 늘리지 않고 top-1 error를 1.51%p, top-5를 0.86%p 개선했다. Top-5 6.62는 더 깊은 ResNet-101의 6.52에 근접한다.
 
-Vision attention은 이처럼 공간, channel, object slot 중 어떤 축에서 상호작용을 만들지에 따라 성격이 달라진다.
+다른 backbone에서도 일관된다.
 
-## 계산 복잡도와 병목
+- SE-ResNet-101 top-5 error 6.07
+- SE-ResNeXt-50 top-5 error 5.49
+- SE-ResNeXt 계열에서 baseline 대비 지속적 개선
+- MobileNet top-1 error `28.4 → 25.3`, top-5 `9.4 → 7.7`
 
-- Spatial attention은 직접 다루지 않는다. channel별로만 같은 gain을 전체 위치에 곱한다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+MobileNet에서는 569→572 MFLOPs, parameter 4.2M→4.7M으로 비교적 작은 비용으로 큰 accuracy 개선을 보였다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+## ILSVRC 2017
 
-## 구현할 때 확인할 부분
+SENet architecture ensemble은 test top-5 error `2.251%`로 1위를 기록했다. 2016 winning entry의 2.991%보다 relative 약 25% 감소다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+이 숫자는 단일 SE block의 독립 효과가 아니라 architecture, training, ensemble 전체 결과지만 SE design의 scale-up 가능성을 보여준다.
 
-## 자주 헷갈리는 지점
+## 다른 dataset과 task
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Vision attention이 항상 CNN보다 낫다는 뜻은 아니다. 데이터 크기와 local inductive bias가 큰 영향을 준다.
-- Channel attention, spatial attention, token self-attention은 모두 attention이라고 불리지만 계산 대상이 다르다.
+Places365에서 ResNet-50 top-1/top-5 accuracy `57.9/38.0` 대비 SE-ResNet-50은 `61.0/40.4`를 기록했다. CIFAR-10/100에서도 여러 backbone의 error를 줄였고, detection backbone으로 사용할 때도 baseline보다 개선됐다.
 
-## 관련 방법과 비교
+즉 SE가 ImageNet class taxonomy에만 맞춘 trick이 아니라 general feature recalibration임을 보여준다.
 
-| 방법 | Attention 대상 | 역할 |
-| --- | --- | --- |
-| SE | channel | feature channel 재가중 |
-| CBAM | channel + spatial | 무엇과 어디를 순차 강조 |
-| Non-local | spatial/space-time position | global relation modeling |
-| ViT | image patch token | Transformer encoder classification |
-| DETR | object query와 image memory | set prediction detection |
+## Stage별 역할 해석
 
-## 실험 결과를 읽는 관점
+논문은 excitation activation을 layer 깊이와 class별로 시각화한다.
 
-Vision 논문에서는 attention이 CNN 대비 어떤 inductive bias를 잃고 어떤 global modeling 능력을 얻는지 봐야 한다.
+- 초기 stage의 gate는 class 간 비슷해 low-level edge/color feature를 일반적으로 recalibrate한다.
+- 후반 stage는 class별로 다른 activation pattern을 보여 semantic specialization이 강하다.
+- 같은 class image에서는 더 유사한 channel selection이 나타난다.
 
-ImageNet classification, detection, segmentation, video understanding 결과를 볼 때는 input resolution, pretraining data scale, backbone 차이를 함께 확인해야 공정한 비교가 된다.
+이는 SE가 단순 normalization scale이 아니라 input-dependent conditional computation을 수행한다는 해석을 뒷받침한다. 다만 gate 시각화 역시 causal explanation은 아니다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- Channel dependency를 명시적으로 모델링하는 간단한 plug-in block을 제시했다.
+- GAP으로 global context를 매우 싸게 가져왔다.
+- Bottleneck MLP와 sigmoid로 input-dependent channel gate를 만들었다.
+- 다양한 CNN family와 dataset에서 일관된 improvement를 보였다.
+- FLOPs overhead가 거의 없고 기존 residual block에 쉽게 통합된다.
 
 ## 한계와 비판적 관점
 
-- Spatial attention은 직접 다루지 않는다. channel별로만 같은 gain을 전체 위치에 곱한다.
-- Global average pooling은 spatial distribution 정보를 많이 잃는다.
-- 매우 작은 객체나 위치별 중요도가 큰 task에서는 공간 attention이 추가로 필요할 수 있다.
+### 1. Spatial 위치를 잃는다
 
-## 후속 논문과의 연결점
+GAP 후 channel scalar 하나만 남기므로 object가 어디에 있는지, 여러 region이 어떤 관계인지 표현하지 못한다.
 
-CBAM은 SE의 channel attention에 spatial attention을 추가해 channel과 공간을 순차적으로 재보정한다.
+### 2. Channel gate만 있고 새로운 spatial interaction은 없다
 
-## 개인 학습/연구 메모
+Non-local attention처럼 먼 위치 feature를 섞지 않는다. 기존 convolution feature를 재가중할 뿐이다.
 
-SE block은 `global context로 channel별 볼륨 노브를 조절한다`고 생각하면 된다.
+### 3. Late-stage parameter 증가
 
+MLP parameter가 `C²`에 비례한다. Channel이 매우 큰 model에서는 `r`을 써도 parameter overhead가 무시하기 어려울 수 있다.
+
+### 4. Sigmoid 범위
+
+Gate가 0~1이라 원 feature를 직접 증폭한다기보다 상대적 억제/유지에 가깝다. Residual과 다음 layer가 보상하지만 표현을 제한할 수 있다.
+
+### 5. FLOPs와 latency 차이
+
+GAP와 작은 FC는 mobile accelerator에서 memory synchronization을 유발할 수 있다. 0.01 GFLOPs 증가가 항상 negligible latency는 아니다.
+
+## CBAM과 차이
+
+| 방법 | Channel gate | Spatial gate | Global pairwise mixing |
+| --- | --- | --- | --- |
+| SE | GAP + MLP | 없음 | 없음 |
+| CBAM | Avg/Max + shared MLP | Avg/Max + 7×7 conv | 없음 |
+| Non-local | projection에 포함 | position pair attention | 있음 |
+
+SE는 가장 가볍고 channel “what”에 집중한다.
+
+## 구현 체크리스트
+
+- GAP가 batch/channel을 제외한 H,W에만 적용되는가?
+- `C/r`이 0이 되지 않도록 minimum channel을 두는가?
+- Residual branch의 어느 지점에 SE를 넣는가?
+- Sigmoid gate shape가 `[B,C,1,1]`로 올바르게 broadcast되는가?
+- Quantization에서 sigmoid와 small FC를 device가 지원하는가?
+- Parameter 수뿐 아니라 single-batch latency를 측정했는가?
+
+## 온디바이스 관점
+
+SE는 global pairwise attention이 없어 activation memory가 `O(CHW)`이고 overhead가 작아 mobile CNN에 적합하다. 실제 MobileNet 결과도 강하다. GAP와 FC를 fuse하거나 1×1 convolution으로 표현하면 NPU 배포가 쉽다.
+
+다만 very small model에서는 FC parameter와 sigmoid가 상대적으로 커질 수 있다. Hard-sigmoid, ECA류 1D channel convolution, stage별 선택적 삽입을 비교할 수 있다.
+
+## 최종 평가
+
+SE Networks는 attention을 복잡한 token pair 관계가 아니라 **global context가 channel response를 조건부로 조절하는 문제**로 풀었다. 구조가 단순하고 계산량이 작으며 거의 모든 CNN backbone에 붙일 수 있다는 점이 강점이다. Spatial 정보와 위치 간 상호작용을 직접 모델링하지 않는 한계는 있지만, channel attention의 표준을 만든 가장 영향력 있는 vision block 중 하나다.

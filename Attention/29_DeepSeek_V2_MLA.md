@@ -1,204 +1,317 @@
-# 29. DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model
+# 29. DeepSeek-V2의 Multi-head Latent Attention (MLA)
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\29_DeepSeek_V2_MLA.pdf`
-- 제목: DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model
+- 원 논문: **DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model**
 - 저자: DeepSeek-AI
 - 발표: 2024
-- 주제: DeepSeek-V2 MLA와 MoE 효율 이론
-- 핵심 키워드: DeepSeek-V2, MLA, Multi-head Latent Attention, DeepSeekMoE, KV cache compression
+- 리뷰 범위: DeepSeek-V2 전체 중 **Multi-head Latent Attention(MLA)** 중심
+- 핵심 키워드: KV cache compression, low-rank joint compression, projection absorption, decoupled RoPE, latent attention
 
 ## 한눈에 보는 요약
 
-DeepSeek-V2는 효율적인 대형 언어모델을 위해 Multi-head Latent Attention(MLA)과 DeepSeekMoE를 결합한다.
-
-MLA는 key/value를 직접 모든 head별로 cache하지 않고, 저차원 latent representation을 cache한 뒤 필요할 때 key/value를 복원한다.
-
-목표는 GQA/MQA보다 더 강한 품질을 유지하면서 KV cache를 크게 줄이는 것이다.
-
-## 연구 배경과 문제의식
-
-대형 decoder-only LLM serving에서 KV cache는 sequence length, layer 수, head 수에 비례해 증가한다.
-
-KV cache를 latent representation으로 압축하고 MoE로 활성 parameter를 줄여 경제적인 LLM을 만든다.
-
-MQA/GQA는 K/V head 수를 줄이는 방식이지만, head별 표현력을 일부 희생한다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `DeepSeek-V2 MLA와 MoE 효율 이론`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-Serving 최적화 논문들은 Transformer layer의 수식보다 decode-time state를 바꾼다.
+Multi-head Latent Attention(MLA)은 각 token의 full multi-head K와 V를 cache하는 대신, K와 V를 공동으로 생성할 수 있는 작은 latent vector `c_KV`만 cache한다. 별도의 low-rank down-projection으로 hidden state를 압축하고, key와 value는 각각 up-projection으로 복원한다.
 
 ```text
-training view:
-all tokens processed in parallel
-attention over full prefix matrix
-
-serving view:
-one new token at a time
-read old K/V cache
-compute attention for current query
-append new K/V cache
+c_KV = W_DKV h
+k_C  = W_UK c_KV
+v_C  = W_UV c_KV
 ```
 
-따라서 이 계열에서는 FLOPs보다 KV cache size, memory bandwidth, fragmentation, batching efficiency가 더 중요해질 수 있다.
+Inference에서는 행렬 곱의 결합 법칙으로 `W_UK`를 query projection 쪽에, `W_UV`를 output projection 쪽에 흡수할 수 있어 매 step 과거의 full K/V를 복원할 필요가 없다.
 
-## 핵심 개념 상세 해설
+문제는 RoPE다. Position-dependent rotation이 `W_UK`와 query 사이에 들어가면 projection absorption이 깨진다. DeepSeek-V2는 content key/query에는 low-rank latent 경로를 사용하고, 작은 별도 query/key에만 RoPE를 적용하는 **decoupled RoPE**로 해결한다. Cache에는 `c_KV`와 작은 shared RoPE key만 저장한다.
 
-### KV cache 관점의 핵심
+DeepSeek-V2 설정에서 KV cache는 MHA보다 93.3% 줄고, 이론상 GQA 2.25 group 정도의 cache 크기로 MHA보다 강한 결과를 보고한다.
 
-MLA는 full K/V를 저장하지 않고 compressed latent를 저장한다.
+![MLA의 latent KV cache와 decoupled RoPE](https://github.com/user-attachments/assets/9385f64d-ed04-48fd-8ad9-257184bcb93a)
+
+## MHA의 KV cache 병목
+
+Hidden dimension `d`, head 수 `n_h`, head dimension `d_h`인 MHA는 token `t`에서
 
 ```text
-c_t^KV = W_DKV h_t
-k_t = W_UK c_t^KV + positional key part
-v_t = W_UV c_t^KV
-cache stores c_t^KV, not all head-wise K/V
+q_t = W^Q h_t
+k_t = W^K h_t
+v_t = W^V h_t
 ```
 
-K/V head 수를 줄이는 MQA/GQA와 달리, MLA는 latent basis에서 head별 K/V를 복원한다. 그래서 cache는 작게 유지하면서 표현력은 더 많이 보존하려 한다.
-
-## Tensor shape와 자료구조
-
-Serving 계열에서는 training-time tensor보다 decode-time KV cache shape가 중요하다. Layer 수를 `L`, query head 수를 `H_q`, KV head 수를 `H_kv`, head dimension을 `d`, 현재 길이를 `n`이라고 하자.
+를 만들고 `n_h`개의 head로 나눈다. Autoregressive inference에서는 모든 과거 `k_t,v_t`를 layer마다 저장한다.
 
 ```text
-MHA KV cache per layer: [n, H_q, d] for K and [n, H_q, d] for V
-MQA KV cache per layer: [n, 1, d] for K and [n, 1, d] for V
-GQA KV cache per layer: [n, H_kv, d], where 1 < H_kv < H_q
-MLA cache per layer: [n, d_latent] plus positional components
-PagedAttention: logical [n, ...] mapped to physical KV blocks
+cache elements per token across l layers
+= 2 n_h d_h l
 ```
 
-즉, attention score 수식보다 cache의 head dimension과 layout이 실제 throughput을 결정한다. 긴 context에서는 `n`이 커지므로 cache 절감 효과가 매우 커진다.
+DeepSeek-V2처럼 head가 128개이고 context가 128K이면 KV cache가 batch size와 throughput을 제한한다. MQA/GQA는 KV head를 공유해 줄이지만 논문의 ablation에서는 hard benchmark 품질이 MHA보다 낮았다.
 
-## 수식과 계산 전개
+## MLA의 핵심: K/V 공동 low-rank compression
 
-### Latent KV compression
+Token hidden state `h_t ∈ R^d`를 작은 latent로 down-project한다.
 
 ```text
-`c_t^KV = W_DKV h_t`로 low-dimensional latent KV를 만든다.
+c_t^KV = W^DKV h_t
+
+c_t^KV ∈ R^{d_c}
+W^DKV  ∈ R^{d_c × d}
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Content key 복원
+이 latent에서 content key와 value를 up-project한다.
 
 ```text
-`k_t^C = W_UK c_t^KV`, `v_t^C = W_UV c_t^KV`로 content key/value를 복원한다.
+k_t^C = W^UK c_t^KV
+v_t^C = W^UV c_t^KV
+
+W^UK,W^UV ∈ R^{(n_h d_h) × d_c}
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+`d_c << n_h d_h`이므로 full K/V 대신 `c_t^KV`만 cache하면 layer당 token당 `d_c` element만 필요하다. K와 V에 별도 latent를 두지 않고 **joint latent 하나**를 공유하는 것이 추가 절감이다.
 
-### Value 복원
+## Query low-rank compression
+
+Training activation memory를 줄이기 위해 query도 별도 latent를 거친다.
 
 ```text
-Query도 compressed latent를 거쳐 head별 query로 up-projection될 수 있다.
+c_t^Q = W^DQ h_t
+q_t^C = W^UQ c_t^Q
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Query는 현재 token에서 한 번 계산하고 cache하지 않으므로 decode KV cache 크기를 직접 줄이지는 않는다. 하지만 큰 `n_h d_h` query activation과 projection 구조를 low-rank로 제한해 training memory/parameterization에 영향을 준다.
 
-### Decoupled RoPE
+## Projection absorption
+
+Naive inference라면 과거 latent마다 `W^UK c_j^KV`, `W^UV c_j^KV`를 복원해야 해 cache는 작아도 compute가 커진다. MLA의 핵심 최적화는 결합 법칙이다.
+
+### Key up-projection 흡수
+
+Content score를 쓰면
 
 ```text
-RoPE는 content key와 분리된 positional key에 적용해 cache 압축과 위치 encoding 충돌을 줄인다.
+(q_t^C)^T k_j^C
+= (W^UQ c_t^Q)^T (W^UK c_j^KV)
+= (c_t^Q)^T [(W^UQ)^T W^UK] c_j^KV
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+두 projection을 미리 결합한 matrix로 query를 latent key space에 보내면 cached `c_j^KV`와 직접 dot product할 수 있다. 논문 표현으로 `W^UK`를 query projection에 absorb한다.
 
-### Decode cache 구성
+### Value up-projection 흡수
+
+Attention weight `a_j`에 대해
 
 ```text
-Decode cache에는 full head별 K/V 대신 `c_t^KV`와 필요한 positional component만 저장한다.
+sum_j a_j v_j^C
+= sum_j a_j W^UV c_j^KV
+= W^UV (sum_j a_j c_j^KV)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+Head concatenate 뒤 output projection `W^O`와 `W^UV`를 결합할 수 있다. 먼저 latent value weighted sum을 만든 뒤 absorbed output projection을 적용한다.
 
-## 전체 알고리즘 흐름
+따라서 decode kernel은 full K/V를 매번 복원하지 않고 latent cache를 직접 읽는다.
 
-1. 현재 token hidden state로 query를 만든다.
-2. 과거 token의 K/V cache를 shared, grouped, latent, paged layout에 맞게 읽는다.
-3. 현재 query와 과거 key 사이 attention score를 계산한다.
-4. 과거 value를 weighted sum해 현재 output을 만든다.
-5. 현재 token의 K/V 또는 latent cache를 cache에 append한다.
+## RoPE가 absorption을 깨뜨리는 이유
 
-## 작은 예시로 보는 직관
-
-사용자가 prompt 3000 token을 넣고 모델이 1 token을 생성한다고 하자. 새 token의 query는 과거 3000개 token의 K/V를 모두 읽는다.
+RoPE는 위치 `j`에 따라 key에 rotation matrix `R_j`를 적용한다.
 
 ```text
-decode step t:
-q_t: [H_q, d]
-K_cache: [t, H_kv, d]
-V_cache: [t, H_kv, d]
-attention reads K_cache and V_cache every step
+k_j = R_j W^UK c_j^KV
 ```
 
-그래서 `H_kv`를 줄이거나 cache layout을 개선하면 실제 응답 속도가 크게 달라진다.
+Score는
 
-## 계산 복잡도와 병목
+```text
+q_t^T R_j W^UK c_j^KV
+```
 
-- MLA는 구조가 복잡하고 기존 Transformer 구현과 호환성이 낮다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+가 된다. `R_j`가 token position마다 다르므로 `W^UK`를 query projection에 하나의 고정 matrix로 미리 흡수할 수 없다. 행렬 곱은 결합 가능하지만 교환 가능하지 않아 `R_j`를 지나서 projection 순서를 바꿀 수 없다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+Full key를 cache하지 않으면 매 decode step 모든 과거 position의 rotated key를 다시 만들어야 하므로 MLA의 compute 이득이 사라진다.
 
-## 구현할 때 확인할 부분
+## Decoupled RoPE
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+DeepSeek-V2는 attention query/key를 두 부분으로 나눈다.
 
-## 자주 헷갈리는 지점
+```text
+content part: low-rank MLA, RoPE 없음
+position part: small separate q_R, shared k_R, RoPE 적용
+```
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- MQA/GQA/MLA는 학습 FLOPs보다 decoding cache bandwidth를 겨냥한다.
-- KV cache 최적화는 모델 구조와 serving scheduler가 함께 맞아야 효과가 크다.
+Query head `i`와 key는
 
-## 관련 방법과 비교
+```text
+q_{t,i} = [q_{t,i}^C ; q_{t,i}^R]
+k_{j,i} = [k_{j,i}^C ; k_j^R]
+```
 
-| 방법 | KV cache 전략 | 장점 |
-| --- | --- | --- |
-| MHA | head별 K/V 저장 | 표현력 높음, cache 큼 |
-| MQA | 모든 query head가 K/V 공유 | cache 최소화 |
-| GQA | group별 K/V 공유 | 품질/효율 절충 |
-| MLA | latent KV 저장 후 복원 | cache 압축과 head 표현력 절충 |
-| PagedAttention | block table로 KV 관리 | fragmentation 감소, prefix sharing |
+이다. RoPE 부분은
 
-## 실험 결과를 읽는 관점
+```text
+q_t^R = RoPE(W^QR c_t^Q)
+k_t^R = RoPE(W^KR h_t)
+```
 
-Serving 논문의 실험은 perplexity보다 throughput, latency, batch 처리량, GPU memory 사용량이 핵심이다.
+로 계산한다. `q^R`은 multi-head지만 `k^R`은 head 사이에서 공유한다. Score는 content dot product와 position dot product의 합이다.
 
-MQA/GQA/MLA는 품질 손실과 cache 절감의 trade-off를 보고, PagedAttention은 실제 request workload에서 fragmentation과 scheduling 효율을 본다.
+```text
+score_{t,j,i}
+= [(q^C)^T k^C + (q^R)^T k^R]
+  / sqrt(d_h + d_h^R)
+```
+
+RoPE는 작은 position subspace에만 존재하므로 content `W^UK` absorption은 유지된다. Cache에는 latent `c_j^KV`와 shared rotated key `k_j^R`만 저장한다.
+
+## 최종 KV cache 크기
+
+MLA의 layer당 token cache는
+
+```text
+d_c + d_h^R
+```
+
+이고 전체 `l` layer에서는
+
+```text
+(d_c + d_h^R) l
+```
+
+이다. 비교하면 다음과 같다.
+
+| Attention | Token당 cache element, l layers |
+| --- | ---: |
+| MHA | `2 n_h d_h l` |
+| GQA | `2 n_g d_h l` |
+| MQA | `2 d_h l` |
+| MLA | `(d_c + d_h^R) l` |
+
+DeepSeek-V2는 `d_c=4d_h`, `d_h^R=d_h/2`를 사용하므로 MLA cache는 `4.5d_h l`, 즉 MQA의 `2.25×`, GQA 2.25 group과 같은 규모다. MHA head 128개와 비교하면 매우 작다.
+
+## DeepSeek-V2 구체 설정
+
+논문 설정은 다음과 같다.
+
+```text
+attention heads n_h   = 128
+per-head dim d_h      = 128
+KV latent dim d_c     = 512
+query latent dim d'_c = 1536
+RoPE head dim d_h^R   = 64
+context length        = 128K
+```
+
+Layer당 token cache는 latent 512와 RoPE key 64, 총 576 element다. MHA의 `2×128×128=32768` element와 비교하면 약 98.2% 작은 이론 element 수다. 논문의 실제 배포 전체 비교에서는 precision·다른 최적화를 포함해 KV cache 93.3% 감소를 보고한다.
+
+## Attention 계산 흐름
+
+```text
+current token h_t
+  ├─ W_DQ -> c_Q -> content query
+  ├─ c_Q -> RoPE query per head
+  └─ W_DKV -> c_KV(current), cache
+              └─ W_KR h_t -> shared RoPE key, cache
+
+decode against prefix:
+  content score: absorbed query · cached c_KV
+  position score: RoPE query · cached RoPE key
+  softmax over prefix
+  weighted sum of cached c_KV
+  absorbed value/output projection
+```
+
+MLA 전용 kernel은 두 cache component와 absorbed weight layout을 직접 지원해야 한다.
+
+## MQA/GQA/MHA ablation
+
+논문은 약 7B dense model을 같은 1.33T token으로 학습해 비교한다.
+
+| Benchmark | MQA | GQA-8 | MHA |
+| --- | ---: | ---: | ---: |
+| BBH | 33.2 | 35.6 | **37.0** |
+| MMLU | 37.9 | 41.2 | **45.2** |
+| C-Eval | 30.0 | 37.7 | **42.9** |
+| CMMLU | 34.6 | 38.4 | **43.5** |
+
+이 결과는 극단적 KV head sharing이 hard benchmark capacity를 낮출 수 있다는 MLA의 동기를 강화한다.
+
+## MLA와 MHA 직접 비교
+
+Architecture를 attention 외에는 맞춘 small/large MoE model 결과는 다음과 같다.
+
+| 항목 | Small MHA | Small MLA | Large MHA | Large MLA |
+| --- | ---: | ---: | ---: | ---: |
+| KV cache/token | 110.6K | **15.6K** | 860.2K | **34.6K** |
+| BBH | 37.9 | **39.0** | 46.6 | **50.7** |
+| MMLU | 48.7 | **50.0** | 57.5 | **59.0** |
+| C-Eval | **51.6** | 50.9 | 57.9 | **59.2** |
+| CMMLU | 52.3 | **53.4** | 60.7 | **62.5** |
+
+MLA cache는 small에서 MHA의 약 14%, large에서 약 4%이고 대부분 benchmark에서 MHA보다 높다. 다만 model layer/activated parameter가 완전히 동일하지 않은 항목이 있어 attention 하나의 순수 효과로 과도하게 일반화하면 안 된다.
+
+## 전체 DeepSeek-V2 효율 결과
+
+DeepSeek-V2는 236B total parameter 중 token당 21B를 activate하는 MoE model이고 8.1T token으로 학습되었다. 이전 DeepSeek 67B 대비 논문은 다음을 보고한다.
+
+- Training cost 42.5% 절감
+- KV cache 93.3% 절감
+- Maximum generation throughput 5.76×
+- 배포 generation throughput 50K tokens/s 이상
+
+이 수치는 MLA뿐 아니라 DeepSeekMoE, quantization, serving optimization의 결합 결과다. MLA의 독립 기여로 동일시해서는 안 된다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- K와 V를 별도 head 공유가 아니라 하나의 low-rank latent로 공동 압축했다.
+- Projection absorption으로 cache 압축이 과거 K/V 재계산으로 이어지지 않게 했다.
+- RoPE와 absorption의 충돌을 정확히 지적하고 decoupled RoPE로 해결했다.
+- MQA급 cache 크기에서 MHA 이상의 benchmark 품질 가능성을 보였다.
+- 128K context 대형 MoE model에서 실제 throughput 개선으로 연결했다.
 
 ## 한계와 비판적 관점
 
-- MLA는 구조가 복잡하고 기존 Transformer 구현과 호환성이 낮다.
-- 압축 차원 선택이 품질과 cache 절감의 핵심 trade-off다.
-- MoE routing까지 포함하면 학습 안정성, load balancing, serving scheduling 문제가 함께 생긴다.
+### 1. 구현과 kernel이 복잡하다
 
-## 후속 논문과의 연결점
+일반 MHA/GQA kernel에 단순 shape 변경만으로 넣기 어렵다. Latent content score, shared RoPE key, absorbed value output을 지원해야 한다.
 
-MLA는 MQA/GQA 이후 KV cache 효율화의 더 공격적인 방향이며, long-context serving과 MoE inference 최적화와 밀접하게 연결된다.
+### 2. Low-rank bottleneck
 
-## 개인 학습/연구 메모
+모든 K/V 정보가 `d_c` latent를 통과한다. DeepSeek 규모에서 잘 작동했지만 작은 model, multimodal high-rank feature, exact retrieval에서 optimal rank가 다를 수 있다.
 
-MLA는 `full KV를 저장하지 말고 latent KV를 저장한 뒤 head별 K/V를 필요할 때 복원한다`고 기억하면 된다.
+### 3. Decoupled RoPE의 표현 제약
 
+Position interaction이 작은 별도 subspace에 제한된다. Full key dimension 전체에 RoPE를 적용하는 MHA와 inductive bias가 다르다.
+
+### 4. 전체 모델 결과와 MLA 기여 분리
+
+5.76× throughput과 93.3% cache 절감에는 quantization, MoE, system optimization이 함께 들어간다. MLA-only matched deployment benchmark가 더 필요하다.
+
+### 5. Training parameter/compute
+
+Down/up projection과 query compression이 추가되고 training forward에는 full multi-head representation이 필요할 수 있다. Decode cache 절감과 training FLOPs 절감은 같은 문제가 아니다.
+
+## GQA와 MLA 비교
+
+| 축 | GQA | MLA |
+| --- | --- | --- |
+| 압축 방식 | KV head 공유 | K/V 공동 low-rank latent |
+| Cached state | G개의 full KV head | `c_KV` + small RoPE key |
+| 위치 처리 | full head RoPE | decoupled RoPE |
+| 기존 MHA 변환 | mean pooling+uptraining 가능 | architecture 변경·재학습 필요 |
+| Kernel | 비교적 단순 broadcast | absorbed projection 전용 kernel |
+
+## 구현 체크리스트
+
+- `c_KV` 하나가 K와 V up-projection에 공동 사용되는가?
+- Inference에서 과거 full `k_C,v_C`를 복원하지 않는가?
+- `W_UK`와 `W_UV` absorption의 transpose/ head layout이 정확한가?
+- RoPE가 content key가 아니라 decoupled q_R/k_R에만 적용되는가?
+- Shared RoPE key를 head 수만큼 물리적으로 복제하지 않는가?
+- Cache allocator가 `(d_c+d_h^R)` 기준으로 실제 줄었는가?
+- Prefill, decode, cache memory, quality를 분리해 측정했는가?
+
+## 온디바이스 관점
+
+MLA는 긴 context의 RAM과 DRAM bandwidth를 크게 줄일 잠재력이 있어 온디바이스 LLM에 매력적이다. Cache가 latent 512+position 64처럼 고정된 작은 vector면 context capacity와 energy가 개선된다. 그러나 absorbed projection을 효율적으로 실행하는 custom kernel과 weight conversion이 필요하며 기존 GQA model을 바로 MLA로 바꿀 수 없다.
+
+작은 NPU에서는 low-rank GEMM이 잘 맞지만 RoPE branch와 latent attention fusion이 지원되지 않으면 kernel launch/transpose overhead가 커질 수 있다. 따라서 architecture 선택은 학습 단계부터 device compiler와 co-design해야 한다.
+
+## 최종 평가
+
+MLA는 MQA/GQA처럼 KV head 수만 줄이는 대신 **각 token의 K와 V를 생성하는 공통 latent state 자체를 cache**한다. Projection absorption으로 복원 compute를 없애고, decoupled RoPE로 position encoding과 결합 법칙의 충돌을 해결한 점이 가장 독창적이다. 구현 난도와 low-rank 가정은 크지만, 매우 작은 cache로 MHA급 이상의 품질을 보인 결과는 KV-cache 설계의 새로운 축을 열었다.

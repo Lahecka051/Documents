@@ -2,205 +2,287 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\21_Performer.pdf`
-- 제목: Rethinking Attention with Performers
+- 제목: **Rethinking Attention with Performers**
 - 저자: Krzysztof Choromanski et al.
 - 발표: ICLR 2021
-- 주제: Performer의 kernelized linear attention
-- 핵심 키워드: Performer, FAVOR+, random features, kernelized attention, linear attention
+- 핵심 키워드: FAVOR+, random feature, softmax kernel, orthogonal random feature, linear attention
 
 ## 한눈에 보는 요약
 
-Performer는 softmax attention을 random feature kernel approximation으로 근사해 linear attention을 구현한다.
+Performer는 softmax attention을 kernel로 해석하고, 그 kernel을 positive random feature로 근사해 `[n,n]` attention matrix를 만들지 않는다. 이 알고리즘을 **FAVOR+**(Fast Attention Via positive Orthogonal Random features)라고 부른다.
 
-FAVOR+는 positive orthogonal random features를 사용해 softmax kernel을 안정적으로 근사한다.
-
-핵심은 `exp(q^T k)`를 `phi(q)^T phi(k)`로 근사하면 attention을 associative하게 계산할 수 있다는 점이다.
-
-## 연구 배경과 문제의식
-
-Softmax attention은 `A = softmax(QK^T)` 때문에 `n x n` matrix를 필요로 한다.
-
-Softmax kernel을 random feature inner product로 근사해 linear attention을 만든다.
-
-만약 attention kernel을 feature inner product로 표현할 수 있으면 `QK^T`를 만들지 않고 `K^T V`류의 선형 계산으로 바꿀 수 있다.
-
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `Performer의 kernelized linear attention`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-표준 attention과 효율 attention의 차이는 `n x n` 행렬을 얼마나 직접 다루는지에 있다.
+표준 attention의 unnormalized kernel은
 
 ```text
-standard:
-S = QK^T                  # [n, n]
-P = softmax(S)            # [n, n]
-O = P V
-
-efficient:
-avoid or approximate S by
-- sparse subset
-- low-rank projection
-- random feature kernel
-- landmark approximation
+A_ij = exp(q_i^T k_j / sqrt(d))
 ```
 
-이때 중요한 질문은 `P`를 정확히 보존하는가이다. 보존하지 않는다면 그 방법은 속도를 얻는 대신 attention 분포를 바꾼다.
-
-## 핵심 개념 상세 해설
-
-### 효율 attention의 핵심 수식
-
-Performer는 softmax kernel을 random feature inner product로 근사한다.
+이다. `exp(q^T k)`를 feature map 내적 `phi(q)^T phi(k)`로 근사하면 계산 순서를 바꿀 수 있다.
 
 ```text
-exp(q^T k) approx phi(q)^T phi(k)
-O_i = [phi(q_i)^T sum_j phi(k_j)v_j^T] / [phi(q_i)^T sum_j phi(k_j)]
+phi(Q) [phi(K)^T V]
 ```
 
-이렇게 하면 token pair matrix를 만들지 않고 key/value feature aggregate만 유지하면 된다.
+중간 값은 `[r,d_v]`이고, `r`은 random feature 수다. normalization denominator도 같은 방식으로 계산한다. 따라서 time은 `O(n r d)`, memory는 `O(nr + nd + rd)`가 된다. `r`을 고정하면 길이에 대해 선형이다.
 
-## Tensor shape와 자료구조
+Performer의 중요한 개선은 일반 random feature가 아니라 **양수 feature**와 **orthogonal random vector**를 사용해 softmax kernel 근사의 분산과 normalization 불안정을 줄인 점이다.
 
-효율 attention의 shape는 어떤 차원을 줄이느냐에 따라 달라진다. 표준 attention은 `[n, n]` score matrix를 만들지만, sparse/low-rank/kernel 방식은 이 matrix를 직접 만들지 않는다.
+![Performer FAVOR+의 kernel factorization](https://github.com/user-attachments/assets/67654194-a0ef-4520-9289-8172c64c4b27)
+
+## 표준 softmax attention을 kernel로 보기
+
+한 head에서 scaled query/key를 이미 반영했다고 하자. unnormalized attention matrix와 row normalization은 다음과 같다.
 
 ```text
-standard:
-Q: [n, d], K: [n, d], V: [n, d_v]
-S = QK^T: [n, n]
-O = softmax(S)V: [n, d_v]
-
-linear/low-rank examples:
-K' or landmark: [k, d] where k << n
-score: [n, k] or implicit kernel aggregate
-output: [n, d_v]
+A = exp(Q K^T)                  # element-wise exp, [n,n]
+D = diag(A 1_n)                 # row sum
+Y = D^(-1) A V
 ```
 
-따라서 이 계열을 읽을 때는 `n x n` 행렬이 어디에서 사라지는지 추적해야 한다. 사라지는 방식이 곧 논문의 이론적 가정이다.
-
-## 수식과 계산 전개
-
-### Softmax kernel
+`A`를 직접 만들지 않고 kernel
 
 ```text
-Softmax kernel은 `exp(q^T k)`로 볼 수 있다.
+K(q,k) = exp(q^T k)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Random feature map
+의 저차원 feature 표현을 찾는 것이 핵심이다.
 
 ```text
-Performer는 `exp(q^T k) ≈ phi(q)^T phi(k)`로 근사한다.
+K(q,k) ≈ phi(q)^T phi(k),  phi(x) ∈ R^r
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### Linear numerator
+그러면 전체 kernel matrix는
 
 ```text
-Attention numerator는 `sum_j phi(q_i)^T phi(k_j) v_j = phi(q_i)^T (sum_j phi(k_j) v_j^T)`로 계산된다.
+A ≈ Q' K'^T
+Q' = phi(Q) : [n,r]
+K' = phi(K) : [n,r]
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+로 factorize된다.
 
-### Linear denominator
+## FAVOR+ attention 수식
+
+Numerator는 결합 법칙으로 다음처럼 계산한다.
 
 ```text
-Denominator는 `sum_j phi(q_i)^T phi(k_j) = phi(q_i)^T (sum_j phi(k_j))`로 계산된다.
+A V ≈ (Q' K'^T) V
+    = Q' (K'^T V)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-### FAVOR+ 안정화
+Denominator도 `[n,n]` 없이 계산한다.
 
 ```text
-따라서 `output_i = numerator_i / denominator_i`가 되고, 전체 비용은 `O(n r d)`가 된다. `r`은 random feature 수다.
+A 1 ≈ Q' (K'^T 1)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
-
-## 전체 알고리즘 흐름
-
-1. Q/K/V를 만든다.
-2. Full `n x n` score를 만들지 않기 위한 sparse set, projection, random feature, landmark를 구성한다.
-3. 제한되거나 근사된 attention score 또는 kernel aggregate를 계산한다.
-4. Normalization을 적용한다.
-5. Value aggregation으로 output representation을 만든다.
-
-## 작은 예시로 보는 직관
-
-길이 10,000 문서에서 full attention은 한 head마다 1억 개 score를 만든다. 하지만 문서 이해에 모든 token pair가 같은 중요도를 갖지는 않는다.
+최종 출력은 row별 scalar로 나눈다.
 
 ```text
-full score count: n^2 = 10000^2 = 100,000,000
-local window w=256: n*w = 2,560,000
-landmarks k=256: n*k = 2,560,000
+S = K'^T V              # [r,d_v]
+z = K'^T 1_n            # [r]
+
+Y_i = (Q'_i S) / (Q'_i z)
 ```
 
-효율 attention은 이 차이를 이용한다. 다만 줄인 score가 실제 필요한 관계를 충분히 포함해야 한다.
+Batch/head를 포함하면 shape은 다음과 같다.
 
-## 계산 복잡도와 병목
+```text
+Q',K' : [B,H,N,R]
+V     : [B,H,N,D]
+S     : [B,H,R,D]
+z     : [B,H,R]
+Y     : [B,H,N,D]
+```
 
-- 근사 attention이므로 exact softmax attention과 출력이 다를 수 있다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+분모가 매우 작아질 때 epsilon과 stable accumulation이 필요하다.
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+## Positive random feature의 유도
 
-## 구현할 때 확인할 부분
+Gaussian random vector `ω ~ N(0,I)`에 대해 다음 feature를 생각할 수 있다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+```text
+phi_ω(x) = exp(ω^T x - ||x||² / 2)
+```
 
-## 자주 헷갈리는 지점
+Gaussian moment generating function을 사용하면
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- Linear complexity라고 해서 항상 실제 wall-clock이 빠른 것은 아니다. GPU kernel, memory layout, batch shape가 중요하다.
-- Approximate attention은 exact softmax attention과 같은 결과를 내지 않는다. 성능 비교에서 품질 손실을 함께 봐야 한다.
+```text
+E_ω[phi_ω(x) phi_ω(y)] = exp(x^T y)
+```
 
-## 관련 방법과 비교
+가 된다. `r`개의 random vector를 샘플링하고 `1/sqrt(r)`로 정규화해 finite-dimensional feature map을 만든다.
 
-| 방법 | 줄이는 대상 | Exact 여부 |
-| --- | --- | --- |
-| Sparse/Longformer/BigBird | attention edge 수 | sparse graph 기준 exact, full attention은 아님 |
-| Linformer | sequence dimension rank | 근사 |
-| Performer | softmax kernel | random feature 근사 |
-| Nyströmformer | attention matrix rank | landmark 근사 |
-| FlashAttention | HBM IO와 저장량 | full attention exact |
+```text
+phi(x) = 1/sqrt(r) * [phi_ω1(x), ..., phi_ωr(x)]
+```
 
-## 실험 결과를 읽는 관점
+모든 component가 양수이므로 근사 kernel과 denominator가 음수가 되지 않는다. 이것이 일반적인 sine/cosine random Fourier feature보다 softmax attention에 안정적인 이유다.
 
-효율 attention 실험은 점수와 복잡도를 함께 봐야 한다. 근사 방식은 속도와 메모리를 줄일 수 있지만, attention distribution이 바뀌므로 task 성능이 손상될 수 있다.
+## 왜 기존 trigonometric feature가 불안정한가
 
-또한 이론적 `O(n)` 또는 `O(n log n)` 복잡도가 실제 GPU wall-clock speedup으로 이어지는지 확인해야 한다. Sparse 또는 low-rank 알고리즘은 kernel 구현의 영향을 크게 받는다.
+일반 random Fourier feature는 양수와 음수 term을 함께 사용한다. 기대값은 올바르더라도 실제 finite sample에서 cancellation이 크고, kernel 값이 작은 영역의 상대 오차가 커진다. attention row sum이 0 근처 또는 음수가 되면 normalization이 불안정해진다.
+
+Positive feature는 cancellation을 줄이고 denominator의 의미를 유지한다. 하지만 exponential feature 자체가 큰 값을 만들 수 있으므로 max subtraction, input scaling, FP32 accumulation 같은 수치 안정화는 여전히 필요하다.
+
+## Orthogonal random features
+
+독립 Gaussian vector 대신 서로 직교하도록 구성한 random vector를 사용한다. 같은 `r`개의 방향이 중복 정보를 덜 담으므로 Monte Carlo variance가 낮아진다.
+
+```text
+independent features : 방향이 우연히 비슷할 수 있음
+orthogonal features  : feature budget으로 더 다양한 방향을 탐색
+```
+
+`r <= d`이면 하나의 orthogonal block을 사용할 수 있고, 더 큰 `r`은 여러 block을 이어 붙인다. 논문은 orthogonal feature의 mean squared error가 일반 feature보다 낮음을 이론과 실험으로 보인다.
+
+## Query/key scaling
+
+표준 scaled dot-product의
+
+```text
+exp(q^T k / sqrt(d))
+```
+
+를 `exp(x^T y)` 형태로 맞추려면 query와 key를 `d^(-1/4)`씩 scaling할 수 있다.
+
+```text
+x = q / d^(1/4)
+y = k / d^(1/4)
+x^T y = q^T k / sqrt(d)
+```
+
+이 scaling이 누락되면 kernel의 sharpness와 feature variance가 크게 달라진다.
+
+## Causal Performer
+
+Bidirectional attention에서는 `S=K'^T V`, `z=K'^T 1`을 sequence 전체에서 한 번 계산한다. causal attention에서는 위치 `i`가 `j<=i`만 봐야 하므로 prefix statistics를 사용한다.
+
+```text
+S_i = sum_{j<=i} K'_j outer V_j      # [r,d]
+z_i = sum_{j<=i} K'_j                # [r]
+
+Y_i = (Q'_i S_i) / (Q'_i z_i)
+```
+
+parallel training에서는 associative prefix scan으로 모든 `S_i,z_i`를 계산할 수 있다. autoregressive decoding에서는 새 key/value가 들어올 때 state를 한 번 update한다.
+
+```text
+S <- S + k'_t outer v_t
+z <- z + k'_t
+y_t = (q'_t S) / (q'_t z)
+```
+
+이 recurrent state 크기는 sequence length와 무관한 `O(rd)`다. 하지만 정확한 KV history를 보존하지 않으므로 random-feature 근사의 정보 bottleneck이 된다.
+
+## 계산 복잡도
+
+| 항 | Exact attention | Performer |
+| --- | ---: | ---: |
+| Score/kernel | `O(n²d)` | `O(nrd)` |
+| Attention memory | `O(n²)` | `O(nr + rd)` |
+| Causal decode state | `O(nd)` KV cache | `O(rd)` statistics |
+
+`r << n`이면 큰 절감이 난다. 그러나 feature map에서 exponential과 norm을 계산하는 비용, prefix scan, numerical stabilization도 포함해야 한다. 짧은 sequence에서는 exact fused attention이 더 빠를 수 있다.
+
+## Feature redraw
+
+Random projection을 학습 내내 고정하면 모델이 특정 feature sample의 approximation error에 과도하게 적응할 수 있다. 논문은 일정 간격으로 random features를 redraw하는 옵션을 사용한다.
+
+Redraw는 kernel estimator의 다양한 sample을 경험하게 하지만 다음 관리가 필요하다.
+
+- distributed replica에 같은 random matrix를 배포할지
+- evaluation에서는 고정할지
+- checkpoint에 projection seed/state를 저장할지
+- reversible/recompute와 RNG를 일치시킬지
+
+## 이론적 보장
+
+논문은 positive feature estimator의 unbiased 또는 거의 unbiased 성질과 variance bound를 분석한다. 또한 bounded query/key domain에서 uniform convergence를 위해 필요한 feature 수가 sequence length `n`이 아니라 dimension, norm bound, error tolerance에 의존하는 결과를 제시한다.
+
+이 결과의 의미는 `n`이 커진다고 반드시 `r`을 같은 비율로 늘릴 필요는 없다는 것이다. 다만 실제 Transformer의 query/key norm이 bound를 얼마나 만족하는지, 작은 error가 downstream output에 어떻게 누적되는지는 별도 문제다.
+
+## 실험 결과
+
+### Kernel approximation
+
+Positive feature가 trigonometric feature보다 attention matrix와 output의 approximation error가 낮았고, orthogonal random vector를 사용하면 같은 feature 수에서 error가 더 줄었다. 특히 kernel 값이 작거나 score distribution이 sharp한 영역에서 positivity의 안정성 이득이 나타난다.
+
+### Pretrained Transformer 변환
+
+기존 full-attention model을 Performer attention으로 치환하면 즉시 품질 손실이 생기지만, 짧은 fine-tuning으로 상당 부분 회복한다. 이는 Reformer와 마찬가지로 모델이 approximation 구조에 적응할 필요가 있음을 보여준다.
+
+### PG-19 language modeling
+
+긴 책 dataset에서 positive feature와 periodic redraw가 중요했다. 단순 ReLU kernel이나 불안정 feature는 긴 training에서 품질이 떨어졌고, FAVOR+가 더 안정적으로 학습되었다.
+
+### Protein sequence modeling
+
+36-layer protein model에서 softmax-kernel Performer는 exact attention과 비슷한 성능을 보였다. 일부 설정에서는 ReLU kernel이 더 좋은 task metric을 내기도 해, 모든 task에서 softmax approximation 자체가 최적 kernel이라는 보장은 없음을 보여준다.
+
+### ImageNet64
+
+64×64 RGB를 펼친 약 12,288 길이 sequence에서 6-layer Performer가 12-layer Reformer에 경쟁적인 density modeling 성능을 보였다. sorting 없는 dense linear algebra로 긴 image sequence를 처리한 사례다.
+
+### 매우 긴 protein concatenation
+
+8,192 길이의 concatenated protein sequence도 full attention memory 없이 처리할 수 있음을 보였다. 논문의 주장은 특정 benchmark SOTA보다 다양한 modality에서 하나의 kernel mechanism이 작동한다는 범용성에 있다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- softmax attention을 kernel factorization으로 바꿔 `[n,n]` materialization을 제거했다.
+- positive random feature로 normalization 안정성을 개선했다.
+- orthogonal feature로 같은 `r`에서 variance를 줄였다.
+- causal attention을 prefix statistics로 선형 계산하는 방법을 제시했다.
+- 이론 bound와 text, image, protein 실험을 함께 제공했다.
 
 ## 한계와 비판적 관점
 
-- 근사 attention이므로 exact softmax attention과 출력이 다를 수 있다.
-- Random feature 수와 projection 분포가 성능에 영향을 준다.
-- 현대 GPU에서는 exact attention을 최적화한 FlashAttention이 더 단순하고 강력한 경우가 많다.
+### 1. Approximation variance
 
-## 후속 논문과의 연결점
+유한한 `r`에서는 output이 random projection에 의존한다. `r`을 늘리면 품질은 좋아지지만 선형 attention의 비용 이점이 줄어든다.
 
-Performer는 kernelized linear attention의 대표 논문이며, efficient long-context Transformer 연구에서 Linformer, Nyströmformer와 함께 비교된다.
+### 2. Numerical stability
 
-## 개인 학습/연구 메모
+`exp(ω^T x - ||x||²/2)`는 overflow/underflow 가능성이 있고 denominator가 작으면 오차가 증폭된다. mixed precision 구현이 특히 어렵다.
 
-Performer의 핵심은 `softmax(qk)를 phi(q)^T phi(k)로 바꿔서 K/V를 먼저 합산한다`는 것이다.
+### 3. Sharp attention과 retrieval
 
+거의 one-hot인 attention kernel을 작은 random feature 수로 근사하기 어렵다. exact match와 needle retrieval에서 feature bottleneck이 드러날 수 있다.
+
+### 4. Redraw와 재현성
+
+projection 갱신은 regularization 효과가 있지만 training state와 distributed synchronization을 복잡하게 만든다.
+
+### 5. Exact kernel의 발전
+
+FlashAttention은 moderate context에서 exact softmax를 매우 효율적으로 계산한다. Performer의 장점은 매우 긴 context나 recurrent causal state가 중요한 조건에서 평가해야 한다.
+
+## 관련 방법과 비교
+
+| 방법 | Factorization 축 | 중간 크기 | 특징 |
+| --- | --- | ---: | --- |
+| Efficient Attention | Q/K channel | `[d_k,d_v]` | separable softmax |
+| Linformer | sequence rank | `[n,k]` | learned projection |
+| Performer | kernel feature | `[n,r]` | random feature |
+| Nyströmformer | landmarks | `[n,m]` | pseudo-inverse core |
+
+## 구현 체크리스트
+
+- `d^(-1/4)` query/key scaling이 올바른가?
+- random feature normalization `1/sqrt(r)`가 포함되는가?
+- exponential 계산 전에 안정화가 적용되는가?
+- denominator에 안전한 epsilon과 FP32 accumulation을 쓰는가?
+- causal prefix sum이 미래 token을 포함하지 않는가?
+- redraw seed/state가 checkpoint와 distributed training에서 재현되는가?
+- feature 수 `r`별 error·quality·latency를 함께 측정했는가?
+
+## 온디바이스 관점
+
+Performer는 sort나 irregular sparse gather 없이 GEMM, reduction, elementwise exp로 구성할 수 있다는 장점이 있다. causal decode state가 `O(rd)`로 고정되므로 KV cache가 긴 context에 비례해 커지는 문제도 피할 수 있다. 반면 exponential feature와 FP32 accumulation이 양자화·저정밀 NPU에서 부담일 수 있다.
+
+Vision encoder에서는 fixed resolution의 긴 patch sequence를 처리하기 쉽고 dense linear algebra 활용도가 높다. 실제 배포에서는 `r`을 vector unit tile에 맞추고, feature map 생성과 `K'^T V`를 fuse할 수 있는지가 핵심이다.
+
+## 최종 평가
+
+Performer는 linear attention을 단순한 `Q(K^T V)` 재배열에서 **softmax kernel의 확률적 factorization**으로 발전시킨 대표 논문이다. positivity와 orthogonality로 random-feature 근사의 실용성을 높였고, causal prefix state까지 하나의 수식으로 처리한다. 그러나 exact attention이 아니며 feature 수, random seed, 수치 안정성에 품질이 좌우된다. 긴 context에서 kernel approximation을 받아들일 수 있을 때 강력하지만, moderate length에서 exact fused attention과 반드시 비교해야 한다.

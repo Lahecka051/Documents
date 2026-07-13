@@ -2,212 +2,246 @@
 
 ## 논문 정보
 
-- 원본 파일: `C:\Users\lkm\Documents\Codex\Embbeded_OnDevice_ComputerVision\attention_papers_pdf\23_FlashAttention.pdf`
-- 제목: FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness
-- 저자: Tri Dao et al.
+- 제목: **FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness**
+- 저자: Tri Dao, Daniel Y. Fu, Stefano Ermon, Atri Rudra, Christopher Ré
 - 발표: NeurIPS 2022
-- 주제: FlashAttention의 IO-aware exact attention
-- 핵심 키워드: FlashAttention, exact attention, IO-aware tiling, online softmax
+- 핵심 키워드: exact attention, IO awareness, tiling, online softmax, recomputation, HBM, SRAM
 
 ## 한눈에 보는 요약
 
-FlashAttention은 attention 수식을 근사하지 않고 exact하게 유지하면서 GPU memory IO를 줄여 빠르게 계산한다.
+FlashAttention은 attention의 `O(n²)` FLOPs를 줄이지 않는다. 대신 GPU의 느리고 큰 HBM과 빠르고 작은 on-chip SRAM 사이에서 오가는 byte 수를 줄여 **표준 softmax attention을 정확하게** 더 빠르고 적은 memory로 계산한다.
 
-핵심은 `QK^T`와 attention matrix를 HBM에 저장하지 않고, SRAM tile 단위로 읽고 online softmax를 수행하는 것이다.
+표준 구현은 `S=QK^T`, `P=softmax(S)`, `O=PV`를 별도 kernel로 실행하면서 `[n,n]` 행렬 `S,P`를 HBM에 쓰고 다시 읽는다. FlashAttention은 Q/K/V를 tile로 SRAM에 올리고, score·softmax·value aggregation을 한 fused kernel 안에서 처리한다. `[n,n]` attention matrix는 HBM에 저장하지 않는다.
 
-Backward에서는 attention matrix를 저장하는 대신 필요한 값을 recomputation해 메모리를 줄인다.
+Softmax는 한 row 전체가 있어야 normalization할 수 있지만, **online softmax**의 running maximum과 running sum을 유지하면 key block을 차례로 보면서도 정확한 결과를 얻을 수 있다. backward에서는 저장하지 않은 attention probability를 Q/K/V와 softmax 통계로 다시 계산한다.
 
-## 연구 배경과 문제의식
+결과적으로 FLOPs는 여전히 `O(n²d)`지만 추가 activation memory는 `O(n)` 수준이고, HBM IO가 크게 줄어 실제 wall-clock이 빨라진다.
 
-표준 attention 구현은 `S = QK^T`, `P = softmax(S)`, `O = PV`를 각각 큰 matrix로 materialize한다.
+![FlashAttention의 IO-aware tiling과 online softmax](https://github.com/user-attachments/assets/223f4cf2-7396-4abc-9817-07e72fe6e3c0)
 
-Attention 수식은 유지하고, tiling과 online softmax로 HBM IO와 memory를 줄인다.
+## 문제의식: FLOPs만 줄여서는 충분하지 않다
 
-GPU에서 연산량뿐 아니라 HBM과 SRAM 사이의 memory traffic이 실제 속도의 큰 병목이다.
+GPU memory hierarchy는 비대칭이다. 논문이 예로 든 A100은 HBM이 수십 GB이고 bandwidth가 약 1.5 TB/s인 반면, SRAM은 SM 전체 합계가 수십 MB로 작지만 약 19 TB/s 수준으로 훨씬 빠르다.
 
-## 이 논문에서 먼저 잡아야 할 이론적 축
-
-이 논문의 중심축은 `FlashAttention의 IO-aware exact attention`이다.
-
-따라서 리뷰의 초점은 단순히 모델이 성능을 올렸다는 사실이 아니라, 논문이 기존 방법의 어떤 가정을 바꾸었고 그 변화가 수식과 계산 절차에서 어떻게 나타나는지에 둔다.
-
-아래 섹션에서는 핵심 개념을 먼저 분해하고, 그 다음 실제 계산 흐름을 단계별로 따라간다.
-
-## 기존 방식과 무엇이 다른가
-
-FlashAttention 계열은 Linformer나 Performer처럼 attention을 근사하지 않는다. 표준 attention과 같은 수학적 결과를 내되, 중간 matrix를 저장하지 않는 실행 알고리즘을 설계한다.
+표준 attention은 다음 과정을 거친다.
 
 ```text
-approximate efficient attention:
-change attention math to reduce pairwise interactions
-
-FlashAttention:
-keep exact softmax attention
-change memory access pattern and tiling
+kernel 1: Q,K를 HBM에서 읽음 -> S=QK^T -> S를 HBM에 씀
+kernel 2: S를 읽음 -> P=softmax(S) -> P를 HBM에 씀
+kernel 3: P,V를 읽음 -> O=PV -> O를 HBM에 씀
 ```
 
-따라서 FlashAttention의 핵심 이론은 모델링 이론이라기보다 IO complexity와 online softmax 알고리즘이다.
+연산량이 많더라도 Tensor Core GEMM은 매우 빠르다. 오히려 거대한 `S,P`를 HBM에 쓰고 읽는 시간이 병목이 된다. 일부 approximate attention은 FLOPs를 줄여도 irregular memory access와 kernel overhead 때문에 실제로 빠르지 않았다는 것이 논문의 출발점이다.
 
-## 핵심 개념 상세 해설
-
-### Online softmax
-
-FlashAttention의 핵심은 softmax를 tile 단위로 나누어도 정확히 계산할 수 있다는 점이다. 각 row에 대해 현재까지 본 score의 maximum `m`과 exp sum `l`을 유지한다.
+## 표준 attention과 정확성 목표
 
 ```text
-m_new = max(m_old, max(S_tile))
+S = Q K^T / sqrt(d)       # [N,N]
+P = softmax_row(S)        # [N,N]
+O = P V                   # [N,d]
+```
+
+FlashAttention이 출력해야 하는 `O`는 위 식과 동일하다. sparsity, low-rank, random feature를 사용하지 않는다. 차이는 `[N,N]` 중간 결과를 materialize하지 않는 계산 순서뿐이다.
+
+## Tiling 구조
+
+Q를 row block `Q_i`, K/V를 column block `K_j,V_j`로 나눈다.
+
+```text
+Q_i : [B_r,d]
+K_j : [B_c,d]
+V_j : [B_c,d]
+S_ij = Q_i K_j^T : [B_r,B_c]
+```
+
+한 key/value block을 SRAM에 올리고 여러 Q block을 순회한다. 각 Q block에 대해 작은 `S_ij`만 SRAM에서 만들고 softmax state와 output accumulator를 update한 뒤 버린다.
+
+```text
+for K_j, V_j block:
+    load K_j, V_j HBM -> SRAM
+    for Q_i block:
+        load Q_i and row statistics
+        compute S_ij in SRAM
+        update exact softmax output
+        write only O_i and statistics
+```
+
+Block size는 `Q_i,K_j,V_j,S_ij,O_i`가 SRAM에 맞도록 선택한다. SRAM이 클수록 더 큰 tile을 사용해 HBM 왕복을 줄일 수 있다.
+
+## Online softmax
+
+한 query row의 score를 key block별로 `x^(1), x^(2), ...`라 하자. 지금까지 본 block의 running maximum `m`, exponential sum `l`, unnormalized output accumulator를 유지한다.
+
+새 block score `x`가 들어오면
+
+```text
+m_new = max(m_old, max(x))
+
 l_new = exp(m_old - m_new) * l_old
-      + sum(exp(S_tile - m_new))
-
-acc_new = exp(m_old - m_new) * acc_old
-        + exp(S_tile - m_new) @ V_tile
-output = acc_final / l_final
+        + sum exp(x - m_new)
 ```
 
-이 update를 쓰면 tile을 여러 번 나누어 보더라도 전체 row에 softmax를 한 것과 같은 결과가 나온다.
+이다. 기존 exponential은 기준 maximum이 `m_old`에서 `m_new`로 바뀌므로 `exp(m_old-m_new)`로 rescale한다.
 
-### IO-aware attention
-
-표준 구현은 `S`와 `P`를 큰 tensor로 HBM에 저장한다. FlashAttention은 Q/K/V tile을 SRAM에 올려 계산하고, 중간 attention probability를 저장하지 않는다.
-
-FlashAttention-2는 work partitioning을 개선하고, FlashAttention-3는 Hopper GPU의 asynchronous pipeline과 low precision을 활용한다. 하지만 세 논문의 공통점은 attention 수학을 바꾸지 않는다는 것이다.
-
-## Tensor shape와 자료구조
-
-FlashAttention 계열은 tensor shape를 줄이는 것이 아니라 중간 행렬을 저장하지 않는다. 논리적으로는 `[B, h, n, n]` attention을 계산하지만, 실제 메모리에 전체 matrix를 materialize하지 않는다.
+Normalized output을 직접 유지한다면 새 block의 value contribution과 기존 output을 동일한 scale로 합친다.
 
 ```text
-logical computation:
-S = QK^T: [B, h, n, n]
-P = softmax(S): [B, h, n, n]
-O = P V: [B, h, n, d_v]
+P_tilde = exp(x - m_new)
 
-FlashAttention execution:
-Q block: [B_q, d]
-K/V block: [B_k, d]
-running max m: [B_q]
-running normalizer l: [B_q]
-running output acc: [B_q, d_v]
+O_new = [l_old * exp(m_old-m_new) * O_old
+         + P_tilde V_block] / l_new
 ```
 
-여기서 핵심 tensor는 `m`, `l`, `acc`다. 이 세 값을 tile마다 업데이트하면 전체 softmax matrix 없이도 정확한 output을 만들 수 있다.
+모든 key block을 처리한 뒤 `m,l,O`는 전체 row softmax와 정확히 같다. 순서를 바꿔도 max-shifted exponential 합을 algebraically 재조합했기 때문이다.
 
-## 수식과 계산 전개
+## Tensor state
 
-### Online softmax max
+HBM에 유지하는 핵심 state는 다음뿐이다.
 
 ```text
-각 row의 softmax를 안정적으로 계산하려면 `m_i = max_j S_ij`, `l_i = sum_j exp(S_ij - m_i)`가 필요하다.
+Q,K,V,O : [N,d]
+m       : [N]      # row maximum
+l       : [N]      # row exponential sum
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+실제 구현은 backward를 위해 `logsumexp = m + log(l)` 형태를 저장할 수 있다. `[N,N]` `S`나 `P`는 저장하지 않는다.
 
-### Tile score update
+## Causal mask와 dropout
+
+### Causal attention
+
+Query block과 key block의 원래 position을 비교한다.
+
+- 완전히 미래인 block은 계산 자체를 건너뛴다.
+- diagonal boundary block만 element-wise triangular mask를 적용한다.
+- 완전히 과거인 block은 mask 없이 계산한다.
+
+이는 dense `[N,N]` mask를 만들지 않고 causal semantics를 보존한다.
+
+### Dropout
+
+Attention dropout mask를 저장하면 quadratic memory가 다시 생긴다. FlashAttention은 random seed/state를 저장하고 backward에서 동일한 pseudo-random mask를 재생성한다. forward와 backward RNG mapping이 정확히 같아야 한다.
+
+## Backward: 저장 대신 재계산
+
+일반 attention backward는 `P`를 저장해 `dV=P^T dO`, `dP=dO V^T`, `dS=dsoftmax(dP)`를 계산한다. FlashAttention은 Q/K/V/O와 row logsumexp를 tile로 읽어 `S_ij,P_ij`를 다시 계산한다.
+
+Softmax gradient의 row reduction은 다음 identity를 이용한다.
 
 ```text
-새 tile score `S_tile`을 계산할 때 새 max `m_new = max(m_old, max(S_tile))`를 구한다.
+dS_ij = P_ij * (dP_ij - D_i)
+D_i   = sum_j P_ij dP_ij
+      = dot(dO_i, O_i)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+`D_i`를 `dO_i`와 forward output `O_i`에서 구할 수 있으므로 전체 `P`를 저장하지 않아도 된다. FLOPs는 재계산 때문에 늘지만 HBM traffic이 크게 줄어 backward도 빨라질 수 있다. 이 논문이 보여주는 핵심은 compute를 조금 더 써서 memory IO를 줄이는 trade-off다.
 
-### Normalizer update
+## 복잡도
+
+### FLOPs와 memory
 
 ```text
-Normalizer는 `l_new = exp(m_old - m_new) l_old + sum exp(S_tile - m_new)`로 갱신한다.
+FLOPs             : O(N²d), 표준 attention과 동일한 차수
+추가 HBM memory    : O(N), N² attention matrix 없음
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+### IO complexity
 
-### Output accumulator
+Head dimension `d`, SRAM 크기 `M`일 때 논문은 다음을 보인다.
 
 ```text
-Output 누적값도 같은 scale correction으로 갱신한다.
+standard attention HBM access:
+Theta(Nd + N²)
+
+FlashAttention HBM access:
+Theta(N² d² / M)
 ```
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+일반적인 `d <= M <= Nd` 범위에서 FlashAttention이 훨씬 적은 HBM access를 사용한다. 또한 모든 SRAM 크기 범위에서 동시에 이를 asymptotically 개선하는 exact attention algorithm은 없다는 lower-bound 성질을 제시한다.
 
-### Final normalization
+이 결과는 FlashAttention이 FLOP-optimal이라는 뜻이 아니라, 특정 memory hierarchy에서 IO-aware하다는 뜻이다.
 
-```text
-최종적으로 각 row output은 누적 numerator를 `l_i`로 나눈 값이다.
-```
+## Block-sparse FlashAttention
 
-이 단계는 위 이론적 아이디어가 실제 forward 계산에서 구현되는 지점이다.
+미리 정한 block mask가 있다면 nonzero tile만 같은 fused algorithm으로 계산한다. sparsity ratio를 `s`라 할 때 HBM IO가 대략 그 비율만큼 더 줄어든다. 이 변형은 full attention의 exact output이 아니라 지정된 sparse attention graph 안에서 exact다.
 
-## 전체 알고리즘 흐름
+FlashAttention의 tiling은 sparsity와 경쟁하는 아이디어가 아니라 sparse attention도 hardware-efficient하게 실행하는 하부 kernel 원리다.
 
-1. Q/K/V를 tile 단위로 나눈다.
-2. Q tile 하나에 대해 K/V tile들을 순회한다.
-3. 각 tile score를 계산하고 running max와 normalizer를 update한다.
-4. Value contribution을 output accumulator에 더한다.
-5. 모든 tile을 본 뒤 accumulator를 normalizer로 나누어 output을 쓴다.
+## 실험 결과: Attention kernel
 
-## 작은 예시로 보는 직관
+GPT-2 medium의 길이 1,024 설정에서 표준 attention은 약 `40.3 GB`, FlashAttention은 약 `4.4 GB`의 HBM read/write를 보였고 attention 계산은 최대 `7.6×` 빨라졌다. Block size를 키워 HBM access가 줄어드는 구간에서 runtime도 함께 감소해 IO가 병목이라는 가설을 검증한다.
 
-길이 8192 attention에서 `8192 x 8192` probability matrix를 저장하면 매우 큰 메모리가 필요하다. FlashAttention은 한 번에 예를 들어 128개 query와 128개 key tile만 SRAM에서 처리한다.
+GPU와 shape에 따라 A100에서 대체로 `2~4×`, RTX 3090에서 약 `2.5~4.5×` attention speedup을 보고한다. Head dimension 128에서는 SRAM에 맞추기 위해 tile이 작아져 이득이 줄 수 있다.
 
-```text
-process Q[0:128] with K[0:128], K[128:256], ...
-keep running max/sum/output for Q[0:128]
-never store full P[8192, 8192]
-```
+## 실험 결과: End-to-end training
 
-결과는 full softmax attention과 같지만, 중간 matrix를 저장하지 않는다.
+### BERT-large
 
-## 계산 복잡도와 병목
+Sequence length 512의 BERT-large 학습에서 MLPerf 1.1 기록 대비 약 `15%` end-to-end speedup을 보였다. 짧은 길이에서도 fused IO 절감이 전체 training time에 영향을 준다는 결과다.
 
-- 특정 GPU kernel 구현에 의존하므로 하드웨어와 shape에 따라 성능 차이가 있다.
-- 이 논문에서 말하는 효율 또는 성능 개선이 어느 병목을 줄이는지 분리해서 봐야 한다.
-- 수식상 복잡도, 실제 메모리 사용량, GPU 실행 효율, 학습 안정성, 추론 latency는 서로 다른 축이다.
+### GPT-2
 
-예를 들어 같은 `더 효율적이다`라는 주장도 Linformer에서는 low-rank 근사, FlashAttention에서는 IO 절감, PagedAttention에서는 KV cache memory management, ViT에서는 대규모 pretraining을 통한 inductive bias 보완을 뜻한다.
+| 모델 | 구현 | PPL | 학습 시간 |
+| --- | --- | ---: | ---: |
+| GPT-2 small | HuggingFace | 18.2 | 9.5일 |
+| GPT-2 small | Megatron-LM | 18.2 | 4.7일 |
+| GPT-2 small | FlashAttention | 18.2 | **2.7일** |
+| GPT-2 medium | HuggingFace | 14.2 | 21.0일 |
+| GPT-2 medium | Megatron-LM | 14.3 | 11.5일 |
+| GPT-2 medium | FlashAttention | 14.3 | **6.9일** |
 
-## 구현할 때 확인할 부분
+Approximation 없이 perplexity를 유지하면서 HuggingFace 대비 최대 약 `3×`, Megatron 대비 약 `1.7~1.8×` 빨라졌다.
 
-- 수식에서 normalization이 어느 축에 적용되는지 확인한다.
-- Mask, position index, cache index, spatial flatten order처럼 off-by-one 오류가 나기 쉬운 부분을 별도로 검증한다.
-- 논문이 exact 계산을 유지하는지, 근사 또는 sparse 제한을 쓰는지 구분한다.
-- 학습 시 이득과 추론 시 이득이 같은지 분리해서 본다.
+### 더 긴 context
 
-## 자주 헷갈리는 지점
+GPT-2 small에서 context를 1K에서 4K로 늘리면 perplexity가 `18.2 → 17.5`로 개선되었다. FlashAttention 4K 학습은 3.6일로, Megatron 1K의 4.7일보다도 약 30% 빨랐다. 빠른 kernel이 단순 비용 절감뿐 아니라 더 긴 context라는 model capability를 가능하게 한 사례다.
 
-- Attention weight가 항상 사람이 해석하는 원인 설명과 일치한다고 보면 안 된다. 모델 내부의 정보 routing 가중치로 보는 편이 안전하다.
-- Score에 추가되는 bias나 position term은 value에 직접 더해지는 정보와 역할이 다르다. Score는 무엇을 볼지, value는 무엇을 가져올지를 정한다.
-- FlashAttention은 sparse attention이나 linear attention이 아니다. Exact attention을 더 효율적으로 계산하는 kernel이다.
-- 메모리를 덜 쓴다고 해서 이론적 `O(n^2)` pairwise score 성격이 사라지는 것은 아니다.
+### Long Range Arena
 
-## 관련 방법과 비교
-
-| 방법 | 수학적 attention | 줄이는 병목 | 품질 영향 |
-| --- | --- | --- | --- |
-| 표준 attention | Exact | `S`, `P` materialization으로 HBM IO 큼 | 기준 |
-| Linear/low-rank attention | 근사 또는 변형 | `n x n` pairwise 계산 | 근사 오차 가능 |
-| FlashAttention | Exact | HBM read/write와 peak memory | 동일 precision에서 동일 결과 |
-| FlashAttention-2/3 | Exact 또는 저정밀 경로 | 병렬화, pipeline, hardware utilization | 저정밀 사용 시 검증 필요 |
-
-## 실험 결과를 읽는 관점
-
-FlashAttention 계열은 모델 품질 실험보다 kernel throughput, memory footprint, sequence length별 속도 비교가 중요하다. Exact attention이므로 같은 precision 조건에서는 모델 output이 표준 attention과 같아야 한다.
-
-따라서 실험을 볼 때는 `얼마나 빠른가`, `얼마나 긴 sequence를 메모리에 올릴 수 있는가`, `backward까지 포함했는가`, `어떤 GPU에서 측정했는가`를 확인해야 한다.
+길이 1K~4K의 LRA에서 약 `2.4×` end-to-end speedup을 보고한다. Path-X 16K에서 `61.4%`, block-sparse 변형으로 Path-256 64K에서 `63.1%`를 기록해 당시 Transformer가 chance를 넘기 어려웠던 긴 문제를 처리했다.
 
 ## 장점과 기여
 
-- 기존 방법의 한계를 명확한 이론적 문제로 재정의한다.
-- 그 문제를 해결하기 위한 계산 구조 또는 학습/추론 절차를 제안한다.
-- 후속 연구가 비교할 수 있는 기준점과 용어를 제공한다.
+- attention을 FLOP 수가 아니라 memory hierarchy와 IO 관점에서 재정의했다.
+- online softmax와 tiling으로 full softmax attention을 정확히 계산한다.
+- `[N,N]` activation 저장을 제거해 memory를 sequence length에 선형으로 줄였다.
+- backward recomputation이 IO-bound GPU에서는 실제로 더 빠를 수 있음을 보였다.
+- 이론 IO bound, CUDA kernel, end-to-end 품질을 함께 검증했다.
 
 ## 한계와 비판적 관점
 
-- 특정 GPU kernel 구현에 의존하므로 하드웨어와 shape에 따라 성능 차이가 있다.
-- 수식은 exact하지만 구현은 block size, shared memory, warp scheduling 같은 low-level 요소가 중요하다.
-- Sequence length 자체의 `O(n^2)` 연산량은 그대로다.
+### 1. FLOPs는 여전히 quadratic
 
-## 후속 논문과의 연결점
+Memory cap은 크게 완화하지만 매우 긴 context에서 `N²d` compute 자체가 병목이 된다. 1M-token dense attention의 근본 연산량을 없애지는 않는다.
 
-FlashAttention-2는 병렬성과 work partitioning을 개선하고, FlashAttention-3는 Hopper GPU의 asynchrony와 FP8을 활용한다.
+### 2. Hardware·shape 의존
 
-## 개인 학습/연구 메모
+Head dimension, sequence length, GPU SRAM과 bandwidth에 따라 optimal tile과 speedup이 달라진다. 작은 shape에서는 kernel launch와 setup overhead가 우세할 수 있다.
 
-FlashAttention은 `attention을 바꾸지 않고, 저장하고 읽는 방식을 바꾼다`는 점이 가장 중요하다.
+### 3. 구현 복잡도
 
+Online softmax rescaling, dropout RNG, causal boundary, backward gradient를 fused CUDA kernel에서 정확히 구현해야 한다. framework-level reference보다 검증 부담이 크다.
+
+### 4. Training과 decode는 다른 병목
+
+논문의 중심은 parallel full-sequence attention이다. Autoregressive decode에서는 query가 한 개이고 KV cache read bandwidth가 주요 병목이므로 MQA/GQA/MLA 같은 별도 기법이 중요하다.
+
+## 구현 체크리스트
+
+- row maximum과 sum을 새 block maximum 기준으로 모두 rescale하는가?
+- old output accumulator도 같은 scale로 보정하는가?
+- causal mask에서 완전 미래 tile을 skip하고 diagonal tile만 mask하는가?
+- backward가 forward와 동일한 dropout mask를 재생성하는가?
+- softmax 통계와 accumulation을 FP32로 유지하는가?
+- `[N,N]` tensor가 autograd graph에 숨어서 생성되지 않는가?
+- kernel benchmark와 end-to-end speedup을 구분해 측정했는가?
+
+## 온디바이스 관점
+
+FlashAttention의 원리는 GPU에 한정되지 않는다. 작은 on-chip SRAM/scratchpad와 느린 외부 DRAM을 가진 NPU에서도 tile fusion으로 external-memory traffic을 줄일 수 있다. 다만 device가 dynamic loop, online reduction, fused exp를 지원해야 한다.
+
+Vision의 고해상도 patch attention에서 activation memory를 크게 줄일 수 있지만 compute는 여전히 quadratic이다. 따라서 작은/중간 resolution에는 exact tiled attention, 더 큰 resolution에는 window·sparse attention을 결합하는 것이 현실적이다.
+
+## 최종 평가
+
+FlashAttention은 “attention을 근사해야만 빠르게 만들 수 있다”는 전제를 뒤집었다. 수학적 output은 그대로 두고, tile·online softmax·recomputation으로 HBM IO와 activation storage를 줄여 실제 GPU 시간을 개선했다. 이후 attention 연구에서 FLOPs와 wall-clock, algorithm과 memory hierarchy를 함께 보게 만든 전환점이다. 단, compute complexity는 여전히 quadratic이며 decoding KV cache 문제는 별도의 축이다.
