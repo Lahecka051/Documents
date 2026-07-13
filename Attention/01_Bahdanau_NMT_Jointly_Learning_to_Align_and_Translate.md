@@ -127,7 +127,7 @@ for target step i:
     -> p(y_i)
 ```
 
-![Bahdanau attention 기반 encoder-decoder 구조](https://github.com/user-attachments/assets/def0673b-2fac-45a8-9692-f2010948e3c7)
+![Bahdanau attention 기반 encoder-decoder 구조](https://github.com/user-attachments/assets/1bd54adf-475b-431f-8ec5-f28caf2bfc57)
 
 ### Bidirectional encoder
 

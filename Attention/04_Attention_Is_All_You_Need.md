@@ -119,7 +119,7 @@ Attention은 query와 key를 비교해 점수를 만들고, 그 점수를 확률
 Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
 ```
 
-![세 attention 유형과 scaled dot-product attention 계산](https://github.com/user-attachments/assets/6636fc8e-302c-4272-af7d-cf70baafcf01)
+![세 attention 유형과 scaled dot-product attention 계산](https://github.com/user-attachments/assets/6e8550c4-74ab-4e57-9bbb-315d94e41877)
 
 그림의 (a)는 encoder-decoder attention, (b)는 encoder self-attention, (c)는 decoder self-attention에서 `Q`, `K`, `V`가 오는 위치를 나타낸다. (d)는 원논문 Figure 2의 `MatMul -> Scale -> Mask (opt.) -> SoftMax -> MatMul` 순서를 수식과 함께 펼친 것이다.
 
@@ -395,7 +395,7 @@ head_i = Attention(Q W_i^Q, K W_i^K, V W_i^V)
 MultiHead(Q, K, V) = Concat(head_1, ..., head_h) W^O
 ```
 
-![QKV projection과 multi-head attention 결합](https://github.com/user-attachments/assets/79644a1a-2d88-4fb7-bdce-86c3ae9fbf8d)
+![QKV projection과 multi-head attention 결합](https://github.com/user-attachments/assets/907c656d-3ba1-4fb4-a016-a30b0bca5909)
 
 그림의 (a)는 head `i`에서 `Q`, `K`, `V`에 서로 다른 learned linear projection을 적용하는 과정이고, (b)는 `h`개 head를 concatenate한 뒤 `W^O`로 다시 `d_model` 차원에 projection하는 과정이다. 그림의 함수와 parameter 표기는 원논문 Section 3.2.2를 따른다.
 

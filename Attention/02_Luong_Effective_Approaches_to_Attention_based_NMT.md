@@ -214,7 +214,7 @@ total alignment pairs: O(T * S)
 
 긴 source에서 모든 position을 볼 필요가 없고 번역 alignment가 대체로 국소적이라는 가정을 사용하면 일부 window만 scoring할 수 있다.
 
-![Luong의 global attention과 local attention](https://github.com/user-attachments/assets/3801b2f5-c228-42be-a6c3-aa4c4af6cd80)
+![Luong의 global attention과 local attention](https://github.com/user-attachments/assets/ab24f2db-7a14-4280-8486-781fb9ea6960)
 
 Local attention은 먼저 현재 target word가 대응할 source 중심 위치 `p_t`를 정하고, 그 주변 `[p_t-D, p_t+D]`만 본다.
 

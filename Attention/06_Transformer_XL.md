@@ -139,7 +139,7 @@ K = \tilde h_{\tau+1}^{n-1}W_k,
 V = \tilde h_{\tau+1}^{n-1}W_v
 $$
 
-![Transformer-XL의 segment recurrence와 relative attention](https://github.com/user-attachments/assets/04802280-3551-44fd-a0da-ed1328604eab)
+![Transformer-XL의 segment recurrence와 relative attention](https://github.com/user-attachments/assets/3ab20fd8-b682-40ec-9274-f96ce1598e8a)
 
 ### Tensor shape
 

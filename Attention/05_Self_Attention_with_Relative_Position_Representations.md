@@ -217,7 +217,7 @@ Learned label 수는 각각 `2k+1`개다.
 -k, ..., -2, -1, 0, +1, +2, ..., +k
 ```
 
-![상대 거리를 directed edge label로 사용하는 self-attention](https://github.com/user-attachments/assets/9e954718-4245-48b8-a5dc-9f5cabde2729)
+![상대 거리를 directed edge label로 사용하는 self-attention](https://github.com/user-attachments/assets/ec5fd08e-3149-472e-a9fe-1bb75eff8f8f)
 
 ### 방향성이 중요하다
 

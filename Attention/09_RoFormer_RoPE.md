@@ -240,7 +240,7 @@ R(a)^T R(b) = R(b-a)
 = q^T R_(n-m) k
 ```
 
-![같은 위치 이동에 대한 RoPE 내적의 불변성](https://github.com/user-attachments/assets/5eec3ccc-5d20-463d-9bb1-0422a402b135)
+![같은 위치 이동에 대한 RoPE 내적의 불변성](https://github.com/user-attachments/assets/c7971d45-8212-4945-b680-aa6ee433335e)
 
 그림의 두 panel은 query와 key를 모두 같은 크기만큼 더 회전해도 내적이 동일함을 보여 준다. Attention score 관점에서 중요한 것은 좌표계의 절대 원점보다 두 위치 사이의 차이다.
 
@@ -367,7 +367,7 @@ RoPE:
 Q/K의 각 2D pair를 position-dependent angle로 회전한다.
 ```
 
-![RoPE의 주파수별 회전 패턴과 논문의 장거리 감쇠 proxy](https://github.com/user-attachments/assets/0b6740d1-be2a-4565-989a-55370b713270)
+![RoPE의 주파수별 회전 패턴과 논문의 장거리 감쇠 proxy](https://github.com/user-attachments/assets/e90f4cb5-5471-4bce-8f91-4df73fea68c9)
 
 왼쪽은 pair index가 커질수록 회전이 느려지는 패턴을 보여 준다. 오른쪽은 논문의 Figure 2와 같은 정의를 `d=80`으로 재계산한 것이다. 전체 추세는 감소하지만 진동이 분명하므로, 이를 모든 token pair의 attention score가 거리와 함께 단조 감소한다는 보장으로 읽으면 안 된다.
 
@@ -396,7 +396,7 @@ A = softmax(S + mask)
 O = A V
 ```
 
-![Attention 계산 안에서 RoPE가 적용되는 위치](https://github.com/user-attachments/assets/1729cc92-001c-4684-97c6-501191785f62)
+![Attention 계산 안에서 RoPE가 적용되는 위치](https://github.com/user-attachments/assets/3c0641fc-a21d-4a89-a1e8-b2d391998906)
 
 RoPE 적용 전후의 Q/K shape는 동일하다.
 

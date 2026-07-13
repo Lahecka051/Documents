@@ -25,7 +25,7 @@ $$
 
 $Q$와 $K$에 서로 역수인 scale을 적용하므로 dot product에는 절대 위치 각각이 아니라 $m-n$에 따른 scale ratio가 남는다. RoPE의 상대 위치 성질을 유지하면서, 장거리에서 크게 진동하는 고주파 성분을 감쇠한다.
 
-![xPos의 reciprocal scaling, attention resolution, blockwise causal attention](https://github.com/user-attachments/assets/844927de-5a70-476d-8b87-053b91fafc01)
+![xPos의 reciprocal scaling, attention resolution, blockwise causal attention](https://github.com/user-attachments/assets/b3500ba6-99e6-4fe4-8abc-9045c1a23b51)
 
 ## 연구 배경과 문제의식
 
