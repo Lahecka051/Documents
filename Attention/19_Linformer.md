@@ -11,24 +11,29 @@
 
 Linformer는 self-attention matrix가 실제로는 낮은 rank로 근사될 수 있다는 관찰에서 출발한다. key와 value의 **sequence length 축** `n`을 학습된 projection `E,F`로 `k`까지 줄인 뒤 attention을 계산한다.
 
-```text
-K : [n,d]  ->  E K : [k,d]
-V : [n,d]  ->  F V : [k,d]
+```math
+\begin{aligned}
+K\in\mathbb{R}^{n\times d}&\longmapsto EK\in\mathbb{R}^{k\times d},\\
+V\in\mathbb{R}^{n\times d}&\longmapsto FV\in\mathbb{R}^{k\times d}.
+\end{aligned}
 ```
 
 query는 `n`개를 유지하지만 key/value slot은 `k`개만 남으므로 score가 `[n,n]` 대신 `[n,k]`가 된다. `k << n`이고 `k`를 길이와 무관한 상수로 두면 time과 memory가 `O(nk)`, 즉 `n`에 대해 선형이다.
 
 이 방법은 sparse attention처럼 일부 원본 token을 선택하는 것이 아니다. projection의 각 row가 sequence 전체를 섞어 `k`개의 latent key/value를 만든다. 따라서 dense global information을 낮은 rank bottleneck으로 압축하는 방법이다.
 
-![Linformer의 sequence-axis projection](https://github.com/user-attachments/assets/67f3cd04-224c-4572-ad43-46a8d5b2c0a7)
+![Linformer의 sequence-axis projection](https://github.com/user-attachments/assets/5a1c9ee5-25df-40b1-9ed3-dc7d5096e33b)
 
 ## 문제의식
 
 한 head의 표준 self-attention은 다음과 같다.
 
-```text
-P = softmax(Q K^T / sqrt(d))    # [n,n]
-Y = P V                         # [n,d]
+```math
+\begin{aligned}
+P&=\operatorname{softmax}\!\left(\frac{QK^{\top}}{\sqrt d}\right)
+&&\in\mathbb{R}^{n\times n},\\
+Y&=PV&&\in\mathbb{R}^{n\times d}.
+\end{aligned}
 ```
 
 `P`를 직접 만들면 `O(n²)` memory와 compute가 필요하다. 저자들은 pretrained Transformer의 attention map singular value를 조사해 몇 개의 큰 singular value가 대부분의 energy를 차지하는 경향을 관찰한다. 즉 `P`의 effective rank가 `n`보다 훨씬 작을 수 있다는 가설을 세운다.
@@ -39,27 +44,33 @@ Y = P V                         # [n,d]
 
 입력 `X ∈ R^{n×d_model}`에서 head별 query/key/value를 만든다.
 
-```text
-Q = X W_i^Q        # [n,d_h]
-K = X W_i^K        # [n,d_h]
-V = X W_i^V        # [n,d_h]
+```math
+\begin{aligned}
+Q&=XW_i^Q&&\in\mathbb{R}^{n\times d_h},\\
+K&=XW_i^K&&\in\mathbb{R}^{n\times d_h},\\
+V&=XW_i^V&&\in\mathbb{R}^{n\times d_h}.
+\end{aligned}
 ```
 
 projection matrix는 sequence 축에 작용한다.
 
-```text
-E_i ∈ R^{k×n}
-F_i ∈ R^{k×n}
-
-K_bar = E_i K      # [k,d_h]
-V_bar = F_i V      # [k,d_h]
+```math
+\begin{aligned}
+E_i&\in\mathbb{R}^{k\times n},
+&F_i&\in\mathbb{R}^{k\times n},\\
+\bar K&=E_iK&&\in\mathbb{R}^{k\times d_h},\\
+\bar V&=F_iV&&\in\mathbb{R}^{k\times d_h}.
+\end{aligned}
 ```
 
 Linformer head의 출력은 다음과 같다.
 
-```text
-head_i = softmax(Q K_bar^T / sqrt(d_h)) V_bar
-       = softmax(Q (E_i K)^T / sqrt(d_h)) (F_i V)
+```math
+\begin{aligned}
+\operatorname{head}_i
+&=\operatorname{softmax}\!\left(\frac{Q\bar K^{\top}}{\sqrt{d_h}}\right)\bar V\\
+&=\operatorname{softmax}\!\left(\frac{Q(E_iK)^{\top}}{\sqrt{d_h}}\right)(F_iV).
+\end{aligned}
 ```
 
 score shape은 `[n,k]`, output은 `[n,d_h]`다. query마다 `k`개의 latent key를 선택하고, 같은 projection으로 압축된 value를 조합한다.

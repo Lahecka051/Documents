@@ -11,29 +11,33 @@
 
 이 논문은 convolution을 channel/spatial gate로 재가중하는 대신, convolution branch와 self-attention branch가 **서로 다른 output feature map을 직접 생성**하고 channel 방향으로 concatenate하는 Attention-Augmented Convolution(AAConv)을 제안한다.
 
-```text
-AAConv(X) = Concat[Conv(X), MHA_2D_relative(X)]
+```math
+\operatorname{AAConv}(X)=\operatorname{Concat}\!\left[
+\operatorname{Conv}(X),\operatorname{MHA}_{\mathrm{2D\ relative}}(X)
+\right]
 ```
 
 Convolution은 local pattern과 translation equivariance라는 강한 inductive bias를 제공하고, self-attention은 image 전체의 content-dependent long-range interaction을 제공한다. 두 연산을 경쟁시키기보다 output channel budget을 나눠 병렬 결합한다.
 
 Vision에 맞게 attention score에 relative height와 relative width embedding을 별도로 추가한다. ResNet-50에서 ImageNet top-1은 `76.4 → 77.7`, RetinaNet R50의 COCO AP는 `36.8 → 38.2`로 개선됐으며 parameter 수는 거의 유지됐다.
 
-![Attention-Augmented Convolution의 convolution·relative attention 병렬 구조](https://github.com/user-attachments/assets/1e374bcf-d976-41f5-a6da-075335d94fff)
+![Attention-Augmented Convolution의 convolution·relative attention 병렬 구조](https://github.com/user-attachments/assets/f034dee9-c16f-4bd3-b5fc-b6ad6edbc4e8)
 
 ## 기존 attention module과 차이
 
 SE와 CBAM은 convolution이 만든 feature `F`에 gate를 곱한다.
 
-```text
-F_out = gate(F) ⊗ F
+```math
+F_{\mathrm{out}}=\operatorname{gate}(F)\otimes F
 ```
 
 AAConv의 attention branch는 value를 global weighted sum해 **새 feature channel**을 만든다.
 
-```text
-F_attn = softmax(QK^T + relative_bias) V
-F_out  = concat(F_conv, F_attn)
+```math
+\begin{aligned}
+F_{\mathrm{attn}}&=\operatorname{softmax}\!\left(QK^{\top}+\mathrm{relative\ bias}\right)V,\\
+F_{\mathrm{out}}&=\operatorname{concat}(F_{\mathrm{conv}},F_{\mathrm{attn}}).
+\end{aligned}
 ```
 
 따라서 단순 feature selection보다 표현력이 크고, 위치 간 정보를 실제로 이동시킨다.
@@ -42,17 +46,21 @@ F_out  = concat(F_conv, F_attn)
 
 Input `X ∈ R^{H×W×C_in}`를 `N=HW` sequence로 펼친다.
 
-```text
-Q = X W_q     # [N,d_k]
-K = X W_k     # [N,d_k]
-V = X W_v     # [N,d_v]
+```math
+\begin{aligned}
+Q&=XW_q&&\in\mathbb{R}^{N\times d_k},\\
+K&=XW_k&&\in\mathbb{R}^{N\times d_k},\\
+V&=XW_v&&\in\mathbb{R}^{N\times d_v}.
+\end{aligned}
 ```
 
 `N_h` head로 나누어 head별 score와 output을 계산한다.
 
-```text
-O_h = softmax(Q_h K_h^T / sqrt(d_k^h)) V_h
-MHA(X) = W_o Concat_h(O_h)
+```math
+\begin{aligned}
+O_h&=\operatorname{softmax}\!\left(\frac{Q_hK_h^{\top}}{\sqrt{d_k^h}}\right)V_h,\\
+\operatorname{MHA}(X)&=W_o\operatorname{Concat}_h(O_h).
+\end{aligned}
 ```
 
 Score는 `[N,N]`이라 global attention cost는 `O((HW)²)`. 논문은 주로 28×28 이하 stage에 적용해 비용을 관리한다.
@@ -61,10 +69,10 @@ Score는 `[N,N]`이라 global attention cost는 `O((HW)²)`. 논문은 주로 28
 
 Content dot product만 사용하면 permutation에 대해 equivariant하고 2D 위치 관계를 알기 어렵다. Absolute position은 image resolution 변화와 translation에 불리할 수 있다. 논문은 query position `i=(i_y,i_x)`, key `j=(j_y,j_x)`의 상대 차이를 height와 width로 분리한다.
 
-```text
-logit(i,j) = q_i^T k_j
-           + q_i^T r^H_{j_y-i_y}
-           + q_i^T r^W_{j_x-i_x}
+```math
+\operatorname{logit}(i,j)=q_i^{\top}k_j
++q_i^{\top}r^H_{j_y-i_y}
++q_i^{\top}r^W_{j_x-i_x}
 ```
 
 - `r^H`: relative vertical displacement embedding
@@ -87,11 +95,12 @@ relative_logits_height(Q, r_H)
 
 원 convolution output channel을 `F_out`이라 하자. 그중 `d_v` channel을 attention에 배정하고 convolution은 `F_out-d_v` channel을 만든다.
 
-```text
-conv_out = Conv_k×k(X, channels=F_out-d_v)
-attn_out = MHA_relative(X, value_channels=d_v)
-
-AAConv(X) = Concat(conv_out, attn_out)
+```math
+\begin{aligned}
+\mathrm{conv}_{\mathrm{out}}&=\operatorname{Conv}_{k\times k}(X,\mathrm{channels}=F_{\mathrm{out}}-d_v),\\
+\mathrm{attn}_{\mathrm{out}}&=\operatorname{MHA}_{\mathrm{relative}}(X,\mathrm{value\ channels}=d_v),\\
+\operatorname{AAConv}(X)&=\operatorname{Concat}(\mathrm{conv}_{\mathrm{out}},\mathrm{attn}_{\mathrm{out}}).
+\end{aligned}
 ```
 
 Attention이 단순 추가 branch가 아니라 convolution channel 일부를 대체하므로 parameter budget을 비슷하게 유지할 수 있다.
@@ -100,9 +109,10 @@ Attention이 단순 추가 branch가 아니라 convolution channel 일부를 대
 
 논문은 channel ratio를 다음처럼 정의한다.
 
-```text
-κ = d_k / F_out
-υ = d_v / F_out
+```math
+\kappa=\frac{d_k}{F_{\mathrm{out}}},
+\qquad
+\upsilon=\frac{d_v}{F_{\mathrm{out}}}
 ```
 
 - `κ`: query/key dimension 비율
@@ -120,8 +130,8 @@ Relative embedding도 feature resolution에 맞춰 bilinear interpolation한다.
 
 Standard `k×k` convolution parameter는
 
-```text
-k² C_in F_out
+```math
+k^2C_{\mathrm{in}}F_{\mathrm{out}}
 ```
 
 이다. AAConv는 convolution output channel을 줄이는 대신 Q/K/V/output projection을 추가한다. 적절한 `d_k,d_v`에서는 3×3 convolution channel을 attention으로 대체하면서 전체 parameter가 오히려 약간 감소할 수 있다.

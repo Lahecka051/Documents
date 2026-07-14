@@ -18,16 +18,18 @@ LSH attention은 query와 key를 content 기반 hash bucket으로 묶고 같은 
 
 Reversible layer는 출력으로부터 입력을 복원할 수 있게 residual block을 설계한다. backward에서 이전 activation을 저장하는 대신 다시 계산하므로 memory를 크게 줄인다. 여기에 feed-forward를 position chunk로 나누는 기법까지 결합해 수만 길이 sequence를 처리한다.
 
-![Reformer의 LSH attention과 reversible residual 구조](https://github.com/user-attachments/assets/8c587cfe-91fd-4a0c-bc92-e09edeb4094f)
+![Reformer의 LSH attention과 reversible residual 구조](https://github.com/user-attachments/assets/2d6f7784-77be-485b-81b5-f59cdbcf3f96)
 
 ## 표준 Transformer의 세 메모리 항
 
 길이 `n`, hidden dimension `d`, layer 수 `L`인 Transformer의 학습 memory를 단순화하면 다음 세 항으로 볼 수 있다.
 
-```text
-attention logits/weights : O(L n²)
-layer activations        : O(L n d)
-feed-forward activations : O(L n d_ff)
+```math
+\begin{aligned}
+\text{attention logits/weights} &:\ O(Ln^2),\\
+\text{layer activations} &:\ O(Lnd),\\
+\text{feed-forward activations} &:\ O(Lnd_{ff}).
+\end{aligned}
 ```
 
 긴 sequence에서는 `n²`이 먼저 병목이지만, attention을 선형화한 뒤에도 깊은 layer의 activation 저장이 남는다. Reformer는 이 항들을 각각 LSH, reversible layer, chunking으로 대응한다.
@@ -38,9 +40,11 @@ feed-forward activations : O(L n d_ff)
 
 논문은 query와 key projection을 공유한다.
 
-```text
-Q = K projection
-k_j = q_j / ||q_j||
+```math
+\begin{aligned}
+&Q\text{와 }K\text{가 같은 projection을 공유},\\
+k_j&=\frac{q_j}{\lVert q_j\rVert}.
+\end{aligned}
 ```
 
 이렇게 하면 query와 key가 같은 공간에 있고 angular similarity 기반 LSH를 사용할 수 있다. 자기 자신은 항상 가장 가까운 vector이므로, 다른 token을 찾도록 self-attention score를 보통 mask한다.
@@ -49,8 +53,8 @@ k_j = q_j / ||q_j||
 
 무작위 rotation matrix `R`을 만들고 다음 hash를 사용한다.
 
-```text
-h(x) = argmax([xR ; -xR])
+```math
+h(x)=\operatorname*{arg\,max}\left([xR;-xR]\right)
 ```
 
 `xR`의 각 coordinate와 부호 반전 값을 이어 붙인 뒤 가장 큰 항의 index를 bucket으로 삼는다. 방향이 비슷한 vector는 같은 최대 coordinate를 가질 가능성이 높다.
@@ -77,9 +81,12 @@ h(x) = argmax([xR ; -xR])
 
 Autoregressive modeling에서는 정렬 후에도 원래 sequence의 미래 token을 보지 않도록 해야 한다. bucket 정렬은 시간 순서를 섞으므로 causal mask는 **정렬된 index가 아니라 원래 position index**를 비교해 적용한다.
 
-```text
-allow(i,j) = same candidate bucket
-             and original_position(j) <= original_position(i)
+```math
+\operatorname{allow}(i,j)=
+\begin{cases}
+1,&\text{same candidate bucket and }\operatorname{pos}(j)\le\operatorname{pos}(i),\\
+0,&\text{otherwise}.
+\end{cases}
 ```
 
 동일 pair가 여러 hash round에서 선택되면 softmax normalization과 output을 중복 보정해야 한다. 구현의 정확성이 단순 local attention보다 훨씬 까다로운 이유다.
@@ -88,10 +95,12 @@ allow(i,j) = same candidate bucket
 
 대략적인 비용은 다음과 같다.
 
-```text
-hash projection      : O(n d n_hashes)
-bucket sorting       : O(n log n)
-chunk attention      : O(n m d n_hashes)
+```math
+\begin{aligned}
+\text{hash projection} &:\ O(ndn_{\mathrm{hashes}}),\\
+\text{bucket sorting} &:\ O(n\log n),\\
+\text{chunk attention} &:\ O(nmdn_{\mathrm{hashes}}).
+\end{aligned}
 ```
 
 bucket/chunk 크기를 상수 또는 `O(log n)` 수준으로 관리하면 전체를 `O(n log n)`으로 볼 수 있다. 그러나 실제 wall-clock은 sort, permutation, gather/scatter, 여러 hash round의 중복에 좌우된다. dense attention보다 FLOPs가 적어도 sequence가 짧으면 정렬 overhead가 더 클 수 있다.
@@ -118,22 +127,26 @@ random rotation에 따라 candidate가 달라진다. seed, 학습/평가 시 has
 
 일반 residual layer는
 
-```text
-y = x + F(x)
+```math
+y=x+F(x)
 ```
 
 이며 `F`의 입력을 backward에 사용하려고 `x`를 저장한다. Reformer는 hidden state를 두 부분 `x1, x2`로 나누고 다음 coupling을 사용한다.
 
-```text
-y1 = x1 + F(x2)
-y2 = x2 + G(y1)
+```math
+\begin{aligned}
+y_1&=x_1+F(x_2),\\
+y_2&=x_2+G(y_1).
+\end{aligned}
 ```
 
 `F`는 attention, `G`는 feed-forward network다. 출력 `y1,y2`가 있으면 입력을 정확히 재구성할 수 있다.
 
-```text
-x2 = y2 - G(y1)
-x1 = y1 - F(x2)
+```math
+\begin{aligned}
+x_2&=y_2-G(y_1),\\
+x_1&=y_1-F(x_2).
+\end{aligned}
 ```
 
 따라서 각 layer의 activation을 저장하지 않고 최종 activation만 유지한 채, backward에서 `G`와 `F`를 다시 실행해 입력과 gradient를 복원한다.
@@ -146,8 +159,8 @@ activation storage는 layer 수에 거의 선형으로 늘지 않지만, backwar
 
 Transformer의 FFN은 각 position에 독립적으로 적용된다.
 
-```text
-FFN(X)[i] = W2 activation(W1 X[i])
+```math
+\operatorname{FFN}(X)[i]=W_2\,\operatorname{activation}\!\left(W_1X[i]\right)
 ```
 
 따라서 모든 `n` position의 `d_ff` activation을 동시에 만들 필요가 없다. sequence를 여러 chunk로 나누어 FFN을 실행하고 결과를 concatenate한다.

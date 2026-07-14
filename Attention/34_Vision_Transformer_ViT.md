@@ -24,26 +24,26 @@ ViT의 핵심 주장은 vision-specific convolution 없이도 충분히 큰 data
 
 JFT-300M pretrained ViT-H/14는 ImageNet `88.55%`, ImageNet-ReaL `90.72%`, CIFAR-100 `94.55%`, VTAB 평균 `77.63%`를 기록했다. 논문의 진짜 공헌은 단일 수치보다 **data scale이 inductive bias 부족을 상쇄한다**는 경험 법칙이다.
 
-![ViT의 patch tokenization과 Transformer encoder](https://github.com/user-attachments/assets/e64f227d-d434-4757-8ec4-69c7dfdc6a7b)
+![ViT의 patch tokenization과 Transformer encoder](https://github.com/user-attachments/assets/5ea58a22-375b-441a-b684-4b42890a736e)
 
 ## Image를 token sequence로 만들기
 
 Input image `x ∈ R^{H×W×C}`를 `P×P` patch로 나눈다. Patch 수는
 
-```text
-N = H W / P²
+```math
+N=\frac{HW}{P^2}
 ```
 
 이다. 각 patch를 flatten하면
 
-```text
-x_p ∈ R^{N × (P²C)}
+```math
+x_p\in\mathbb{R}^{N\times(P^2C)}
 ```
 
 이고 trainable projection `E ∈ R^{(P²C)×D}`로 hidden dimension `D`에 보낸다.
 
-```text
-x_p E ∈ R^{N×D}
+```math
+x_pE\in\mathbb{R}^{N\times D}
 ```
 
 Patchify + linear projection은 kernel size와 stride가 모두 P인 convolution으로 동일하게 구현할 수 있다. 차이는 이후 모든 patch가 global self-attention으로 상호작용한다는 점이다.
@@ -52,8 +52,8 @@ Patchify + linear projection은 kernel size와 stride가 모두 P인 convolution
 
 BERT의 `[CLS]`처럼 learned vector `x_class`를 sequence 앞에 붙인다.
 
-```text
-z_0 = [x_class ; x_p^1 E ; ... ; x_p^N E] + E_pos
+```math
+z_0=\left[x_{\mathrm{class}};x_p^1E;\ldots;x_p^NE\right]+E_{\mathrm{pos}}
 ```
 
 `E_pos ∈ R^{(N+1)×D}`는 learned 1D absolute position embedding이다. 2D-aware embedding도 실험했지만 주 setting에서 큰 이득이 없어 단순 1D를 사용했다.
@@ -64,17 +64,19 @@ z_0 = [x_class ; x_p^1 E ; ... ; x_p^N E] + E_pos
 
 Pre-LayerNorm block을 사용한다.
 
-```text
-z'_l = MSA(LN(z_{l-1})) + z_{l-1}
-z_l  = MLP(LN(z'_l)) + z'_l
+```math
+\begin{aligned}
+z'_l&=\operatorname{MSA}\!\left(\operatorname{LN}(z_{l-1})\right)+z_{l-1},\\
+z_l&=\operatorname{MLP}\!\left(\operatorname{LN}(z'_l)\right)+z'_l.
+\end{aligned}
 ```
 
 MLP는 두 linear layer와 GELU로 구성된다. Encoder 내부는 NLP Transformer와 동일하며 2D convolution, pooling hierarchy가 없다.
 
 Self-attention score는 patch 수에 대해 `[N,N]`이므로 complexity는
 
-```text
-O(N²D) = O((HW/P²)² D)
+```math
+O(N^2D)=O\!\left(\left(\frac{HW}{P^2}\right)^2D\right)
 ```
 
 이다. Patch size를 절반으로 줄이면 token 수가 4배, attention FLOPs는 약 16배가 된다.

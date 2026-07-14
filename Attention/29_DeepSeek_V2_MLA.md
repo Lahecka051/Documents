@@ -12,10 +12,12 @@
 
 Multi-head Latent Attention(MLA)은 각 token의 full multi-head K와 V를 cache하는 대신, K와 V를 공동으로 생성할 수 있는 작은 latent vector `c_KV`만 cache한다. 별도의 low-rank down-projection으로 hidden state를 압축하고, key와 value는 각각 up-projection으로 복원한다.
 
-```text
-c_KV = W_DKV h
-k_C  = W_UK c_KV
-v_C  = W_UV c_KV
+```math
+\begin{aligned}
+c_{KV}&=W_{DKV}h,\\
+k_C&=W_{UK}c_{KV},\\
+v_C&=W_{UV}c_{KV}.
+\end{aligned}
 ```
 
 Inference에서는 행렬 곱의 결합 법칙으로 `W_UK`를 query projection 쪽에, `W_UV`를 output projection 쪽에 흡수할 수 있어 매 step 과거의 full K/V를 복원할 필요가 없다.
@@ -24,23 +26,24 @@ Inference에서는 행렬 곱의 결합 법칙으로 `W_UK`를 query projection 
 
 DeepSeek-V2 설정에서 KV cache는 MHA보다 93.3% 줄고, 이론상 GQA 2.25 group 정도의 cache 크기로 MHA보다 강한 결과를 보고한다.
 
-![MLA의 latent KV cache와 decoupled RoPE](https://github.com/user-attachments/assets/9385f64d-ed04-48fd-8ad9-257184bcb93a)
+![MLA의 latent KV cache와 decoupled RoPE](https://github.com/user-attachments/assets/1bb46318-cadd-46c1-a009-f537069d5ca4)
 
 ## MHA의 KV cache 병목
 
 Hidden dimension `d`, head 수 `n_h`, head dimension `d_h`인 MHA는 token `t`에서
 
-```text
-q_t = W^Q h_t
-k_t = W^K h_t
-v_t = W^V h_t
+```math
+\begin{aligned}
+q_t&=W^Qh_t,\\
+k_t&=W^Kh_t,\\
+v_t&=W^Vh_t.
+\end{aligned}
 ```
 
 를 만들고 `n_h`개의 head로 나눈다. Autoregressive inference에서는 모든 과거 `k_t,v_t`를 layer마다 저장한다.
 
-```text
-cache elements per token across l layers
-= 2 n_h d_h l
+```math
+\text{cache elements per token across }l\text{ layers}=2n_hd_hl
 ```
 
 DeepSeek-V2처럼 head가 128개이고 context가 128K이면 KV cache가 batch size와 throughput을 제한한다. MQA/GQA는 KV head를 공유해 줄이지만 논문의 ablation에서는 hard benchmark 품질이 MHA보다 낮았다.
@@ -49,20 +52,22 @@ DeepSeek-V2처럼 head가 128개이고 context가 128K이면 KV cache가 batch s
 
 Token hidden state `h_t ∈ R^d`를 작은 latent로 down-project한다.
 
-```text
-c_t^KV = W^DKV h_t
-
-c_t^KV ∈ R^{d_c}
-W^DKV  ∈ R^{d_c × d}
+```math
+\begin{aligned}
+c_t^{KV}&=W^{DKV}h_t,\\
+c_t^{KV}&\in\mathbb{R}^{d_c},\\
+W^{DKV}&\in\mathbb{R}^{d_c\times d}.
+\end{aligned}
 ```
 
 이 latent에서 content key와 value를 up-project한다.
 
-```text
-k_t^C = W^UK c_t^KV
-v_t^C = W^UV c_t^KV
-
-W^UK,W^UV ∈ R^{(n_h d_h) × d_c}
+```math
+\begin{aligned}
+k_t^C&=W^{UK}c_t^{KV},\\
+v_t^C&=W^{UV}c_t^{KV},\\
+W^{UK},W^{UV}&\in\mathbb{R}^{(n_hd_h)\times d_c}.
+\end{aligned}
 ```
 
 `d_c << n_h d_h`이므로 full K/V 대신 `c_t^KV`만 cache하면 layer당 token당 `d_c` element만 필요하다. K와 V에 별도 latent를 두지 않고 **joint latent 하나**를 공유하는 것이 추가 절감이다.
@@ -71,9 +76,11 @@ W^UK,W^UV ∈ R^{(n_h d_h) × d_c}
 
 Training activation memory를 줄이기 위해 query도 별도 latent를 거친다.
 
-```text
-c_t^Q = W^DQ h_t
-q_t^C = W^UQ c_t^Q
+```math
+\begin{aligned}
+c_t^Q&=W^{DQ}h_t,\\
+q_t^C&=W^{UQ}c_t^Q.
+\end{aligned}
 ```
 
 Query는 현재 token에서 한 번 계산하고 cache하지 않으므로 decode KV cache 크기를 직접 줄이지는 않는다. 하지만 큰 `n_h d_h` query activation과 projection 구조를 low-rank로 제한해 training memory/parameterization에 영향을 준다.
@@ -86,10 +93,12 @@ Naive inference라면 과거 latent마다 `W^UK c_j^KV`, `W^UV c_j^KV`를 복원
 
 Content score를 쓰면
 
-```text
-(q_t^C)^T k_j^C
-= (W^UQ c_t^Q)^T (W^UK c_j^KV)
-= (c_t^Q)^T [(W^UQ)^T W^UK] c_j^KV
+```math
+\begin{aligned}
+(q_t^C)^{\top}k_j^C
+&=(W^{UQ}c_t^Q)^{\top}(W^{UK}c_j^{KV})\\
+&=(c_t^Q)^{\top}\left[(W^{UQ})^{\top}W^{UK}\right]c_j^{KV}.
+\end{aligned}
 ```
 
 두 projection을 미리 결합한 matrix로 query를 latent key space에 보내면 cached `c_j^KV`와 직접 dot product할 수 있다. 논문 표현으로 `W^UK`를 query projection에 absorb한다.
@@ -98,10 +107,12 @@ Content score를 쓰면
 
 Attention weight `a_j`에 대해
 
-```text
-sum_j a_j v_j^C
-= sum_j a_j W^UV c_j^KV
-= W^UV (sum_j a_j c_j^KV)
+```math
+\begin{aligned}
+\sum_ja_jv_j^C
+&=\sum_ja_jW^{UV}c_j^{KV}\\
+&=W^{UV}\left(\sum_ja_jc_j^{KV}\right).
+\end{aligned}
 ```
 
 Head concatenate 뒤 output projection `W^O`와 `W^UV`를 결합할 수 있다. 먼저 latent value weighted sum을 만든 뒤 absorbed output projection을 적용한다.
@@ -112,14 +123,14 @@ Head concatenate 뒤 output projection `W^O`와 `W^UV`를 결합할 수 있다. 
 
 RoPE는 위치 `j`에 따라 key에 rotation matrix `R_j`를 적용한다.
 
-```text
-k_j = R_j W^UK c_j^KV
+```math
+k_j=R_jW^{UK}c_j^{KV}
 ```
 
 Score는
 
-```text
-q_t^T R_j W^UK c_j^KV
+```math
+q_t^{\top}R_jW^{UK}c_j^{KV}
 ```
 
 가 된다. `R_j`가 token position마다 다르므로 `W^UK`를 query projection에 하나의 고정 matrix로 미리 흡수할 수 없다. 행렬 곱은 결합 가능하지만 교환 가능하지 않아 `R_j`를 지나서 projection 순서를 바꿀 수 없다.
@@ -137,24 +148,27 @@ position part: small separate q_R, shared k_R, RoPE 적용
 
 Query head `i`와 key는
 
-```text
-q_{t,i} = [q_{t,i}^C ; q_{t,i}^R]
-k_{j,i} = [k_{j,i}^C ; k_j^R]
+```math
+\begin{aligned}
+q_{t,i}&=\left[q_{t,i}^C;q_{t,i}^R\right],\\
+k_{j,i}&=\left[k_{j,i}^C;k_j^R\right].
+\end{aligned}
 ```
 
 이다. RoPE 부분은
 
-```text
-q_t^R = RoPE(W^QR c_t^Q)
-k_t^R = RoPE(W^KR h_t)
+```math
+\begin{aligned}
+q_t^R&=\operatorname{RoPE}(W^{QR}c_t^Q),\\
+k_t^R&=\operatorname{RoPE}(W^{KR}h_t).
+\end{aligned}
 ```
 
 로 계산한다. `q^R`은 multi-head지만 `k^R`은 head 사이에서 공유한다. Score는 content dot product와 position dot product의 합이다.
 
-```text
-score_{t,j,i}
-= [(q^C)^T k^C + (q^R)^T k^R]
-  / sqrt(d_h + d_h^R)
+```math
+\operatorname{score}_{t,j,i}
+=\frac{(q^C)^{\top}k^C+(q^R)^{\top}k^R}{\sqrt{d_h+d_h^R}}
 ```
 
 RoPE는 작은 position subspace에만 존재하므로 content `W^UK` absorption은 유지된다. Cache에는 latent `c_j^KV`와 shared rotated key `k_j^R`만 저장한다.
@@ -163,14 +177,14 @@ RoPE는 작은 position subspace에만 존재하므로 content `W^UK` absorption
 
 MLA의 layer당 token cache는
 
-```text
-d_c + d_h^R
+```math
+d_c+d_h^R
 ```
 
 이고 전체 `l` layer에서는
 
-```text
-(d_c + d_h^R) l
+```math
+(d_c+d_h^R)l
 ```
 
 이다. 비교하면 다음과 같다.
@@ -188,13 +202,15 @@ DeepSeek-V2는 `d_c=4d_h`, `d_h^R=d_h/2`를 사용하므로 MLA cache는 `4.5d_h
 
 논문 설정은 다음과 같다.
 
-```text
-attention heads n_h   = 128
-per-head dim d_h      = 128
-KV latent dim d_c     = 512
-query latent dim d'_c = 1536
-RoPE head dim d_h^R   = 64
-context length        = 128K
+```math
+\begin{aligned}
+\text{attention heads }n_h&=128,\\
+\text{per-head dim }d_h&=128,\\
+\text{KV latent dim }d_c&=512,\\
+\text{query latent dim }d'_c&=1536,\\
+\text{RoPE head dim }d_h^R&=64,\\
+\text{context length}&=128\mathrm{K}.
+\end{aligned}
 ```
 
 Layer당 token cache는 latent 512와 RoPE key 64, 총 576 element다. MHA의 `2×128×128=32768` element와 비교하면 약 98.2% 작은 이론 element 수다. 논문의 실제 배포 전체 비교에서는 precision·다른 최적화를 포함해 KV cache 93.3% 감소를 보고한다.

@@ -20,7 +20,7 @@ Autoregressive decode에서는 매 step query가 하나뿐이라 계산 parallel
 
 논문 실험에서 WMT14 translation의 품질 손실은 작았고, TPUv2 greedy decoder 부분 비용은 token당 `46 μs → 3.8 μs`로 크게 감소했다. 대신 여러 value subspace를 head별로 유지하던 MHA의 capacity가 줄어드는 것이 핵심 trade-off다.
 
-![Multi-Head Attention과 Multi-Query Attention의 KV cache 비교](https://github.com/user-attachments/assets/022a9c7c-1806-4822-b844-45deafa84f58)
+![Multi-Head Attention과 Multi-Query Attention의 KV cache 비교](https://github.com/user-attachments/assets/a3a2d7eb-7f91-47ff-a1a1-0c555bac00ac)
 
 ## Training과 incremental decoding의 차이
 
@@ -45,18 +45,19 @@ V_cache  : [B,H,t,D_h]
 
 MHA는 head별 projection을 사용한다.
 
-```text
-q_h = W_h^Q x_t
-k_h = W_h^K x_t
-v_h = W_h^V x_t
-
-o_h = softmax(q_h K_h^T / sqrt(D_h)) V_h
+```math
+\begin{aligned}
+q_h&=W_h^Qx_t,
+&k_h&=W_h^Kx_t,
+&v_h&=W_h^Vx_t,\\
+o_h&=\operatorname{softmax}\!\left(\frac{q_hK_h^{\top}}{\sqrt{D_h}}\right)V_h.
+\end{aligned}
 ```
 
 Layer당 sequence 길이 `N`의 KV cache element 수는
 
-```text
-2 × B × H × N × D_h
+```math
+2B H N D_h
 ```
 
 이다. 총 hidden dimension `D=H D_h`라면 token당 `2D` element를 layer마다 저장한다.
@@ -65,20 +66,21 @@ Layer당 sequence 길이 `N`의 KV cache element 수는
 
 MQA에서는 query projection은 head별로 유지하지만 key/value projection은 하나다.
 
-```text
-q_h = W_h^Q x_t              # h = 1...H
-k   = W^K x_t                # shared
-v   = W^V x_t                # shared
-
-o_h = softmax(q_h K^T / sqrt(D_h)) V
+```math
+\begin{aligned}
+q_h&=W_h^Qx_t,&&h=1,\ldots,H,\\
+k&=W^Kx_t,&&\text{shared},\\
+v&=W^Vx_t,&&\text{shared},\\
+o_h&=\operatorname{softmax}\!\left(\frac{q_hK^{\top}}{\sqrt{D_h}}\right)V.
+\end{aligned}
 ```
 
 여기서 모든 query head가 같은 cached `K,V`를 보지만 score는 query가 다르므로 head마다 다르다. 즉 attention pattern의 다양성은 남고, key/value representation의 다양성만 공유된다.
 
 Cache element 수는
 
-```text
-2 × B × N × D_h
+```math
+2B N D_h
 ```
 
 로 줄어 MHA 대비 정확히 `H`분의 1이다.
@@ -116,14 +118,14 @@ stored memory vectors  : 1개로 축소
 
 한 token을 생성할 때 layer마다 `K,V` 전체 prefix를 읽는다. MHA의 대략적인 byte는
 
-```text
-bytes ≈ 2 × B × H × N × D_h × bytes_per_element
+```math
+\mathrm{bytes}_{\mathrm{MHA}}\approx 2B H N D_h\,\mathrm{bytes\_per\_element}
 ```
 
 이다. MQA는
 
-```text
-bytes ≈ 2 × B × N × D_h × bytes_per_element
+```math
+\mathrm{bytes}_{\mathrm{MQA}}\approx 2B N D_h\,\mathrm{bytes\_per\_element}
 ```
 
 이므로 ideal bandwidth-bound 구간에서는 attention decode가 `H`배까지 빨라질 여지가 있다. 실제 latency에는 model weight read, Q projection, softmax, output projection, framework overhead가 있어 전체 속도는 그보다 작다.
@@ -214,10 +216,12 @@ Batch가 작으면 model weight read도 지배한다. MQA만으로 end-to-end la
 
 ## MHA·MQA·GQA 관계
 
-```text
-MHA: KV heads = H
-GQA: KV heads = G, 1 < G < H
-MQA: KV heads = 1
+```math
+\begin{aligned}
+\mathrm{MHA}:&\quad \#\mathrm{KV\ heads}=H,\\
+\mathrm{GQA}:&\quad \#\mathrm{KV\ heads}=G,\quad 1<G<H,\\
+\mathrm{MQA}:&\quad \#\mathrm{KV\ heads}=1.
+\end{aligned}
 ```
 
 MQA는 가장 작은 cache, MHA는 가장 큰 capacity, GQA는 그 사이의 조절 가능한 절충이다.

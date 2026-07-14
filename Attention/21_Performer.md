@@ -13,50 +13,58 @@ Performer는 softmax attention을 kernel로 해석하고, 그 kernel을 positive
 
 표준 attention의 unnormalized kernel은
 
-```text
-A_ij = exp(q_i^T k_j / sqrt(d))
+```math
+A_{ij}=\exp\!\left(\frac{q_i^{\top}k_j}{\sqrt d}\right)
 ```
 
 이다. `exp(q^T k)`를 feature map 내적 `phi(q)^T phi(k)`로 근사하면 계산 순서를 바꿀 수 있다.
 
-```text
-phi(Q) [phi(K)^T V]
+```math
+\phi(Q)\left[\phi(K)^{\top}V\right]
 ```
 
 중간 값은 `[r,d_v]`이고, `r`은 random feature 수다. normalization denominator도 같은 방식으로 계산한다. 따라서 time은 `O(n r d)`, memory는 `O(nr + nd + rd)`가 된다. `r`을 고정하면 길이에 대해 선형이다.
 
 Performer의 중요한 개선은 일반 random feature가 아니라 **양수 feature**와 **orthogonal random vector**를 사용해 softmax kernel 근사의 분산과 normalization 불안정을 줄인 점이다.
 
-![Performer FAVOR+의 kernel factorization](https://github.com/user-attachments/assets/67654194-a0ef-4520-9289-8172c64c4b27)
+![Performer FAVOR+의 kernel factorization](https://github.com/user-attachments/assets/71d31c10-f49d-4cd1-bdd8-5795d7a6d172)
 
 ## 표준 softmax attention을 kernel로 보기
 
 한 head에서 scaled query/key를 이미 반영했다고 하자. unnormalized attention matrix와 row normalization은 다음과 같다.
 
-```text
-A = exp(Q K^T)                  # element-wise exp, [n,n]
-D = diag(A 1_n)                 # row sum
-Y = D^(-1) A V
+```math
+\begin{aligned}
+A&=\exp\!\left(QK^{\top}\right)&&\in\mathbb{R}^{n\times n}
+\quad\text{(element-wise exp)},\\
+D&=\operatorname{diag}(A\mathbf{1}_n)
+\quad\text{(row sum)},\\
+Y&=D^{-1}AV.
+\end{aligned}
 ```
 
 `A`를 직접 만들지 않고 kernel
 
-```text
-K(q,k) = exp(q^T k)
+```math
+K(q,k)=\exp\!\left(q^{\top}k\right)
 ```
 
 의 저차원 feature 표현을 찾는 것이 핵심이다.
 
-```text
-K(q,k) ≈ phi(q)^T phi(k),  phi(x) ∈ R^r
+```math
+K(q,k)\approx\phi(q)^{\top}\phi(k),
+\qquad
+\phi(x)\in\mathbb{R}^{r}
 ```
 
 그러면 전체 kernel matrix는
 
-```text
-A ≈ Q' K'^T
-Q' = phi(Q) : [n,r]
-K' = phi(K) : [n,r]
+```math
+\begin{aligned}
+A&\approx Q'{K'}^{\top},\\
+Q'&=\phi(Q)\in\mathbb{R}^{n\times r},\\
+K'&=\phi(K)\in\mathbb{R}^{n\times r}.
+\end{aligned}
 ```
 
 로 factorize된다.
@@ -65,24 +73,24 @@ K' = phi(K) : [n,r]
 
 Numerator는 결합 법칙으로 다음처럼 계산한다.
 
-```text
-A V ≈ (Q' K'^T) V
-    = Q' (K'^T V)
+```math
+AV\approx\left(Q'{K'}^{\top}\right)V=Q'\left({K'}^{\top}V\right)
 ```
 
 Denominator도 `[n,n]` 없이 계산한다.
 
-```text
-A 1 ≈ Q' (K'^T 1)
+```math
+A\mathbf{1}\approx Q'\left({K'}^{\top}\mathbf{1}\right)
 ```
 
 최종 출력은 row별 scalar로 나눈다.
 
-```text
-S = K'^T V              # [r,d_v]
-z = K'^T 1_n            # [r]
-
-Y_i = (Q'_i S) / (Q'_i z)
+```math
+\begin{aligned}
+S&={K'}^{\top}V&&\in\mathbb{R}^{r\times d_v},\\
+z&={K'}^{\top}\mathbf{1}_n&&\in\mathbb{R}^{r},\\
+Y_i&=\frac{Q'_iS}{Q'_iz}.
+\end{aligned}
 ```
 
 Batch/head를 포함하면 shape은 다음과 같다.
@@ -101,20 +109,20 @@ Y     : [B,H,N,D]
 
 Gaussian random vector `ω ~ N(0,I)`에 대해 다음 feature를 생각할 수 있다.
 
-```text
-phi_ω(x) = exp(ω^T x - ||x||² / 2)
+```math
+\phi_{\omega}(x)=\exp\!\left(\omega^{\top}x-\frac{\lVert x\rVert^2}{2}\right)
 ```
 
 Gaussian moment generating function을 사용하면
 
-```text
-E_ω[phi_ω(x) phi_ω(y)] = exp(x^T y)
+```math
+\mathbb{E}_{\omega}\!\left[\phi_{\omega}(x)\phi_{\omega}(y)\right]=\exp\!\left(x^{\top}y\right)
 ```
 
 가 된다. `r`개의 random vector를 샘플링하고 `1/sqrt(r)`로 정규화해 finite-dimensional feature map을 만든다.
 
-```text
-phi(x) = 1/sqrt(r) * [phi_ω1(x), ..., phi_ωr(x)]
+```math
+\phi(x)=\frac{1}{\sqrt r}\left[\phi_{\omega_1}(x),\ldots,\phi_{\omega_r}(x)\right]
 ```
 
 모든 component가 양수이므로 근사 kernel과 denominator가 음수가 되지 않는다. 이것이 일반적인 sine/cosine random Fourier feature보다 softmax attention에 안정적인 이유다.
@@ -140,16 +148,18 @@ orthogonal features  : feature budget으로 더 다양한 방향을 탐색
 
 표준 scaled dot-product의
 
-```text
-exp(q^T k / sqrt(d))
+```math
+\exp\!\left(\frac{q^{\top}k}{\sqrt d}\right)
 ```
 
 를 `exp(x^T y)` 형태로 맞추려면 query와 key를 `d^(-1/4)`씩 scaling할 수 있다.
 
-```text
-x = q / d^(1/4)
-y = k / d^(1/4)
-x^T y = q^T k / sqrt(d)
+```math
+\begin{aligned}
+x&=\frac{q}{d^{1/4}},
+&y&=\frac{k}{d^{1/4}},\\
+x^{\top}y&=\frac{q^{\top}k}{\sqrt d}.
+\end{aligned}
 ```
 
 이 scaling이 누락되면 kernel의 sharpness와 feature variance가 크게 달라진다.
@@ -158,19 +168,22 @@ x^T y = q^T k / sqrt(d)
 
 Bidirectional attention에서는 `S=K'^T V`, `z=K'^T 1`을 sequence 전체에서 한 번 계산한다. causal attention에서는 위치 `i`가 `j<=i`만 봐야 하므로 prefix statistics를 사용한다.
 
-```text
-S_i = sum_{j<=i} K'_j outer V_j      # [r,d]
-z_i = sum_{j<=i} K'_j                # [r]
-
-Y_i = (Q'_i S_i) / (Q'_i z_i)
+```math
+\begin{aligned}
+S_i&=\sum_{j\le i}K'_j\otimes V_j&&\in\mathbb{R}^{r\times d},\\
+z_i&=\sum_{j\le i}K'_j&&\in\mathbb{R}^{r},\\
+Y_i&=\frac{Q'_iS_i}{Q'_iz_i}.
+\end{aligned}
 ```
 
 parallel training에서는 associative prefix scan으로 모든 `S_i,z_i`를 계산할 수 있다. autoregressive decoding에서는 새 key/value가 들어올 때 state를 한 번 update한다.
 
-```text
-S <- S + k'_t outer v_t
-z <- z + k'_t
-y_t = (q'_t S) / (q'_t z)
+```math
+\begin{aligned}
+S&\leftarrow S+k'_t\otimes v_t,\\
+z&\leftarrow z+k'_t,\\
+y_t&=\frac{q'_tS}{q'_tz}.
+\end{aligned}
 ```
 
 이 recurrent state 크기는 sequence length와 무관한 `O(rd)`다. 하지만 정확한 KV history를 보존하지 않으므로 random-feature 근사의 정보 bottleneck이 된다.

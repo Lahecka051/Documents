@@ -17,7 +17,7 @@ Softmax는 한 row 전체가 있어야 normalization할 수 있지만, **online 
 
 결과적으로 FLOPs는 여전히 `O(n²d)`지만 추가 activation memory는 `O(n)` 수준이고, HBM IO가 크게 줄어 실제 wall-clock이 빨라진다.
 
-![FlashAttention의 IO-aware tiling과 online softmax](https://github.com/user-attachments/assets/223f4cf2-7396-4abc-9817-07e72fe6e3c0)
+![FlashAttention의 IO-aware tiling과 online softmax](https://github.com/user-attachments/assets/881b91f8-8e34-4dee-957a-26c173707c60)
 
 ## 문제의식: FLOPs만 줄여서는 충분하지 않다
 
@@ -35,10 +35,12 @@ kernel 3: P,V를 읽음 -> O=PV -> O를 HBM에 씀
 
 ## 표준 attention과 정확성 목표
 
-```text
-S = Q K^T / sqrt(d)       # [N,N]
-P = softmax_row(S)        # [N,N]
-O = P V                   # [N,d]
+```math
+\begin{aligned}
+S&=\frac{QK^{\top}}{\sqrt d}&&\in\mathbb{R}^{N\times N},\\
+P&=\operatorname{softmax}_{\mathrm{row}}(S)&&\in\mathbb{R}^{N\times N},\\
+O&=PV&&\in\mathbb{R}^{N\times d}.
+\end{aligned}
 ```
 
 FlashAttention이 출력해야 하는 `O`는 위 식과 동일하다. sparsity, low-rank, random feature를 사용하지 않는다. 차이는 `[N,N]` 중간 결과를 materialize하지 않는 계산 순서뿐이다.
@@ -47,11 +49,13 @@ FlashAttention이 출력해야 하는 `O`는 위 식과 동일하다. sparsity, 
 
 Q를 row block `Q_i`, K/V를 column block `K_j,V_j`로 나눈다.
 
-```text
-Q_i : [B_r,d]
-K_j : [B_c,d]
-V_j : [B_c,d]
-S_ij = Q_i K_j^T : [B_r,B_c]
+```math
+\begin{aligned}
+Q_i&\in\mathbb{R}^{B_r\times d},
+&K_j&\in\mathbb{R}^{B_c\times d},\\
+V_j&\in\mathbb{R}^{B_c\times d},
+&S_{ij}=Q_iK_j^{\top}&\in\mathbb{R}^{B_r\times B_c}.
+\end{aligned}
 ```
 
 한 key/value block을 SRAM에 올리고 여러 Q block을 순회한다. 각 Q block에 대해 작은 `S_ij`만 SRAM에서 만들고 softmax state와 output accumulator를 update한 뒤 버린다.
@@ -74,22 +78,25 @@ Block size는 `Q_i,K_j,V_j,S_ij,O_i`가 SRAM에 맞도록 선택한다. SRAM이 
 
 새 block score `x`가 들어오면
 
-```text
-m_new = max(m_old, max(x))
-
-l_new = exp(m_old - m_new) * l_old
-        + sum exp(x - m_new)
+```math
+\begin{aligned}
+m_{\mathrm{new}}&=\max\!\left(m_{\mathrm{old}},\max(x)\right),\\
+l_{\mathrm{new}}&=\exp\!\left(m_{\mathrm{old}}-m_{\mathrm{new}}\right)l_{\mathrm{old}}
++\sum\exp\!\left(x-m_{\mathrm{new}}\right).
+\end{aligned}
 ```
 
 이다. 기존 exponential은 기준 maximum이 `m_old`에서 `m_new`로 바뀌므로 `exp(m_old-m_new)`로 rescale한다.
 
 Normalized output을 직접 유지한다면 새 block의 value contribution과 기존 output을 동일한 scale로 합친다.
 
-```text
-P_tilde = exp(x - m_new)
-
-O_new = [l_old * exp(m_old-m_new) * O_old
-         + P_tilde V_block] / l_new
+```math
+\begin{aligned}
+\tilde P&=\exp\!\left(x-m_{\mathrm{new}}\right),\\
+O_{\mathrm{new}}
+&=\frac{l_{\mathrm{old}}\exp\!\left(m_{\mathrm{old}}-m_{\mathrm{new}}\right)O_{\mathrm{old}}
++\tilde P V_{\mathrm{block}}}{l_{\mathrm{new}}}.
+\end{aligned}
 ```
 
 모든 key block을 처리한 뒤 `m,l,O`는 전체 row softmax와 정확히 같다. 순서를 바꿔도 max-shifted exponential 합을 algebraically 재조합했기 때문이다.
@@ -128,10 +135,12 @@ Attention dropout mask를 저장하면 quadratic memory가 다시 생긴다. Fla
 
 Softmax gradient의 row reduction은 다음 identity를 이용한다.
 
-```text
-dS_ij = P_ij * (dP_ij - D_i)
-D_i   = sum_j P_ij dP_ij
-      = dot(dO_i, O_i)
+```math
+\begin{aligned}
+dS_{ij}&=P_{ij}\left(dP_{ij}-D_i\right),\\
+D_i&=\sum_jP_{ij}dP_{ij}
+=\operatorname{dot}(dO_i,O_i).
+\end{aligned}
 ```
 
 `D_i`를 `dO_i`와 forward output `O_i`에서 구할 수 있으므로 전체 `P`를 저장하지 않아도 된다. FLOPs는 재계산 때문에 늘지만 HBM traffic이 크게 줄어 backward도 빨라질 수 있다. 이 논문이 보여주는 핵심은 compute를 조금 더 써서 memory IO를 줄이는 trade-off다.
@@ -140,21 +149,22 @@ D_i   = sum_j P_ij dP_ij
 
 ### FLOPs와 memory
 
-```text
-FLOPs             : O(N²d), 표준 attention과 동일한 차수
-추가 HBM memory    : O(N), N² attention matrix 없음
+```math
+\begin{aligned}
+\mathrm{FLOPs}&:\ O(N^2d)\quad\text{(표준 attention과 동일한 차수)},\\
+\text{추가 HBM memory}&:\ O(N)\quad\text{(}N^2\text{ attention matrix 없음)}.
+\end{aligned}
 ```
 
 ### IO complexity
 
 Head dimension `d`, SRAM 크기 `M`일 때 논문은 다음을 보인다.
 
-```text
-standard attention HBM access:
-Theta(Nd + N²)
-
-FlashAttention HBM access:
-Theta(N² d² / M)
+```math
+\begin{aligned}
+\text{standard attention HBM access}&:\ \Theta(Nd+N^2),\\
+\text{FlashAttention HBM access}&:\ \Theta\!\left(\frac{N^2d^2}{M}\right).
+\end{aligned}
 ```
 
 일반적인 `d <= M <= Nd` 범위에서 FlashAttention이 훨씬 적은 HBM access를 사용한다. 또한 모든 SRAM 크기 범위에서 동시에 이를 asymptotically 개선하는 exact attention algorithm은 없다는 lower-bound 성질을 제시한다.

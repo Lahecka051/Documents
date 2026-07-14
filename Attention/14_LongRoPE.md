@@ -23,24 +23,22 @@ LongRoPE는 RoPE 기반 pretrained LLM의 context를 2048k, 즉 $2048\times1024=
 
 핵심 수식은 하나의 global factor $s$ 대신 각 RoPE pair에 $\lambda_i$를 적용하는 것이다.
 
-$$
+```math
 \phi_{n,i}
-=
-I(\lambda_i,\hat n)\frac{n}{\beta_i},
-$$
+=I(\lambda_i,\hat n)\frac{n}{\beta_i},
+```
 
-$$
-I(\lambda_i,\hat n)
-=
+```math
+I(\lambda_i,\hat n)=
 \begin{cases}
-1,&n<\hat n\\
-1/\lambda_i,&n\ge\hat n.
+1, & n<\hat n\\
+1/\lambda_i, & n\ge\hat n.
 \end{cases}
-$$
+```
 
 논문은 LLaMA2-7B와 Mistral-7B에서 2048k context를 구성하고, LLaMA2가 4k~2048k passkey retrieval에서 90% 이상을 유지했다고 보고한다. 다만 position scaling이 성공했다고 해서 2M-token dense attention의 계산·메모리 문제가 해결된 것은 아니다.
 
-![LongRoPE의 차원별 scale 탐색과 progressive context extension](https://github.com/user-attachments/assets/39ab5be1-3832-41ce-ac02-6aeab39b785b)
+![LongRoPE의 차원별 scale 탐색과 progressive context extension](https://github.com/user-attachments/assets/164b91b1-c6d8-4c05-b7d0-c8f6ad278251)
 
 ## 연구 배경과 문제의식
 
@@ -60,9 +58,9 @@ $$
 
 512배 uniform interpolation은 original 4k 위치도 8-token 상당의 RoPE 구간에 압축한다.
 
-$$
+```math
 \frac{4096}{512}=8.
-$$
+```
 
 인접 token의 phase 차이가 극단적으로 작아져 original benchmark 성능이 떨어질 수 있다.
 
@@ -78,33 +76,33 @@ $$
 
 RoPE head dimension을 $d$, base를 $\theta=10000$이라 하자. Position $n$의 encoding은 단순화하면 다음과 같다.
 
-$$
+```math
 [
 \cos(n\theta_0),\sin(n\theta_0),
 \ldots,
 \cos(n\theta_{d/2-1}),\sin(n\theta_{d/2-1})
 ],
-$$
+```
 
-$$
+```math
 \theta_i=\theta^{-2i/d}.
-$$
+```
 
 논문은 $\beta=\theta^{2/d}$를 두고 각 pair의 angle을 대략 $n/\beta^i$로 표기한다. Context extension ratio는 다음과 같다.
 
-$$
+```math
 s=\frac{L'}{L}.
-$$
+```
 
 다양한 interpolation은 dimension별 rescale factor $\lambda_i$로 통일할 수 있다.
 
-$$
+```math
 \left[
 \cos\left(\frac{n}{\lambda_0\beta^0}\right),
 \sin\left(\frac{n}{\lambda_0\beta^0}\right),
 \ldots
 \right].
-$$
+```
 
 PI는 모든 $\lambda_i=s$인 특수한 경우다. $\lambda_i=1$이면 해당 dimension은 전혀 interpolation하지 않고 direct extrapolation한다.
 
@@ -129,9 +127,9 @@ Search한 scale이 기존 rule보다 안정적이다. 논문은 이를 original 
 
 완전히 자유로운 $\lambda_i$를 탐색하면 search space가 너무 크다. NTK 관점에서 high-frequency의 낮은 dimension은 덜 interpolation하고 low-frequency의 높은 dimension은 더 interpolation하는 것이 합리적이므로 다음 제약을 둔다.
 
-$$
+```math
 \lambda_i\le\lambda_{i+1}.
-$$
+```
 
 이 제약은 탐색을 크게 줄이지만 최적해가 반드시 monotone하다는 증명은 아니다. 효율을 위한 inductive bias다.
 
@@ -143,14 +141,13 @@ StreamingLLM과 LM-Infinite 계열 연구는 sequence 시작 token이 높은 att
 
 LongRoPE는 첫 $\hat n$ token에는 original RoPE를 그대로 쓰고, 이후 token에만 dimension-wise factor를 적용한다.
 
-$$
-I(\lambda_i,\hat n)
-=
+```math
+I(\lambda_i,\hat n)=
 \begin{cases}
-1,&0\le n<\hat n\\
-1/\lambda_i,&n\ge\hat n.
+1, & 0\le n<\hat n\\
+1/\lambda_i, & n\ge\hat n.
 \end{cases}
-$$
+```
 
 ### 실험 관찰
 
@@ -176,13 +173,13 @@ PI와 Dynamic NTK로 8k/16k를 확장하면서 $\hat n$을 0~256으로 바꿨다
 
 Target context $L'$ 이상의 긴 document 집합을 $X$라 하자. 각 candidate RoPE로 LLM의 next-token loss를 평가한다.
 
-$$
+```math
 \arg\min_{\{\lambda_i\},\hat n}
 \mathcal{L}
 \left(
 \operatorname{LLM}(\operatorname{RoPE}_{\lambda,\hat n},X)
 \right).
-$$
+```
 
 ### Search space
 
@@ -487,21 +484,21 @@ Dimension non-uniformity가 대부분의 이득을 만든다. Initial token thre
 
 LongRoPE의 position 계산은 다음 정도다.
 
-$$
+```math
 O(Nd)
-$$
+```
 
 하지만 dense attention은 여전히 다음과 같다.
 
-$$
+```math
 O(N^2d).
-$$
+```
 
 KV cache는 token 수에 선형 증가한다.
 
-$$
+```math
 O(N\times n_{layers}\times n_{kvheads}\times d_h).
-$$
+```
 
 2M context에서 naive dense attention을 일반 GPU에 그대로 실행하기는 매우 어렵다. 논문은 FlashAttention 2와 internal distributed platform CUBE를 사용해 512k 이상의 serving 비용을 줄였다.
 

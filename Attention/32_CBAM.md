@@ -11,9 +11,11 @@
 
 CBAM은 CNN feature를 channel과 spatial 두 축으로 순차적으로 재가중한다.
 
-```text
-F'  = M_c(F) ⊗ F
-F'' = M_s(F') ⊗ F'
+```math
+\begin{aligned}
+F'&=M_c(F)\otimes F,\\
+F''&=M_s(F')\otimes F'.
+\end{aligned}
 ```
 
 - Channel attention `M_c ∈ R^{C×1×1}`은 “무엇이 중요한가”를 선택한다.
@@ -23,7 +25,7 @@ F'' = M_s(F') ⊗ F'
 
 Full `C×H×W` attention map을 직접 예측하지 않고 channel gate와 spatial gate의 곱으로 factorize해 가볍다. ResNet-50 ImageNet top-1 error는 `24.56% → 22.66%`, COCO Faster R-CNN mAP는 `27.0 → 28.1`로 개선됐다.
 
-![CBAM의 channel-first·spatial-second attention](https://github.com/user-attachments/assets/04585339-649b-4d43-813d-0888a8e8a5f6)
+![CBAM의 channel-first·spatial-second attention](https://github.com/user-attachments/assets/3acae233-6ddc-4a41-a319-a4689f436d86)
 
 ## SE에서 확장된 문제의식
 
@@ -38,17 +40,19 @@ CBAM은 두 축을 동시에 거대한 tensor로 학습하기보다 순차 facto
 
 입력 `F ∈ R^{C×H×W}`에 대해
 
-```text
-F'  = M_c(F) ⊗ F
-F'' = M_s(F') ⊗ F'
+```math
+\begin{aligned}
+F'&=M_c(F)\otimes F,\\
+F''&=M_s(F')\otimes F'.
+\end{aligned}
 ```
 
 `⊗`는 broadcast element-wise multiplication이다. Channel gate는 H,W에 broadcast되고 spatial gate는 C에 broadcast된다.
 
 최종 gate를 펼쳐 보면 대략
 
-```text
-A(c,h,w) = M_c(c) · M_s(h,w | F')
+```math
+A(c,h,w)=M_c(c)\cdot M_s(h,w\mid F')
 ```
 
 형태의 low-rank factorization이다. Spatial gate가 channel-refined feature `F'`에 조건화되어 있어 완전히 독립인 단순 outer product보다는 유연하다.
@@ -57,25 +61,29 @@ A(c,h,w) = M_c(c) · M_s(h,w | F')
 
 Spatial 축에 average pooling과 max pooling을 각각 적용한다.
 
-```text
-F_avg^c = AvgPool_{H,W}(F)   # [C,1,1]
-F_max^c = MaxPool_{H,W}(F)   # [C,1,1]
+```math
+\begin{aligned}
+F_{\mathrm{avg}}^c&=\operatorname{AvgPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1},\\
+F_{\mathrm{max}}^c&=\operatorname{MaxPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1}.
+\end{aligned}
 ```
 
 두 descriptor를 같은 MLP에 통과시켜 더하고 sigmoid를 적용한다.
 
-```text
-M_c(F) = sigmoid(
-    MLP(F_avg^c) + MLP(F_max^c)
-)
+```math
+M_c(F)=\operatorname{sigmoid}\!\left(
+\operatorname{MLP}(F_{\mathrm{avg}}^c)+\operatorname{MLP}(F_{\mathrm{max}}^c)
+\right)
 ```
 
 Shared MLP는 SE처럼 bottleneck을 갖는다.
 
-```text
-MLP(z) = W_1 ReLU(W_0 z)
-W_0: C -> C/r
-W_1: C/r -> C
+```math
+\begin{aligned}
+\operatorname{MLP}(z)&=W_1\operatorname{ReLU}(W_0z),\\
+W_0&:\ C\to C/r,\\
+W_1&:\ C/r\to C.
+\end{aligned}
 ```
 
 두 pooling path가 weight를 공유하므로 parameter는 SE와 거의 같다. Average는 전체 activation 통계를, max는 가장 강한 salient response를 제공한다.
@@ -84,17 +92,19 @@ W_1: C/r -> C
 
 Channel-refined `F'`에서 channel 축을 pooling한다.
 
-```text
-F_avg^s = AvgPool_C(F')    # [1,H,W]
-F_max^s = MaxPool_C(F')    # [1,H,W]
+```math
+\begin{aligned}
+F_{\mathrm{avg}}^s&=\operatorname{AvgPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W},\\
+F_{\mathrm{max}}^s&=\operatorname{MaxPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W}.
+\end{aligned}
 ```
 
 두 map을 channel 방향으로 concatenate하고 convolution한다.
 
-```text
-M_s(F') = sigmoid(
-    Conv_{7×7}([F_avg^s ; F_max^s])
-)
+```math
+M_s(F')=\operatorname{sigmoid}\!\left(
+\operatorname{Conv}_{7\times7}\!\left([F_{\mathrm{avg}}^s;F_{\mathrm{max}}^s]\right)
+\right)
 ```
 
 Input channel은 2, output channel은 1이므로 7×7 convolution parameter는 매우 작다. Kernel 7은 3보다 넓은 local context로 salient region 경계를 판단한다.

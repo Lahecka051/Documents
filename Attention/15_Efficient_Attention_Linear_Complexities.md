@@ -12,14 +12,14 @@
 
 이 논문의 핵심은 새로운 sparse pattern을 설계하는 것이 아니라, attention의 행렬 곱 순서를 바꾸는 데 있다. 정규화가 없는 dot-product attention
 
-```text
-(Q K^T) V
+```math
+(QK^{\top})V
 ```
 
 는 행렬 곱의 결합 법칙에 의해 정확히
 
-```text
-Q (K^T V)
+```math
+Q(K^{\top}V)
 ```
 
 와 같다. 왼쪽 순서는 길이 `n`에 대해 `[n, n]` attention map을 만들지만, 오른쪽 순서는 `[d_k, d_v]` 크기의 작은 전역 context만 만든다. 따라서 token이나 pixel 수에 대한 메모리와 계산량을 선형으로 줄일 수 있다.
@@ -29,18 +29,20 @@ Q (K^T V)
 - 행렬 곱 순서 변경 자체는 정확하다.
 - softmax 버전은 표준 softmax attention의 근사적 변형이다.
 
-![표준 attention과 Efficient Attention의 계산 순서 비교](https://github.com/user-attachments/assets/3ec4a560-4791-478a-99a8-c429a4d1fbf3)
+![표준 attention과 Efficient Attention의 계산 순서 비교](https://github.com/user-attachments/assets/197702f2-349f-4c6d-9a28-195451d086d1)
 
 ## 문제의식
 
 입력 feature를 `X ∈ R^{n×d}`라고 하자. 이미지에서는 `n = H×W`, 문장에서는 `n`이 sequence length이다. 표준 attention은 모든 위치 쌍의 관계를 계산한다.
 
-```text
-Q = X W_q                  # [n, d_k]
-K = X W_k                  # [n, d_k]
-V = X W_v                  # [n, d_v]
-S = Q K^T                  # [n, n]
-Y = rho(S) V               # [n, d_v]
+```math
+\begin{aligned}
+Q &= XW_q &&\in \mathbb{R}^{n\times d_k},\\
+K &= XW_k &&\in \mathbb{R}^{n\times d_k},\\
+V &= XW_v &&\in \mathbb{R}^{n\times d_v},\\
+S &= QK^{\top} &&\in \mathbb{R}^{n\times n},\\
+Y &= \rho(S)V &&\in \mathbb{R}^{n\times d_v}.
+\end{aligned}
 ```
 
 `S`의 크기가 `n²`이므로 고해상도 vision feature에 non-local block을 넣으면 activation memory와 FLOPs가 급격히 커진다. 예를 들어 `100×100` feature map은 위치가 10,000개이고, head 하나의 score만 1억 개다. 논문은 이 병목이 attention의 의미 자체보다 **중간 행렬을 어떤 순서로 계산하느냐**에서 발생한다고 본다.
@@ -49,14 +51,14 @@ Y = rho(S) V               # [n, d_v]
 
 논문은 attention을 다음처럼 정의한다.
 
-```text
-D(Q, K, V) = rho(Q K^T) V
+```math
+D(Q,K,V)=\rho\!\left(QK^{\top}\right)V
 ```
 
 여기서 `rho`는 score normalization이다. Efficient Attention은 query와 key에 각각 적용 가능한 normalization `rho_q`, `rho_k`를 사용해 다음 형태로 계산한다.
 
-```text
-E(Q, K, V) = rho_q(Q) (rho_k(K)^T V)
+```math
+E(Q,K,V)=\rho_q(Q)\left(\rho_k(K)^{\top}V\right)
 ```
 
 계산은 두 단계다.
@@ -81,19 +83,20 @@ Q (K^T V)              : [n, d_v]
 
 논문이 scaling normalization이라 부르는 경우를 단순화하면 score를 `n`으로 나눈다.
 
-```text
-D(Q,K,V) = (Q K^T / n) V
+```math
+D(Q,K,V)=\left(\frac{QK^{\top}}{n}\right)V
 ```
 
 query와 key를 각각 `sqrt(n)`으로 나누면 다음이 성립한다.
 
-```text
-rho_q(Q) = Q / sqrt(n)
-rho_k(K) = K / sqrt(n)
-
-rho_q(Q) (rho_k(K)^T V)
-= (Q / sqrt(n)) ((K / sqrt(n))^T V)
-= (Q K^T / n) V
+```math
+\begin{aligned}
+\rho_q(Q)&=\frac{Q}{\sqrt n},
+&\rho_k(K)&=\frac{K}{\sqrt n},\\
+\rho_q(Q)\left(\rho_k(K)^{\top}V\right)
+&=\frac{Q}{\sqrt n}\left(\left(\frac{K}{\sqrt n}\right)^{\top}V\right)\\
+&=\left(\frac{QK^{\top}}{n}\right)V.
+\end{aligned}
 ```
 
 이 경우는 근사가 아니다. 연산 순서만 바뀌고 출력은 수치 오차 범위에서 동일하다. 논문의 “equivalent”라는 표현은 우선 이 설정에 가장 명확하게 적용된다.
@@ -102,8 +105,8 @@ rho_q(Q) (rho_k(K)^T V)
 
 표준 attention의 softmax는 query 하나마다 모든 key score를 함께 정규화한다.
 
-```text
-P_ij = exp(q_i^T k_j) / sum_t exp(q_i^T k_t)
+```math
+P_{ij}=\frac{\exp\!\left(q_i^{\top}k_j\right)}{\sum_t\exp\!\left(q_i^{\top}k_t\right)}
 ```
 
 이 연산은 일반적으로 `softmax(QK^T) = softmax(Q) softmax(K)^T`로 분해되지 않는다. 저자들은 대신 다음 normalization을 사용한다.
@@ -115,8 +118,9 @@ rho_k(K) : K의 각 column에 softmax   # position 방향
 
 그 결과
 
-```text
-Y = softmax_row(Q) [softmax_col(K)^T V]
+```math
+Y=\operatorname{softmax}_{\mathrm{row}}(Q)
+\left[\operatorname{softmax}_{\mathrm{col}}(K)^{\top}V\right]
 ```
 
 가 된다. `softmax_col(K)`의 각 channel은 전체 위치에서 합이 1이므로 `K^T V` 단계는 위치 전체의 weighted context를 만든다. `softmax_row(Q)`는 각 위치가 그 context channel들을 어떻게 섞을지 정한다.
