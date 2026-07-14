@@ -23,7 +23,8 @@ CNN feature map
 
 ResNet-50 DETR은 COCO에서 42.0 AP, 28 FPS로 strong Faster R-CNN-FPN과 비슷한 성능·속도를 보였다. Large object AP는 61.1로 훨씬 높지만 small object AP는 20.5로 낮고, 500 epoch라는 매우 긴 학습이 필요하다.
 
-![DETR의 image memory·object query·Hungarian set loss](https://github.com/user-attachments/assets/53eda2d5-0b7a-4b11-9569-99bdac51f06d)
+<p align="center"><img src="https://github.com/user-attachments/assets/5f8c0d3a-fc96-47b5-9793-51c9e7f0a1f1" alt="DETR architecture" width="820"></p>
+<p align="center"><sub>원 논문 Figure 2 원본·확대 패널 — CNN backbone·encoder-decoder·object query·prediction heads</sub></p>
 
 ## 기존 detection pipeline의 문제
 

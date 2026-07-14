@@ -29,7 +29,8 @@ Q(K^{\top}V)
 - 행렬 곱 순서 변경 자체는 정확하다.
 - softmax 버전은 표준 softmax attention의 근사적 변형이다.
 
-![표준 attention과 Efficient Attention의 계산 순서 비교](https://github.com/user-attachments/assets/197702f2-349f-4c6d-9a28-195451d086d1)
+<p align="center"><img src="https://github.com/user-attachments/assets/737dfa7a-52ec-42f1-b815-76b89af88b35" alt="Efficient Attention calculation order" width="820"></p>
+<p align="center"><sub>원 논문 Figure 1 — 표준 attention과 곱 순서를 바꾼 Efficient Attention 비교</sub></p>
 
 ## 문제의식
 

@@ -38,7 +38,8 @@ I(\lambda_i,\hat n)=
 
 논문은 LLaMA2-7B와 Mistral-7B에서 2048k context를 구성하고, LLaMA2가 4k~2048k passkey retrieval에서 90% 이상을 유지했다고 보고한다. 다만 position scaling이 성공했다고 해서 2M-token dense attention의 계산·메모리 문제가 해결된 것은 아니다.
 
-![LongRoPE의 차원별 scale 탐색과 progressive context extension](https://github.com/user-attachments/assets/164b91b1-c6d8-4c05-b7d0-c8f6ad278251)
+<p align="center"><img src="https://github.com/user-attachments/assets/e2947b2f-4a7f-4a29-b349-7d21018f39f0" alt="LongRoPE non-uniform position interpolation" width="820"></p>
+<p align="center"><sub>원 논문 Figure 2 — 직접 외삽·선형 보간·LongRoPE의 차원별 비균일 보간 비교</sub></p>
 
 ## 연구 배경과 문제의식
 

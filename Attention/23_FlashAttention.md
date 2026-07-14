@@ -17,7 +17,8 @@ Softmax는 한 row 전체가 있어야 normalization할 수 있지만, **online 
 
 결과적으로 FLOPs는 여전히 `O(n²d)`지만 추가 activation memory는 `O(n)` 수준이고, HBM IO가 크게 줄어 실제 wall-clock이 빨라진다.
 
-![FlashAttention의 IO-aware tiling과 online softmax](https://github.com/user-attachments/assets/881b91f8-8e34-4dee-957a-26c173707c60)
+<p align="center"><img src="https://github.com/user-attachments/assets/43b88503-21cb-4369-9b4c-05c62a31c442" alt="FlashAttention IO-aware tiling" width="760"></p>
+<p align="center"><sub>원 논문 Figure 1 핵심 패널 — HBM-SRAM 데이터 이동을 줄이는 FlashAttention tiling</sub></p>
 
 ## 문제의식: FLOPs만 줄여서는 충분하지 않다
 

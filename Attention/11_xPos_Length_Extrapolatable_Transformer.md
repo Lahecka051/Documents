@@ -25,7 +25,8 @@ k_n' = R_n k_n\odot \hat\zeta^{-n}.
 
 $Q$와 $K$에 서로 역수인 scale을 적용하므로 dot product에는 절대 위치 각각이 아니라 $m-n$에 따른 scale ratio가 남는다. RoPE의 상대 위치 성질을 유지하면서, 장거리에서 크게 진동하는 고주파 성분을 감쇠한다.
 
-![xPos의 reciprocal scaling, attention resolution, blockwise causal attention](https://github.com/user-attachments/assets/a89fe11f-c946-45ac-a889-4cb4d757802c)
+<p align="center"><img src="https://github.com/user-attachments/assets/5ed96d55-1276-4d5c-91d0-c4a9d3f67b9b" alt="xPos long dependency curve" width="680"></p>
+<p align="center"><sub>원 논문 Figure 1 — 장거리 RoPE 진동을 완화하는 xPos dependency curve</sub></p>
 
 ## 연구 배경과 문제의식
 

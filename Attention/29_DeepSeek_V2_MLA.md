@@ -26,7 +26,8 @@ Inference에서는 행렬 곱의 결합 법칙으로 `W_UK`를 query projection 
 
 DeepSeek-V2 설정에서 KV cache는 MHA보다 93.3% 줄고, 이론상 GQA 2.25 group 정도의 cache 크기로 MHA보다 강한 결과를 보고한다.
 
-![MLA의 latent KV cache와 decoupled RoPE](https://github.com/user-attachments/assets/1bb46318-cadd-46c1-a009-f537069d5ca4)
+<p align="center"><img src="https://github.com/user-attachments/assets/151eda74-9bef-4c43-85b2-5892101206d5" alt="DeepSeek-V2 MLA compressed latent KV" width="680"></p>
+<p align="center"><sub>원 논문 Figure 3 핵심 패널 — compressed latent KV와 추론 시 cache 구조</sub></p>
 
 ## MHA의 KV cache 병목
 

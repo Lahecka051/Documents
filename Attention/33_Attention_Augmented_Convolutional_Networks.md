@@ -21,7 +21,8 @@ Convolution은 local pattern과 translation equivariance라는 강한 inductive 
 
 Vision에 맞게 attention score에 relative height와 relative width embedding을 별도로 추가한다. ResNet-50에서 ImageNet top-1은 `76.4 → 77.7`, RetinaNet R50의 COCO AP는 `36.8 → 38.2`로 개선됐으며 parameter 수는 거의 유지됐다.
 
-![Attention-Augmented Convolution의 convolution·relative attention 병렬 구조](https://github.com/user-attachments/assets/f034dee9-c16f-4bd3-b5fc-b6ad6edbc4e8)
+<p align="center"><img src="https://github.com/user-attachments/assets/87c3a394-ac55-4fe3-bb79-d59767e812ed" alt="Attention Augmented Convolution" width="820"></p>
+<p align="center"><sub>원 논문 Figure 2 원본·확대 패널 — convolution과 multi-head attention의 병렬 경로</sub></p>
 
 ## 기존 attention module과 차이
 

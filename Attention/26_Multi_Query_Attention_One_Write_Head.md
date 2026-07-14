@@ -20,7 +20,8 @@ Autoregressive decode에서는 매 step query가 하나뿐이라 계산 parallel
 
 논문 실험에서 WMT14 translation의 품질 손실은 작았고, TPUv2 greedy decoder 부분 비용은 token당 `46 μs → 3.8 μs`로 크게 감소했다. 대신 여러 value subspace를 head별로 유지하던 MHA의 capacity가 줄어드는 것이 핵심 trade-off다.
 
-![Multi-Head Attention과 Multi-Query Attention의 KV cache 비교](https://github.com/user-attachments/assets/a3a2d7eb-7f91-47ff-a1a1-0c555bac00ac)
+<p align="center"><img src="https://github.com/user-attachments/assets/d682061f-5660-4583-a818-0aab6d1c27f5" alt="Multi-Head와 Multi-Query Attention 비교" width="820"></p>
+<p align="center"><sub>보조 도식 — MHA와 MQA의 query/KV head 구성 및 KV cache 비교</sub></p>
 
 ## Training과 incremental decoding의 차이
 

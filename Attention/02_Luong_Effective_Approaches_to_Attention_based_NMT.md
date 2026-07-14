@@ -220,7 +220,8 @@ Global attention은 target step마다 source 전체를 본다.
 
 긴 source에서 모든 position을 볼 필요가 없고 번역 alignment가 대체로 국소적이라는 가정을 사용하면 일부 window만 scoring할 수 있다.
 
-![Luong의 global attention과 local attention](https://github.com/user-attachments/assets/49f9eca7-d89c-4c20-afc8-ae8a585592aa)
+<p align="center"><img src="https://github.com/user-attachments/assets/27873282-f87f-4bcb-b945-2f1d02a1fd1c" alt="Luong local attention model" width="680"></p>
+<p align="center"><sub>원 논문 Figure 3 — 예측 정렬 위치 주변의 작은 창에 집중하는 Luong local attention</sub></p>
 
 Local attention은 먼저 현재 target word가 대응할 source 중심 위치 $p_t$를 정하고, 그 주변 $[p_t-D,p_t+D]$만 본다.
 

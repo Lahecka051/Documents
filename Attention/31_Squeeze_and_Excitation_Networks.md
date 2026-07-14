@@ -25,7 +25,8 @@ Convolution이 local receptive field 안에서 spatial·channel 정보를 섞지
 
 `r=16`에서 계산 overhead는 매우 작고 다양한 ResNet/ResNeXt/MobileNet/ShuffleNet에 일관된 개선을 보였다. SE-ResNet-50은 ImageNet top-5 error를 `7.48% → 6.62%`로 낮췄고, SENet ensemble은 ILSVRC 2017에서 top-5 error `2.251%`로 1위를 기록했다.
 
-![SE block의 squeeze·excitation·channel scaling](https://github.com/user-attachments/assets/dca53822-0483-4505-94d6-69a38feed74a)
+<p align="center"><img src="https://github.com/user-attachments/assets/ce481d90-6608-4181-9b11-b7f131304b33" alt="Squeeze and Excitation block" width="820"></p>
+<p align="center"><sub>원 논문 Figure 1 원본·확대 패널 — squeeze·excitation·channel recalibration 흐름</sub></p>
 
 ## 문제의식: Channel dependency
 

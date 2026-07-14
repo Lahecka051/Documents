@@ -49,7 +49,8 @@ LLaMA/Llama 2에서는 다음 경험식을 권장한다.
 
 논문은 Llama 2의 4k context를 64k/128k로 확장하면서, PI보다 약 2.5배 적은 steps와 10배 적은 token으로 경쟁력 있는 성능을 얻었다. 또한 64k 길이 data로 학습한 128k 모델이 128k까지 extrapolate하는 결과를 보였다.
 
-![YaRN의 RoPE 주파수 band와 attention temperature 보정](https://github.com/user-attachments/assets/45cd578b-4def-466a-a0f7-3389d119c325)
+<p align="center"><img src="https://github.com/user-attachments/assets/bc13680d-3165-49db-ae9c-0c5b253248af" alt="YaRN context extension flow" width="820"></p>
+<p align="center"><sub>원 논문 Figure 1 — PI·NTK-aware·NTK-by-parts에서 YaRN으로 이어지는 확장 흐름</sub></p>
 
 ## 연구 배경과 문제의식
 

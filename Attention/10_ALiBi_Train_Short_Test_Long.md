@@ -24,7 +24,8 @@ S_{i,j}^{(h)}
 
 논문의 핵심 주장은 단순히 “긴 입력을 계산할 수 있다”가 아니다. **짧은 sequence로 학습해 비용을 줄인 뒤, 학습보다 긴 sequence에서 perplexity가 무너지지 않도록 한다**는 것이다. 1.3B 모델에서 길이 1024로 학습한 ALiBi가 길이 2048로 학습한 sinusoidal baseline과 비슷하거나 더 좋은 perplexity를 내면서 학습 시간과 메모리를 각각 약 11% 줄였다.
 
-![ALiBi의 head별 선형 거리 bias와 attention 계산 위치](https://github.com/user-attachments/assets/873960e4-941f-4df4-8424-034cc7e52b46)
+<p align="center"><img src="https://github.com/user-attachments/assets/1915794d-5ea2-42a5-aa5f-34de385e38c5" alt="ALiBi linear distance bias" width="680"></p>
+<p align="center"><sub>원 논문 Figure 3 — attention score에 head별 선형 거리 bias를 더하는 ALiBi</sub></p>
 
 ## 연구 배경과 문제의식
 

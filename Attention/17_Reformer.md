@@ -18,7 +18,8 @@ LSH attention은 query와 key를 content 기반 hash bucket으로 묶고 같은 
 
 Reversible layer는 출력으로부터 입력을 복원할 수 있게 residual block을 설계한다. backward에서 이전 activation을 저장하는 대신 다시 계산하므로 memory를 크게 줄인다. 여기에 feed-forward를 position chunk로 나누는 기법까지 결합해 수만 길이 sequence를 처리한다.
 
-![Reformer의 LSH attention과 reversible residual 구조](https://github.com/user-attachments/assets/2d6f7784-77be-485b-81b5-f59cdbcf3f96)
+<p align="center"><img src="https://github.com/user-attachments/assets/d3bf37f5-0053-400b-8af3-2b49297dcf32" alt="Reformer LSH attention process" width="760"></p>
+<p align="center"><sub>원 논문 Figure 2 — LSH bucket·sort·chunk로 attention 후보를 좁히는 Reformer</sub></p>
 
 ## 표준 Transformer의 세 메모리 항
 

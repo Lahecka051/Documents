@@ -465,7 +465,8 @@ Alpha: [B, C, 196]
 
 ## Attention visualization
 
-![Caption word별 soft/hard visual attention과 object alignment](https://github.com/user-attachments/assets/36dfdb3b-a7e8-41b7-8c11-c1d734b528ab)
+<p align="center"><img src="https://github.com/user-attachments/assets/36dfdb3b-a7e8-41b7-8c11-c1d734b528ab" alt="Caption word별 soft hard visual attention과 object alignment" width="760"></p>
+<p align="center"><sub>원 논문 Figures 2–3 — 단어 생성에 따라 이동하는 visual attention과 객체 정렬</sub></p>
 
 Caption word가 바뀔 때 bright region도 이동한다.
 
@@ -507,7 +508,8 @@ Length bucket은 batch에서 가장 긴 caption에 맞춘 padding 계산 낭비�
 
 ## 실험 결과
 
-![Flickr8k, Flickr30k, COCO captioning 결과](https://github.com/user-attachments/assets/1edd5288-487a-42be-8d03-858413bfc431)
+<p align="center"><img src="https://github.com/user-attachments/assets/1edd5288-487a-42be-8d03-858413bfc431" alt="Flickr8k Flickr30k COCO captioning 결과" width="820"></p>
+<p align="center"><sub>원 논문 Table 1 — Flickr8k·Flickr30k·COCO captioning 성능 비교</sub></p>
 
 ### Flickr8k
 

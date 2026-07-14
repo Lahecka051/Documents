@@ -139,7 +139,8 @@ K = \tilde h_{\tau+1}^{n-1}W_k,
 V = \tilde h_{\tau+1}^{n-1}W_v
 ```
 
-![Transformer-XL의 segment recurrence와 relative attention](https://github.com/user-attachments/assets/e94bdc24-9e1d-4cf7-ad5c-ad255f9f0874)
+<p align="center"><img src="https://github.com/user-attachments/assets/e86c97fd-8aee-456f-b4b9-a94307950e18" alt="Transformer-XL segment recurrence" width="680"></p>
+<p align="center"><sub>원 논문 Figure 2(a) — 이전 segment state를 새 segment의 memory로 재사용하는 단계</sub></p>
 
 ### Tensor shape
 

@@ -30,7 +30,8 @@ f\left(x,m\frac{L}{L'}\right).
 
 논문은 LLaMA 7B~65B를 최대 32768 context로 확장했고, 대부분 1000 fine-tuning steps 안에서 긴 context를 활용하는 성능을 얻었다. 핵심 절충은 명확하다. **범위 밖 불안정성을 없애는 대신, 인접 token의 positional resolution을 확장 배율만큼 낮춘다.**
 
-![Position Interpolation이 긴 위치 구간을 기존 RoPE 범위로 매핑하는 과정](https://github.com/user-attachments/assets/2d521ed8-2fa7-4cc3-8dbf-d3edc007d27b)
+<p align="center"><img src="https://github.com/user-attachments/assets/f113e7f2-600d-4468-ac18-9e4fa2eacc94" alt="Position Interpolation" width="760"></p>
+<p align="center"><sub>원 논문 Figure 1 — 긴 위치 구간을 사전학습 RoPE 범위 안으로 압축하는 과정</sub></p>
 
 ## 연구 배경과 문제의식
 

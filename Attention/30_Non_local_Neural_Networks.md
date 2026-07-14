@@ -19,7 +19,8 @@ y_i=\frac{1}{C(x)}\sum_jf(x_i,x_j)g(x_j)
 
 논문은 video의 space-time 전체, image의 spatial 전체에서 global interaction을 한 block으로 계산한다. Kinetics에서 5-block Non-local I3D가 ResNet-101 기준 `74.4 → 76.0` top-1로 개선되었고, COCO detection·segmentation·keypoint에도 일관된 이득을 보였다.
 
-![Non-local block의 affinity·global aggregation·residual 흐름](https://github.com/user-attachments/assets/f6b6d163-2198-416e-b040-0946f1b13725)
+<p align="center"><img src="https://github.com/user-attachments/assets/0fcd45ba-eb31-4db1-8862-1a539983180f" alt="Non-local block" width="760"></p>
+<p align="center"><sub>원 논문 Figure 2 — affinity·global aggregation·residual로 이어지는 non-local block</sub></p>
 
 ## 문제의식
 

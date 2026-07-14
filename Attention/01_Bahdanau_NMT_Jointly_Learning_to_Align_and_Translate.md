@@ -131,7 +131,8 @@ for target step i:
     -> p(y_i)
 ```
 
-![Bahdanau attention 기반 encoder-decoder 구조](https://github.com/user-attachments/assets/8d4c0983-c6b2-4aec-8d51-5329b06c5558)
+<p align="center"><img src="https://github.com/user-attachments/assets/fb1cbf8a-72e6-425b-8d7c-040047e5518f" alt="Bahdanau additive attention 계산 흐름" width="860"></p>
+<p align="center"><sub>보조 도식 — decoder state에서 alignment score, source weight, context vector를 계산하는 흐름</sub></p>
 
 ### Bidirectional encoder
 
@@ -478,7 +479,8 @@ RNNsearch-30 > RNNencdec-50
 
 ### 학습된 alignment
 
-![RNNsearch가 학습한 source-target soft alignment](https://github.com/user-attachments/assets/cf77d1d1-a746-43d0-8f13-db68990b8f62)
+<p align="center"><img src="https://github.com/user-attachments/assets/cf77d1d1-a746-43d0-8f13-db68990b8f62" alt="RNNsearch가 학습한 source-target soft alignment" width="680"></p>
+<p align="center"><sub>원 논문 Figure 3 — RNNsearch-50이 학습한 영어-프랑스어 soft alignment</sub></p>
 
 Alignment matrix에는 대체로 diagonal pattern이 나타나지만 영어-프랑스어 어순 차이도 학습한다. 논문은 `European Economic Area`가 `zone économique européenne`로 순서가 바뀌는 사례를 보여 준다.
 

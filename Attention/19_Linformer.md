@@ -22,7 +22,8 @@ query는 `n`개를 유지하지만 key/value slot은 `k`개만 남으므로 scor
 
 이 방법은 sparse attention처럼 일부 원본 token을 선택하는 것이 아니다. projection의 각 row가 sequence 전체를 섞어 `k`개의 latent key/value를 만든다. 따라서 dense global information을 낮은 rank bottleneck으로 압축하는 방법이다.
 
-![Linformer의 sequence-axis projection](https://github.com/user-attachments/assets/5a1c9ee5-25df-40b1-9ed3-dc7d5096e33b)
+<p align="center"><img src="https://github.com/user-attachments/assets/05740013-ccb8-4cc9-b593-477f77c1e7b7" alt="Linformer projection and inference time" width="760"></p>
+<p align="center"><sub>원 논문 Figure 2 — sequence-axis projection과 길이에 따른 Linformer 추론 시간</sub></p>
 
 ## 문제의식
 

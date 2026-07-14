@@ -31,7 +31,8 @@ Query와 key를 sequence segment별 평균으로 압축해 landmark `Q_tilde,K_t
 
 핵심 trade-off는 landmark가 전체 attention structure를 얼마나 잘 대표하는지, 그리고 중앙 `m×m` matrix의 pseudo-inverse를 얼마나 안정적으로 근사하는지다.
 
-![Nyströmformer의 landmark factorization](https://github.com/user-attachments/assets/ccbc673f-bb21-4249-83f1-f6c8be2e78e9)
+<p align="center"><img src="https://github.com/user-attachments/assets/2af03b28-faae-4f76-936b-c076f7a736b4" alt="Nyströmformer landmark factorization" width="820"></p>
+<p align="center"><sub>원 논문 Figure 2 — landmark 기반 세 행렬 곱으로 근사하는 Nyström factorization</sub></p>
 
 ## Nyström method의 직관
 

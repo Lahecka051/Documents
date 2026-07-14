@@ -226,7 +226,8 @@ Learned label 수는 각각 $2k+1$개다.
 -k,\ldots,-2,-1,0,+1,+2,\ldots,+k
 ```
 
-![상대 거리를 directed edge label로 사용하는 self-attention](https://github.com/user-attachments/assets/0ceb7fe6-88c7-48a4-aa4d-d1495d555144)
+<p align="center"><img src="https://github.com/user-attachments/assets/01376754-622e-42eb-8623-0ceb2dafabe8" alt="상대 거리를 directed edge로 표현하는 self-attention" width="680"></p>
+<p align="center"><sub>원 논문 Figure 1 — 상대 거리를 directed edge representation으로 표현하는 방식</sub></p>
 
 ### 방향성이 중요하다
 

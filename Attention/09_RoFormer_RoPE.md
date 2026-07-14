@@ -270,9 +270,10 @@ R(a)^\top R(b)=R(b-a).
 \end{aligned}
 ```
 
-![같은 위치 이동에 대한 RoPE 내적의 불변성](https://github.com/user-attachments/assets/b6f33ce4-8ea4-452d-af2e-aedfff0a96a3)
+<p align="center"><img src="https://github.com/user-attachments/assets/f536d8aa-4db1-4987-b4a2-df4fbf9e22e5" alt="RoPE common-shift invariance" width="860"></p>
+<p align="center"><sub>보조 도식 — Q/K 위치를 함께 이동해도 상대 offset과 내적이 유지되는 RoPE 성질</sub></p>
 
-그림의 두 panel은 query와 key를 모두 같은 크기만큼 더 회전해도 내적이 동일함을 보여 준다. Attention score 관점에서 중요한 것은 좌표계의 절대 원점보다 두 위치 사이의 차이다.
+세 단계는 원래 query-key 위치쌍, 두 위치를 함께 이동한 쌍, 이동 뒤에도 같은 상대 offset이 남는 관계를 보여 준다. 두 벡터를 같은 크기만큼 더 회전해도 내적은 동일하므로, attention score 관점에서 중요한 것은 좌표계의 절대 원점보다 두 위치 사이의 차이다.
 
 ### 작은 수치 예시
 
@@ -402,9 +403,10 @@ RoPE:
 Q/K의 각 2D pair를 position-dependent angle로 회전한다.
 ```
 
-![RoPE의 주파수별 회전 패턴과 논문의 장거리 감쇠 proxy](https://github.com/user-attachments/assets/721a6b8e-54ff-40b4-85fd-d8d5613a76d9)
+<p align="center"><img src="https://github.com/user-attachments/assets/365961d2-dc64-4994-b4a3-33f5455152a5" alt="RoPE rotary position embedding" width="760"></p>
+<p align="center"><sub>원 논문 Figure 1 — 위치별 Q/K feature pair를 여러 주파수로 회전시키는 RoPE</sub></p>
 
-왼쪽은 pair index가 커질수록 회전이 느려지는 패턴을 보여 준다. 오른쪽은 논문의 Figure 2와 같은 정의를 `d=80`으로 재계산한 것이다. 전체 추세는 감소하지만 진동이 분명하므로, 이를 모든 token pair의 attention score가 거리와 함께 단조 감소한다는 보장으로 읽으면 안 된다.
+원 논문 Figure 1은 각 2D feature pair가 $\theta_i$와 위치에 따라 서로 다른 속도로 회전하는 과정을 보여 준다. 별도로 논문 Figure 2의 장거리 감쇠 proxy는 전체 추세가 감소하지만 진동이 분명하므로, 이를 모든 token pair의 attention score가 거리와 함께 단조 감소한다는 보장으로 읽으면 안 된다.
 
 ## Tensor shape와 실제 구현
 
@@ -433,7 +435,8 @@ O&=AV.
 \end{aligned}
 ```
 
-![Attention 계산 안에서 RoPE가 적용되는 위치](https://github.com/user-attachments/assets/7bc97470-2993-4cc5-905d-fd01328063b2)
+<p align="center"><img src="https://github.com/user-attachments/assets/35bcd5fc-8749-4420-8096-0209f2c60714" alt="Attention 계산에서 RoPE가 적용되는 위치" width="860"></p>
+<p align="center"><sub>보조 도식 — Q/K projection 뒤 score 계산 전에 RoPE를 적용하고 V는 우회하는 pipeline</sub></p>
 
 RoPE 적용 전후의 Q/K shape는 동일하다.
 

@@ -44,7 +44,8 @@ input text + task prefix
 
 최종 T5 계열은 60M, 220M, 770M, 3B, 11B parameter로 확장되었고, 11B 모델은 당시 24개 평가 task 중 18개에서 state of the art를 달성했다.
 
-![T5의 text-to-text, span corruption, relative position bucket](https://github.com/user-attachments/assets/567972f8-e2cc-4d55-9fda-cba91ef5c41f)
+<p align="center"><img src="https://github.com/user-attachments/assets/45f37887-a49d-4091-aaf4-268a70b3a412" alt="T5 text-to-text framework" width="820"></p>
+<p align="center"><sub>원 논문 Figure 1 — 여러 NLP task를 하나의 text-to-text 형식으로 통일한 T5</sub></p>
 
 ## 연구 배경과 문제의식
 

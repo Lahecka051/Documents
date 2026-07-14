@@ -27,7 +27,8 @@ A_{ij}=\exp\!\left(\frac{q_i^{\top}k_j}{\sqrt d}\right)
 
 Performer의 중요한 개선은 일반 random feature가 아니라 **양수 feature**와 **orthogonal random vector**를 사용해 softmax kernel 근사의 분산과 normalization 불안정을 줄인 점이다.
 
-![Performer FAVOR+의 kernel factorization](https://github.com/user-attachments/assets/71d31c10-f49d-4cd1-bdd8-5795d7a6d172)
+<p align="center"><img src="https://github.com/user-attachments/assets/dda250ac-3966-4284-a35d-7fd8fb0eaff4" alt="Performer FAVOR+ factorization" width="760"></p>
+<p align="center"><sub>원 논문 Figure 1 — FAVOR+ factorization으로 계산 순서를 바꾸는 Performer</sub></p>
 
 ## 표준 softmax attention을 kernel로 보기
 
