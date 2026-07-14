@@ -20,11 +20,11 @@ landmark -> token
 Query와 key를 sequence segment별 평균으로 압축해 landmark `Q_tilde,K_tilde ∈ R^{m×d}`를 만들고 다음 근사를 사용한다.
 
 ```math
-\operatorname{softmax}\!\left(QK^{\top}\right)
+\mathrm{softmax}\!\left(QK^{\top}\right)
 \approx
-\operatorname{softmax}\!\left(Q\tilde K^{\top}\right)
-\left[\operatorname{softmax}\!\left(\tilde Q\tilde K^{\top}\right)\right]^+
-\operatorname{softmax}\!\left(\tilde QK^{\top}\right)
+\mathrm{softmax}\!\left(Q\tilde K^{\top}\right)
+\left[\mathrm{softmax}\!\left(\tilde Q\tilde K^{\top}\right)\right]^+
+\mathrm{softmax}\!\left(\tilde QK^{\top}\right)
 ```
 
 각 factor의 shape은 `[n,m]`, `[m,m]`, `[m,n]`이다. 전체 `[n,n]`을 materialize하지 않고 오른쪽에서부터 `V`와 곱하면 memory를 줄일 수 있다. `m`을 64처럼 작은 상수로 두면 sequence length `n`에 대해 선형에 가까워진다.
@@ -32,7 +32,7 @@ Query와 key를 sequence segment별 평균으로 압축해 landmark `Q_tilde,K_t
 핵심 trade-off는 landmark가 전체 attention structure를 얼마나 잘 대표하는지, 그리고 중앙 `m×m` matrix의 pseudo-inverse를 얼마나 안정적으로 근사하는지다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/2af03b28-faae-4f76-936b-c076f7a736b4" alt="Nyströmformer landmark factorization" width="820"></p>
-<p align="center"><sub>원 논문 Figure 2 — landmark 기반 세 행렬 곱으로 근사하는 Nyström factorization</sub></p>
+<p align="center"><sub>Figure 2 — landmark 기반 세 행렬 곱으로 근사하는 Nyström factorization</sub></p>
 
 ## Nyström method의 직관
 
@@ -75,13 +75,13 @@ Scaled score를 포함해 세 factor를 정의한다.
 
 ```math
 \begin{aligned}
-F&=\operatorname{softmax}\!\left(\frac{Q\tilde K^{\top}}{\sqrt d}\right)
+F&=\mathrm{softmax}\!\left(\frac{Q\tilde K^{\top}}{\sqrt d}\right)
 &&\in\mathbb{R}^{n\times m}
 \quad\text{(token }\to\text{ landmark key)},\\
-A&=\operatorname{softmax}\!\left(\frac{\tilde Q\tilde K^{\top}}{\sqrt d}\right)
+A&=\mathrm{softmax}\!\left(\frac{\tilde Q\tilde K^{\top}}{\sqrt d}\right)
 &&\in\mathbb{R}^{m\times m}
 \quad\text{(landmark core)},\\
-B&=\operatorname{softmax}\!\left(\frac{\tilde QK^{\top}}{\sqrt d}\right)
+B&=\mathrm{softmax}\!\left(\frac{\tilde QK^{\top}}{\sqrt d}\right)
 &&\in\mathbb{R}^{m\times n}
 \quad\text{(landmark query }\to\text{ every token)}.
 \end{aligned}
@@ -147,7 +147,7 @@ Z_{j+1}=\frac{1}{4}Z_j\left[13I-AZ_j\left(15I-AZ_j(7I-AZ_j)\right)\right]
 Landmark approximation은 global low-rank structure를 잘 포착할 수 있지만 local detail을 평균내기 쉽다. 논문은 value에 depthwise 1D convolution을 적용해 output에 residual로 더한다.
 
 ```math
-Y_{\mathrm{final}}=\operatorname{Nystr\ddot{o}mAttention}(Q,K,V)+\operatorname{DWConv}(V)
+Y_{\mathrm{final}}=\mathrm{Nystr\ddot{o}mAttention}(Q,K,V)+\mathrm{DWConv}(V)
 ```
 
 channel마다 local neighborhood를 convolution해 근접 정보를 보강한다. 이는 attention approximation 자체의 수학에는 필요 없지만 empirical 성능에 중요한 architecture 요소다. 비교 시 convolution이 주는 이득과 landmark factorization의 이득을 분리해 봐야 한다.

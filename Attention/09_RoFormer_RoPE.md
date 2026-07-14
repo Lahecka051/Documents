@@ -70,9 +70,9 @@ Attention weight와 출력은 다음과 같다.
 
 ```math
 \begin{aligned}
-\operatorname{score}_{m,n} &= \frac{q_m^\top k_n}{\sqrt d},\\
-a_{m,n} &= \frac{\exp(\operatorname{score}_{m,n})}
-{\sum_j \exp(\operatorname{score}_{m,j})},\\
+\mathrm{score}_{m,n} &= \frac{q_m^\top k_n}{\sqrt d},\\
+a_{m,n} &= \frac{\exp(\mathrm{score}_{m,n})}
+{\sum_j \exp(\mathrm{score}_{m,j})},\\
 o_m &= \sum_n a_{m,n}v_n.
 \end{aligned}
 ```
@@ -124,7 +124,7 @@ Transformer-XL 계열은 absolute position을 더한 Q/K 내적을 네 항으로
 T5 계열처럼 attention logit에 거리별 scalar bias를 더하는 방식도 있다.
 
 ```math
-\operatorname{score}_{m,n}
+\mathrm{score}_{m,n}
 =\frac{q_m^\top k_n}{\sqrt d}+b_{m-n}.
 ```
 
@@ -234,8 +234,8 @@ xe^{i\phi}
 ```math
 \begin{aligned}
 \langle\tilde q_m,\tilde k_n\rangle
-&=\operatorname{Re}\!\left[\tilde q_m\operatorname{conj}(\tilde k_n)\right]\\
-&=\operatorname{Re}\!\left[q\operatorname{conj}(k)e^{i(m-n)\theta}\right].
+&=\mathrm{Re}\!\left[\tilde q_m\mathrm{conj}(\tilde k_n)\right]\\
+&=\mathrm{Re}\!\left[q\mathrm{conj}(k)e^{i(m-n)\theta}\right].
 \end{aligned}
 ```
 
@@ -355,7 +355,7 @@ Head dimension `d`가 짝수라고 하자. RoPE는 `d`차원 vector를 `d/2`개�
 전체 `d`차원 회전 행렬은 2x2 회전 block을 대각선에 놓은 block diagonal matrix다.
 
 ```math
-R_{\Theta,m}=\operatorname{diag}\!\left(
+R_{\Theta,m}=\mathrm{diag}\!\left(
 R(m\theta_0),
 R(m\theta_1),
 \ldots,
@@ -404,7 +404,7 @@ Q/K의 각 2D pair를 position-dependent angle로 회전한다.
 ```
 
 <p align="center"><img src="https://github.com/user-attachments/assets/365961d2-dc64-4994-b4a3-33f5455152a5" alt="RoPE rotary position embedding" width="760"></p>
-<p align="center"><sub>원 논문 Figure 1 — 위치별 Q/K feature pair를 여러 주파수로 회전시키는 RoPE</sub></p>
+<p align="center"><sub>Figure 1 — 위치별 Q/K feature pair를 여러 주파수로 회전시키는 RoPE</sub></p>
 
 원 논문 Figure 1은 각 2D feature pair가 $\theta_i$와 위치에 따라 서로 다른 속도로 회전하는 과정을 보여 준다. 별도로 논문 Figure 2의 장거리 감쇠 proxy는 전체 추세가 감소하지만 진동이 분명하므로, 이를 모든 token pair의 attention score가 거리와 함께 단조 감소한다는 보장으로 읽으면 안 된다.
 
@@ -426,11 +426,11 @@ RoPE는 Q/K projection 뒤, QK transpose score 계산 전에 들어간다.
 
 ```math
 \begin{aligned}
-Q,K,V&=\operatorname{project}(X),\\
-Q_{\mathrm{rope}}&=\operatorname{apply\_rope}(Q,\operatorname{position\_ids}),\\
-K_{\mathrm{rope}}&=\operatorname{apply\_rope}(K,\operatorname{position\_ids}),\\
+Q,K,V&=\mathrm{project}(X),\\
+Q_{\mathrm{rope}}&=\mathrm{apply\_rope}(Q,\mathrm{position\_ids}),\\
+K_{\mathrm{rope}}&=\mathrm{apply\_rope}(K,\mathrm{position\_ids}),\\
 S&=\frac{Q_{\mathrm{rope}}K_{\mathrm{rope}}^\top}{\sqrt d},\\
-A&=\operatorname{softmax}(S+\operatorname{mask}),\\
+A&=\mathrm{softmax}(S+\mathrm{mask}),\\
 O&=AV.
 \end{aligned}
 ```
@@ -457,7 +457,7 @@ score:  [B, h, N, N]
 ```math
 \begin{aligned}
 x&=[x_0,x_1,x_2,x_3,\ldots,x_{d-2},x_{d-1}],\\
-\operatorname{rotate\_pairs}(x)
+\mathrm{rotate\_pairs}(x)
 &=[-x_1,x_0,-x_3,x_2,\ldots,-x_{d-1},x_{d-2}].
 \end{aligned}
 ```
@@ -476,7 +476,7 @@ x&=[x_0,x_1,x_2,x_3,\ldots,x_{d-2},x_{d-1}],\\
 그러면 회전은 element-wise 연산으로 구현된다.
 
 ```math
-R_mx=x\odot\cos_m+\operatorname{rotate\_pairs}(x)\odot\sin_m.
+R_mx=x\odot\cos_m+\mathrm{rotate\_pairs}(x)\odot\sin_m.
 ```
 
 PyTorch 형태의 의사 코드는 다음과 같다.
@@ -599,7 +599,7 @@ Sin/cos table은 미리 계산해 둘 수 있고 필요할 때 동적으로 만�
 \begin{gathered}
 \sum_i h_i\exp(i\Delta\theta_i),\\
 \Delta=m-n,\qquad
-h_i=q_{\mathrm{pair},i}\operatorname{conj}(k_{\mathrm{pair},i}).
+h_i=q_{\mathrm{pair},i}\mathrm{conj}(k_{\mathrm{pair},i}).
 \end{gathered}
 ```
 
@@ -640,15 +640,15 @@ Abel transformation을 적용하면 내적 크기의 상계를 대략 다음 구
 논문은 attention을 similarity function `sim`으로 다음처럼 쓴다.
 
 ```math
-\operatorname{Attention}(Q,K,V)_m
-=\frac{\sum_n\operatorname{sim}(q_m,k_n)v_n}
-{\sum_n\operatorname{sim}(q_m,k_n)}.
+\mathrm{Attention}(Q,K,V)_m
+=\frac{\sum_n\mathrm{sim}(q_m,k_n)v_n}
+{\sum_n\mathrm{sim}(q_m,k_n)}.
 ```
 
 Softmax attention에서는 다음 similarity를 사용한다.
 
 ```math
-\operatorname{sim}(q_m,k_n)
+\mathrm{sim}(q_m,k_n)
 =\exp\!\left(\frac{q_m^\top k_n}{\sqrt d}\right).
 ```
 
@@ -659,7 +659,7 @@ Softmax attention에서는 다음 similarity를 사용한다.
 Linear attention은 similarity를 feature map의 내적으로 분해한다.
 
 ```math
-\operatorname{sim}(q_m,k_n)=\phi(q_m)^\top\psi(k_n).
+\mathrm{sim}(q_m,k_n)=\phi(q_m)^\top\psi(k_n).
 ```
 
 그러면 numerator를 다음처럼 재배열할 수 있다.
@@ -707,7 +707,7 @@ RoPE는 norm을 보존하는 회전이므로 feature-mapped Q/K에 회전을 적
 전체 식은 다음 형태다.
 
 ```math
-\operatorname{Attention}_{\mathrm{rope\_linear}}(m)
+\mathrm{Attention}_{\mathrm{rope\_linear}}(m)
 =\frac{
 \sum_n\left[(R_m\phi(q_m))^\top(R_n\psi(k_n))\right]v_n
 }{
@@ -744,23 +744,23 @@ V: [B, h, N, d_v]
 ```math
 \theta_i=10000^{-2i/d},
 \qquad
-\operatorname{angle}_{m,i}=\operatorname{position\_id}_m\theta_i.
+\mathrm{angle}_{m,i}=\mathrm{position\_id}_m\theta_i.
 ```
 
 Pair별 cosine과 sine을 만든다.
 
 ```math
-\cos_{m,i}=\cos(\operatorname{angle}_{m,i}),
+\cos_{m,i}=\cos(\mathrm{angle}_{m,i}),
 \qquad
-\sin_{m,i}=\sin(\operatorname{angle}_{m,i}).
+\sin_{m,i}=\sin(\mathrm{angle}_{m,i}).
 ```
 
 ### 3단계: Q와 K 회전
 
 ```math
 \begin{aligned}
-Q_{\mathrm{rope}}&=Q\odot\cos+\operatorname{rotate\_pairs}(Q)\odot\sin,\\
-K_{\mathrm{rope}}&=K\odot\cos+\operatorname{rotate\_pairs}(K)\odot\sin.
+Q_{\mathrm{rope}}&=Q\odot\cos+\mathrm{rotate\_pairs}(Q)\odot\sin,\\
+K_{\mathrm{rope}}&=K\odot\cos+\mathrm{rotate\_pairs}(K)\odot\sin.
 \end{aligned}
 ```
 
@@ -775,13 +775,13 @@ S=\frac{Q_{\mathrm{rope}}K_{\mathrm{rope}}^\top}{\sqrt d}.
 필요하면 causal mask와 padding mask를 적용한다.
 
 ```math
-S=S+\operatorname{causal\_mask}+\operatorname{padding\_mask}.
+S=S+\mathrm{causal\_mask}+\mathrm{padding\_mask}.
 ```
 
 ### 5단계: softmax와 value 합산
 
 ```math
-A=\operatorname{softmax}(S,\operatorname{dim}=-1),
+A=\mathrm{softmax}(S,\mathrm{dim}=-1),
 \qquad O=AV.
 ```
 

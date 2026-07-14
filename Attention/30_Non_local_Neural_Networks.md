@@ -20,7 +20,7 @@ y_i=\frac{1}{C(x)}\sum_jf(x_i,x_j)g(x_j)
 논문은 video의 space-time 전체, image의 spatial 전체에서 global interaction을 한 block으로 계산한다. Kinetics에서 5-block Non-local I3D가 ResNet-101 기준 `74.4 → 76.0` top-1로 개선되었고, COCO detection·segmentation·keypoint에도 일관된 이득을 보였다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/0fcd45ba-eb31-4db1-8862-1a539983180f" alt="Non-local block" width="760"></p>
-<p align="center"><sub>원 논문 Figure 2 — affinity·global aggregation·residual로 이어지는 non-local block</sub></p>
+<p align="center"><sub>Figure 2 — affinity·global aggregation·residual로 이어지는 non-local block</sub></p>
 
 ## 문제의식
 
@@ -71,7 +71,7 @@ C(x)&=\sum_jf(x_i,x_j).
 Row normalization을 적용하면
 
 ```math
-y=\operatorname{softmax}\!\left(\theta(x)\phi(x)^{\top}\right)g(x)
+y=\mathrm{softmax}\!\left(\theta(x)\phi(x)^{\top}\right)g(x)
 ```
 
 가 되어 Transformer의 scaled dot-product 이전 형태와 거의 같다. 논문은 이 관계를 명시하며 self-attention을 더 일반적인 non-local family의 special case로 본다.
@@ -90,7 +90,7 @@ Exponential/softmax 없이 위치 수로 scaling한다. Weight가 음수일 수 
 ### Concatenation
 
 ```math
-f(x_i,x_j)=\operatorname{ReLU}\!\left(w_f^{\top}[\theta(x_i),\phi(x_j)]\right)
+f(x_i,x_j)=\mathrm{ReLU}\!\left(w_f^{\top}[\theta(x_i),\phi(x_j)]\right)
 ```
 
 Query/key feature를 concatenate한 learned compatibility다. 계산은 더 복잡하지만 generic pair function의 범위를 보여준다.

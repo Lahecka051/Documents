@@ -23,7 +23,7 @@ query는 `n`개를 유지하지만 key/value slot은 `k`개만 남으므로 scor
 이 방법은 sparse attention처럼 일부 원본 token을 선택하는 것이 아니다. projection의 각 row가 sequence 전체를 섞어 `k`개의 latent key/value를 만든다. 따라서 dense global information을 낮은 rank bottleneck으로 압축하는 방법이다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/05740013-ccb8-4cc9-b593-477f77c1e7b7" alt="Linformer projection and inference time" width="760"></p>
-<p align="center"><sub>원 논문 Figure 2 — sequence-axis projection과 길이에 따른 Linformer 추론 시간</sub></p>
+<p align="center"><sub>Figure 2 — sequence-axis projection과 길이에 따른 Linformer 추론 시간</sub></p>
 
 ## 문제의식
 
@@ -31,7 +31,7 @@ query는 `n`개를 유지하지만 key/value slot은 `k`개만 남으므로 scor
 
 ```math
 \begin{aligned}
-P&=\operatorname{softmax}\!\left(\frac{QK^{\top}}{\sqrt d}\right)
+P&=\mathrm{softmax}\!\left(\frac{QK^{\top}}{\sqrt d}\right)
 &&\in\mathbb{R}^{n\times n},\\
 Y&=PV&&\in\mathbb{R}^{n\times d}.
 \end{aligned}
@@ -68,9 +68,9 @@ Linformer head의 출력은 다음과 같다.
 
 ```math
 \begin{aligned}
-\operatorname{head}_i
-&=\operatorname{softmax}\!\left(\frac{Q\bar K^{\top}}{\sqrt{d_h}}\right)\bar V\\
-&=\operatorname{softmax}\!\left(\frac{Q(E_iK)^{\top}}{\sqrt{d_h}}\right)(F_iV).
+\mathrm{head}_i
+&=\mathrm{softmax}\!\left(\frac{Q\bar K^{\top}}{\sqrt{d_h}}\right)\bar V\\
+&=\mathrm{softmax}\!\left(\frac{Q(E_iK)^{\top}}{\sqrt{d_h}}\right)(F_iV).
 \end{aligned}
 ```
 

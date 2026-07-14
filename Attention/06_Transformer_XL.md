@@ -118,7 +118,7 @@ h_\tau^n \in \mathbb{R}^{L\times d}
 ```math
 \tilde h_{\tau+1}^{n-1}
 =
-[\operatorname{SG}(m_\tau^{n-1})\circ h_{\tau+1}^{n-1}]
+[\mathrm{SG}(m_\tau^{n-1})\circ h_{\tau+1}^{n-1}]
 ```
 
 여기서
@@ -140,7 +140,7 @@ V = \tilde h_{\tau+1}^{n-1}W_v
 ```
 
 <p align="center"><img src="https://github.com/user-attachments/assets/e86c97fd-8aee-456f-b4b9-a94307950e18" alt="Transformer-XL segment recurrence" width="680"></p>
-<p align="center"><sub>원 논문 Figure 2(a) — 이전 segment state를 새 segment의 memory로 재사용하는 단계</sub></p>
+<p align="center"><sub>Figure 2(a) — 이전 segment state를 새 segment의 memory로 재사용하는 단계</sub></p>
 
 ### Tensor shape
 
@@ -308,7 +308,7 @@ i-j \in \{0,1,\ldots,M+L-1\}
 ```math
 Q_{\mathrm{pos}}=qR_{\mathrm{projected}}^\top,
 \qquad
-\operatorname{shape}(Q_{\mathrm{pos}})=[L,M+L].
+\mathrm{shape}(Q_{\mathrm{pos}})=[L,M+L].
 ```
 
 문제는 행 `i`마다 필요한 거리 정렬이 한 칸씩 다르다는 점이다. 논문은 행별 left shift 관계를 이용한다. 구현에서는 흔히 dummy column을 붙이고 reshape한 다음 slice하는 `relative_shift` 연산으로 나타난다.
@@ -348,7 +348,7 @@ def relative_shift(x):
 수식으로는 다음과 같다.
 
 ```math
-\tilde h^{n-1}=[\operatorname{SG}(m^{n-1})\circ h^{n-1}]
+\tilde h^{n-1}=[\mathrm{SG}(m^{n-1})\circ h^{n-1}]
 ```
 
 ```math
@@ -366,15 +366,15 @@ A_{i,j}^n
 ```
 
 ```math
-a^n=\operatorname{MaskedSoftmax}(A^n)V^n
+a^n=\mathrm{MaskedSoftmax}(A^n)V^n
 ```
 
 ```math
-o^n=\operatorname{LayerNorm}(a^n+h^{n-1})
+o^n=\mathrm{LayerNorm}(a^n+h^{n-1})
 ```
 
 ```math
-h^n=\operatorname{PositionwiseFFN}(o^n)
+h^n=\mathrm{PositionwiseFFN}(o^n)
 ```
 
 논문의 원식에는 multi-head scaling, dropout, output projection 등 구현 세부가 생략되어 있다. 실제 구현에서는 보통 score를 `sqrt(d_h)`로 나누고 residual/dropout을 적용한다.

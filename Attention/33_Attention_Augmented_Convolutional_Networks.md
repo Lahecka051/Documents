@@ -12,8 +12,8 @@
 이 논문은 convolution을 channel/spatial gate로 재가중하는 대신, convolution branch와 self-attention branch가 **서로 다른 output feature map을 직접 생성**하고 channel 방향으로 concatenate하는 Attention-Augmented Convolution(AAConv)을 제안한다.
 
 ```math
-\operatorname{AAConv}(X)=\operatorname{Concat}\!\left[
-\operatorname{Conv}(X),\operatorname{MHA}_{\mathrm{2D\ relative}}(X)
+\mathrm{AAConv}(X)=\mathrm{Concat}\!\left[
+\mathrm{Conv}(X),\mathrm{MHA}_{\mathrm{2D\ relative}}(X)
 \right]
 ```
 
@@ -22,22 +22,22 @@ Convolution은 local pattern과 translation equivariance라는 강한 inductive 
 Vision에 맞게 attention score에 relative height와 relative width embedding을 별도로 추가한다. ResNet-50에서 ImageNet top-1은 `76.4 → 77.7`, RetinaNet R50의 COCO AP는 `36.8 → 38.2`로 개선됐으며 parameter 수는 거의 유지됐다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/87c3a394-ac55-4fe3-bb79-d59767e812ed" alt="Attention Augmented Convolution" width="820"></p>
-<p align="center"><sub>원 논문 Figure 2 원본·확대 패널 — convolution과 multi-head attention의 병렬 경로</sub></p>
+<p align="center"><sub>Figure 2 원본·확대 패널 — convolution과 multi-head attention의 병렬 경로</sub></p>
 
 ## 기존 attention module과 차이
 
 SE와 CBAM은 convolution이 만든 feature `F`에 gate를 곱한다.
 
 ```math
-F_{\mathrm{out}}=\operatorname{gate}(F)\otimes F
+F_{\mathrm{out}}=\mathrm{gate}(F)\otimes F
 ```
 
 AAConv의 attention branch는 value를 global weighted sum해 **새 feature channel**을 만든다.
 
 ```math
 \begin{aligned}
-F_{\mathrm{attn}}&=\operatorname{softmax}\!\left(QK^{\top}+\mathrm{relative\ bias}\right)V,\\
-F_{\mathrm{out}}&=\operatorname{concat}(F_{\mathrm{conv}},F_{\mathrm{attn}}).
+F_{\mathrm{attn}}&=\mathrm{softmax}\!\left(QK^{\top}+\mathrm{relative\ bias}\right)V,\\
+F_{\mathrm{out}}&=\mathrm{concat}(F_{\mathrm{conv}},F_{\mathrm{attn}}).
 \end{aligned}
 ```
 
@@ -59,8 +59,8 @@ V&=XW_v&&\in\mathbb{R}^{N\times d_v}.
 
 ```math
 \begin{aligned}
-O_h&=\operatorname{softmax}\!\left(\frac{Q_hK_h^{\top}}{\sqrt{d_k^h}}\right)V_h,\\
-\operatorname{MHA}(X)&=W_o\operatorname{Concat}_h(O_h).
+O_h&=\mathrm{softmax}\!\left(\frac{Q_hK_h^{\top}}{\sqrt{d_k^h}}\right)V_h,\\
+\mathrm{MHA}(X)&=W_o\mathrm{Concat}_h(O_h).
 \end{aligned}
 ```
 
@@ -71,7 +71,7 @@ Score는 `[N,N]`이라 global attention cost는 `O((HW)²)`. 논문은 주로 28
 Content dot product만 사용하면 permutation에 대해 equivariant하고 2D 위치 관계를 알기 어렵다. Absolute position은 image resolution 변화와 translation에 불리할 수 있다. 논문은 query position `i=(i_y,i_x)`, key `j=(j_y,j_x)`의 상대 차이를 height와 width로 분리한다.
 
 ```math
-\operatorname{logit}(i,j)=q_i^{\top}k_j
+\mathrm{logit}(i,j)=q_i^{\top}k_j
 +q_i^{\top}r^H_{j_y-i_y}
 +q_i^{\top}r^W_{j_x-i_x}
 ```
@@ -98,9 +98,9 @@ relative_logits_height(Q, r_H)
 
 ```math
 \begin{aligned}
-\mathrm{conv}_{\mathrm{out}}&=\operatorname{Conv}_{k\times k}(X,\mathrm{channels}=F_{\mathrm{out}}-d_v),\\
-\mathrm{attn}_{\mathrm{out}}&=\operatorname{MHA}_{\mathrm{relative}}(X,\mathrm{value\ channels}=d_v),\\
-\operatorname{AAConv}(X)&=\operatorname{Concat}(\mathrm{conv}_{\mathrm{out}},\mathrm{attn}_{\mathrm{out}}).
+\mathrm{conv}_{\mathrm{out}}&=\mathrm{Conv}_{k\times k}(X,\mathrm{channels}=F_{\mathrm{out}}-d_v),\\
+\mathrm{attn}_{\mathrm{out}}&=\mathrm{MHA}_{\mathrm{relative}}(X,\mathrm{value\ channels}=d_v),\\
+\mathrm{AAConv}(X)&=\mathrm{Concat}(\mathrm{conv}_{\mathrm{out}},\mathrm{attn}_{\mathrm{out}}).
 \end{aligned}
 ```
 

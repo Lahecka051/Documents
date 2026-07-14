@@ -26,7 +26,7 @@ Caption word $y_t$를 생성할 때마다 이전 LSTM hidden state $h_{t-1}$로 
 ```math
 \begin{aligned}
 e_{t,i} &= f_{\mathrm{att}}(a_i,h_{t-1}),\\
-\alpha_{t,:} &= \operatorname{softmax}(e_{t,:}).
+\alpha_{t,:} &= \mathrm{softmax}(e_{t,:}).
 \end{aligned}
 ```
 
@@ -37,7 +37,7 @@ e_{t,i} &= f_{\mathrm{att}}(a_i,h_{t-1}),\\
 \text{soft attention:}\quad
 z_t &= \sum_i\alpha_{t,i}a_i,\\
 \text{hard attention:}\quad
-s_t &\sim \operatorname{Categorical}(\alpha_t),\\
+s_t &\sim \mathrm{Categorical}(\alpha_t),\\
 z_t &= a_{s_t}.
 \end{aligned}
 ```
@@ -130,7 +130,7 @@ Gate 계산을 단순화해 쓰면 다음과 같다.
 ```math
 \begin{aligned}
 [i_t,f_t,o_t,g_t]
-&=[\operatorname{sigmoid},\operatorname{sigmoid},\operatorname{sigmoid},\tanh]
+&=[\mathrm{sigmoid},\mathrm{sigmoid},\mathrm{sigmoid},\tanh]
 \!\left(W[E y_{t-1};h_{t-1};\hat z_t]\right),\\
 c_t &= f_t\odot c_{t-1}+i_t\odot g_t,\\
 h_t &= o_t\odot\tanh(c_t).
@@ -248,7 +248,7 @@ Hard attention은 one-hot location variable $s_t$를 sampling한다.
 
 ```math
 \begin{aligned}
-s_t &\sim \operatorname{Multinoulli}(\alpha_t),\\
+s_t &\sim \mathrm{Multinoulli}(\alpha_t),\\
 s_{t,i} &\in \{0,1\},\\
 \sum_i s_{t,i} &= 1.
 \end{aligned}
@@ -291,7 +291,7 @@ Gradient에는 두 부분이 있다.
 \nabla\mathcal{L}
 \approx
 \nabla\log p(y\mid s_{\mathrm{sampled}},A)
-+(\operatorname{reward}-\operatorname{baseline})
++(\mathrm{reward}-\mathrm{baseline})
 \nabla\log p(s_{\mathrm{sampled}}\mid A)
 ```
 
@@ -333,7 +333,7 @@ Hard attention은 이름과 달리 학습 과정에서 완전히 deterministic�
 \begin{aligned}
 \phi_{\mathrm{soft}}(A,\alpha) &= \sum_i\alpha_i a_i,\\
 \phi_{\mathrm{hard}}(A,\alpha) &= a_s,\qquad
-s\sim\operatorname{Categorical}(\alpha).
+s\sim\mathrm{Categorical}(\alpha).
 \end{aligned}
 ```
 
@@ -373,7 +373,7 @@ Soft model은 previous hidden state에서 scalar gate $\beta_t$도 예측한다.
 
 ```math
 \begin{aligned}
-\beta_t &= \operatorname{sigmoid}(f_\beta(h_{t-1})),\\
+\beta_t &= \mathrm{sigmoid}(f_\beta(h_{t-1})),\\
 \hat z_t &= \beta_t\sum_i\alpha_{t,i}a_i.
 \end{aligned}
 ```
@@ -394,16 +394,16 @@ Additive attention hidden dimension을 $d_a$라 하면:
 ```math
 \begin{aligned}
 A_{\mathrm{proj}}&=AW_a,
-&\operatorname{shape}&=[B,196,d_a],\\
+&\mathrm{shape}&=[B,196,d_a],\\
 h_{\mathrm{proj}}&=h_{t-1}W_h,
-&\operatorname{shape}&=[B,d_a],\\
+&\mathrm{shape}&=[B,d_a],\\
 E_{\mathrm{hidden}}
 &=\tanh(A_{\mathrm{proj}}+h_{\mathrm{proj}}[:,\mathrm{None},:]),
-&\operatorname{shape}&=[B,196,d_a],\\
+&\mathrm{shape}&=[B,196,d_a],\\
 e_t&=E_{\mathrm{hidden}}v_a,
-&\operatorname{shape}&=[B,196],\\
-\alpha_t&=\operatorname{softmax}(e_t,\operatorname{dim}=\operatorname{location}),
-&\operatorname{shape}&=[B,196].
+&\mathrm{shape}&=[B,196],\\
+\alpha_t&=\mathrm{softmax}(e_t,\mathrm{dim}=\mathrm{location}),
+&\mathrm{shape}&=[B,196].
 \end{aligned}
 ```
 
@@ -412,7 +412,7 @@ Soft context:
 ```math
 \begin{aligned}
 z_t&=\alpha_t[:,\mathrm{None},:]\,A,\\
-\operatorname{shape}(z_t)&=[B,512].
+\mathrm{shape}(z_t)&=[B,512].
 \end{aligned}
 ```
 
@@ -420,9 +420,9 @@ Hard context:
 
 ```math
 \begin{aligned}
-\operatorname{index}_t&\sim\operatorname{Categorical}(\alpha_t),\\
-z_t&=\operatorname{gather}(A,\operatorname{index}_t),\\
-\operatorname{shape}(z_t)&=[B,512].
+\mathrm{index}_t&\sim\mathrm{Categorical}(\alpha_t),\\
+z_t&=\mathrm{gather}(A,\mathrm{index}_t),\\
+\mathrm{shape}(z_t)&=[B,512].
 \end{aligned}
 ```
 
@@ -466,7 +466,7 @@ Alpha: [B, C, 196]
 ## Attention visualization
 
 <p align="center"><img src="https://github.com/user-attachments/assets/36dfdb3b-a7e8-41b7-8c11-c1d734b528ab" alt="Caption word별 soft hard visual attention과 object alignment" width="760"></p>
-<p align="center"><sub>원 논문 Figures 2–3 — 단어 생성에 따라 이동하는 visual attention과 객체 정렬</sub></p>
+<p align="center"><sub>Figures 2–3 — 단어 생성에 따라 이동하는 visual attention과 객체 정렬</sub></p>
 
 Caption word가 바뀔 때 bright region도 이동한다.
 
@@ -509,7 +509,7 @@ Length bucket은 batch에서 가장 긴 caption에 맞춘 padding 계산 낭비�
 ## 실험 결과
 
 <p align="center"><img src="https://github.com/user-attachments/assets/1edd5288-487a-42be-8d03-858413bfc431" alt="Flickr8k Flickr30k COCO captioning 결과" width="820"></p>
-<p align="center"><sub>원 논문 Table 1 — Flickr8k·Flickr30k·COCO captioning 성능 비교</sub></p>
+<p align="center"><sub>Table 1 — Flickr8k·Flickr30k·COCO captioning 성능 비교</sub></p>
 
 ### Flickr8k
 
@@ -675,7 +675,7 @@ memory item = image region annotation
 \text{soft:}\quad
 z_t &= \sum_i\alpha_{t,i}a_i,\\
 \text{hard:}\quad
-s_t &\sim \operatorname{Categorical}(\alpha_t),\\
+s_t &\sim \mathrm{Categorical}(\alpha_t),\\
 z_t &= a_{s_t}.
 \end{aligned}
 ```

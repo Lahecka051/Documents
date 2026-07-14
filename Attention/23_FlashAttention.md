@@ -18,7 +18,7 @@ Softmax는 한 row 전체가 있어야 normalization할 수 있지만, **online 
 결과적으로 FLOPs는 여전히 `O(n²d)`지만 추가 activation memory는 `O(n)` 수준이고, HBM IO가 크게 줄어 실제 wall-clock이 빨라진다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/43b88503-21cb-4369-9b4c-05c62a31c442" alt="FlashAttention IO-aware tiling" width="760"></p>
-<p align="center"><sub>원 논문 Figure 1 핵심 패널 — HBM-SRAM 데이터 이동을 줄이는 FlashAttention tiling</sub></p>
+<p align="center"><sub>Figure 1 핵심 패널 — HBM-SRAM 데이터 이동을 줄이는 FlashAttention tiling</sub></p>
 
 ## 문제의식: FLOPs만 줄여서는 충분하지 않다
 
@@ -39,7 +39,7 @@ kernel 3: P,V를 읽음 -> O=PV -> O를 HBM에 씀
 ```math
 \begin{aligned}
 S&=\frac{QK^{\top}}{\sqrt d}&&\in\mathbb{R}^{N\times N},\\
-P&=\operatorname{softmax}_{\mathrm{row}}(S)&&\in\mathbb{R}^{N\times N},\\
+P&=\mathrm{softmax}_{\mathrm{row}}(S)&&\in\mathbb{R}^{N\times N},\\
 O&=PV&&\in\mathbb{R}^{N\times d}.
 \end{aligned}
 ```
@@ -140,7 +140,7 @@ Softmax gradient의 row reduction은 다음 identity를 이용한다.
 \begin{aligned}
 dS_{ij}&=P_{ij}\left(dP_{ij}-D_i\right),\\
 D_i&=\sum_jP_{ij}dP_{ij}
-=\operatorname{dot}(dO_i,O_i).
+=\mathrm{dot}(dO_i,O_i).
 \end{aligned}
 ```
 

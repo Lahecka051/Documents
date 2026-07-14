@@ -25,7 +25,7 @@ ViT의 핵심 주장은 vision-specific convolution 없이도 충분히 큰 data
 JFT-300M pretrained ViT-H/14는 ImageNet `88.55%`, ImageNet-ReaL `90.72%`, CIFAR-100 `94.55%`, VTAB 평균 `77.63%`를 기록했다. 논문의 진짜 공헌은 단일 수치보다 **data scale이 inductive bias 부족을 상쇄한다**는 경험 법칙이다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/8a462cac-4240-4352-8572-7b9270cc80a3" alt="Vision Transformer model overview" width="820"></p>
-<p align="center"><sub>원 논문 Figure 1 — patch embedding·class token·Transformer encoder 구조</sub></p>
+<p align="center"><sub>Figure 1 — patch embedding·class token·Transformer encoder 구조</sub></p>
 
 ## Image를 token sequence로 만들기
 
@@ -67,8 +67,8 @@ Pre-LayerNorm block을 사용한다.
 
 ```math
 \begin{aligned}
-z'_l&=\operatorname{MSA}\!\left(\operatorname{LN}(z_{l-1})\right)+z_{l-1},\\
-z_l&=\operatorname{MLP}\!\left(\operatorname{LN}(z'_l)\right)+z'_l.
+z'_l&=\mathrm{MSA}\!\left(\mathrm{LN}(z_{l-1})\right)+z_{l-1},\\
+z_l&=\mathrm{MLP}\!\left(\mathrm{LN}(z'_l)\right)+z'_l.
 \end{aligned}
 ```
 

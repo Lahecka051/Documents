@@ -26,7 +26,7 @@ F''&=M_s(F')\otimes F'.
 Full `C×H×W` attention map을 직접 예측하지 않고 channel gate와 spatial gate의 곱으로 factorize해 가볍다. ResNet-50 ImageNet top-1 error는 `24.56% → 22.66%`, COCO Faster R-CNN mAP는 `27.0 → 28.1`로 개선됐다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/69122527-e541-4f50-9447-244cfa041c04" alt="CBAM channel and spatial attention modules" width="820"></p>
-<p align="center"><sub>원 논문 Figure 2 — channel attention과 spatial attention의 순차 구조</sub></p>
+<p align="center"><sub>Figure 2 — channel attention과 spatial attention의 순차 구조</sub></p>
 
 ## SE에서 확장된 문제의식
 
@@ -64,16 +64,16 @@ Spatial 축에 average pooling과 max pooling을 각각 적용한다.
 
 ```math
 \begin{aligned}
-F_{\mathrm{avg}}^c&=\operatorname{AvgPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1},\\
-F_{\mathrm{max}}^c&=\operatorname{MaxPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1}.
+F_{\mathrm{avg}}^c&=\mathrm{AvgPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1},\\
+F_{\mathrm{max}}^c&=\mathrm{MaxPool}_{H,W}(F)&&\in\mathbb{R}^{C\times1\times1}.
 \end{aligned}
 ```
 
 두 descriptor를 같은 MLP에 통과시켜 더하고 sigmoid를 적용한다.
 
 ```math
-M_c(F)=\operatorname{sigmoid}\!\left(
-\operatorname{MLP}(F_{\mathrm{avg}}^c)+\operatorname{MLP}(F_{\mathrm{max}}^c)
+M_c(F)=\mathrm{sigmoid}\!\left(
+\mathrm{MLP}(F_{\mathrm{avg}}^c)+\mathrm{MLP}(F_{\mathrm{max}}^c)
 \right)
 ```
 
@@ -81,7 +81,7 @@ Shared MLP는 SE처럼 bottleneck을 갖는다.
 
 ```math
 \begin{aligned}
-\operatorname{MLP}(z)&=W_1\operatorname{ReLU}(W_0z),\\
+\mathrm{MLP}(z)&=W_1\mathrm{ReLU}(W_0z),\\
 W_0&:\ C\to C/r,\\
 W_1&:\ C/r\to C.
 \end{aligned}
@@ -95,16 +95,16 @@ Channel-refined `F'`에서 channel 축을 pooling한다.
 
 ```math
 \begin{aligned}
-F_{\mathrm{avg}}^s&=\operatorname{AvgPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W},\\
-F_{\mathrm{max}}^s&=\operatorname{MaxPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W}.
+F_{\mathrm{avg}}^s&=\mathrm{AvgPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W},\\
+F_{\mathrm{max}}^s&=\mathrm{MaxPool}_{C}(F')&&\in\mathbb{R}^{1\times H\times W}.
 \end{aligned}
 ```
 
 두 map을 channel 방향으로 concatenate하고 convolution한다.
 
 ```math
-M_s(F')=\operatorname{sigmoid}\!\left(
-\operatorname{Conv}_{7\times7}\!\left([F_{\mathrm{avg}}^s;F_{\mathrm{max}}^s]\right)
+M_s(F')=\mathrm{sigmoid}\!\left(
+\mathrm{Conv}_{7\times7}\!\left([F_{\mathrm{avg}}^s;F_{\mathrm{max}}^s]\right)
 \right)
 ```
 

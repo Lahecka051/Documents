@@ -25,8 +25,8 @@ Decoder가 target word $y_i$를 생성할 때마다 이전 decoder state $s_{i-1
 
 ```math
 \begin{aligned}
-e_{i,j} &= \operatorname{alignment\_score}(s_{i-1}, h_j),\\
-\alpha_{i,:} &= \operatorname{softmax}(e_{i,:}),\\
+e_{i,j} &= \mathrm{alignment\_score}(s_{i-1}, h_j),\\
+\alpha_{i,:} &= \mathrm{softmax}(e_{i,:}),\\
 c_i &= \sum_j \alpha_{i,j}h_j.
 \end{aligned}
 ```
@@ -140,15 +140,15 @@ Source position $j$의 표현이 왼쪽 문맥뿐 아니라 오른쪽 문맥도 
 
 ```math
 \begin{aligned}
-h_j^{\mathrm{forward}} &= \operatorname{forward\_RNN}(x_j,h_{j-1}^{\mathrm{forward}}),\\
-h_j^{\mathrm{backward}} &= \operatorname{backward\_RNN}(x_j,h_{j+1}^{\mathrm{backward}}).
+h_j^{\mathrm{forward}} &= \mathrm{forward\_RNN}(x_j,h_{j-1}^{\mathrm{forward}}),\\
+h_j^{\mathrm{backward}} &= \mathrm{backward\_RNN}(x_j,h_{j+1}^{\mathrm{backward}}).
 \end{aligned}
 ```
 
 두 state를 concatenate해 annotation을 만든다.
 
 ```math
-h_j=\operatorname{concat}\!\left(h_j^{\mathrm{forward}},h_j^{\mathrm{backward}}\right)
+h_j=\mathrm{concat}\!\left(h_j^{\mathrm{forward}},h_j^{\mathrm{backward}}\right)
 ```
 
 따라서 $h_j$는 단순한 $x_j$ embedding이 아니라 position $j$ 주변의 양방향 문맥을 반영한다.
@@ -265,10 +265,10 @@ Additive score를 vectorized하면 다음과 같다.
 
 ```math
 \begin{aligned}
-\operatorname{projected\_state} &= s_{i-1}W_s,
-&\operatorname{shape} &= [B,d_a],\\
-\operatorname{projected\_memory} &= HW_h,
-&\operatorname{shape} &= [B,T_x,d_a].
+\mathrm{projected\_state} &= s_{i-1}W_s,
+&\mathrm{shape} &= [B,d_a],\\
+\mathrm{projected\_memory} &= HW_h,
+&\mathrm{shape} &= [B,T_x,d_a].
 \end{aligned}
 ```
 
@@ -278,10 +278,10 @@ State를 source length 축으로 broadcast해 더한다.
 \begin{aligned}
 E_{\mathrm{hidden}}
 &=\tanh\!\left(
-\operatorname{projected\_memory}
-+\operatorname{projected\_state}[:,\mathrm{None},:]
+\mathrm{projected\_memory}
++\mathrm{projected\_state}[:,\mathrm{None},:]
 \right),\\
-\operatorname{shape}(E_{\mathrm{hidden}})&=[B,T_x,d_a].
+\mathrm{shape}(E_{\mathrm{hidden}})&=[B,T_x,d_a].
 \end{aligned}
 ```
 
@@ -290,7 +290,7 @@ $v_a$와 내적해 source position별 scalar score를 만든다.
 ```math
 \begin{aligned}
 e_i&=E_{\mathrm{hidden}}v_a,\\
-\operatorname{shape}(e_i)&=[B,T_x].
+\mathrm{shape}(e_i)&=[B,T_x].
 \end{aligned}
 ```
 
@@ -299,10 +299,10 @@ Softmax와 context 계산은 다음과 같다.
 ```math
 \begin{aligned}
 \alpha_i
-&=\operatorname{softmax}(e_i,\operatorname{dim}=\operatorname{source\_position}),\\
-\operatorname{shape}(\alpha_i)&=[B,T_x],\\
+&=\mathrm{softmax}(e_i,\mathrm{dim}=\mathrm{source\_position}),\\
+\mathrm{shape}(\alpha_i)&=[B,T_x],\\
 c_i&=\alpha_i[:,\mathrm{None},:]\,H,\\
-\operatorname{shape}(c_i)&=[B,d_h].
+\mathrm{shape}(c_i)&=[B,d_h].
 \end{aligned}
 ```
 
@@ -480,7 +480,7 @@ RNNsearch-30 > RNNencdec-50
 ### 학습된 alignment
 
 <p align="center"><img src="https://github.com/user-attachments/assets/cf77d1d1-a746-43d0-8f13-db68990b8f62" alt="RNNsearch가 학습한 source-target soft alignment" width="680"></p>
-<p align="center"><sub>원 논문 Figure 3 — RNNsearch-50이 학습한 영어-프랑스어 soft alignment</sub></p>
+<p align="center"><sub>Figure 3 — RNNsearch-50이 학습한 영어-프랑스어 soft alignment</sub></p>
 
 Alignment matrix에는 대체로 diagonal pattern이 나타나지만 영어-프랑스어 어순 차이도 학습한다. 논문은 `European Economic Area`가 `zone économique européenne`로 순서가 바뀌는 사례를 보여 준다.
 
@@ -604,7 +604,7 @@ compression-first modeling
 ```math
 \begin{aligned}
 e_{i,j} &= v_a^\top\tanh\!\left(W_s s_{i-1}+W_hh_j\right),\\
-\alpha_{i,:} &= \operatorname{softmax}(e_{i,:}),\\
+\alpha_{i,:} &= \mathrm{softmax}(e_{i,:}),\\
 c_i &= \sum_j\alpha_{i,j}h_j.
 \end{aligned}
 ```

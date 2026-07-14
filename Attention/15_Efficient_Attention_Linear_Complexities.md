@@ -30,7 +30,7 @@ Q(K^{\top}V)
 - softmax 버전은 표준 softmax attention의 근사적 변형이다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/737dfa7a-52ec-42f1-b815-76b89af88b35" alt="Efficient Attention calculation order" width="820"></p>
-<p align="center"><sub>원 논문 Figure 1 — 표준 attention과 곱 순서를 바꾼 Efficient Attention 비교</sub></p>
+<p align="center"><sub>Figure 1 — 표준 attention과 곱 순서를 바꾼 Efficient Attention 비교</sub></p>
 
 ## 문제의식
 
@@ -120,8 +120,8 @@ rho_k(K) : K의 각 column에 softmax   # position 방향
 그 결과
 
 ```math
-Y=\operatorname{softmax}_{\mathrm{row}}(Q)
-\left[\operatorname{softmax}_{\mathrm{col}}(K)^{\top}V\right]
+Y=\mathrm{softmax}_{\mathrm{row}}(Q)
+\left[\mathrm{softmax}_{\mathrm{col}}(K)^{\top}V\right]
 ```
 
 가 된다. `softmax_col(K)`의 각 channel은 전체 위치에서 합이 1이므로 `K^T V` 단계는 위치 전체의 weighted context를 만든다. `softmax_row(Q)`는 각 위치가 그 context channel들을 어떻게 섞을지 정한다.

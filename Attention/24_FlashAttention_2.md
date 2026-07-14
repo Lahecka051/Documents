@@ -18,7 +18,7 @@ FlashAttention-2(FA2)는 FlashAttention의 IO-aware tiling과 정확한 softmax�
 출력은 표준 attention과 동일하고 memory도 sequence 길이에 선형이다. A100에서 FlashAttention 대비 약 `2×`, theoretical peak의 `50~73%`를 달성했으며 GPT-style model 학습에서 GPU당 최대 `225 TFLOPs/s`, 약 72% model FLOPs utilization을 보고한다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/ba17f3e6-5c67-4d6d-9456-e9bd4ccc871c" alt="FlashAttention-2 worker parallelism" width="820"></p>
-<p align="center"><sub>원 논문 Figure 2 — attention block을 worker에 분할하는 FlashAttention-2</sub></p>
+<p align="center"><sub>Figure 2 — attention block을 worker에 분할하는 FlashAttention-2</sub></p>
 
 ## 왜 FlashAttention-1도 충분히 빠르지 않았는가
 
@@ -37,7 +37,7 @@ FA2도 다음 exact output을 계산한다.
 ```math
 \begin{aligned}
 S&=\frac{QK^{\top}}{\sqrt d},\\
-P&=\operatorname{softmax}(S),\\
+P&=\mathrm{softmax}(S),\\
 O&=PV.
 \end{aligned}
 ```
@@ -46,9 +46,9 @@ Q/K/V tile을 SRAM에 올리고 row별 running maximum `m`과 sum `l`을 유지�
 
 ```math
 \begin{aligned}
-m_{\mathrm{new}}&=\max\!\left(m_{\mathrm{old}},\operatorname{rowmax}(S_{ij})\right),\\
+m_{\mathrm{new}}&=\max\!\left(m_{\mathrm{old}},\mathrm{rowmax}(S_{ij})\right),\\
 l_{\mathrm{new}}&=\exp\!\left(m_{\mathrm{old}}-m_{\mathrm{new}}\right)l_{\mathrm{old}}
-+\operatorname{rowsum}\!\left(\exp(S_{ij}-m_{\mathrm{new}})\right).
++\mathrm{rowsum}\!\left(\exp(S_{ij}-m_{\mathrm{new}})\right).
 \end{aligned}
 ```
 

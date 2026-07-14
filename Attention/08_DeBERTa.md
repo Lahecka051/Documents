@@ -46,7 +46,7 @@ Q_i^cK_j^{c\top}
 첫 항은 content-to-content, 둘째는 content-to-position, 셋째는 position-to-content다. position-to-position 항은 relative position 설정에서 추가 정보가 작다고 판단해 제거한다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/dbaf4a2e-0f7b-4160-9087-8eff47662e9b" alt="DeBERTa enhanced mask decoder" width="820"></p>
-<p align="center"><sub>원 논문 Figure 2 — BERT decoding layer와 DeBERTa enhanced mask decoder 비교</sub></p>
+<p align="center"><sub>Figure 2 — BERT decoding layer와 DeBERTa enhanced mask decoder 비교</sub></p>
 
 ## 연구 배경과 문제의식
 
@@ -243,7 +243,7 @@ A_{i,j}
 그 다음 softmax와 content value aggregation을 수행한다.
 
 ```math
-H_o=\operatorname{softmax}(A)V_c
+H_o=\mathrm{softmax}(A)V_c
 ```
 
 multi-head 구현에서는 `d`가 보통 head dimension `d_h`에 대응한다.

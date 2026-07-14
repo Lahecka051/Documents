@@ -26,7 +26,7 @@ k_n' = R_n k_n\odot \hat\zeta^{-n}.
 $Q$와 $K$에 서로 역수인 scale을 적용하므로 dot product에는 절대 위치 각각이 아니라 $m-n$에 따른 scale ratio가 남는다. RoPE의 상대 위치 성질을 유지하면서, 장거리에서 크게 진동하는 고주파 성분을 감쇠한다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/5ed96d55-1276-4d5c-91d0-c4a9d3f67b9b" alt="xPos long dependency curve" width="680"></p>
-<p align="center"><sub>원 논문 Figure 1 — 장거리 RoPE 진동을 완화하는 xPos dependency curve</sub></p>
+<p align="center"><sub>Figure 1 — 장거리 RoPE 진동을 완화하는 xPos dependency curve</sub></p>
 
 ## 연구 배경과 문제의식
 
@@ -194,7 +194,7 @@ RoPE는 $\zeta_i=1$인 특수한 경우다. $0<\zeta_i<1$이면 장거리에서 
 Pair $[x_{2i},x_{2i+1}]$에 대해 RoPE 회전은 다음과 같다.
 
 ```math
-\operatorname{rot}(x)
+\mathrm{rot}(x)
 =
 [-x_1,x_0,-x_3,x_2,\ldots].
 ```
@@ -205,7 +205,7 @@ Pair $[x_{2i},x_{2i+1}]$에 대해 RoPE 회전은 다음과 같다.
 Q_n'
 =
 \left(Q_n\odot\cos(n\theta)
-+\operatorname{rot}(Q_n)\odot\sin(n\theta)\right)
++\mathrm{rot}(Q_n)\odot\sin(n\theta)\right)
 \odot\hat\zeta^n,
 ```
 
@@ -213,7 +213,7 @@ Q_n'
 K_n'
 =
 \left(K_n\odot\cos(n\theta)
-+\operatorname{rot}(K_n)\odot\sin(n\theta)\right)
++\mathrm{rot}(K_n)\odot\sin(n\theta)\right)
 \odot\hat\zeta^{-n}.
 ```
 

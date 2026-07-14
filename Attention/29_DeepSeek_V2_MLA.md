@@ -27,7 +27,7 @@ Inference에서는 행렬 곱의 결합 법칙으로 `W_UK`를 query projection 
 DeepSeek-V2 설정에서 KV cache는 MHA보다 93.3% 줄고, 이론상 GQA 2.25 group 정도의 cache 크기로 MHA보다 강한 결과를 보고한다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/151eda74-9bef-4c43-85b2-5892101206d5" alt="DeepSeek-V2 MLA compressed latent KV" width="680"></p>
-<p align="center"><sub>원 논문 Figure 3 핵심 패널 — compressed latent KV와 추론 시 cache 구조</sub></p>
+<p align="center"><sub>Figure 3 핵심 패널 — compressed latent KV와 추론 시 cache 구조</sub></p>
 
 ## MHA의 KV cache 병목
 
@@ -160,15 +160,15 @@ k_{j,i}&=\left[k_{j,i}^C;k_j^R\right].
 
 ```math
 \begin{aligned}
-q_t^R&=\operatorname{RoPE}(W^{QR}c_t^Q),\\
-k_t^R&=\operatorname{RoPE}(W^{KR}h_t).
+q_t^R&=\mathrm{RoPE}(W^{QR}c_t^Q),\\
+k_t^R&=\mathrm{RoPE}(W^{KR}h_t).
 \end{aligned}
 ```
 
 로 계산한다. `q^R`은 multi-head지만 `k^R`은 head 사이에서 공유한다. Score는 content dot product와 position dot product의 합이다.
 
 ```math
-\operatorname{score}_{t,j,i}
+\mathrm{score}_{t,j,i}
 =\frac{(q^C)^{\top}k^C+(q^R)^{\top}k^R}{\sqrt{d_h+d_h^R}}
 ```
 

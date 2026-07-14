@@ -24,7 +24,7 @@ local window + random links + global links
 BigBird의 특징은 sparse pattern을 실험적 heuristic으로만 제시하지 않고 graph 관점의 이론을 붙였다는 점이다. global star를 포함한 특정 sparse graph가 Transformer의 universal approximation과 Turing completeness 성질을 유지한다고 보인다. 그러나 이 결과는 arbitrary precision, 충분한 depth/width 같은 조건 아래의 표현 가능성이고, 현실의 finite-depth model이 full attention과 같은 품질을 자동으로 낸다는 뜻은 아니다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/b3ca0be0-05e8-4d96-9e09-1ac1fa399026" alt="BigBird attention patterns" width="680"></p>
-<p align="center"><sub>원 논문 Figure 1 패널 재배치 — random·sliding-window·global attention을 결합한 BigBird</sub></p>
+<p align="center"><sub>Figure 1 패널 재배치 — random·sliding-window·global attention을 결합한 BigBird</sub></p>
 
 ## 문제의식
 

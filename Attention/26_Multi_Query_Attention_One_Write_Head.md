@@ -51,7 +51,7 @@ MHA는 head별 projection을 사용한다.
 q_h&=W_h^Qx_t,
 &k_h&=W_h^Kx_t,
 &v_h&=W_h^Vx_t,\\
-o_h&=\operatorname{softmax}\!\left(\frac{q_hK_h^{\top}}{\sqrt{D_h}}\right)V_h.
+o_h&=\mathrm{softmax}\!\left(\frac{q_hK_h^{\top}}{\sqrt{D_h}}\right)V_h.
 \end{aligned}
 ```
 
@@ -72,7 +72,7 @@ MQA에서는 query projection은 head별로 유지하지만 key/value projection
 q_h&=W_h^Qx_t,&&h=1,\ldots,H,\\
 k&=W^Kx_t,&&\text{shared},\\
 v&=W^Vx_t,&&\text{shared},\\
-o_h&=\operatorname{softmax}\!\left(\frac{q_hK^{\top}}{\sqrt{D_h}}\right)V.
+o_h&=\mathrm{softmax}\!\left(\frac{q_hK^{\top}}{\sqrt{D_h}}\right)V.
 \end{aligned}
 ```
 

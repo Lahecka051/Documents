@@ -19,7 +19,7 @@ LSH attention은 query와 key를 content 기반 hash bucket으로 묶고 같은 
 Reversible layer는 출력으로부터 입력을 복원할 수 있게 residual block을 설계한다. backward에서 이전 activation을 저장하는 대신 다시 계산하므로 memory를 크게 줄인다. 여기에 feed-forward를 position chunk로 나누는 기법까지 결합해 수만 길이 sequence를 처리한다.
 
 <p align="center"><img src="https://github.com/user-attachments/assets/d3bf37f5-0053-400b-8af3-2b49297dcf32" alt="Reformer LSH attention process" width="760"></p>
-<p align="center"><sub>원 논문 Figure 2 — LSH bucket·sort·chunk로 attention 후보를 좁히는 Reformer</sub></p>
+<p align="center"><sub>Figure 2 — LSH bucket·sort·chunk로 attention 후보를 좁히는 Reformer</sub></p>
 
 ## 표준 Transformer의 세 메모리 항
 
@@ -55,7 +55,7 @@ k_j&=\frac{q_j}{\lVert q_j\rVert}.
 무작위 rotation matrix `R`을 만들고 다음 hash를 사용한다.
 
 ```math
-h(x)=\operatorname*{arg\,max}\left([xR;-xR]\right)
+h(x)=\mathrm*{arg\,max}\left([xR;-xR]\right)
 ```
 
 `xR`의 각 coordinate와 부호 반전 값을 이어 붙인 뒤 가장 큰 항의 index를 bucket으로 삼는다. 방향이 비슷한 vector는 같은 최대 coordinate를 가질 가능성이 높다.
@@ -83,9 +83,9 @@ h(x)=\operatorname*{arg\,max}\left([xR;-xR]\right)
 Autoregressive modeling에서는 정렬 후에도 원래 sequence의 미래 token을 보지 않도록 해야 한다. bucket 정렬은 시간 순서를 섞으므로 causal mask는 **정렬된 index가 아니라 원래 position index**를 비교해 적용한다.
 
 ```math
-\operatorname{allow}(i,j)=
+\mathrm{allow}(i,j)=
 \begin{cases}
-1,&\text{same candidate bucket and }\operatorname{pos}(j)\le\operatorname{pos}(i),\\
+1,&\text{same candidate bucket and }\mathrm{pos}(j)\le\mathrm{pos}(i),\\
 0,&\text{otherwise}.
 \end{cases}
 ```
@@ -161,7 +161,7 @@ activation storage는 layer 수에 거의 선형으로 늘지 않지만, backwar
 Transformer의 FFN은 각 position에 독립적으로 적용된다.
 
 ```math
-\operatorname{FFN}(X)[i]=W_2\,\operatorname{activation}\!\left(W_1X[i]\right)
+\mathrm{FFN}(X)[i]=W_2\,\mathrm{activation}\!\left(W_1X[i]\right)
 ```
 
 따라서 모든 `n` position의 `d_ff` activation을 동시에 만들 필요가 없다. sequence를 여러 chunk로 나누어 FFN을 실행하고 결과를 concatenate한다.
