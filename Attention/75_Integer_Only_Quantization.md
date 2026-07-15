@@ -76,9 +76,9 @@ r=S(q-Z)
 ```math
 q
 =
-\operatorname{clamp}
+\mathrm{clamp}
 \left(
-\operatorname{round}\left(\frac{r}{S}\right)+Z,
+\mathrm{round}\left(\frac{r}{S}\right)+Z,
 q_{min},q_{max}
 \right)
 ```
@@ -297,7 +297,7 @@ s(a,b,n)=\frac{b-a}{n-1}
 Clamp:
 
 ```math
-\operatorname{clamp}(r;a,b)
+\mathrm{clamp}(r;a,b)
 =
 \min(\max(r,a),b)
 ```
@@ -307,9 +307,9 @@ Fake quantized real output은:
 ```math
 q(r;a,b,n)
 =
-\operatorname{round}
+\mathrm{round}
 \left(
-\frac{\operatorname{clamp}(r;a,b)-a}{s(a,b,n)}
+\frac{\mathrm{clamp}(r;a,b)-a}{s(a,b,n)}
 \right)
 s(a,b,n)+a
 ```

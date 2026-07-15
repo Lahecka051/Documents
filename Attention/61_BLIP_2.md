@@ -93,8 +93,8 @@ cross-attention에서 BERT-base의 12 heads를 사용한다고 보면 query-to-i
 ITC는 image와 text의 global alignment를 학습한다. text representation $t$는 text transformer의 `[CLS]` output이다. 32개 query output 각각과 $t$의 similarity를 구한 뒤 가장 높은 값을 image-text similarity로 사용한다.
 
 $$
-s(I,T)=\max_{m\in\{1,\ldots,32\}}
-\operatorname{sim}(Z_m,t).
+s(I,T)=\max_{m\in\lbrace1,\ldots,32\rbrace}
+\mathrm{sim}(Z_m,t).
 $$
 
 이후 batch 내 positive와 negatives에 contrastive loss를 적용한다. frozen image encoder 덕분에 GPU당 더 많은 sample을 넣을 수 있어 BLIP의 momentum queue 대신 in-batch negatives를 사용한다.
@@ -114,7 +114,7 @@ ITG는 image를 조건으로 caption을 생성한다. frozen image feature는 te
 multimodal causal self-attention mask는 다음 규칙을 갖는다.
 
 - query는 모든 query를 볼 수 있지만 text token은 볼 수 없다.
-- text token $t_i$는 모든 query와 이전 text token $t_{<i}$만 볼 수 있다.
+- text token $t_i$는 모든 query와 이전 text token $t_{\lt i}$만 볼 수 있다.
 - 첫 text token은 `[CLS]` 대신 decoding을 알리는 `[DEC]`를 사용한다.
 
 표준 causal LM과 달리 32개 query prefix는 모든 generation step에서 보이는 visual context다.

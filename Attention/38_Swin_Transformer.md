@@ -140,7 +140,7 @@ Feature map이 `h×w` tokens, channel이 `C`, window 한 변이 `M`이라 하자
 ```
 
 ```math
-\Omega(\mathrm{W\mbox{-}MSA})
+\Omega(\text{W-MSA})
 =4hwC^2+2M^2hwC
 ```
 
@@ -153,8 +153,8 @@ Feature map이 `h×w` tokens, channel이 `C`, window 한 변이 `M`이라 하자
 Window 하나에는 `M²` token이 있다. 한 head의 계산은
 
 ```math
-\operatorname{Attention}(Q,K,V)
-=\operatorname{softmax}
+\mathrm{Attention}(Q,K,V)
+=\mathrm{softmax}
 \left(\frac{QK^\top}{\sqrt d}+B+M_{attn}\right)V
 ```
 
@@ -175,11 +175,11 @@ Window 간 attention을 계산하지 않으므로 attention matrix는 block diag
 ```math
 \begin{aligned}
 \hat z^l
-&=\mathrm{W\mbox{-}MSA}(\mathrm{LN}(z^{l-1}))+z^{l-1},\\
+&=\text{W-MSA}(\mathrm{LN}(z^{l-1}))+z^{l-1},\\
 z^l
 &=\mathrm{MLP}(\mathrm{LN}(\hat z^l))+\hat z^l,\\
 \hat z^{l+1}
-&=\mathrm{SW\mbox{-}MSA}(\mathrm{LN}(z^l))+z^l,\\
+&=\text{SW-MSA}(\mathrm{LN}(z^l))+z^l,\\
 z^{l+1}
 &=\mathrm{MLP}(\mathrm{LN}(\hat z^{l+1}))+\hat z^{l+1}.
 \end{aligned}

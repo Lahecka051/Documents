@@ -70,7 +70,7 @@ o_i=W_o z_i+b_o
 ```
 
 ```math
-\hat b_i=\operatorname{MLP}_{box}(z_i)
+\hat b_i=\mathrm{MLP}_{box}(z_i)
 ```
 
 text query `q_c`는 category name이나 description을 text transformer에 넣어 얻는다.
@@ -107,7 +107,7 @@ public CLIP vision encoder는 patch token 외에 global class token을 출력한
 후자가 대부분 architecture에서 더 좋아 사용한다.
 
 ```math
-\tilde z_i=\operatorname{LN}(z_i\odot z_{cls})
+\tilde z_i=\mathrm{LN}(z_i\odot z_{cls})
 ```
 
 global semantic context가 모든 local token을 gate하는 셈이다. 이 class token은 ground-truth object와 match되는 detector slot이 아니다.
@@ -131,7 +131,7 @@ matching cost는 classification, box L1, generalized IoU 정보를 사용한다.
 
 ```math
 \hat b_i=
-\operatorname{decode}(
+\mathrm{decode}(
 \Delta x_i,\Delta y_i,\hat w_i,\hat h_i;
 x_i^{grid},y_i^{grid})
 ```
@@ -176,8 +176,8 @@ image token은 pretraining 단계에서 multi-head attention pooling으로 한 i
 \mathcal{L}_{ITC}
 =\frac{1}{2}
 \left(
-\operatorname{CE}(I T^\top/\tau,\operatorname{diag})
-+\operatorname{CE}(T I^\top/\tau,\operatorname{diag})
+\mathrm{CE}(I T^\top/\tau,\mathrm{diag})
++\mathrm{CE}(T I^\top/\tau,\mathrm{diag})
 \right)
 ```
 

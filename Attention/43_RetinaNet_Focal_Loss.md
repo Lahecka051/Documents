@@ -17,7 +17,7 @@
 Focal Loss는 cross-entropy에 `(1-p_t)^gamma`를 곱해 잘 분류된 sample의 기여를 연속적으로 낮춘다.
 
 ```math
-\operatorname{FL}(p_t)=-\alpha_t(1-p_t)^\gamma\log p_t.
+\mathrm{FL}(p_t)=-\alpha_t(1-p_t)^\gamma\log p_t.
 ```
 
 - `p_t`가 작아 틀린 sample: modulating factor가 1에 가까워 학습 신호를 유지
@@ -70,7 +70,7 @@ Huber 같은 robust loss는 큰 오차의 outlier 영향을 줄인다. Focal Los
 Label `y in {+1,-1}`, positive probability `p`에 대해:
 
 ```math
-\operatorname{CE}(p,y)=
+\mathrm{CE}(p,y)=
 \begin{cases}
 -\log p,&y=+1,\\
 -\log(1-p),&y=-1.
@@ -85,7 +85,7 @@ p,&y=+1,\\
 1-p,&y=-1,
 \end{cases}
 \qquad
-\operatorname{CE}(p_t)=-\log p_t.
+\mathrm{CE}(p_t)=-\log p_t.
 ```
 
 이 표기는 positive/negative를 동일한 식으로 다룬다. `p_t`가 높을수록 정답을 확신한다.
@@ -95,7 +95,7 @@ p,&y=+1,\\
 Class frequency imbalance만 보정하려면 positive에 `alpha`, negative에 `1-alpha`를 둔다.
 
 ```math
-\operatorname{CE}_\alpha(p_t)=-\alpha_t\log p_t.
+\mathrm{CE}_\alpha(p_t)=-\alpha_t\log p_t.
 ```
 
 하지만 alpha는 class만 구분한다. 쉬운 negative와 어려운 negative를 같은 weight로 취급한다. 논문 Table 1a에서 alpha-balanced CE의 최고 AP는 `31.1`이었다.
@@ -103,7 +103,7 @@ Class frequency imbalance만 보정하려면 positive에 `alpha`, negative에 `1
 ### Focal modulating factor
 
 ```math
-\operatorname{FL}(p_t)=-\alpha_t(1-p_t)^\gamma\log p_t.
+\mathrm{FL}(p_t)=-\alpha_t(1-p_t)^\gamma\log p_t.
 ```
 
 `gamma`는 focusing parameter다.
@@ -140,7 +140,7 @@ Negative anchor에서 model이 background를 `0.99`로 맞혔다면 ground-truth
 Logit을 `x`, label을 `y in {+1,-1}`, `p_t=sigma(yx)`라 하면 alpha를 제외한 논문 Appendix의 derivative는:
 
 ```math
-\frac{\partial\operatorname{FL}}{\partial x}
+\frac{\partial\mathrm{FL}}{\partial x}
 =y(1-p_t)^\gamma
 \left(\gamma p_t\log p_t+p_t-1\right).
 ```
@@ -148,7 +148,7 @@ Logit을 `x`, label을 `y in {+1,-1}`, `p_t=sigma(yx)`라 하면 alpha를 제외
 CE의 derivative는:
 
 ```math
-\frac{\partial\operatorname{CE}}{\partial x}=y(p_t-1).
+\frac{\partial\mathrm{CE}}{\partial x}=y(p_t-1).
 ```
 
 Focal Loss는 단지 loss graph를 보기 좋게 바꾸는 것이 아니라 easy sample의 gradient magnitude를 실제로 줄인다. 논문의 converged-model 분석에서 positive loss 분포는 gamma 변화에 비교적 덜 민감했지만, negative loss는 `gamma=2`일 때 극소수 hard negatives에 집중되었다.

@@ -139,13 +139,13 @@ Image self-attention에는 multi-scale deformable attention을 사용한다. 모
 반면 cross-modal attention은 다음 모양을 갖는다.
 
 ```math
-A_{I\leftarrow T}=\operatorname{softmax}
+A_{I\leftarrow T}=\mathrm{softmax}
 \left(\frac{Q_IK_T^{\top}}{\sqrt{d_h}}\right)
 \in\mathbb{R}^{B\times h\times N_I\times N_T}
 ```
 
 ```math
-A_{T\leftarrow I}=\operatorname{softmax}
+A_{T\leftarrow I}=\mathrm{softmax}
 \left(\frac{Q_TK_I^{\top}}{\sqrt{d_h}}\right)
 \in\mathbb{R}^{B\times h\times N_T\times N_I}
 ```
@@ -187,8 +187,8 @@ s_i=\max_{1\leq t\leq N_T}S_{i,t}
 그중 상위 `N_q`개 image 위치를 선택한다.
 
 ```math
-\mathcal{I}_{N_q}=\operatorname{TopN_q}
-\left(\operatorname{Max}_{-1}(X_I X_T^{\top})\right)
+\mathcal{I}_{N_q}=\mathrm{TopN_q}
+\left(\mathrm{Max}_{-1}(X_I X_T^{\top})\right)
 ```
 
 논문의 PyTorch형 의사 코드는 거의 다음과 같다.
@@ -242,7 +242,7 @@ queries [B, 900, 256]
 Text cross-attention을 식으로 쓰면 다음과 같다.
 
 ```math
-Q' = Q + \operatorname{MHA}(Q, X_T, X_T)
+Q' = Q + \mathrm{MHA}(Q, X_T, X_T)
 ```
 
 Image cross-attention은 dense `QX_I^T` 대신 deformable sampling을 사용한다. 각 layer는 box reference point를 갱신하고, auxiliary box 및 text alignment loss를 받는다.
@@ -306,7 +306,7 @@ M_{ij}=\begin{cases}
 BERT attention logit에 더한다.
 
 ```math
-A=\operatorname{softmax}\left(\frac{QK^{\top}}{\sqrt{d_h}}+M\right)
+A=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d_h}}+M\right)
 ```
 
 Word-level prompt로 되돌리면 LVIS zero-shot `16.1 -> 15.6 AP`로 낮아진다. 차이는 작지만 추가 모델 parameter나 image-side 연산 없이 얻는 이득이다. 실제 재현에서는 punctuation, special token, padding token의 segment 할당을 원 구현과 맞춰야 한다.

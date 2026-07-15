@@ -17,8 +17,8 @@ LSQ는 quantizer의 step size $s$를 단순한 activation 통계나 quantization
 
 ```math
 \begin{aligned}
-\bar v &= \operatorname{round}
-\left(\operatorname{clip}\left(\frac{v}{s},-Q_N,Q_P\right)\right),\\
+\bar v &= \mathrm{round}
+\left(\mathrm{clip}\left(\frac{v}{s},-Q_N,Q_P\right)\right),\\
 \hat v &= s\bar v.
 \end{aligned}
 ```
@@ -100,8 +100,8 @@ round에 대해 STE를 적용하고 나머지 연산을 미분하면 논문의 �
 ```math
 \frac{\partial\hat v}{\partial s}=
 \begin{cases}
--v/s+\operatorname{round}(v/s),
-& -Q_N<v/s<Q_P,\\
+-v/s+\mathrm{round}(v/s),
+& -Q_N\lt v/s\lt Q_P,\\
 -Q_N,&v/s\le -Q_N,\\
 Q_P,&v/s\ge Q_P.
 \end{cases}
@@ -114,7 +114,7 @@ clip 밖에서는 gradient가 $-Q_N$ 또는 $Q_P$라 range를 넓히거나 줄�
 ```math
 \frac{\partial\hat v}{\partial v}=
 \begin{cases}
-1,&-Q_N<v/s<Q_P,\\
+1,&-Q_N\lt v/s\lt Q_P,\\
 0,&\text{otherwise}.
 \end{cases}
 ```

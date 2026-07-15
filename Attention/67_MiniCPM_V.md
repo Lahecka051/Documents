@@ -89,7 +89,7 @@ P_1\in\mathbb{R}^{Q\times l},
 
 ```math
 P_1\rightarrow P_2\in\mathbb{R}^{q\times q\times l}
-\rightarrow \operatorname{Interp2D}(P_2,H_s,W_s)
+\rightarrow \mathrm{Interp2D}(P_2,H_s,W_s)
 ```
 
 local slice만 쓰면 전체 layout을 잃기 때문에 원본 image를 global overview slice로 추가한다. local detail과 holistic context를 함께 주는 대신 encoder forward가 하나 더 생긴다.
@@ -111,7 +111,7 @@ K,V\in\mathbb{R}^{1024\times d}
 ```
 
 ```math
-H_v=\operatorname{softmax}
+H_v=\mathrm{softmax}
 \left(\frac{QK^\top}{\sqrt d}\right)V
 \in\mathbb{R}^{M\times d}
 ```
@@ -173,7 +173,7 @@ compressed visual token `H_v`, prompt `H_q`, response `Y=(y_1,...,y_T)`에 대�
 ```math
 p(Y\mid H_v,H_q)
 =\prod_{i=1}^{T}
-p(y_i\mid H_v,H_q,y_{<i})
+p(y_i\mid H_v,H_q,y_{\lt i})
 ```
 
 SFT에서는 answer position의 negative log likelihood를 최소화한다. pretraining에서는 LLM을 단계에 따라 동결해 낮은 품질의 web caption이 language capability를 흔드는 것을 막는다.

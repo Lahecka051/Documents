@@ -88,7 +88,7 @@ Depthwise separable convolution은 channel마다 하나의 spatial filter를 적
 ReLU는 각 좌표에 대해
 
 ```math
-\operatorname{ReLU}(x)=\max(0,x)
+\mathrm{ReLU}(x)=\max(0,x)
 ```
 
 를 적용한다. 음수 값을 모두 같은 0으로 보내므로 일반적으로 역함수가 없다. 저자들의 직관은 실제 image activation이 전체 고차원 공간을 채우지 않고 더 낮은 차원의 manifold 근처에 놓인다는 가정에서 출발한다.
@@ -104,8 +104,8 @@ ReLU는 각 좌표에 대해
 마지막 `1×1` projection만 activation function 없이 선형이다. 앞의 expansion과 depthwise 뒤에는 ReLU6가 있으므로 block 전체 함수는 비선형이다.
 
 ```math
-F(X)=P\left(\operatorname{ReLU6}left(
-D\left(\operatorname{ReLU6}(E(X))\right)
+F(X)=P\left(\mathrm{ReLU6}\left(
+D\left(\mathrm{ReLU6}(E(X))\right)
 \right)\right)
 ```
 
@@ -136,7 +136,7 @@ Y=X+F(X)
 `t=1`인 첫 bottleneck은 expansion `1×1`을 생략하는 구현이 일반적이다. 논문의 기본 모델은 첫 stage를 제외하면 `t=6`을 사용한다. ReLU6는
 
 ```math
-\operatorname{ReLU6}(x)=\min(\max(0,x),6)
+\mathrm{ReLU6}(x)=\min(\max(0,x),6)
 ```
 
 이며 bounded range가 저정밀 계산에 더 안정적이라는 이유로 선택됐다.

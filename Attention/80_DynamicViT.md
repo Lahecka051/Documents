@@ -57,7 +57,7 @@ Figure 5의 시각화는 stage가 진행될수록 foreground object 근처 token
 
 DynamicViT는 별도의 새 Transformer block을 만들지 않고 DeiT 또는 LV-ViT backbone 사이에 prediction module을 삽입한다. 12-layer 예에서는 4, 7, 10번째 block 앞, 즉 앞선 3개 block의 feature를 받은 지점에 세 module을 둔다.
 
-patch token을 $x\in\mathbb{R}^{N\times C}$, 누적 decision mask를 $\hat D\in\{0,1\}^N$라고 두자. 논문 수식은 class token을 생략하지만 구현에서는 class token decision을 항상 1로 고정한다.
+patch token을 $x\in\mathbb{R}^{N\times C}$, 누적 decision mask를 $\hat D\in\lbrace0,1\rbrace^N$라고 두자. 논문 수식은 class token을 생략하지만 구현에서는 class token decision을 항상 1로 고정한다.
 
 초기 상태는
 
@@ -78,7 +78,7 @@ patch token을 $x\in\mathbb{R}^{N\times C}$, 누적 decision mask를 $\hat D\in\
 먼저 token마다 channel을 절반으로 줄인 local feature를 만든다.
 
 ```math
-z^{local}=\operatorname{MLP}(x)
+z^{local}=\mathrm{MLP}(x)
 \in\mathbb{R}^{N\times C'},
 \qquad C'=C/2.
 ```
@@ -87,7 +87,7 @@ z^{local}=\operatorname{MLP}(x)
 
 ```math
 z^{global}
-=\operatorname{Agg}(\operatorname{MLP}(x),\hat D)
+=\mathrm{Agg}(\mathrm{MLP}(x),\hat D)
 =\frac{\sum_{i=1}^N\hat D_i u_i}
 {\sum_{i=1}^N\hat D_i}
 \in\mathbb{R}^{C'}.
@@ -103,7 +103,7 @@ z_i=[z_i^{local},z^{global}]
 두 class 확률은
 
 ```math
-\pi=\operatorname{Softmax}(\operatorname{MLP}(z))
+\pi=\mathrm{Softmax}(\mathrm{MLP}(z))
 \in\mathbb{R}^{N\times2},
 ```
 
@@ -138,8 +138,8 @@ DeiT-S의 $C=384$를 예로 들고 bias와 LayerNorm parameter를 제외하면 m
 binary sample은 미분할 수 없으므로 training decision은
 
 ```math
-D=\operatorname{GumbelSoftmax}(\pi)_{:,1}
-\in\{0,1\}^{N}
+D=\mathrm{GumbelSoftmax}(\pi)_{:,1}
+\in\lbrace0,1\rbrace^{N}
 ```
 
 로 만든다. forward에서는 one-hot keep/drop sample을 사용하고 reparameterized surrogate를 통해 prediction module로 gradient를 전달한다.
@@ -149,7 +149,7 @@ D=\operatorname{GumbelSoftmax}(\pi)_{:,1}
 일반 attention은
 
 ```math
-A=\operatorname{Softmax}\left(\frac{QK^T}{\sqrt C}\right)
+A=\mathrm{Softmax}\left(\frac{QK^T}{\sqrt C}\right)
 ```
 
 이다. dropped token vector를 0으로 만들어도 그 key의 logit은 0일 뿐 softmax denominator에 $e^0=1$로 참여한다. 다른 token의 attention normalization을 바꾸므로 완전히 제거한 것과 같지 않다.
@@ -189,7 +189,7 @@ Equation 11은 constant $N\times N$ shape를 유지한다. dropped token의 Q/K/
 ### Classification loss
 
 ```math
-\mathcal L_{cls}=\operatorname{CrossEntropy}(y,\bar y).
+\mathcal L_{cls}=\mathrm{CrossEntropy}(y,\bar y).
 ```
 
 ### Token distillation
@@ -206,7 +206,7 @@ Equation 11은 constant $N\times N$ shape를 유지한다. dropped token의 Q/K/
 ### Prediction KL loss
 
 ```math
-\mathcal L_{KL}=\operatorname{KL}(y\|y').
+\mathcal L_{KL}=\mathrm{KL}(y\|y').
 ```
 
 $y'$는 teacher prediction이다.
@@ -244,7 +244,7 @@ m_s=\left\lfloor\rho^sN\right\rfloor
 이다. keep probability를 정렬해
 
 ```math
-I^s=\operatorname{argsort}(\pi_{:,1})
+I^s=\mathrm{argsort}(\pi_{:,1})
 ```
 
 상위 $m_s$ index만 gather한다. classification token은 별도로 항상 유지한다.
@@ -438,7 +438,7 @@ main Table 3에서 DeiT-S는 full loss 79.3, distill 제거 79.3, KL 제거 79.2
 | 0.6 | 78.5 | 2.5 | 21.6% |
 | 0.5 | 77.5 | 2.2 | 12.5% |
 
-$\rho<0.7$에서 information loss가 급격히 커진다는 appendix 해석과 일치한다.
+$\rho\lt 0.7$에서 information loss가 급격히 커진다는 appendix 해석과 일치한다.
 
 ## 실제 디바이스 관점
 

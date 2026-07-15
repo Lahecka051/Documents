@@ -193,7 +193,7 @@ w &= e^{t_w}w_a, & h &= e^{t_h}h_a.
 논문의 이미지별 RPN objective는 다음과 같다.
 
 ```math
-L(\{p_i\},\{t_i\})=
+L(\lbrace p_i\rbrace,\lbrace t_i\rbrace)=
 \frac{1}{N_{cls}}\sum_i L_{cls}(p_i,p_i^*)
 +\lambda\frac{1}{N_{reg}}\sum_i p_i^*L_{reg}(t_i,t_i^*).
 ```
@@ -210,9 +210,9 @@ L(\{p_i\},\{t_i\})=
 Smooth L1을 `d=t-t^*`에 대해 쓰면 일반적으로 다음 형태다.
 
 ```math
-\operatorname{smooth}_{L1}(d)=
+\mathrm{smooth}_{L1}(d)=
 \begin{cases}
-\frac{1}{2}d^2,& |d|<1,\\
+\frac{1}{2}d^2,& |d|\lt 1,\\
 |d|-\frac{1}{2},& \text{otherwise}.
 \end{cases}
 ```

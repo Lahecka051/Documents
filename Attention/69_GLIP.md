@@ -128,7 +128,7 @@ GLIP이 사용하는 sigmoid/focal 형태에서는 positive phrase에 속한 모
 Late fusion은 image와 text를 따로 encode한 뒤 마지막 내적에서만 만난다. GLIP은 DyHead의 마지막 layer들과 추가 BERT layer 사이에서 양방향 cross-attention을 반복한다.
 
 ```math
-O^i_{t2i},P^i_{i2t}=\mathrm{X\mbox{-}MHA}(O^i,P^i)
+O^i_{t2i},P^i_{i2t}=\text{X-MHA}(O^i,P^i)
 ```
 
 ```math
@@ -208,7 +208,7 @@ FP16 score만 약 `41.5 MiB`다. 양방향 softmax, projected Q/V, gradient, 여
 핵심 scaling은 명확하다.
 
 ```math
-\mathrm{X\mbox{-}MHA\ cost}=O(NMd)
+\text{X-MHA cost}=O(NMd)
 ```
 
 Input resolution로 `N`이 늘고 prompt 길이로 `M`이 늘면 memory와 latency가 곱으로 증가한다. Open-vocabulary class를 한 번에 많이 query할수록 text cost뿐 아니라 cross-modal attention cost도 커진다.

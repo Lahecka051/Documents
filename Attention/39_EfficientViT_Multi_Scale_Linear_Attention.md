@@ -33,8 +33,8 @@ Q/K/V linear projection
 핵심 수학은 `N×N` attention matrix를 만들지 않고 결합 순서를 바꾸는 것이다.
 
 ```math
-\operatorname{ReLU}(Q)
-\left(\operatorname{ReLU}(K)^TV\right)
+\mathrm{ReLU}(Q)
+\left(\mathrm{ReLU}(K)^TV\right)
 ```
 
 `K^TV`를 먼저 계산하면 token 수 `N` 대신 head dimension `d`에 대한 `d×d` global summary를 만든다. 따라서 high-resolution에서 softmax attention보다 계산과 activation memory가 크게 줄어든다.
@@ -104,16 +104,16 @@ W_Q,W_K,W_V\in\mathbb{R}^{f\times d}
 ```math
 O_i=
 \frac{
-\sum_{j=1}^{N}\operatorname{Sim}(Q_i,K_j)V_j
+\sum_{j=1}^{N}\mathrm{Sim}(Q_i,K_j)V_j
 }{
-\sum_{j=1}^{N}\operatorname{Sim}(Q_i,K_j)
+\sum_{j=1}^{N}\mathrm{Sim}(Q_i,K_j)
 }
 ```
 
 이다. Softmax attention은
 
 ```math
-\operatorname{Sim}(Q,K)
+\mathrm{Sim}(Q,K)
 =\exp\left(\frac{QK^T}{\sqrt d}\right)
 ```
 
@@ -124,8 +124,8 @@ O_i=
 EfficientViT는 similarity를 다음처럼 바꾼다.
 
 ```math
-\operatorname{Sim}(Q,K)
-=\operatorname{ReLU}(Q)\operatorname{ReLU}(K)^T
+\mathrm{Sim}(Q,K)
+=\mathrm{ReLU}(Q)\mathrm{ReLU}(K)^T
 ```
 
 `Q'=ReLU(Q)`, `K'=ReLU(K)`라 쓰면

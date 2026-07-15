@@ -253,7 +253,7 @@ Query head마다 다른 attention pattern을 만들 수 있지만 동일한 K/V 
 
 ```math
 \mathrm{attention}_j
-=\operatorname{softmax}
+=\mathrm{softmax}
 \left(
 \frac{(XW_j^Q)(SR(X)W^K)^T}{\sqrt{d_k}}
 \right)
@@ -262,7 +262,7 @@ Query head마다 다른 attention pattern을 만들 수 있지만 동일한 K/V 
 
 ```math
 \mathrm{MobileMQA}(X)
-=\operatorname{Concat}(mathrm{attention}_1,\dots,mathrm{attention}_h)W^O
+=\mathrm{Concat}(\mathrm{attention}_1,\dots,\mathrm{attention}_h)W^O
 ```
 
 Spatial reduction은 MQA와 별개의 절감 축이다. MQA는 K/V의 head dimension 복제를 없애고, SRA는 K/V token 수 `M`을 줄인다.

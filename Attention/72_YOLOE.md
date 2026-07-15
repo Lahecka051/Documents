@@ -58,7 +58,7 @@ mask for region n = sigmoid(sum_k A[n,k] * Pm[k,:,:])
 Text prompt matrix를 `P in R^{C x D}`, object embedding을 `O in R^{N x D}`라 하면 class logit은 다음과 같다.
 
 ```math
-\operatorname{Label}=OP^{\top}
+\mathrm{Label}=OP^{\top}
 \in\mathbb{R}^{N\times C}
 ```
 
@@ -83,9 +83,9 @@ object map:      [B, D, H, W]
 Training-time score는 개념적으로 다음과 같다.
 
 ```math
-\operatorname{Label}
+\mathrm{Label}
 =
-\operatorname{reshape}(I*K)
+\mathrm{reshape}(I*K)
 f_{\theta}(P)^{\top}
 ```
 
@@ -98,14 +98,14 @@ f_{\theta}(P)^{\top}
 ```math
 K'
 =
-\operatorname{Compose}(f_{\theta}(P),K)
+\mathrm{Compose}(f_{\theta}(P),K)
 \in\mathbb{R}^{C\times D'\times1\times1}
 ```
 
 이후 추론은 다음 한 줄이 된다.
 
 ```math
-\operatorname{Label}=I*K'
+\mathrm{Label}=I*K'
 ```
 
 ```text
@@ -193,7 +193,7 @@ S_{iD/A:(i+1)D/A}^{\top}
 그룹 결과를 이어 붙여 prompt embedding을 만든다.
 
 ```math
-P_v=\operatorname{Concat}(G_1,\ldots,G_A)
+P_v=\mathrm{Concat}(G_1,\ldots,G_A)
 \in\mathbb{R}^{D}
 ```
 
@@ -251,7 +251,7 @@ LRPC는 `모든 object`를 나타내도록 학습한 special prompt `P_s`를 먼
 ```math
 O'
 =
-\{o\in O\mid oP_s^{\top}>\delta\}
+\lbrace o\in O\mid oP_s^{\top}\gt \delta\rbrace
 ```
 
 Threshold를 넘은 region만 4,585개 vocabulary와 비교한다.

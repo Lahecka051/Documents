@@ -58,7 +58,7 @@ current frame I
 Image encoder는 stride 4, 8, 16 feature를 출력한다.
 
 ```math
-\{F_4,F_8,F_{16}\}=E_{img}(I)
+\lbrace F_4,F_8,F_{16}\rbrace=E_{img}(I)
 ```
 
 현재 low-resolution feature와 과거 `T`개 memory를 결합한다.
@@ -148,7 +148,7 @@ O(TCHWN_g)
 EdgeTAM은 local latent `Z_l`마다 non-overlapping spatial patch 하나를 담당시킨다.
 
 ```math
-M'_t=\operatorname{window\_partition}(M_t)
+M'_t=\mathrm{window\_partition}(M_t)
 ```
 
 ```math
@@ -160,13 +160,13 @@ L'_t=SA(Z'_l)
 ```
 
 ```math
-L_t=\operatorname{window\_unpartition}(L'_t)+p'
+L_t=\mathrm{window\_unpartition}(L'_t)+p'
 ```
 
 Global latent는 frame 전체에서 자유롭게 움직이며 object-level summary를 만들고, 2D latent는 local patch identity를 유지한다. 두 output을 flattened token dimension으로 concatenate한다.
 
 ```math
-\widetilde M_t=\operatorname{Concat}(G_t,L_t)
+\widetilde M_t=\mathrm{Concat}(G_t,L_t)
 \in\mathbb{R}^{C\times(N_g+N_l)}
 ```
 

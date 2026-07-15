@@ -146,7 +146,7 @@ u=W_{up}h+b_{up}
 ```
 
 ```math
-a=\operatorname{ReLU}(u)
+a=\mathrm{ReLU}(u)
 ```
 
 ```math
@@ -180,7 +180,7 @@ B\in\mathbb{R}^{d_{ff}\times r}
 ```
 
 ```math
-\hat m_j=\mathbf{1}[\hat z_j>0.5]
+\hat m_j=\mathbf{1}[\hat z_j\gt 0.5]
 ```
 
 `r`이 작으므로 원래 up-projection보다 predictor parameter와 compute가 작다. Positive와 negative sample 수가 크게 다르기 때문에 balanced loss를 쓴다.

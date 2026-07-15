@@ -55,7 +55,7 @@ OFA는 CNN을 feature map resolution이 줄고 channel이 늘어나는 여러 un
 입력 image size를 128부터 224까지 step 4로 선택한다.
 
 $$
-R\in\{128,132,\ldots,224\}.
+R\in\lbrace128,132,\ldots,224\rbrace.
 $$
 
 총 25개 resolution이다. resolution은 전체 training 동안 batch마다 sampling한다.
@@ -65,7 +65,7 @@ $$
 각 unit의 layer 수를 다음에서 고른다.
 
 $$
-D\in\{2,3,4\}.
+D\in\lbrace2,3,4\rbrace.
 $$
 
 depth $D$를 선택할 때 임의의 $D$개 layer를 고르지 않고 앞의 $D$개를 유지하고 뒤의 $4-D$개를 skip한다. 이렇게 해야 한 depth setting이 하나의 deterministic path에 대응하고 앞 layer weight를 큰 model과 공유할 수 있다.
@@ -75,7 +75,7 @@ depth $D$를 선택할 때 임의의 $D$개 layer를 고르지 않고 앞의 $D$
 MBConv expansion ratio를 다음에서 고른다.
 
 $$
-e\in\{3,4,6\}.
+e\in\lbrace3,4,6\rbrace.
 $$
 
 full width를 먼저 학습한 뒤 channel importance를 weight의 L1 norm으로 계산해 내림차순 정렬한다. 작은 width는 앞의 중요한 channel prefix를 사용한다. 독립적인 arbitrary channel subset을 허용하지 않으므로 nested weight sharing이 가능하다.
@@ -85,7 +85,7 @@ full width를 먼저 학습한 뒤 channel importance를 weight의 L1 norm으로
 depthwise convolution의 kernel size는
 
 $$
-k\in\{3,5,7\}
+k\in\lbrace3,5,7\rbrace
 $$
 
 에서 고른다. 7x7 kernel의 중앙 5x5, 그 중앙 3x3을 작은 kernel로 공유한다. 단순 center crop은 같은 weight가 큰 kernel 일부와 독립 작은 kernel의 두 역할을 해야 하므로 distribution 차이가 생긴다. 논문은 layer별 kernel transformation matrix를 둔다.

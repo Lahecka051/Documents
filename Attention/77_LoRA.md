@@ -60,7 +60,7 @@ GPT-3 175B에서 paper는 full fine-tuning의 training VRAM 1.2 TB를 LoRA 350 G
 pretrained autoregressive model을 $P_\Phi(y|x)$라 하고 downstream dataset을
 
 ```math
-\mathcal Z=\{(x_i,y_i)\}_{i=1}^{N}
+\mathcal Z=\lbrace(x_i,y_i)\rbrace_{i=1}^{N}
 ```
 
 라 하자. full fine-tuning은 pretrained parameter $\Phi_0$ 전체를 update해
@@ -69,7 +69,7 @@ pretrained autoregressive model을 $P_\Phi(y|x)$라 하고 downstream dataset을
 \max_{\Phi}
 \sum_{(x,y)\in\mathcal Z}
 \sum_{t=1}^{|y|}
-\log P_\Phi(y_t\mid x,y_{<t})
+\log P_\Phi(y_t\mid x,y_{\lt t})
 ```
 
 를 최적화한다. task마다 $|\Delta\Phi|=|\Phi_0|$인 새 checkpoint가 생긴다.
@@ -86,7 +86,7 @@ LoRA는 task-specific update를 작은 parameter $\Theta$로 encode한다.
 \sum_{(x,y)\in\mathcal Z}
 \sum_{t=1}^{|y|}
 \log P_{\Phi_0+\Delta\Phi(\Theta)}
-(y_t\mid x,y_{<t}).
+(y_t\mid x,y_{\lt t}).
 ```
 
 GPT-3 175B 실험에서 $|\Theta|$는 base의 약 0.01%보다 작을 수 있다. 이는 downstream update가 full-rank일 필요 없이 낮은 intrinsic rank를 가진다는 가설에 기반한다.

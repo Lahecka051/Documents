@@ -104,16 +104,16 @@ DeiT는 ViT와 같은 Pre-LayerNorm block을 12개 쌓는다.
 
 ```math
 \begin{aligned}
-Z'_l&=Z_{l-1}+\operatorname{MSA}(\operatorname{LN}(Z_{l-1})),\\
-Z_l&=Z'_l+\operatorname{FFN}(\operatorname{LN}(Z'_l)).
+Z'_l&=Z_{l-1}+\mathrm{MSA}(\mathrm{LN}(Z_{l-1})),\\
+Z_l&=Z'_l+\mathrm{FFN}(\mathrm{LN}(Z'_l)).
 \end{aligned}
 ```
 
 FFN은 `D -> 4D -> D`, GELU를 사용한다. Attention 한 head는
 
 ```math
-\operatorname{Attn}(Q,K,V)
-=\operatorname{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}\right)V
+\mathrm{Attn}(Q,K,V)
+=\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}\right)V
 ```
 
 이며 head dimension은 모든 model에서 `d_h=64`로 고정한다.
@@ -138,7 +138,7 @@ Teacher와 student logits을 `Z_t`, `Z_s`, temperature를 `τ`, ground-truth los
 \mathcal{L}_{global}
 =(1-\lambda)\mathcal{L}_{CE}(\psi(Z_s),y)
 +\lambda\tau^2
-\operatorname{KL}
+\mathrm{KL}
 \left(\psi(Z_s/\tau),\psi(Z_t/\tau)\right)
 ```
 
@@ -180,8 +180,8 @@ Augmentation된 image마다 teacher prediction을 다시 계산하므로 같은 
 ```math
 p(x)=\frac{1}{2}
 \left[
-\operatorname{softmax}(z_{cls})
-+\operatorname{softmax}(z_{dist})
+\mathrm{softmax}(z_{cls})
++\mathrm{softmax}(z_{dist})
 \right]
 ```
 

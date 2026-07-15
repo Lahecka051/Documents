@@ -73,7 +73,7 @@ FPN의 질문은 다음과 같다.
 ResNet의 stage 마지막 출력들을 사용한다.
 
 ```math
-\{C_2,C_3,C_4,C_5\}
+\lbrace C_2,C_3,C_4,C_5\rbrace
 ```
 
 Input 대비 stride는 각각 `{4,8,16,32}`다. Conv1은 해상도가 너무 높아 memory 부담이 크므로 pyramid에 넣지 않는다. ResNet-50/101의 channel은 통상 다음과 같다.
@@ -93,9 +93,9 @@ Input 대비 stride는 각각 `{4,8,16,32}`다. Conv1은 해상도가 너무 높
 
 ```math
 \begin{aligned}
-M_5 &= \operatorname{Conv}_{1\times1}(C_5),\\
-M_l &= \operatorname{Conv}_{1\times1}(C_l)
-      + \operatorname{Up}_2(M_{l+1}),\qquad l=4,3,2.
+M_5 &= \mathrm{Conv}_{1\times1}(C_5),\\
+M_l &= \mathrm{Conv}_{1\times1}(C_l)
+      + \mathrm{Up}_2(M_{l+1}),\qquad l=4,3,2.
 \end{aligned}
 ```
 
@@ -106,7 +106,7 @@ M_l &= \operatorname{Conv}_{1\times1}(C_l)
 Bottom-up `C_l`을 `1×1` convolution으로 256 channel에 맞춘 뒤 top-down feature와 element-wise addition한다. Concatenation이 아니라 addition이므로 channel 수가 늘지 않는다.
 
 ```math
-P_l=\operatorname{Conv}_{3\times3}(M_l),\qquad l=2,3,4,5.
+P_l=\mathrm{Conv}_{3\times3}(M_l),\qquad l=2,3,4,5.
 ```
 
 마지막 `3×3` convolution은 upsampling에서 생길 수 있는 aliasing을 완화한다. 모든 `P_l`은 256 channel이며, 논문의 FPN extra layer에는 별도 nonlinearity가 없다.

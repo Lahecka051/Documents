@@ -115,8 +115,8 @@ K_1=K_2=\cdots=K_L
 연속 좌표 `(u,v)`에서 feature를 읽을 때 주변 네 pixel을 보간한다.
 
 ```math
-F(u,v)=\sum_{i\in\{\lfloor u\rfloor,\lceil u\rceil\}}
-\sum_{j\in\{\lfloor v\rfloor,\lceil v\rceil\}}
+F(u,v)=\sum_{i\in\lbrace\lfloor u\rfloor,\lceil u\rceil\rbrace}
+\sum_{j\in\lbrace\lfloor v\rfloor,\lceil v\rceil\rbrace}
 w_{ij}(u,v)F[i,j]
 ```
 
@@ -127,7 +127,7 @@ w_{ij}(u,v)F[i,j]
 RT-DETRv2는 좌표를 가까운 integer 위치로 반올림하고 해당 feature를 직접 읽는다.
 
 ```math
-F_{\mathrm{disc}}(u,v)=F[\operatorname{round}(u),\operatorname{round}(v)]
+F_{\mathrm{disc}}(u,v)=F[\mathrm{round}(u),\mathrm{round}(v)]
 ```
 
 이 방식은 bilinear interpolation을 제거하고 일반적인 rounding, index calculation, gather에 가깝게 바꾼다. 하지만 `round`는 거의 모든 점에서 좌표에 대한 gradient가 0이고 경계에서는 미분 불가능하다.

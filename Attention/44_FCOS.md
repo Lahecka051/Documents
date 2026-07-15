@@ -163,7 +163,7 @@ Center-ness를 잠시 제외한 기본 detection loss는:
 
 ```math
 L=\frac{1}{N_{pos}}\sum_{x,y}L_{cls}(p_{x,y},c^*_{x,y})
-+\frac{\lambda}{N_{pos}}\sum_{x,y}\mathbb{1}[c^*_{x,y}>0]
++\frac{\lambda}{N_{pos}}\sum_{x,y}\mathbb{1}[c^*_{x,y}\gt 0]
 L_{reg}(t_{x,y},t^*_{x,y}),
 ```
 

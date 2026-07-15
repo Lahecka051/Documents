@@ -109,7 +109,7 @@ N_v=\left(\frac{R}{64}\right)^2
 hierarchical encoder의 초기 stage는 작은 물체와 문자에 필요한 fine detail을 갖고 있지만 마지막 stage는 semantic representation이 강하다. FastVLM은 여러 stage feature를 learned pooling으로 마지막 spatial 크기에 맞춘 뒤 channel 방향으로 concatenate한다.
 
 ```math
-F_{multi}=\operatorname{Concat}_C(
+F_{multi}=\mathrm{Concat}_C(
 P_2(F_2),P_3(F_3),P_4(F_4),F_5)
 ```
 
@@ -161,7 +161,7 @@ M_{KV}=2LS D_{KV}b
 answer token `y_i`, image representation `H_v`, instruction `H_q`에 대해 다음 likelihood를 최대화한다.
 
 ```math
-p(Y\mid H_v,H_q)=\prod_i p(y_i\mid H_v,H_q,y_{<i})
+p(Y\mid H_v,H_q)=\prod_i p(y_i\mid H_v,H_q,y_{\lt i})
 ```
 
 ### 2-stage ablation recipe

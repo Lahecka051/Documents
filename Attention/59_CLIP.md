@@ -172,7 +172,7 @@ $$
 클래스 $k$의 이름을 prompt template에 넣고 text encoder로 임베딩한다.
 
 $$
-c_k=\operatorname{norm}(f_T(\text{prompt}(y_k))).
+c_k=\mathrm{norm}(f_T(\text{prompt}(y_k))).
 $$
 
 입력 이미지 embedding $v$와 모든 $c_k$의 cosine similarity를 구한 뒤 temperature-scaled softmax를 적용한다.
@@ -231,7 +231,7 @@ ResNet 계열은 규모가 커질수록 image resolution, backbone width/depth, 
 - ViT-L/14@336px의 ImageNet zero-shot top-1은 76.2%, top-5는 95%다.
 - 이 결과는 원래의 supervised ResNet-50과 비슷하지만, ImageNet label로 CLIP을 학습하지 않았다는 점이 핵심이다.
 - zero-shot CLIP은 같은 CLIP feature에서 학습한 평균 4-shot linear probe와 비슷하고, ImageNet에서는 16-shot linear probe와 비슷하다.
-- 27개 데이터셋에서 zero-shot과 supervised linear probe의 상관은 $r=0.82$, $p<10^{-6}$였다. 즉 representation이 좋은 과제는 zero-shot도 대체로 좋지만, 대부분의 과제에서 zero-shot은 linear probe보다 10에서 25 point 낮았다.
+- 27개 데이터셋에서 zero-shot과 supervised linear probe의 상관은 $r=0.82$, $p\lt 10^{-6}$였다. 즉 representation이 좋은 과제는 zero-shot도 대체로 좋지만, 대부분의 과제에서 zero-shot은 linear probe보다 10에서 25 point 낮았다.
 - zero-shot CLIP은 supervised ResNet-50 linear probe보다 27개 중 16개 데이터셋에서 높았다.
 
 이 결과는 zero-shot이 항상 supervised adaptation을 이긴다는 뜻이 아니다. 과제별 train split을 활용한 최상위 supervised 모델과 비교하면 CLIP이 약한 데이터셋이 많다.

@@ -27,14 +27,14 @@ ViT block의 주 계산은 다음 matrix multiplication이다.
 
 - linear: $XW_Q$, $XW_K$, $XW_V$, output projection, MLP FC1/FC2
 - attention score: $QK^\top$
-- attention aggregation: $PV$, where $P=\operatorname{softmax}(QK^\top/\sqrt d)$
+- attention aggregation: $PV$, where $P=\mathrm{softmax}(QK^\top/\sqrt d)$
 
 일반적인 symmetric uniform quantizer는 floating value $x$를 $k$-bit signed integer로 바꾼다.
 
 $$
 x_q=\Psi_k(x,\Delta)
-=\operatorname{clamp}\left(
-\operatorname{round}\left(\frac{x}{\Delta}\right),
+=\mathrm{clamp}\left(
+\mathrm{round}\left(\frac{x}{\Delta}\right),
 -2^{k-1},2^{k-1}-1
 \right).
 $$
@@ -126,9 +126,9 @@ softmax scale search space는
 
 $$
 \Delta^s_{R1}\in
-\left\{
+\left\lbrace
 \frac1{2^k},\frac1{2^{k+1}},\ldots,\frac1{2^{k+10}}
-\right\}.
+\right\rbrace.
 $$
 
 한 값이 두 range에 모두 표현될 수 있으므로 code flag가 어느 resolution을 사용할지 결정한다.
@@ -208,7 +208,7 @@ $$
 \mathcal{M}_l(\Delta)=
 \mathbb{E}\left[
 (\hat O_l-O_l)^\top
-\operatorname{diag}\left(
+\mathrm{diag}\left(
 \left(\frac{\partial L}{\partial O_{l,1}}\right)^2,
 \ldots,
 \left(\frac{\partial L}{\partial O_{l,n}}\right)^2

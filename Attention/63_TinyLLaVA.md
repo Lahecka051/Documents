@@ -61,7 +61,7 @@ TinyLLaVA는 작은 LLM 범위에서 구성 요소를 체계적으로 바꾸어 
 LLM `F_theta`는 `d`차원 embedding sequence를 입력받고 다음 token을 autoregressive하게 예측한다.
 
 ```math
-F_\theta:\{h_i\}_{i=0}^{N-1}
+F_\theta:\lbrace h_i\rbrace_{i=0}^{N-1}
 \mapsto p(y_N\mid h_0,\ldots,h_{N-1})
 ```
 
@@ -80,7 +80,7 @@ Tokenizer와 text embedding은 LLM에 속한다. 논문은 다음 세 모델을 
 Image `X`를 `M`개의 patch feature로 바꾼다.
 
 ```math
-V_\phi(X)=\{v_j\in\mathbb R^{d_x}\}_{j=1}^{M}
+V_\phi(X)=\lbrace v_j\in\mathbb R^{d_x}\rbrace_{j=1}^{M}
 ```
 
 | Vision encoder | 입력 | Visual tokens | Parameter |
@@ -115,13 +115,13 @@ Image-caption pair `(X,Y_a)`에서 image를 조건으로 caption token likelihoo
 
 ```math
 p(Y_a\mid X)=\prod_{i=1}^{N_a}
-F_\theta\left(y_i\mid y_{<i}, P_\varphi(V_\phi(X))\right)
+F_\theta\left(y_i\mid y_{\lt i}, P_\varphi(V_\phi(X))\right)
 ```
 
 ```math
 \max_{\varphi,\theta',\phi'}
 \sum_{i=1}^{N_a}\log
-F_\theta\left(y_i\mid y_{<i},P_\varphi(V_\phi(X))\right)
+F_\theta\left(y_i\mid y_{\lt i},P_\varphi(V_\phi(X))\right)
 ```
 
 `theta'`, `phi'`는 전체 LLM/vision parameter 중 recipe가 학습 가능하게 연 subset이다. Framework의 핵심은 connector-only로 고정하지 않고 작은 LLM의 alignment 능력에 따라 일부 pretrained module도 풀 수 있게 한 것이다.
@@ -133,7 +133,7 @@ Multi-turn conversation은 human question과 assistant response를 포함한다.
 ```math
 \max_{\varphi,\theta',\phi'}
 \sum_{i=1}^{N}\mathbf 1[y_i\in\mathcal A]
-\log F_\theta\left(y_i\mid y_{<i},P_\varphi(V_\phi(X))\right)
+\log F_\theta\left(y_i\mid y_{\lt i},P_\varphi(V_\phi(X))\right)
 ```
 
 Human prompt token은 conditioning context지만 prediction target으로 학습하지 않는다. 구현에서 label tensor의 user/system/image-placeholder 위치를 `ignore_index`로 mask해야 한다.
