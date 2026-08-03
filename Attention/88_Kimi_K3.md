@@ -299,7 +299,7 @@ $\mathrm{Tril}$은 upper triangle을 제거해 미래 token을 보지 못하게 
 
 ### 누적 decay에서 발생하는 수치 문제
 
-$\Gamma$는 $0<\alpha<1$인 값들의 곱이다. 긴 구간에서는 매우 작아지고, $K/\Gamma$의 reciprocal은 매우 커질 수 있다.
+$\Gamma$는 $0\lt\alpha\lt1$인 값들의 곱이다. 긴 구간에서는 매우 작아지고, $K/\Gamma$의 reciprocal은 매우 커질 수 있다.
 
 예를 들어 모든 retention이 0.1이고 16개 token을 곱하면
 
@@ -332,7 +332,7 @@ g_t=g_{\min}\,\mathrm{Sigmoid}\!\left(\exp(A)z_t\right)
 논문에서는 $g_{\min}=-5$를 사용한다. 따라서 한 step의 retention은
 
 ```math
-\alpha_{t,j}>\exp(-5)\approx 6.7\times10^{-3}
+\alpha_{t,j}\gt\exp(-5)\approx 6.7\times10^{-3}
 ```
 
 이고, 16-token tile의 누적 log-decay는 $(-80,0)$ 범위에 있다. Reciprocal rescaling은 $\exp(80)$보다 작아 BF16의 동적 범위 안에 남는다. 이 제한 덕분에 diagonal tile도 position-pair 특수 경로가 아니라 dense Tensor Core matrix multiplication으로 계산할 수 있다.
@@ -498,7 +498,7 @@ h_l=\sum_{i=0}^{l-1}\alpha_{i\rightarrow l}v_i
 
 RMSNorm은 magnitude가 큰 특정 layer가 score를 독점하는 것을 막는다. Pseudo-query가 token별 입력에서 만들어지는 것이 아니라 layer마다 학습되는 vector라는 점도 중요하다. 즉, 같은 layer의 모든 token은 동일한 learned query parameter를 사용한다. 다만 key $k_i$는 각 token의 representation에서 나오므로 score와 depth-attention weight 자체는 token마다 달라진다. 따라서 “완전히 정적인 layer mixing”도 아니고, “입력에서 매번 새 query를 만드는 full token-dependent attention”도 아니다.
 
-Full form의 arithmetic은 대략 $O(L^2d)$이다. $L<100$이면 sequence attention의 $T^2$보다 작아 계산 자체는 감당할 수 있다. 문제는 모든 과거 layer output을 살아 있게 유지해야 하는 $O(Ld)$ activation memory와 pipeline-stage communication이다.
+Full form의 arithmetic은 대략 $O(L^2d)$이다. $L\lt100$이면 sequence attention의 $T^2$보다 작아 계산 자체는 감당할 수 있다. 문제는 모든 과거 layer output을 살아 있게 유지해야 하는 $O(Ld)$ activation memory와 pipeline-stage communication이다.
 
 ### Block Attention Residuals
 
@@ -1074,7 +1074,7 @@ Text와 visual token은 처음부터 하나의 sequence에 interleave되고 같�
 \mathcal{L}_{\mathrm{NTP}}
 =
 -\sum_t
-\log p_\theta(z_t\mid z_{<t})
+\log p_\theta(z_t\mid z_{\lt t})
 ```
 
 여기서 $z_t$는 text token일 수도 있고, visual context를 조건으로 한 text output일 수도 있다. Vision encoder의 representation도 최종 language loss로부터 gradient를 받는다.
@@ -1207,7 +1207,7 @@ Partial rollout은 완료 비율 $\lambda$에 도달하면 generation을 멈춘�
 Problem $x$마다 cold-start model에서 초기 token budget $b_0(x)$를 추정한다. Trajectory $y$의 사용량 $T(y)$가
 
 ```math
-T(y)>\tau b_0(x)
+T(y)\gt\tau b_0(x)
 ```
 
 이면 task reward를 $-1$로 덮어쓴다.
@@ -1231,18 +1231,18 @@ T(y)>\tau b_0(x)
 긴 답변이 유리해지는 reward hacking을 줄이기 위해 cold-start verbosity $\ell_0$와 multiplier $\sigma$를 사용한다.
 
 ```math
-\mathrm{length}(y)>\sigma\ell_0
+\mathrm{length}(y)\gt\sigma\ell_0
 ```
 
 인 후보는 binary comparison에서 자동 패배한다. 이 제약은 verbosity를 통제하지만, 긴 설명이 실제로 필요한 task에서 quality를 손상할 수 있으므로 task별 calibration이 중요하다.
 
 ## Multi-Teacher On-Policy Distillation
 
-9개의 domain-effort teacher를 하나의 student로 합친다. Domain $d$, effort $e$, 입력 $x$, prefix $y_{<t}$에서 teacher와 student의 token probability 비율을 reward로 사용한다.
+9개의 domain-effort teacher를 하나의 student로 합친다. Domain $d$, effort $e$, 입력 $x$, prefix $y_{\lt t}$에서 teacher와 student의 token probability 비율을 reward로 사용한다.
 
 ```math
 r_{\mathrm{OPD}}^d
-\left(y_t\mid e,x,y_{<t}\right)
+\left(y_t\mid e,x,y_{\lt t}\right)
 =
 \mathrm{clip}
 \left[
@@ -1251,10 +1251,10 @@ r_{\mathrm{OPD}}^d
 \log
 \frac{
 \pi_{\mathrm{teacher}}^{(d,e)}
-\left(y_t\mid x,y_{<t}\right)
+\left(y_t\mid x,y_{\lt t}\right)
 }{
 \pi_\theta
-\left(y_t\mid e,x,y_{<t}\right)
+\left(y_t\mid e,x,y_{\lt t}\right)
 }
 \right),
 -R_{\max},
@@ -2405,7 +2405,7 @@ K3는 preserved thinking을 사용한다. Thinking mode에서는 think channel�
 | 주장 | 근거 |
 |---|---|
 | Kimi K3의 정확한 architecture 규모 | Table 1에 K2와 K3 사양 공개 |
-| Lower-bounded decay가 BF16 범위를 제한 | $g_{\min}=-5$, 16-token tile에서 reciprocal $<e^{80}$ 수학적 설명 |
+| Lower-bounded decay가 BF16 범위를 제한 | $g_{\min}=-5$, 16-token tile에서 reciprocal $\lt e^{80}$ 수학적 설명 |
 | SiTU-GLU output이 bounded | Appendix B의 $\beta_1\beta_2=100$ 상한 |
 | QB의 quantile update | Appendix C의 balanced assignment/dual derivation |
 | Histogram estimator의 오차 구조 | Appendix D의 bin-width bound와 $B=1000$ |
@@ -2650,7 +2650,7 @@ O_t^{\mathrm{sequential}}
 -
 O_t^{\mathrm{chunkwise}}
 \right\|
-<\epsilon
+\lt\epsilon
 ```
 
 ### Phase 2: Hybrid ratio
