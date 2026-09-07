@@ -94,7 +94,7 @@ X-VLA의 핵심은 “서로 다른 로봇 데이터를 한 모델에 넣을 때
 - **[저자 보고]** LIBERO 평균 98.1. **[리뷰어 재계산]** `(98.2+98.6+97.8+97.6)/4 = 98.05`, 소수 첫째 자리 반올림 시 98.1로 일치한다. [PDF p.27, Table 15]
 - **[저자 보고]** Simpler VM/VA/WidowX 평균 80.4/75.7/95.8. **[리뷰어 재계산]** 각각 80.35, 75.725, 95.825로 표의 반올림과 일치한다. [PDF p.27, Table 14]
 - **[저자 보고]** RoboTwin-2.0 Easy/Hard 평균 70.0/39.0. **[리뷰어 재계산]** Table 18의 50개 공개 행을 단순 평균하면 70.1/38.2이다. 평균 정의가 별도로 적혀 있지 않아 Hard의 0.8%p 차이는 해소되지 않는다. [PDF p.27, Table 18]
-- **[원문 표기]** Fig.6의 model-size 회귀 옆에 `R² = -0.925`가 적혀 있다. 일반적인 절편 포함 최소제곱 회귀의 결정계수 $R^2$는 음수가 될 수 없으므로, `r=-0.925`를 잘못 표기했거나 `R²=0.925`에서 부호가 잘못 들어갔을 가능성이 있다. 이 문서는 원문을 `+0.925`로 몰래 고치지 않는다. [PDF p.8, Fig.6]
+- **[원문 표기]** Fig.6의 model-size 회귀 옆에 `R² = -0.925`가 적혀 있다. 일반적인 절편 포함 최소제곱 회귀의 결정계수 $`R^2`$는 음수가 될 수 없으므로, `r=-0.925`를 잘못 표기했거나 `R²=0.925`에서 부호가 잘못 들어갔을 가능성이 있다. 이 문서는 원문을 `+0.925`로 몰래 고치지 않는다. [PDF p.8, Fig.6]
 
 ---
 
@@ -108,7 +108,7 @@ X-VLA의 핵심은 “서로 다른 로봇 데이터를 한 모델에 넣을 때
 | environment step | simulator/robot이 action 하나를 적용하고 상태가 바뀌는 한 단계 | flow integration step과 다름 |
 | action step/anchor | action chunk 안의 한 미래 목표 pose | 원시 프레임 한 장과 1:1일 필요 없음 |
 | action chunk | 한 번의 policy 호출이 예측하는 미래 action sequence | X-VLA 공개 config는 30 actions이지만 실제로 몇 개를 실행한 뒤 재계획하는지는 evaluator별로 다름 |
-| flow time $t$ | 데이터 시간과 무관한 생성 ODE의 가상 시간, $t\in[0,1]$ | 로봇의 물리적 초(second)가 아님 |
+| flow time $`t`$ | 데이터 시간과 무관한 생성 ODE의 가상 시간, $`t\in[0,1]`$ | 로봇의 물리적 초(second)가 아님 |
 | integration/denoising step | flow time을 나누어 Transformer를 반복 호출하는 횟수 | action chunk 길이 30과 다름 |
 | training iteration | global batch 하나로 한 번 optimizer update | episode 수, environment step 수와 다름 |
 | task throughput | cloth를 시간당 몇 장 접었는가 | samples/s, tokens/s, policy Hz와 다름 |
@@ -117,35 +117,35 @@ X-VLA의 핵심은 “서로 다른 로봇 데이터를 한 모델에 넣을 때
 
 | 기호 | 의미 | 전형적 shape/단위 |
 |---|---|---|
-| $M$ | trajectory/episode 수 | 정수 |
-| $\tau_j$ | $j$번째 expert trajectory | 길이 $N_j$의 시퀀스 |
-| $o_n$ | step $n$의 multimodal observation | 이미지·문장·proprioception의 묶음 |
-| $a_n$ | expert action | 로봇별 원시 차원; 정렬 뒤 single arm 10-D, dual arm 20-D |
-| $A_n$ 또는 $A$ | 미래 action chunk | $[T_a,D_a]$; 공개 코드 기본 $T_a=30,D_a=20$ |
-| $A^0$ | Gaussian noise chunk | $[T_a,D_a]$, $\mathcal N(0,I)$ |
-| $A^t$ | flow time $t$의 중간 action | $[T_a,D_a]$ |
-| $v_\theta$ | 논문이 정의한 conditional velocity field | 입력 $[T_a,D_a]$와 관측, 출력 $[T_a,D_a]$ |
-| $D_i$ | $i$번째 데이터 소스 | trajectory 집합 |
-| $h_i$ | 그 소스의 하드웨어/수집 설정 | 카메라, 로봇, 제어 interface 등 |
-| $p_i$ | $i$번째 source prompt | 엄밀히는 $[N_p,d]$; 논문은 이를 $\mathbb R^k$로 납작하게 표기 |
-| $N_p$ | soft-prompt token 수 | X-VLA-0.9B에서 32 |
-| $d$ | policy Transformer hidden size | X-VLA-0.9B에서 1024 |
-| $H$ | heterogeneous source 수 | pretraining에서 7 |
-| $B$ | batch size | pretraining global 1024 |
+| $`M`$ | trajectory/episode 수 | 정수 |
+| $`\tau_j`$ | $`j`$번째 expert trajectory | 길이 $`N_j`$의 시퀀스 |
+| $`o_n`$ | step $`n`$의 multimodal observation | 이미지·문장·proprioception의 묶음 |
+| $`a_n`$ | expert action | 로봇별 원시 차원; 정렬 뒤 single arm 10-D, dual arm 20-D |
+| $`A_n`$ 또는 $`A`$ | 미래 action chunk | $`[T_a,D_a]`$; 공개 코드 기본 $`T_a=30,D_a=20`$ |
+| $`A^0`$ | Gaussian noise chunk | $`[T_a,D_a]`$, $`\mathcal N(0,I)`$ |
+| $`A^t`$ | flow time $`t`$의 중간 action | $`[T_a,D_a]`$ |
+| $`v_\theta`$ | 논문이 정의한 conditional velocity field | 입력 $`[T_a,D_a]`$와 관측, 출력 $`[T_a,D_a]`$ |
+| $`D_i`$ | $`i`$번째 데이터 소스 | trajectory 집합 |
+| $`h_i`$ | 그 소스의 하드웨어/수집 설정 | 카메라, 로봇, 제어 interface 등 |
+| $`p_i`$ | $`i`$번째 source prompt | 엄밀히는 $`[N_p,d]`$; 논문은 이를 $`\mathbb R^k`$로 납작하게 표기 |
+| $`N_p`$ | soft-prompt token 수 | X-VLA-0.9B에서 32 |
+| $`d`$ | policy Transformer hidden size | X-VLA-0.9B에서 1024 |
+| $`H`$ | heterogeneous source 수 | pretraining에서 7 |
+| $`B`$ | batch size | pretraining global 1024 |
 
 ### 4.3 파라미터와 hyperparameter의 구분
 
 - **모델 파라미터**: Florence-2-Large encoder, multimodal projection, 24-layer Transformer, positional embedding, action input/output projections, soft prompts. gradient로 값이 바뀐다.
 - **도메인별 파라미터**: prompt와 action input/output projection. source ID로 해당 묶음을 고른다. [PDF p.5, Fig.5]
 - **공유 파라미터**: Florence/Vision encoder와 standard Transformer의 대부분. 모든 source가 업데이트 신호를 공유한다.
-- **hyperparameter**: 24 layers, hidden size 1024, prompt length 32, batch 1024, LR $10^{-4}$, weight decay 0.01, 200K iterations 등. 실험자가 정한다.
+- **hyperparameter**: 24 layers, hidden size 1024, prompt length 32, batch 1024, LR $`10^{-4}`$, weight decay 0.01, 200K iterations 등. 실험자가 정한다.
 
 X-VLA-0.9B의 “0.9B”와 prompt/PEFT 숫자는 다음처럼 분리해야 한다.
 
 | 숫자 | 뜻 |
 |---|---|
 | 0.9B | 저자가 이름 붙인 전체 모델 인스턴스 규모. 공유 backbone을 포함한다. |
-| 32K | 새 domain 하나의 prompt-only 파라미터 수. 공식 config의 $32\times1024=32{,}768$과 맞는다. |
+| 32K | 새 domain 하나의 prompt-only 파라미터 수. 공식 config의 $`32\times1024=32{,}768`$과 맞는다. |
 | 약 70K | Table 8의 prompt + “linear head” 설정. 정확한 포함 모듈별 산식은 PDF에 없다. |
 | 9M | LoRA를 포함한 X-VLA PEFT trainable parameters. prompt 자체의 크기가 아니다. |
 | 25M | 마지막 layer까지 추가로 푸는 Table 8 설정. |
@@ -170,7 +170,7 @@ Figure 1. 전체 방법과 성능 개요. [PDF p.1, Abstract] · [원문 PDF](ht
 2. 그러나 이 데이터의 이질성이 오히려 pretraining을 방해한다.
 3. 데이터 소스마다 별도 soft prompt를 두고, standard Transformer encoder와 flow matching을 결합하면 구조를 단순하게 유지하면서 규모 확장이 가능하다는 주장이다.
 
-Fig.1은 논문의 전체 약속을 한 장에 배치한다. 위쪽은 pretrained VLM, soft prompt, proprio/$t$/noisy action이 반복 self-attention block으로 들어가는 구조이다. 아래쪽은 ① 7 source pretraining, ② 새 로봇 적응, ③ model/data scaling, ④ LIBERO 93%·Simpler-WidowX 54%를 9M PEFT로 얻는다는 결과를 연결한다.
+Fig.1은 논문의 전체 약속을 한 장에 배치한다. 위쪽은 pretrained VLM, soft prompt, proprio/$`t`$/noisy action이 반복 self-attention block으로 들어가는 구조이다. 아래쪽은 ① 7 source pretraining, ② 새 로봇 적응, ③ model/data scaling, ④ LIBERO 93%·Simpler-WidowX 54%를 9M PEFT로 얻는다는 결과를 연결한다.
 
 “One Model to Beat Them All”이라는 시각적 문구는 마케팅적 요약이다. 실제로는 target domain별 prompt와 action head가 있고, downstream fine-tuning도 필요하다. Appendix C도 plug-and-play zero-shot generalist가 아직 아니라고 인정한다. [PDF p.19-20, Appendix C]
 
@@ -211,10 +211,9 @@ Fig.1은 논문의 전체 약속을 한 장에 배치한다. 위쪽은 pretraine
 
 원문 비번호 식:
 
-$$
-\mathcal D=\{\tau_j\}_{j=1}^{M},\qquad
-\tau_j=\{(o_n,a_n)\}_{n=1}^{N_j}.
-$$
+```math
+\mathcal D=\{\tau_j\}_{j=1}^{M},\qquad \tau_j=\{(o_n,a_n)\}_{n=1}^{N_j}.
+```
 
 <a id="equation-1"></a>
 
@@ -224,18 +223,18 @@ $$
 
 항별 의미:
 
-- $M$: episode 수이다.
-- $N_j$: episode $j$의 environment/action step 수이다.
-- $o_n$: step $n$의 관측. 한 tensor가 아니라 multi-view image, language instruction, proprioception을 묶은 조건이다.
-- $a_n$: 같은 step에서 expert가 수행한 action이다.
+- $`M`$: episode 수이다.
+- $`N_j`$: episode $`j`$의 environment/action step 수이다.
+- $`o_n`$: step $`n`$의 관측. 한 tensor가 아니라 multi-view image, language instruction, proprioception을 묶은 조건이다.
+- $`a_n`$: 같은 step에서 expert가 수행한 action이다.
 
 연산 순서는 “episode를 선택 → 그 안의 time index를 선택 → 관측과 미래 action target을 만든다”이다. 이미지/언어는 action을 생성하는 조건이고, expert action은 label이다.
 
 원문 비번호 식:
 
-$$
+```math
 A_n := [a_n,a_{n+1},\ldots,a_{n+T}].
-$$
+```
 
 <a id="equation-2"></a>
 
@@ -243,18 +242,13 @@ $$
 
 원문 수식 (비번호). action chunk 정의. [PDF p.3, §2] · [원문 PDF](https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf#page=3)
 
-여기에는 작은 표기 문제가 있다. 원문은 $T$를 chunk size라고 부르지만 양 끝을 포함한 위 표기는 $T+1$개 action을 갖는다. 구현 관점에서는 horizon을 $T$라고 할지 마지막 offset을 $T$라고 할지 정의가 필요하다. 공식 코드는 현재 state를 포함한 `num_actions+1`개 anchor를 만든 뒤 첫 원소를 proprioception으로 떼고, 나머지 **30개**를 action target으로 사용한다. 따라서 공개 코드의 실제 target shape는 $[B,30,D_a]$이다. [공식 data slicing](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/datasets/domain_handler/base.py#L148-L167)
+여기에는 작은 표기 문제가 있다. 원문은 $`T`$를 chunk size라고 부르지만 양 끝을 포함한 위 표기는 $`T+1`$개 action을 갖는다. 구현 관점에서는 horizon을 $`T`$라고 할지 마지막 offset을 $`T`$라고 할지 정의가 필요하다. 공식 코드는 현재 state를 포함한 `num_actions+1`개 anchor를 만든 뒤 첫 원소를 proprioception으로 떼고, 나머지 **30개**를 action target으로 사용한다. 따라서 공개 코드의 실제 target shape는 $`[B,30,D_a]`$이다. [공식 data slicing](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/datasets/domain_handler/base.py#L148-L167)
 
 원문 비번호 식:
 
-$$
-\mathcal L_{\mathrm{BC}}(\theta)
-=
-\mathbb E_{(o_n,A_n)\sim\mathcal D}
-\left[
-\ell\!\left(\pi_\theta(o_n),A_n\right)
-\right].
-$$
+```math
+\mathcal L_{\mathrm{BC}}(\theta) = \mathbb E_{(o_n,A_n)\sim\mathcal D} \left[ \ell\!\left(\pi_\theta(o_n),A_n\right) \right].
+```
 
 <a id="equation-3"></a>
 
@@ -264,18 +258,18 @@ $$
 
 한 줄씩 풀면 다음과 같다.
 
-1. dataset에서 $(o_n,A_n)$ 쌍을 뽑는다.
-2. policy $\pi_\theta$가 현재 관측 $o_n$만 보고 미래 chunk 전체를 출력한다.
-3. supervised loss $\ell$이 예측 chunk와 expert chunk를 비교한다.
+1. dataset에서 $`(o_n,A_n)`$ 쌍을 뽑는다.
+2. policy $`\pi_\theta`$가 현재 관측 $`o_n`$만 보고 미래 chunk 전체를 출력한다.
+3. supervised loss $`\ell`$이 예측 chunk와 expert chunk를 비교한다.
 4. 모든 샘플 평균이 behavior cloning 목적이다.
 
 Gradient는 loss → action output → policy Transformer → visual/language encoder와 prompt까지 역전파된다. 다만 frozen phase에서는 optimizer가 backbone을 업데이트하지 않고 새 prompt/action head만 바꾼다.
 
-작은 예: 1-D action에서 expert chunk가 $[0.2,0.4,0.6]$, 예측이 $[0.1,0.5,0.5]$라면 MSE는 $(0.01+0.01+0.01)/3=0.01$이다. 실제 X-VLA는 xyz·rotation과 binary gripper를 같은 방식으로 처리하지 않는다. 연속 성분은 MSE, gripper는 BCE를 쓴다.
+작은 예: 1-D action에서 expert chunk가 $`[0.2,0.4,0.6]`$, 예측이 $`[0.1,0.5,0.5]`$라면 MSE는 $`(0.01+0.01+0.01)/3=0.01`$이다. 실제 X-VLA는 xyz·rotation과 binary gripper를 같은 방식으로 처리하지 않는다. 연속 성분은 MSE, gripper는 BCE를 쓴다.
 
 Edge case:
 
-- episode 끝에 가까우면 미래 $T$개가 없다. 논문은 padding/masking을 설명하지 않는다. 공개 loader는 마지막 시간에 clamp/interpolation하거나 후보 index를 앞에서 잘라낸다.
+- episode 끝에 가까우면 미래 $`T`$개가 없다. 논문은 padding/masking을 설명하지 않는다. 공개 loader는 마지막 시간에 clamp/interpolation하거나 후보 index를 앞에서 잘라낸다.
 - 길이가 다른 episode를 batch로 묶을 때 target chunk는 고정 30개 anchor로 만든다.
 - action coordinate frame과 scale을 통일하지 않으면 동일 MSE가 물리적으로 다른 오차를 뜻한다.
 
@@ -283,9 +277,9 @@ Edge case:
 
 원문 비번호 식:
 
-$$
+```math
 A^0\sim\mathcal N(0,I).
-$$
+```
 
 <a id="equation-4"></a>
 
@@ -293,16 +287,13 @@ $$
 
 원문 수식 (비번호). Gaussian initial action. [PDF p.3, §2] · [원문 PDF](https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf#page=3)
 
-$A^0$는 expert action과 같은 shape $[B,T_a,D_a]$의 Gaussian noise이다. $I$는 각 scalar가 단위분산이며 독립이라는 표기이다. 실제 action이 meter, rotation, binary를 섞으므로 normalization이 없다면 단위 Gaussian의 의미가 성분마다 달라진다. 정확한 normalization 통계는 PDF에 없다.
+$`A^0`$는 expert action과 같은 shape $`[B,T_a,D_a]`$의 Gaussian noise이다. $`I`$는 각 scalar가 단위분산이며 독립이라는 표기이다. 실제 action이 meter, rotation, binary를 섞으므로 normalization이 없다면 단위 Gaussian의 의미가 성분마다 달라진다. 정확한 normalization 통계는 PDF에 없다.
 
 원문 비번호 식:
 
-$$
-A^{t+\Delta t}
-=
-A^t+v_\theta(A^t,o,t)\Delta t,
-\qquad t\in[0,1].
-$$
+```math
+A^{t+\Delta t} = A^t+v_\theta(A^t,o,t)\Delta t, \qquad t\in[0,1].
+```
 
 <a id="equation-5"></a>
 
@@ -312,27 +303,20 @@ $$
 
 계산 순서는 다음과 같다.
 
-1. 현재 중간 action $A^t$와 observation $o$, flow time $t$를 network에 넣는다.
-2. network가 action space에서 어느 방향으로 얼마나 이동할지 나타내는 velocity $v_\theta$를 예측한다.
-3. step size $\Delta t$만큼 이동한다.
-4. $t=1$까지 반복해 noise를 action으로 운반한다.
+1. 현재 중간 action $`A^t`$와 observation $`o`$, flow time $`t`$를 network에 넣는다.
+2. network가 action space에서 어느 방향으로 얼마나 이동할지 나타내는 velocity $`v_\theta`$를 예측한다.
+3. step size $`\Delta t`$만큼 이동한다.
+4. $`t=1`$까지 반복해 noise를 action으로 운반한다.
 
-원문은 이를 “Euler-Maruyama”라고 부르지만 식에는 stochastic diffusion term $g(t)dW_t$가 없다. 적힌 식 자체는 deterministic ODE의 **forward Euler** update이다. 확률항을 생략한 것인지 용어를 넓게 쓴 것인지 논문은 밝히지 않는다.
+원문은 이를 “Euler-Maruyama”라고 부르지만 식에는 stochastic diffusion term $`g(t)dW_t`$가 없다. 적힌 식 자체는 deterministic ODE의 **forward Euler** update이다. 확률항을 생략한 것인지 용어를 넓게 쓴 것인지 논문은 밝히지 않는다.
 
 ### 7.3 OT linear path와 flow-matching loss
 
 원문 핵심 비번호 display 식:
 
-$$
-\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}(\theta)
-=
-\mathbb E_{t\sim\mathcal U(0,1),(o,A)\sim\mathcal D}
-\left[
-\left\|
-v_\theta(A^t,o,t)-(A-A^0)
-\right\|^2
-\right],
-$$
+```math
+\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}(\theta) = \mathbb E_{t\sim\mathcal U(0,1),(o,A)\sim\mathcal D} \left[ \left\| v_\theta(A^t,o,t)-(A-A^0) \right\|^2 \right],
+```
 
 <a id="equation-6"></a>
 
@@ -340,9 +324,9 @@ $$
 
 원문 수식 (비번호). flow-matching behavior-cloning loss. [PDF p.3, §2] · [원문 PDF](https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf#page=3)
 
-$$
+```math
 A^t=(1-t)A^0+tA.
-$$
+```
 
 <a id="equation-7"></a>
 
@@ -352,44 +336,38 @@ $$
 
 유도는 한 줄이다.
 
-$$
-\text{[해설용 수식]}\qquad
-\frac{dA^t}{dt}
-=
-\frac{d}{dt}\big((1-t)A^0+tA\big)
-=
-A-A^0.
-$$
+```math
+\text{[해설용 수식]}\qquad \frac{dA^t}{dt} = \frac{d}{dt}\big((1-t)A^0+tA\big) = A-A^0.
+```
 
-따라서 직선 OT path를 정확히 따라가려면 중간점 어느 곳에서도 velocity가 $A-A^0$이어야 한다. loss는 network의 velocity와 이 정답 벡터를 squared norm으로 맞춘다.
+따라서 직선 OT path를 정확히 따라가려면 중간점 어느 곳에서도 velocity가 $`A-A^0`$이어야 한다. loss는 network의 velocity와 이 정답 벡터를 squared norm으로 맞춘다.
 
 항별 shape:
 
-- $A^t,A,A^0\in\mathbb R^{B\times T_a\times D_a}$.
-- $t\in\mathbb R^B$이며 각 batch sample에 broadcast된다.
-- $v_\theta(A^t,o,t)$도 $[B,T_a,D_a]$.
+- $`A^t,A,A^0\in\mathbb R^{B\times T_a\times D_a}`$.
+- $`t\in\mathbb R^B`$이며 각 batch sample에 broadcast된다.
+- $`v_\theta(A^t,o,t)`$도 $`[B,T_a,D_a]`$.
 - norm은 보통 action/time 축을 합산 또는 평균한 scalar가 되지만 reduction 방식은 PDF에 없다.
 
-작은 수치 예: 1-D에서 $A^0=-1$, expert $A=3$이면 $A^{0.25}=0$, 정답 velocity는 $4$이다. network가 $3.5$를 내면 한 점의 squared error는 $(3.5-4)^2=0.25$이다. Euler step $\Delta t=0.1$이면 현재 값을 약 $0.4$ 증가시킨다.
+작은 수치 예: 1-D에서 $`A^0=-1`$, expert $`A=3`$이면 $`A^{0.25}=0`$, 정답 velocity는 $`4`$이다. network가 $`3.5`$를 내면 한 점의 squared error는 $`(3.5-4)^2=0.25`$이다. Euler step $`\Delta t=0.1`$이면 현재 값을 약 $`0.4`$ 증가시킨다.
 
 Edge case:
 
-- $t=0$: 완전 noise이다. observation conditioning이 없으면 어느 action mode로 갈지 알 수 없다.
-- $t=1$: 완전 data이다. 이상적으로 더 움직일 필요가 없다고 생각하기 쉽지만, 이 parameterization의 target velocity $A-A^0$는 0이 아니다. ODE는 경로의 접선장을 학습하는 것이지 residual-to-target을 직접 학습하는 것이 아니다.
-- $A=A^0$: target velocity가 0이다.
+- $`t=0`$: 완전 noise이다. observation conditioning이 없으면 어느 action mode로 갈지 알 수 없다.
+- $`t=1`$: 완전 data이다. 이상적으로 더 움직일 필요가 없다고 생각하기 쉽지만, 이 parameterization의 target velocity $`A-A^0`$는 0이 아니다. ODE는 경로의 접선장을 학습하는 것이지 residual-to-target을 직접 학습하는 것이 아니다.
+- $`A=A^0`$: target velocity가 0이다.
 - 유한 integration step에서는 network error와 Euler discretization error가 누적된다.
-- 기대값 표기에는 $A^0$에 대한 sampling이 명시적으로 들어가 있지 않지만, 앞 문장에서 noise를 sample한다고 했으므로 암묵적으로 포함된 것으로 읽어야 한다.
+- 기대값 표기에는 $`A^0`$에 대한 sampling이 명시적으로 들어가 있지 않지만, 앞 문장에서 noise를 sample한다고 했으므로 암묵적으로 포함된 것으로 읽어야 한다.
 
 ### 7.4 논문 식과 공개 코드의 중요한 불일치
 
 **[공식 코드 확인]** 현재 공개 코드는 training에서
 
-$$
-\text{[코드 동작을 옮긴 해설용 수식]}\qquad
-x_t=t\varepsilon+(1-t)A
-$$
+```math
+\text{[코드 동작을 옮긴 해설용 수식]}\qquad x_t=t\varepsilon+(1-t)A
+```
 
-를 만들고, Transformer 출력 자체를 clean action $A$와 MSE/BCE로 비교한다. 즉 PDF의 $A^t=(1-t)A^0+tA$와는 $t$ 방향이 반대이며, target도 $A-A^0$ velocity가 아니라 clean action이다. inference 역시 Euler 누적이 아니라, $t=1,1-1/K,\ldots,1/K$에서 현재 clean-action 예측을 다시 혼합해 반복 갱신한다. [공식 training/inference 구현](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/models/modeling_xvla.py#L148-L220)
+를 만들고, Transformer 출력 자체를 clean action $`A`$와 MSE/BCE로 비교한다. 즉 PDF의 $`A^t=(1-t)A^0+tA`$와는 $`t`$ 방향이 반대이며, target도 $`A-A^0`$ velocity가 아니라 clean action이다. inference 역시 Euler 누적이 아니라, $`t=1,1-1/K,\ldots,1/K`$에서 현재 clean-action 예측을 다시 혼합해 반복 갱신한다. [공식 training/inference 구현](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/models/modeling_xvla.py#L148-L220)
 
 가능한 해석은 두 가지다.
 
@@ -402,10 +380,9 @@ $$
 
 원문 비번호 식:
 
-$$
-\mathcal D^H=\{\mathcal D_i\}_{i=1}^{H},
-\qquad h_i\in\mathcal H.
-$$
+```math
+\mathcal D^H=\{\mathcal D_i\}_{i=1}^{H}, \qquad h_i\in\mathcal H.
+```
 
 <a id="equation-8"></a>
 
@@ -413,7 +390,7 @@ $$
 
 원문 수식 (비번호). heterogeneous dataset mixture. [PDF p.3, §2] · [원문 PDF](https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf#page=3)
 
-$\mathcal H$는 가능한 hardware setup의 공간이다. 저자는 arm kinematics, control interface, camera setup, deployment scenario를 포함시킨다. 이 식은 $h_i$를 관측 가능한 숫자 벡터로 정의하지 않는다. X-VLA는 $h_i$ 자체를 입력받지 않고 dataset ID를 통해 prompt row를 고른다.
+$`\mathcal H`$는 가능한 hardware setup의 공간이다. 저자는 arm kinematics, control interface, camera setup, deployment scenario를 포함시킨다. 이 식은 $`h_i`$를 관측 가능한 숫자 벡터로 정의하지 않는다. X-VLA는 $`h_i`$ 자체를 입력받지 않고 dataset ID를 통해 prompt row를 고른다.
 
 ---
 
@@ -469,13 +446,9 @@ Figure 2. 네 가지 heterogeneity 처리법. [PDF p.4, §3] · [원문 PDF](htt
 
 원문 비번호 식:
 
-$$
-\mathcal P^H=\{p_i\}_{i=1}^{H},
-\qquad
-p_i\approx\Phi(h_i),
-\qquad
-\Phi:\mathcal H\rightarrow\mathbb R^k.
-$$
+```math
+\mathcal P^H=\{p_i\}_{i=1}^{H}, \qquad p_i\approx\Phi(h_i), \qquad \Phi:\mathcal H\rightarrow\mathbb R^k.
+```
 
 <a id="equation-9"></a>
 
@@ -485,28 +458,19 @@ $$
 
 정확한 tensor 표기로 풀면 다음이 더 가깝다.
 
-$$
-\text{[해설용 수식]}\qquad
-p_i\in\mathbb R^{N_p\times d},
-\quad N_p=32,\ d=1024,
-\quad k=N_pd\ \text{로 납작하게 볼 수 있다.}
-$$
+```math
+\text{[해설용 수식]}\qquad \begin{gathered} p_i\in\mathbb R^{N_p\times d},\quad N_p=32,\ d=1024,\\ k=N_pd\ \text{로 납작하게 볼 수 있다.} \end{gathered}
+```
 
-$\Phi$는 별도 neural network가 아니다. 각 $p_i$를 무작위 초기화하고 end-to-end loss로 직접 최적화하므로, 구현상 embedding lookup table이 $\Phi$ 역할을 한다.
+$`\Phi`$는 별도 neural network가 아니다. 각 $`p_i`$를 무작위 초기화하고 end-to-end loss로 직접 최적화하므로, 구현상 embedding lookup table이 $`\Phi`$ 역할을 한다.
 
 Gradient 경로는 다음과 같다.
 
-$$
-\text{[해설용 수식]}\qquad
-\frac{\partial\mathcal L}{\partial p_i}
-=
-\frac{\partial\mathcal L}{\partial X^{(L)}}
-\prod_{\ell=1}^{L}
-\frac{\partial X^{(\ell)}}{\partial X^{(\ell-1)}}
-\frac{\partial X^{(0)}}{\partial p_i}.
-$$
+```math
+\text{[해설용 수식]}\qquad \frac{\partial\mathcal L}{\partial p_i} = \frac{\partial\mathcal L}{\partial X^{(L)}} \prod_{\ell=1}^{L} \frac{\partial X^{(\ell)}}{\partial X^{(\ell-1)}} \frac{\partial X^{(0)}}{\partial p_i}.
+```
 
-현재 minibatch에 source $i$가 있을 때만 그 row가 선택되어 gradient를 받는다. self-attention 때문에 prompt의 key/value/query가 image, language, proprio, action token과 상호작용한다. 따라서 단순 label보다 깊게 조건화된다.
+현재 minibatch에 source $`i`$가 있을 때만 그 row가 선택되어 gradient를 받는다. self-attention 때문에 prompt의 key/value/query가 image, language, proprio, action token과 상호작용한다. 따라서 단순 label보다 깊게 조건화된다.
 
 작은 예: `DROID-left`와 `DROID-right`가 같은 Franka kinematics를 공유해도 서로 다른 camera geometry 때문에 다른 prompt를 쓴다. backbone은 두 prompt의 공통 gradient를 통해 Franka 조작의 공통성을, prompt는 시점 차이를 흡수할 수 있다. 반대로 prompt가 데이터 수집자나 배경색 같은 spurious cue를 저장할 수도 있다.
 
@@ -536,7 +500,7 @@ Figure 5. X-VLA architecture. [PDF p.5, §4.1] · [원문 PDF](https://openrevie
 
 #### 9.1.1 High-dimensional observation stream
 
-입력은 language $L$과 multi-view images $\mathrm{Img}=\{img_i\}$이다. 저자는 모든 view를 language와 함께 VLM에 밀어 넣지 않고 역할을 나눈다.
+입력은 language $`L`$과 multi-view images $`\mathrm{Img}=\{img_i\}`$이다. 저자는 모든 view를 language와 함께 VLM에 밀어 넣지 않고 역할을 나눈다.
 
 - **main/fixed view + language**: Florence-2-Large의 vision-language encoder로 보낸다. 고정 시점은 scene과 task의 고수준 의미를 안정적으로 제공한다.
 - **auxiliary view**: wrist처럼 빠르고 noisy하지만 fine manipulation에 중요한 view는 shared vision backbone으로 별도 encoding한다.
@@ -547,16 +511,15 @@ Figure 5. X-VLA architecture. [PDF p.5, §4.1] · [원문 PDF](https://openrevie
 
 각 미래 action index마다 다음을 concatenate한다.
 
-$$
-\text{[해설용 수식]}\qquad
-c_j=[\widetilde a_j\ ;\ r_t\ ;\ \gamma(t)].
-$$
+```math
+\text{[해설용 수식]}\qquad c_j=[\widetilde a_j\ ;\ r_t\ ;\ \gamma(t)].
+```
 
-- $\widetilde a_j$: flow의 noisy/intermediate action, shape $[D_a]$.
-- $r_t$: 현재 proprioception, 모든 미래 index $j$에 repeat, shape $[D_r]$.
-- $\gamma(t)$: sinusoidal flow-time embedding, shape $[D_t]$.
+- $`\widetilde a_j`$: flow의 noisy/intermediate action, shape $`[D_a]`$.
+- $`r_t`$: 현재 proprioception, 모든 미래 index $`j`$에 repeat, shape $`[D_r]`$.
+- $`\gamma(t)`$: sinusoidal flow-time embedding, shape $`[D_t]`$.
 
-공개 config의 EE6D 기준 $D_a=20,D_r=20,D_t=32$이므로 한 control token의 linear input은 72-D이고 1024-D hidden으로 project된다. 논문은 이 세부 차원을 주지 않으므로 이는 코드 스냅샷 정보이다.
+공개 config의 EE6D 기준 $`D_a=20,D_r=20,D_t=32`$이므로 한 control token의 linear input은 72-D이고 1024-D hidden으로 project된다. 논문은 이 세부 차원을 주지 않으므로 이는 코드 스냅샷 정보이다.
 
 #### 9.1.3 Soft prompt와 전체 self-attention
 
@@ -564,31 +527,25 @@ source ID가 prompt library와 action input/output projection library를 함께 
 
 논문에 없는 Transformer 내부를 이해하기 위한 식:
 
-$$
-\text{[해설용 수식]}\qquad
-Q=XW_Q,\quad K=XW_K,\quad V=XW_V,
-$$
+```math
+\text{[해설용 수식]}\qquad Q=XW_Q,\quad K=XW_K,\quad V=XW_V,
+```
 
-$$
-\text{[해설용 수식]}\qquad
-\mathrm{Attn}(X)
-=
-\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}\right)V.
-$$
+```math
+\text{[해설용 수식]}\qquad \mathrm{Attn}(X) = \mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_h}}\right)V.
+```
 
-$X\in\mathbb R^{B\times S\times d}$, 16 heads인 공개 config에서는 $d=1024,d_h=64$이다. attention matrix는 head마다 $[B,S,S]$이므로 prompt는 모든 image/language/control token을 읽고, 반대로 action token도 prompt를 읽는다. causal mask가 없으므로 action chunk의 미래 anchor들끼리도 동시에 상호작용한다.
+$`X\in\mathbb R^{B\times S\times d}`$, 16 heads인 공개 config에서는 $`d=1024,d_h=64`$이다. attention matrix는 head마다 $`[B,S,S]`$이므로 prompt는 모든 image/language/control token을 읽고, 반대로 action token도 prompt를 읽는다. causal mask가 없으므로 action chunk의 미래 anchor들끼리도 동시에 상호작용한다.
 
 한 block은 공개 코드상 pre-LN residual 구조이다.
 
-$$
-\text{[해설용 수식]}\qquad
-X' = X+\mathrm{MHSA}(\mathrm{LN}(X)),
-$$
+```math
+\text{[해설용 수식]}\qquad X' = X+\mathrm{MHSA}(\mathrm{LN}(X)),
+```
 
-$$
-\text{[해설용 수식]}\qquad
-X^{+}=X'+W_2\,\mathrm{GELU}(W_1\mathrm{LN}(X')).
-$$
+```math
+\text{[해설용 수식]}\qquad X^{+}=X'+W_2\,\mathrm{GELU}(W_1\mathrm{LN}(X')).
+```
 
 공개 구현은 MLP ratio 4, attention/MLP dropout 0.1을 쓴다. PDF에는 head 수, dropout, norm 위치가 없다. [공식 Transformer](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/models/transformer.py#L252-L403)
 
@@ -601,7 +558,7 @@ $$
 | visual projections | 기본 X-VLA에서는 source 공유 | Florence output을 policy hidden 1024로 정렬 |
 | standard Transformer 24 layers | 공유 | 모든 modality/action anchor의 joint reasoning |
 | soft prompt | source-specific | dataset/hardware/camera context를 token으로 제공 |
-| action input projection | source-specific | noisy action+proprio+$t$를 control token으로 변환 |
+| action input projection | source-specific | noisy action+proprio+$`t`$를 control token으로 변환 |
 | action output projection | source-specific | 첫 30개 token을 해당 action space로 복원 |
 
 Fig.5의 0.04%는 마지막 세 source-specific 묶음이 전체에서 차지하는 비율이라고 설명한다. 반면 Table 3의 1%/9M은 LoRA PEFT까지 포함한다. 두 수치를 섞으면 안 된다.
@@ -610,11 +567,11 @@ Fig.5의 0.04%는 마지막 세 source-specific 묶음이 전체에서 차지하
 
 #### Phase I: heterogeneous pretraining
 
-**[저자 보고]** shared backbone $\pi_\theta$와 source prompts $\mathcal P^H$를 $\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}$ 아래 함께 최적화한다. vision-language module과 prompt에는 더 작은 learning rate를 주어 pretrained representation drift를 줄인다고 한다. 정확한 LR multiplier는 PDF Table 9에 없다. [PDF p.6, §4.2.1]
+**[저자 보고]** shared backbone $`\pi_\theta`$와 source prompts $`\mathcal P^H`$를 $`\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}`$ 아래 함께 최적화한다. vision-language module과 prompt에는 더 작은 learning rate를 주어 pretrained representation drift를 줄인다고 한다. 정확한 LR multiplier는 PDF Table 9에 없다. [PDF p.6, §4.2.1]
 
 #### Phase II-1: prompt warm-up
 
-새 hardware $h_{new}$에 새 prompt $p_{new}$를 무작위로 만들고 pretrained backbone을 freeze한다. prompt가 backbone의 기존 representation을 이용할 수 있는 시작점으로 이동하도록 먼저 학습한다.
+새 hardware $`h_{new}`$에 새 prompt $`p_{new}`$를 무작위로 만들고 pretrained backbone을 freeze한다. prompt가 backbone의 기존 representation을 이용할 수 있는 시작점으로 이동하도록 먼저 학습한다.
 
 #### Phase II-2: joint policy adaptation
 
@@ -630,53 +587,43 @@ Appendix H는 첫 1,000 iterations에 “soft prompts **and action heads**”만
 
 한 팔의 정렬된 action은 다음 10차원이다.
 
-$$
-\text{[해설용 수식]}\qquad
-a^{arm}=[x,y,z,r_1,r_2,r_3,r_4,r_5,r_6,g]\in\mathbb R^{10}.
-$$
+```math
+\text{[해설용 수식]}\qquad a^{arm}=[x,y,z,r_1,r_2,r_3,r_4,r_5,r_6,g]\in\mathbb R^{10}.
+```
 
 양팔은 left/right를 붙여 20-D이다. single arm은 남는 팔 10-D를 zero padding하는 것이 공식 코드/README의 interface다.
 
-- $(x,y,z)$: Cartesian EEF position. 대부분 downstream은 absolute EEF.
-- $(r_1,\ldots,r_6)$: 3D rotation matrix의 첫 두 basis vector를 나타내는 continuous Rotate6D.
-- $g$: binary gripper state.
+- $`(x,y,z)`$: Cartesian EEF position. 대부분 downstream은 absolute EEF.
+- $`(r_1,\ldots,r_6)`$: 3D rotation matrix의 첫 두 basis vector를 나타내는 continuous Rotate6D.
+- $`g`$: binary gripper state.
 
 Rotate6D를 회전행렬로 복원하는 이론:
 
-$$
-\text{[해설용 수식]}\qquad
-b_1=\frac{a_1}{\|a_1\|},\qquad
-b_2=\frac{a_2-(b_1^\top a_2)b_1}{\|a_2-(b_1^\top a_2)b_1\|},\qquad
-b_3=b_1\times b_2,
-$$
+```math
+\text{[해설용 수식]}\qquad \begin{aligned} b_1&=\frac{a_1}{\|a_1\|},\\ b_2&=\frac{a_2-(b_1^\top a_2)b_1}{\|a_2-(b_1^\top a_2)b_1\|},\\ b_3&=b_1\times b_2, \end{aligned}
+```
 
-$$
-\text{[해설용 수식]}\qquad
-R=[b_1\ b_2\ b_3]\in SO(3).
-$$
+```math
+\text{[해설용 수식]}\qquad R=[b_1\ b_2\ b_3]\in SO(3).
+```
 
-Euler angle은 $2\pi$ 경계에서 같은 자세가 멀리 떨어진 숫자가 되고, unit quaternion은 $q$와 $-q$가 같은 회전을 나타내는 이중성 때문에 regression이 불연속적일 수 있다. 6D는 두 벡터를 연속적으로 회귀한 뒤 Gram-Schmidt로 직교화한다.
+Euler angle은 $`2\pi`$ 경계에서 같은 자세가 멀리 떨어진 숫자가 되고, unit quaternion은 $`q`$와 $`-q`$가 같은 회전을 나타내는 이중성 때문에 regression이 불연속적일 수 있다. 6D는 두 벡터를 연속적으로 회귀한 뒤 Gram-Schmidt로 직교화한다.
 
-Edge case는 두 입력 벡터가 0이거나 거의 평행할 때 분모가 0에 가까워지는 것이다. 논문은 안정화 $\epsilon$을 말하지 않는다. 공식 공용 utility도 분모에 epsilon이 없지만 일부 evaluator는 epsilon을 더한다. 이는 배포 시 NaN 검사 대상이다.
+Edge case는 두 입력 벡터가 0이거나 거의 평행할 때 분모가 0에 가까워지는 것이다. 논문은 안정화 $`\epsilon`$을 말하지 않는다. 공식 공용 utility도 분모에 epsilon이 없지만 일부 evaluator는 epsilon을 더한다. 이는 배포 시 NaN 검사 대상이다.
 
 Loss는 position/rotation에 MSE, gripper에 BCE를 쓴다.
 
-$$
-\text{[해설용 수식]}\qquad
-\mathcal L
-=
-\lambda_{xyz}\|\hat p-p\|_2^2
-+\lambda_R\|\hat r-r\|_2^2
-+\lambda_g\,\mathrm{BCEWithLogits}(\hat g,g).
-$$
+```math
+\text{[해설용 수식]}\qquad \begin{aligned} \mathcal L &=\lambda_{xyz}\|\hat p-p\|_2^2 +\lambda_R\|\hat r-r\|_2^2\\ &\quad+\lambda_g\,\mathrm{BCEWithLogits}(\hat g,g). \end{aligned}
+```
 
-PDF에는 $\lambda$ 값과 flow velocity loss와의 결합법이 없다. 공개 코드에서는 clean action을 직접 target으로 두고 EE6D에 `XYZ_SCALE=500`, `ROT_SCALE=10`, `GRIPPER_SCALE=1`을 사용한다. 이것은 논문의 velocity-field 식과 맞지 않는 부분이다. [공식 action loss](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/models/action_hub.py#L101-L174)
+PDF에는 $`\lambda`$ 값과 flow velocity loss와의 결합법이 없다. 공개 코드에서는 clean action을 직접 target으로 두고 EE6D에 `XYZ_SCALE=500`, `ROT_SCALE=10`, `GRIPPER_SCALE=1`을 사용한다. 이것은 논문의 velocity-field 식과 맞지 않는 부분이다. [공식 action loss](https://github.com/2toinf/X-VLA/blob/6bc2513f5f1cbec715cc668b414392a6cae5c671/models/action_hub.py#L101-L174)
 
 #### 9.3.2 Intention abstraction by temporal downsampling
 
 원시 15/30 Hz의 매 step pose를 모두 예측하지 않고, 현재부터 향후 4초를 30개 anchor로 resample한다. 목표는 human jitter와 너무 세밀한 correction보다 trajectory의 고수준 의도를 학습시키는 것이다.
 
-논문 문장만 보면 30개 점이 양 끝을 포함하는지 불명확하다. 공개 pretraining loader는 현재를 포함한 31개 시각을 `linspace`로 만든 뒤 첫 점을 proprioception으로 떼어 30개 future action을 사용한다. 따라서 full 4초 window에서는 anchor 간격이 $4/30\approx0.133$초, 약 7.5 anchors/s이다. 이는 raw logging rate 15/30 Hz와 다르다.
+논문 문장만 보면 30개 점이 양 끝을 포함하는지 불명확하다. 공개 pretraining loader는 현재를 포함한 31개 시각을 `linspace`로 만든 뒤 첫 점을 proprioception으로 떼어 30개 future action을 사용한다. 따라서 full 4초 window에서는 anchor 간격이 $`4/30\approx0.133`$초, 약 7.5 anchors/s이다. 이는 raw logging rate 15/30 Hz와 다르다.
 
 episode 끝에서는 `min(cur+qdur, end)`로 window가 줄어들어 30개 점의 물리 시간 간격이 더 촘촘해질 수 있다. mask가 따로 보고되지 않으므로 끝부분 sampling 정책은 재현에 중요하다.
 
@@ -703,41 +650,40 @@ episode 끝에서는 `min(cur+qdur, end)`로 window가 줄어들어 30개 점의
 
 ### 10.1 입력
 
-- batch $B=1$.
-- language: “fold cloth”, tokenizer output $[1,L]$, 공개 processor는 $L=50$으로 pad/truncate.
-- images: main/front/wrist 중 최대 3장, resize 뒤 $[1,3,3,224,224]$.
-- image mask: 실제 view를 표시하는 $[1,3]$ boolean.
-- proprio: dual-arm EE6D $[1,20]$.
-- noisy/intermediate action: $[1,30,20]$.
-- flow time: $[1]$.
+- batch $`B=1`$.
+- language: “fold cloth”, tokenizer output $`[1,L]`$, 공개 processor는 $`L=50`$으로 pad/truncate.
+- images: main/front/wrist 중 최대 3장, resize 뒤 $`[1,3,3,224,224]`$.
+- image mask: 실제 view를 표시하는 $`[1,3]`$ boolean.
+- proprio: dual-arm EE6D $`[1,20]`$.
+- noisy/intermediate action: $`[1,30,20]`$.
+- flow time: $`[1]`$.
 - domain ID: scalar `AgileX/SoftFold`에 해당하는 integer.
 
 ### 10.2 Florence/visual encoding
 
-1. 세 view를 batch 축으로 펴 $[3,3,224,224]$.
-2. 같은 Florence image encoder로 valid view 각각을 $[N_v,D_f]$ token으로 변환한다.
-3. 첫 view의 image tokens와 $L$개 text embeddings를 Florence encoder에 merge해 $[1,T_{vlm},D_f]$를 얻는다.
-4. 나머지 두 view는 $[1,2N_v,D_f]$로 flatten한다.
+1. 세 view를 batch 축으로 펴 $`[3,3,224,224]`$.
+2. 같은 Florence image encoder로 valid view 각각을 $`[N_v,D_f]`$ token으로 변환한다.
+3. 첫 view의 image tokens와 $`L`$개 text embeddings를 Florence encoder에 merge해 $`[1,T_{vlm},D_f]`$를 얻는다.
+4. 나머지 두 view는 $`[1,2N_v,D_f]`$로 flatten한다.
 5. source-shared linear projection으로 두 stream을 hidden 1024로 맞춘다.
 
 ### 10.3 Control token
 
-각 $j=1,\ldots,30$에 대해 noisy action 20-D, 반복된 proprio 20-D, sinusoidal time 32-D를 이어 72-D를 만든다. domain-specific input projection이 이를 1024-D control token으로 바꾼다.
+각 $`j=1,\ldots,30`$에 대해 noisy action 20-D, 반복된 proprio 20-D, sinusoidal time 32-D를 이어 72-D를 만든다. domain-specific input projection이 이를 1024-D control token으로 바꾼다.
 
 ### 10.4 Joint sequence
 
 prompt 전 sequence 길이를
 
-$$
-\text{[해설용 수식]}\qquad
-S_0=30+T_{vlm}+2N_v
-$$
+```math
+\text{[해설용 수식]}\qquad S_0=30+T_{vlm}+2N_v
+```
 
-라 두면, 32 prompt를 붙인 최종 길이는 $S=S_0+32$이다. 공개 코드는 $S_0\le512$인지 검사한 뒤 positional embedding을 먼저 더하고 prompt를 append한다. 따라서 현재 코드에서 prompt token에는 같은 positional table이 직접 더해지지 않는다.
+라 두면, 32 prompt를 붙인 최종 길이는 $`S=S_0+32`$이다. 공개 코드는 $`S_0\le512`$인지 검사한 뒤 positional embedding을 먼저 더하고 prompt를 append한다. 따라서 현재 코드에서 prompt token에는 같은 positional table이 직접 더해지지 않는다.
 
 ### 10.5 Transformer와 출력
 
-24개 pre-LN self-attention block이 $[1,S,1024]$를 처리한다. 마지막에 처음 30개 control-token 위치만 잘라 layer norm하고, domain-specific output projection으로 $[1,30,20]$ action을 얻는다. gripper logit은 sigmoid 후 확률이 되고 evaluator가 0.5/0.7/0.8 같은 threshold로 binary command로 바꾼다. threshold가 evaluator마다 다른 점도 재현 변수이다.
+24개 pre-LN self-attention block이 $`[1,S,1024]`$를 처리한다. 마지막에 처음 30개 control-token 위치만 잘라 layer norm하고, domain-specific output projection으로 $`[1,30,20]`$ action을 얻는다. gripper logit은 sigmoid 후 확률이 되고 evaluator가 0.5/0.7/0.8 같은 threshold로 binary command로 바꾼다. threshold가 evaluator마다 다른 점도 재현 변수이다.
 
 ---
 
@@ -779,7 +725,7 @@ $$
 
 Figure 6. model, prompt length, data source 및 data size scaling. [PDF p.8, §5.1] · [원문 PDF](https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf#page=8)
 
-평가 metric은 held-out validation set에서 flow denoising 후 예측 action과 ground truth의 $\ell_1$ error이다. training loss의 MSE/BCE와 validation metric $\ell_1$은 서로 다르다.
+평가 metric은 held-out validation set에서 flow denoising 후 예측 action과 ground truth의 $`\ell_1`$ error이다. training loss의 MSE/BCE와 validation metric $`\ell_1`$은 서로 다르다.
 
 #### Model capacity와 prompt length
 
@@ -799,13 +745,9 @@ Fig.6의 네 configuration은 `768-depth6`, `768-depth12`, `1024-depth12`, `1024
 
 Fig.6은 GFLOPS와 error의 관계를 보여줄 뿐, FLOPs/token 감소나 wall-clock latency 개선을 보여주지 않는다. 오히려 32 prompt tokens는 self-attention sequence를 늘린다.
 
-$$
-\text{[해설용 수식]}\qquad
-\frac{\text{attention score cost after prompt}}
-{\text{before prompt}}
-\approx
-\frac{(S_0+32)^2}{S_0^2}.
-$$
+```math
+\text{[해설용 수식]}\qquad \frac{\text{attention score cost after prompt}} {\text{before prompt}} \approx \frac{(S_0+32)^2}{S_0^2}.
+```
 
 따라서 soft prompt의 장점은 parameter-efficient conditioning과 학습 안정성이지 계산량 감소 자체가 아니다.
 
@@ -852,7 +794,7 @@ Table 2가 제시하는 X-VLA 결과와 “Maximum of Existing SOTA” 행을 �
 
 - small/specialized policies: LBP 0.2B, MoDE 0.4B, SuSIE/GHIL-Glue 1B.
 - 4-9B VLA: SpatialVLA, TraceVLA, ThinkAct, FPC-VLA, MemoryVLA, OpenVLA/OFT, DD-VLA, UniVLA.
-- generalist flow/diffusion 계열: Octo, RDT, FLOWER, GR00T-N1, $\pi_0$, $\pi_0$+FAST.
+- generalist flow/diffusion 계열: Octo, RDT, FLOWER, GR00T-N1, $`\pi_0`$, $`\pi_0`$+FAST.
 
 하지만 각 baseline은 서로 다른 pretraining data, checkpoint, fine-tuning recipe, image 수, evaluation budget을 사용한다. Table 1의 내부 ablation처럼 fully aligned control이 아니다. 모델 크기 대비 강함은 분명하지만, Table 2만으로 soft prompt 하나가 모든 격차의 원인이라고 할 수 없다.
 
@@ -881,11 +823,11 @@ Figure 8. 세 real-world robot의 성능. [PDF p.9, §5.2] · [원문 PDF](https
 
 #### AgileX dexterous cloth folding
 
-시간당 완성된 cloth 수는 X-VLA 33, $\pi_0$ 26, ACT-from-scratch 7이다. X-VLA는 $\pi_0$보다 7 folds/hour, 약 26.9% 높고 ACT보다 약 4.7배이다. 다만 task throughput은 inference latency와 별개다. 한 policy call이 느려도 긴 action chunk를 실행하거나 물리 동작이 병목이면 folds/hour가 달라질 수 있다.
+시간당 완성된 cloth 수는 X-VLA 33, $`\pi_0`$ 26, ACT-from-scratch 7이다. X-VLA는 $`\pi_0`$보다 7 folds/hour, 약 26.9% 높고 ACT보다 약 4.7배이다. 다만 task throughput은 inference latency와 별개다. 한 policy call이 느려도 긴 action chunk를 실행하거나 물리 동작이 병목이면 folds/hour가 달라질 수 있다.
 
 #### AIRBOT PEFT
 
-200 demonstrations로 cloth pick을 적응시킨 progress score는 X-VLA 73, $\pi_0$ 68, ACT 50이다. progress score의 세부 rubric, trial 수, 분산은 논문 미기재이다.
+200 demonstrations로 cloth pick을 적응시킨 progress score는 X-VLA 73, $`\pi_0`$ 68, ACT 50이다. progress score의 세부 rubric, trial 수, 분산은 논문 미기재이다.
 
 ### 11.6 PEFT: Table 3과 Table 8을 함께 읽기
 
@@ -893,10 +835,10 @@ Table 3:
 
 | method | trainable/model parameter 표기 | Spatial | Object | Goal | Long | 평균(재계산) | Simpler-WidowX |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| $\pi_0$ | 3B | 96.8 | 98.8 | 95.8 | 85.2 | 94.15 | 55.7 |
-| X-VLA LoRA | 9M | $95.8\pm0.4$ | $96.3\pm0.3$ | $95.2\pm0.8$ | $83.7\pm0.5$ | 92.75 | 54.2 |
+| $`\pi_0`$ | 3B | 96.8 | 98.8 | 95.8 | 85.2 | 94.15 | 55.7 |
+| X-VLA LoRA | 9M | $`95.8\pm0.4`$ | $`96.3\pm0.3`$ | $`95.2\pm0.8`$ | $`83.7\pm0.5`$ | 92.75 | 54.2 |
 
-본문의 “93% on LIBERO”는 92.75를 반올림한 값이다. 3B/9M은 약 333배지만 저자는 “300× fewer”로 반올림한다. 더 중요한 것은 비교 단위이다. $\pi_0$의 3B는 전체 모델 크기/fully tuned parameter로 쓰였고 X-VLA의 9M은 trainable adapter 수다. inference 때는 X-VLA 0.9B backbone 전체를 여전히 실행한다. 9M은 runtime model이 9M이라는 뜻이 아니다.
+본문의 “93% on LIBERO”는 92.75를 반올림한 값이다. 3B/9M은 약 333배지만 저자는 “300× fewer”로 반올림한다. 더 중요한 것은 비교 단위이다. $`\pi_0`$의 3B는 전체 모델 크기/fully tuned parameter로 쓰였고 X-VLA의 9M은 trainable adapter 수다. inference 때는 X-VLA 0.9B backbone 전체를 여전히 실행한다. 9M은 runtime model이 9M이라는 뜻이 아니다.
 
 Table 8은 soft prompt 단독의 한계를 직접 보인다.
 
@@ -1014,14 +956,14 @@ NLP의 prompt tuning은 pretrained model 전체 대신 입력에 붙인 embeddin
 |---|---:|---|
 | Standard DiT | 0.077 | X-VLA 0.041은 46.8% 낮음 |
 | MM-DiT | 0.140 | X-VLA는 70.7% 낮음; modality별 parameter 분리가 오히려 불안정 |
-| $\pi_0$-style | 0.056 | X-VLA는 26.8% 낮음; parallel action expert보다 단순 encoder가 이 recipe에서 우세 |
+| $`\pi_0`$-style | 0.056 | X-VLA는 26.8% 낮음; parallel action expert보다 단순 encoder가 이 recipe에서 우세 |
 | X-VLA | 0.041 | 최저 |
 
 저자 설명:
 
 - Standard DiT는 VLM condition 아래 action denoising을 하는 직접 baseline.
 - MM-DiT는 modality별 parameter를 분리해 attention으로 결합하지만 heterogeneous setting에서 불안정했다.
-- $\pi_0$-style은 VLM 옆에 MLP-Mixer action module을 병렬 배치해 action의 compactness를 이용하지만 복잡도가 늘어난다.
+- $`\pi_0`$-style은 VLM 옆에 MLP-Mixer action module을 병렬 배치해 action의 compactness를 이용하지만 복잡도가 늘어난다.
 
 세 모델 모두 Appendix I와 같은 preliminary setting이라고 한다. parameter count, wall-clock, seed는 표에 없다.
 
@@ -1134,8 +1076,8 @@ Figure 12. cloth-folding 실행 과정. [PDF p.23, Appendix F] · [원문 PDF](h
 | global batch | 1024 |
 | iterations | 200K |
 | optimizer | AdamW |
-| learning rate | $1\times10^{-4}$ |
-| betas | $(0.9,0.95)$ |
+| learning rate | $`1\times10^{-4}`$ |
+| betas | $`(0.9,0.95)`$ |
 | weight decay | 0.01 |
 | precision | bfloat16 |
 | image | 224×224 |
@@ -1147,7 +1089,7 @@ Figure 12. cloth-folding 실행 과정. [PDF p.23, Appendix F] · [원문 PDF](h
 
 ### 19.2 validation set
 
-AGIBOT-beta의 train-excluded trajectories에서 189 tasks×3 trajectories/task = 567 trajectories를 구성한다. 예측과 GT trajectory의 평균 $\ell_1$ error를 보고한다. 이 validation이 다른 6 source를 직접 포함하지 않으므로, 낮은 error가 모든 source의 균등 generalization을 보장하지 않는다. 저자들은 held-out AGIBOT로 cross-source sharing을 proxy한다고 본다.
+AGIBOT-beta의 train-excluded trajectories에서 189 tasks×3 trajectories/task = 567 trajectories를 구성한다. 예측과 GT trajectory의 평균 $`\ell_1`$ error를 보고한다. 이 validation이 다른 6 source를 직접 포함하지 않으므로, 낮은 error가 모든 source의 균등 generalization을 보장하지 않는다. 저자들은 held-out AGIBOT로 cross-source sharing을 proxy한다고 본다.
 
 ### 19.3 Table 10 sampling recipe
 
@@ -1170,7 +1112,7 @@ trajectory count와 290K 표기는 약 2K 차이가 난다. 데이터 버전/필
 
 [PDF p.24, Appendix H, Table 11]
 
-공통 optimizer는 pretraining과 같은 AdamW, betas, weight decay 0.01, bf16, LR $10^{-4}$이다. 첫 1,000 iterations에는 prompt+action heads만 학습하고 나머지를 freeze한다. 이어 LR을 복구하며 joint training한다.
+공통 optimizer는 pretraining과 같은 AdamW, betas, weight decay 0.01, bf16, LR $`10^{-4}`$이다. 첫 1,000 iterations에는 prompt+action heads만 학습하고 나머지를 freeze한다. 이어 LR을 복구하며 joint training한다.
 
 | benchmark | control interface | batch | steps | augmentation |
 |---|---|---:|---:|---|
@@ -1243,8 +1185,8 @@ Figure 14. real-world hardware와 camera 배치. [PDF p.26, Appendix J] · [원�
 
 | baseline/task | initialization/tuning | hardware | batch | steps/time |
 |---|---|---|---:|---|
-| $\pi_0$ cloth folding | official base, Soft-Fold full FT | 4 A100 | 32 | 150K, 약 60h |
-| $\pi_0$ PEFT | official base LoRA; PaliGemma attention+FFN rank16/alpha16, action expert rank32/alpha32 | 4 A800 | 32 | 30K, 약 7h |
+| $`\pi_0`$ cloth folding | official base, Soft-Fold full FT | 4 A100 | 32 | 150K, 약 60h |
+| $`\pi_0`$ PEFT | official base LoRA; PaliGemma attention+FFN rank16/alpha16, action expert rank32/alpha32 | 4 A800 | 32 | 30K, 약 7h |
 | ACT cloth folding | scratch, Soft-Fold | 8 A100 | 256 | 약 1M steps |
 
 X-VLA의 real-world finetuning wall-clock/hardware는 같은 표에 없어 training-cost fair comparison은 완전하지 않다. Fig.8의 task 성능 비교는 가능하지만, compute-efficiency 비교는 이 정보만으로 결론내리면 안 된다.
@@ -1375,7 +1317,7 @@ Hard에서 80 이상인 것은 Put Object Cabinet 82, Place Cans Plasticbox 85, 
   8. ||v_hat - u||^2를 역전파한다.
 ~~~
 
-이 버전에서는 모델 출력이 velocity이며, $A_0$도 loss의 확률변수다. 원문 loss의 기대값 첨자에는 $t$와 $(o,A)$만 쓰였지만 실제 Monte Carlo 학습에는 $A_0$ 샘플링이 반드시 포함되어야 한다.
+이 버전에서는 모델 출력이 velocity이며, $`A_0`$도 loss의 확률변수다. 원문 loss의 기대값 첨자에는 $`t`$와 $`(o,A)`$만 쓰였지만 실제 Monte Carlo 학습에는 $`A_0`$ 샘플링이 반드시 포함되어야 한다.
 
 ### 25.3 공개 코드가 실제로 계산하는 학습 의사코드
 
@@ -1392,7 +1334,7 @@ Hard에서 80 이상인 것은 Put Object Cabinet 82, Place Cans Plasticbox 85, 
 6. 총 loss를 역전파한다.
 ~~~
 
-즉 공개 코드는 $t=0$이 data이고 $t=1$이 noise인 convention을 쓴다. 더 중요한 차이는 $A-A_0$라는 velocity를 예측하지 않고 clean $A$를 예측한다는 점이다. 그러므로 PDF 식을 그대로 구현한 실험과 공개 checkpoint를 재현하는 실험은 별도 branch로 관리해야 한다.
+즉 공개 코드는 $`t=0`$이 data이고 $`t=1`$이 noise인 convention을 쓴다. 더 중요한 차이는 $`A-A_0`$라는 velocity를 예측하지 않고 clean $`A`$를 예측한다는 점이다. 그러므로 PDF 식을 그대로 구현한 실험과 공개 checkpoint를 재현하는 실험은 별도 branch로 관리해야 한다.
 
 ### 25.4 loss와 데이터 처리의 실제 결합
 
@@ -1414,7 +1356,7 @@ Hard에서 80 이상인 것은 Put Object Cabinet 82, Place Cans Plasticbox 85, 
 
 ### 26.1 논문에 적힌 ODE 해석
 
-PDF §2를 문자 그대로 구현하면 noise에서 data 쪽으로 $t:0\rightarrow1$을 적분한다. $\Delta t=1/K$인 explicit Euler 의사코드는 다음과 같다.
+PDF §2를 문자 그대로 구현하면 noise에서 data 쪽으로 $`t:0\rightarrow1`$을 적분한다. $`\Delta t=1/K`$인 explicit Euler 의사코드는 다음과 같다.
 
 ~~~text
 F = encode_images_and_language(o)       # 캐시 가능하다고 가정한 설명
@@ -1428,7 +1370,7 @@ for k = 0 ... K-1:
 return postprocess(A)
 ~~~
 
-원문은 이를 Euler-Maruyama라고 부르지만 표시된 update에는 확률 미분항이 없다. 식만 보면 deterministic Euler ODE solver다. 진짜 Euler-Maruyama라면 일반적으로 $\sigma(t)\sqrt{\Delta t}\,\xi$ 같은 noise increment가 추가되어야 한다.
+원문은 이를 Euler-Maruyama라고 부르지만 표시된 update에는 확률 미분항이 없다. 식만 보면 deterministic Euler ODE solver다. 진짜 Euler-Maruyama라면 일반적으로 $`\sigma(t)\sqrt{\Delta t}\,\xi`$ 같은 noise increment가 추가되어야 한다.
 
 ### 26.2 공개 구현의 iterative clean prediction
 
@@ -1447,23 +1389,23 @@ for i = K ... 1:
 return action_space.postprocess(action)
 ~~~
 
-여기에는 velocity, $\Delta t$, 누적 Euler update가 없다. 직전 clean-action estimate를 같은 초기 noise와 다시 섞어 재예측하는 deterministic loop다. 기본 API/README 예시는 $K=10$이며, 이는 **공식 코드 기본값**이지 PDF에 보고된 latency-optimal 값이 아니다.
+여기에는 velocity, $`\Delta t`$, 누적 Euler update가 없다. 직전 clean-action estimate를 같은 초기 noise와 다시 섞어 재예측하는 deterministic loop다. 기본 API/README 예시는 $`K=10`$이며, 이는 **공식 코드 기본값**이지 PDF에 보고된 latency-optimal 값이 아니다.
 
 ### 26.3 두 알고리즘이 같지 않은 이유
 
 | 질문 | 논문식 | 공개 코드 |
 |---|---|---|
-| $t=0$의 의미 | noise | data |
-| network target | velocity $A-A_0$ | clean action $A$ |
+| $`t=0`$의 의미 | noise | data |
+| network target | velocity $`A-A_0`$ | clean action $`A`$ |
 | update | 현재 state에 velocity를 누적 | fixed noise와 직전 예측을 재혼합 |
-| explicit step size | $\Delta t$ 있음 | 없음 |
+| explicit step size | $`\Delta t`$ 있음 | 없음 |
 | stochastic increment | 표시된 식에는 없음 | 없음 |
 
-둘이 특정 parameterization 아래 관련될 수는 있지만, 동일한 학습 target과 동일한 sampler라고 단정할 수 없다. 최소 재현 실험은 같은 데이터/초기화에서 두 objective를 각각 학습하고 validation L1, task success, $K$별 latency를 비교해야 한다.
+둘이 특정 parameterization 아래 관련될 수는 있지만, 동일한 학습 target과 동일한 sampler라고 단정할 수 없다. 최소 재현 실험은 같은 데이터/초기화에서 두 objective를 각각 학습하고 validation L1, task success, $`K`$별 latency를 비교해야 한다.
 
 ### 26.4 추론 edge cases
 
-- $K=1$: 공개 코드는 순수 noise에서 clean action을 한 번 예측한다. one-step distillation을 별도로 하지 않았으므로 성능 저하 정도는 실측 대상이다.
+- $`K=1`$: 공개 코드는 순수 noise에서 clean action을 한 번 예측한다. one-step distillation을 별도로 하지 않았으므로 성능 저하 정도는 실측 대상이다.
 - 잘못된 domain ID: 다른 camera/action distribution의 prompt와 heads를 고르므로 shape가 맞아도 의미가 틀릴 수 있다.
 - view 누락: image mask와 view order를 함께 검증해야 한다. 첫 view만 language encoder에 들어가므로 순서 교환은 단순 permutation이 아니다.
 - Rotate6D 두 벡터가 0/평행에 가까움: 정규직교화에서 NaN 가능성을 확인한다.
@@ -1481,7 +1423,7 @@ return action_space.postprocess(action)
 1. camera frame 최대 3개와 현재 proprioception을 timestamp와 함께 취득한다.
 2. resize, color conversion, text tokenization, normalization을 수행한다.
 3. Florence image encoder를 모든 view에 적용하고, 첫 view+language만 Florence language encoder로 융합한다.
-4. 동일 observation feature를 유지한 채 policy Transformer를 $K$회 실행한다.
+4. 동일 observation feature를 유지한 채 policy Transformer를 $`K`$회 실행한다.
 5. 30×20 action chunk를 denormalize하고 Rotate6D를 회전으로 복원하며 gripper를 이산화한다.
 6. evaluator/controller가 chunk의 일부 또는 전부를 실행한다.
 7. plan이 소진되거나 replanning 조건을 만나면 새 observation으로 다시 요청한다.
@@ -1499,17 +1441,17 @@ return action_space.postprocess(action)
 | VLA-Bench | 변환된 chunk를 queue |
 | RoboTwin-2.0 | sequence를 environment 쪽에 전달 |
 
-따라서 benchmark success는 모델만이 아니라 receding-horizon 길이 $C$, sub-sampling stride, gripper threshold의 함수다. 이 값들을 통제하지 않은 모델 간 비교는 동일한 closed-loop feedback budget을 보장하지 않는다.
+따라서 benchmark success는 모델만이 아니라 receding-horizon 길이 $`C`$, sub-sampling stride, gripper threshold의 함수다. 이 값들을 통제하지 않은 모델 간 비교는 동일한 closed-loop feedback budget을 보장하지 않는다.
 
 ### 27.3 latency와 control rate의 관계
 
-제어 주파수를 $f_c$, 한 번에 실제 실행하는 action 수를 $C$, observation-to-plan latency를 $L$이라 두자. 새 plan이 필요한 시간 간격은 대략
+제어 주파수를 $`f_c`$, 한 번에 실제 실행하는 action 수를 $`C`$, observation-to-plan latency를 $`L`$이라 두자. 새 plan이 필요한 시간 간격은 대략
 
-$$
+```math
 \text{[해설용 수식]}\qquad D_{\mathrm{refresh}}=\frac{C}{f_c}.
-$$
+```
 
-stall 없는 동작의 필요조건은 $L<D_{\mathrm{refresh}}$지만 충분조건은 아니다. camera timestamp 지연, network jitter, controller queue, action interpolation까지 포함한 p99가 deadline보다 작아야 한다. $C$를 늘리면 추론을 amortize하지만 오래된 observation에 기반한 open-loop 실행이 길어지고, $C$를 줄이면 반응성은 좋아지지만 추론 deadline이 짧아진다.
+stall 없는 동작의 필요조건은 $`L\lt D_{\mathrm{refresh}}`$지만 충분조건은 아니다. camera timestamp 지연, network jitter, controller queue, action interpolation까지 포함한 p99가 deadline보다 작아야 한다. $`C`$를 늘리면 추론을 amortize하지만 오래된 observation에 기반한 open-loop 실행이 길어지고, $`C`$를 줄이면 반응성은 좋아지지만 추론 deadline이 짧아진다.
 
 ---
 
@@ -1532,20 +1474,17 @@ stall 없는 동작의 필요조건은 $L<D_{\mathrm{refresh}}$지만 충분조�
 | peak device/unified memory | 미기재 | 배포 적합성 불명 |
 | energy per plan/thermal steady state | 미기재 | edge 효율 불명 |
 
-9M만 학습한다고 해서 inference가 300배 빨라지는 것은 아니다. PEFT는 저장할 gradient/optimizer state와 업데이트 파라미터를 줄이지만, frozen 0.9B backbone의 forward는 여전히 실행한다. 논문의 “300× fewer parameters”는 $3\mathrm{B}/9\mathrm{M}\approx333$인 **학습 파라미터 수 비교**이지 inference FLOPs나 latency 배수가 아니다.
+9M만 학습한다고 해서 inference가 300배 빨라지는 것은 아니다. PEFT는 저장할 gradient/optimizer state와 업데이트 파라미터를 줄이지만, frozen 0.9B backbone의 forward는 여전히 실행한다. 논문의 “300× fewer parameters”는 $`3\mathrm{B}/9\mathrm{M}\approx333`$인 **학습 파라미터 수 비교**이지 inference FLOPs나 latency 배수가 아니다.
 
 ### 28.2 Transformer 계산 구조
 
-sequence 길이를 $S$, hidden을 $d$, layer 수를 $N$, denoising steps를 $K$라 하면 policy core의 대략적인 항은
+sequence 길이를 $`S`$, hidden을 $`d`$, layer 수를 $`N`$, denoising steps를 $`K`$라 하면 policy core의 대략적인 항은
 
-$$
-\text{[해설용 수식]}\qquad
-\mathrm{Cost}_{policy}
-\sim
-K N\left(c_1 S d^2+c_2 S^2d\right).
-$$
+```math
+\text{[해설용 수식]}\qquad \mathrm{Cost}_{policy} \sim K N\left(c_1 S d^2+c_2 S^2d\right).
+```
 
-$Sd^2$에는 QKV/output projection과 MLP가, $S^2d$에는 dense attention이 들어간다. 여기에 observation refresh마다 Florence vision-language encoding 비용이 더해진다. 공개 구현은 VLM feature를 denoising loop 밖에서 한 번 계산하므로 $K$배 반복하지 않는다.
+$`Sd^2`$에는 QKV/output projection과 MLP가, $`S^2d`$에는 dense attention이 들어간다. 여기에 observation refresh마다 Florence vision-language encoding 비용이 더해진다. 공개 구현은 VLM feature를 denoising loop 밖에서 한 번 계산하므로 $`K`$배 반복하지 않는다.
 
 그러나 policy Transformer는 bidirectional self-attention으로 static visual/prompt tokens와 매 step 바뀌는 action tokens를 함께 업데이트한다. 따라서 autoregressive LLM처럼 static token의 모든 layer KV를 그대로 캐시하는 것은 의미 보존이 자동으로 보장되지 않는다. 안전하게 재사용 가능한 것은 현재 구현처럼 **VLM encoder 출력**이며, deeper KV cache는 attention 구조 변경과 parity 검증이 필요한 새 방법이다.
 
@@ -1554,7 +1493,7 @@ $Sd^2$에는 QKV/output projection과 MLP가, $S^2d$에는 dense attention이 �
 - camera capture 완료부터 tensor 준비까지의 CPU preprocessing
 - H2D 또는 unified-memory page migration
 - main/aux image encoding과 text-image fusion
-- policy Transformer 1회와 $K$회 누적
+- policy Transformer 1회와 $`K`$회 누적
 - Rotate6D/gripper postprocess
 - RPC serialization/network round trip
 - controller enqueue부터 actuator command timestamp까지
@@ -1604,9 +1543,9 @@ pretraining은 7 sources/5 arm types로 넓지만 prompt는 source ID lookup이�
 ### 29.5 비교의 공정성
 
 - Table 2는 각 benchmark의 공개 최고치와 X-VLA를 모은다. baseline별 pretraining data, parameter count, observation history, action horizon, controller, evaluation version이 완전히 일치하지 않는다.
-- 저자의 “5개 manipulation benchmark SOTA” 범위에서는 CALVIN 4.43이 $\pi_0$ 4.53보다 낮다. 원문은 대체로 five benchmark 문구에서 CALVIN을 성능 주장 범위 밖으로 두지만, 독자는 6개 모두를 이겼다고 확대 해석하면 안 된다.
+- 저자의 “5개 manipulation benchmark SOTA” 범위에서는 CALVIN 4.43이 $`\pi_0`$ 4.53보다 낮다. 원문은 대체로 five benchmark 문구에서 CALVIN을 성능 주장 범위 밖으로 두지만, 독자는 6개 모두를 이겼다고 확대 해석하면 안 된다.
 - Table 3의 9M 대 3B는 trainable parameters 비교다. total executed parameters, wall-clock, memory, inference latency의 공정 비교가 아니다.
-- Appendix K에는 $\pi_0$/ACT baseline compute가 있으나 X-VLA downstream wall-clock이 같은 형식으로 없다.
+- Appendix K에는 $`\pi_0`$/ACT baseline compute가 있으나 X-VLA downstream wall-clock이 같은 형식으로 없다.
 - benchmark별 chunk prefix/stride가 다르므로 closed-loop feedback 횟수를 맞춘 추가 실험이 필요하다.
 
 ### 29.6 통계와 보고의 한계
@@ -1617,10 +1556,10 @@ pretraining은 7 sources/5 arm types로 넓지만 prompt는 source ID lookup이�
 
 | 위치 | 관찰 | 영향 |
 |---|---|---|
-| §2 action chunk | $[a_n,\ldots,a_{n+T}]$를 chunk size $T$라 부름 | 표기대로면 $T+1$개인 off-by-one |
-| §2 flow loss | 기대값 첨자에 $A_0$ 샘플이 생략됨 | 실제 stochastic training 정의가 불완전 |
+| §2 action chunk | $`[a_n,\ldots,a_{n+T}]`$를 chunk size $`T`$라 부름 | 표기대로면 $`T+1`$개인 off-by-one |
+| §2 flow loss | 기대값 첨자에 $`A_0`$ 샘플이 생략됨 | 실제 stochastic training 정의가 불완전 |
 | §2 solver | noise term 없는 식을 Euler-Maruyama로 지칭 | ODE Euler와 SDE solver 혼동 |
-| Fig.6 | 선형식과 함께 $R^2=-0.925$ 인쇄 | intercept를 둔 표준 OLS의 $R^2$로는 불가능; correlation $r$ 오기 또는 $R^2=0.925$ 가능성 |
+| Fig.6 | 선형식과 함께 $`R^2=-0.925`$ 인쇄 | intercept를 둔 표준 OLS의 $`R^2`$로는 불가능; correlation $`r`$ 오기 또는 $`R^2=0.925`$ 가능성 |
 | Table 6 문장/표 | 본문은 LIBERO-Goal 50/10 demos를 말하나 표는 4 suites | 어떤 data subset을 줄였는지 모호 |
 | Table 10 | source 합이 288K, 본문은 약 290K | 데이터 manifest 필요 |
 | Table 10 | DROID-left가 두 번 인쇄 | Fig.3과 설명상 두 번째는 DROID-right로 추정 |
@@ -1732,21 +1671,21 @@ metrics:
 | image resize/normalize | CUDA/VPI 후보 | CPU copy와 color conversion 제거 효과 |
 | Florence image encoder | TensorRT FP16 기준 | 1/2/3 view dynamic shape 또는 profile 분리 |
 | main-view text fusion | TensorRT 가능성 검증 | unsupported op와 mask semantics |
-| shared projection + 24-layer policy | TensorRT FP16 기준 | $S$ 고정, prompt/domain gather, attention kernel |
-| $K$-step loop | host loop 뒤 CUDA Graph 후보 | launch overhead와 fixed shape |
+| shared projection + 24-layer policy | TensorRT FP16 기준 | $`S`$ 고정, prompt/domain gather, attention kernel |
+| $`K`$-step loop | host loop 뒤 CUDA Graph 후보 | launch overhead와 fixed shape |
 | Rotate6D/gripper/postprocess | fused CUDA 또는 CPU | NaN, threshold, controller format parity |
 
-VLM feature는 $K$회 loop 밖에서 한 번만 계산한다. 반면 policy Transformer의 layer-wise KV cache는 static token도 action token을 양방향으로 읽기 때문에 그대로 재사용하지 않는다. KV cache를 도입한다면 cross-attention 형태로 재설계한 별도 모델로 취급하고 재학습/성능 검증한다.
+VLM feature는 $`K`$회 loop 밖에서 한 번만 계산한다. 반면 policy Transformer의 layer-wise KV cache는 static token도 action token을 양방향으로 읽기 때문에 그대로 재사용하지 않는다. KV cache를 도입한다면 cross-attention 형태로 재설계한 별도 모델로 취급하고 재학습/성능 검증한다.
 
 ### 31.3 실험 축
 
 | 축 | 후보 | 고정해야 할 것 |
 |---|---|---|
-| denoise steps $K$ | 10, 6, 4, 2, 1 | 동일 noise seeds, checkpoint, controller |
+| denoise steps $`K`$ | 10, 6, 4, 2, 1 | 동일 noise seeds, checkpoint, controller |
 | precision | FP16 기준; BF16, FP8, weight-only INT8/4-bit 후보 | calibration set/source 비율 |
 | views | 3, 2, 1 | camera order와 task set |
 | image resolution | 224 기준; auxiliary 192/160 후보 | main view는 별도 ablation |
-| executed chunk $C$ | 1, 5, 10, 20, 30 | control Hz와 stride |
+| executed chunk $`C`$ | 1, 5, 10, 20, 30 | control Hz와 stride |
 | backend | eager PyTorch, compiled PyTorch, TensorRT | 동일 preprocessing/postprocess |
 | power | 장치가 제공하는 고정 power mode들 | clocks, fan, ambient temperature |
 
@@ -1758,7 +1697,7 @@ precision은 한 번에 전부 낮추지 않는다. prompt/action heads, input/o
 
 - 50회 warm-up 뒤 최소 1,000 policy requests의 p50/p95/p99/max
 - CPU timestamp 기준 camera-ready to first-action
-- CUDA event 기준 preprocessing, VLM, policy 1회, $K$회, postprocess
+- CUDA event 기준 preprocessing, VLM, policy 1회, $`K`$회, postprocess
 - cold-start model load/engine build와 steady-state를 분리
 - actions/s와 plan refresh Hz
 - peak unified memory, page migration/fault, OOM 여부
@@ -1767,26 +1706,26 @@ precision은 한 번에 전부 낮추지 않는다. prompt/action heads, input/o
 - simulation success와 실제 robot success, intervention, safety stop
 - deadline miss rate와 frame age
 
-제어 deadline은 임의의 “30 Hz 모델” 가정 대신 §27의 $D_{\mathrm{refresh}}=C/f_c$로 정한다. 제안 gate는 p99 end-to-end가 $0.8D_{\mathrm{refresh}}$ 이하이고 deadline miss가 0.1% 이하인 configuration만 physical pilot로 넘기는 것이다. 이는 논문 기준이 아니라 안전 margin을 둔 **제안 기준**이다.
+제어 deadline은 임의의 “30 Hz 모델” 가정 대신 §27의 $`D_{\mathrm{refresh}}=C/f_c`$로 정한다. 제안 gate는 p99 end-to-end가 $`0.8D_{\mathrm{refresh}}`$ 이하이고 deadline miss가 0.1% 이하인 configuration만 physical pilot로 넘기는 것이다. 이는 논문 기준이 아니라 안전 margin을 둔 **제안 기준**이다.
 
 ### 31.5 순차 최적화와 중단 기준
 
 1. **Parity baseline**: workstation과 Thor FP16에서 동일 1,000 observations, 동일 noise seed의 action을 비교한다. shape/mask/gripper bit가 다르면 최적화를 중단한다.
-2. **Profile baseline**: $K=10$, 224, 3 views, eager와 TensorRT 후보의 component latency를 잰다. 병목을 측정하기 전에는 quantization을 시작하지 않는다.
-3. **Step sweep**: $K=10\rightarrow6\rightarrow4\rightarrow2\rightarrow1$. latency 감소와 validation/simulation success를 함께 그린다.
+2. **Profile baseline**: $`K=10`$, 224, 3 views, eager와 TensorRT 후보의 component latency를 잰다. 병목을 측정하기 전에는 quantization을 시작하지 않는다.
+3. **Step sweep**: $`K=10\rightarrow6\rightarrow4\rightarrow2\rightarrow1`$. latency 감소와 validation/simulation success를 함께 그린다.
 4. **Precision ladder**: 큰 linear/attention부터 FP8/INT8/4-bit 후보를 적용하고 layer-wise cosine error와 최종 action error를 확인한다.
 5. **Visual ablation**: auxiliary resolution/view 수를 줄이되 wrist-dependent fine manipulation task와 scene-level task를 분리한다.
 6. **Scheduling**: fixed shapes, CUDA Graph, preallocated buffers, camera double buffering, controller thread 분리를 적용한다.
 7. **Thermal soak**: 목표 power mode에서 30분 이상 반복하고 clock/latency drift를 기록한다.
 8. **Closed-loop pilot**: simulation/hardware-in-the-loop 뒤 low-speed real robot, safety cage, workspace limit, emergency stop 순으로 확장한다.
 
-각 최적화는 FP16 baseline 대비 연속 action 오차, gripper disagreement, task success 차이의 95% interval을 보고한다. 제안상 normalized continuous max error $10^{-3}$과 gripper bit 완전 일치를 먼저 software parity gate로 쓰되, 실제 허용 오차는 robot의 단위·controller resolution·safety envelope에 맞춰 다시 정의해야 한다. success가 2 percentage points 이상 낮아지거나 interval이 사전 허용치를 벗어나면 해당 optimization을 채택하지 않는다.
+각 최적화는 FP16 baseline 대비 연속 action 오차, gripper disagreement, task success 차이의 95% interval을 보고한다. 제안상 normalized continuous max error $`10^{-3}`$과 gripper bit 완전 일치를 먼저 software parity gate로 쓰되, 실제 허용 오차는 robot의 단위·controller resolution·safety envelope에 맞춰 다시 정의해야 한다. success가 2 percentage points 이상 낮아지거나 interval이 사전 허용치를 벗어나면 해당 optimization을 채택하지 않는다.
 
 ### 31.6 가장 가능성 높은 우선순위
 
 1. 공개 코드에 이미 있는 VLM-once 재사용을 보존한다.
 2. fixed input shapes와 TensorRT-compatible attention/GEMM을 먼저 검증한다.
-3. $K$ 감소가 가장 직접적인 policy 반복 비용 절감이므로 accuracy-latency frontier를 먼저 얻는다.
+3. $`K`$ 감소가 가장 직접적인 policy 반복 비용 절감이므로 accuracy-latency frontier를 먼저 얻는다.
 4. source prompt 자체는 32K parameters라 압축 우선순위가 낮다.
 5. LoRA merge는 runtime graph 단순화에는 유리할 수 있지만 total backbone forward를 줄이지는 않는다.
 6. Python HTTP/JSON image serialization이 남으면 accelerator 최적화 뒤에도 end-to-end가 느릴 수 있으므로 shared memory 또는 in-process API를 별도 비교한다.
@@ -1828,21 +1767,21 @@ precision은 한 번에 전부 낮추지 않는다. prompt/action heads, input/o
     아니다. t-SNE는 neighborhood 시각화이고 정량 disentanglement test가 아니다.
 
 11. **“SOTA라고 했으므로 모든 suite의 모든 지표를 이겼다.”**  
-    아니다. CALVIN은 $\pi_0$보다 낮고, 각 benchmark 비교 조건도 완전히 동일하지 않다.
+    아니다. CALVIN은 $`\pi_0`$보다 낮고, 각 benchmark 비교 조건도 완전히 동일하지 않다.
 
 12. **“standard Transformer라서 edge에서도 빠르다.”**  
-    아니다. simplicity는 구현 장점이지만 0.9B, multi-view VLM, $K$회 policy pass의 실제 latency는 측정해야 한다.
+    아니다. simplicity는 구현 장점이지만 0.9B, multi-view VLM, $`K`$회 policy pass의 실제 latency는 측정해야 한다.
 
 ### 32.2 개념 확인 Q&A
 
 **Q1. soft prompt가 action head보다 앞에서 heterogeneity를 처리한다는 의미는?**  
 A. prompt가 전체 self-attention sequence에 들어가므로 image/language/control representation이 fusion되는 동안부터 source context를 제공한다. action head는 마지막 출력 변환만 바꾼다.
 
-**Q2. prompt $P_i\in\mathbb R^{32\times1024}$가 “hardware”만 담는가?**  
+**Q2. prompt $`P_i\in\mathbb R^{32\times1024}`$가 “hardware”만 담는가?**  
 A. 보장되지 않는다. source ID와 함께 변하는 camera, scene, task, controller, sampling frequency도 담을 수 있다.
 
-**Q3. $A^t=(1-t)A^0+tA$에서 target velocity가 왜 $A-A^0$인가?**  
-A. $t$로 미분하면 $\frac{dA^t}{dt}=A-A^0$이기 때문이다. 직선 OT path에서는 $t$와 무관한 일정한 velocity다.
+**Q3. $`A^t=(1-t)A^0+tA`$에서 target velocity가 왜 $`A-A^0`$인가?**  
+A. $`t`$로 미분하면 $`\frac{dA^t}{dt}=A-A^0`$이기 때문이다. 직선 OT path에서는 $`t`$와 무관한 일정한 velocity다.
 
 **Q4. behavior cloning과 flow matching은 경쟁하는 별개 목표인가?**  
 A. 여기서는 flow matching이 action-chunk behavior cloning을 구현하는 생성 parameterization이다. demonstration의 conditional action distribution을 noise-to-action flow로 학습한다.
@@ -1905,15 +1844,15 @@ A. published claim을 검증하려면 PDF식 velocity flow branch와 official-ch
 
 원문은 equation number를 부여하지 않는다. PDF p.3, §2의 수학 표현을 등장 순서대로 모두 다뤘다.
 
-- dataset/trajectory 정의 $\mathcal D=\{\tau_j\}$와 $\tau_j=\{(o_n,a_n)\}$: §7.1
-- action chunk $A_n=[a_n,\ldots,a_{n+T}]$: §7.2
-- behavior-cloning loss $\mathcal L_{\mathrm{BC}}$: §7.3
-- Gaussian initial action $A^0\sim\mathcal N(0,I)$: §7.4
-- velocity field $v_\theta(A^t,o,t)$: §7.4
-- Euler update $A^{t+\Delta t}=A^t+v_\theta\Delta t$: §7.5
-- OT interpolation $A^t=(1-t)A^0+tA$: §7.6
-- flow-matching BC loss $\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}$: §7.7
-- heterogeneous mixture $\mathcal D^H=\{\mathcal D_i\}$와 hardware mapping: §7.8, §8
+- dataset/trajectory 정의 $`\mathcal D=\{\tau_j\}`$와 $`\tau_j=\{(o_n,a_n)\}`$: §7.1
+- action chunk $`A_n=[a_n,\ldots,a_{n+T}]`$: §7.2
+- behavior-cloning loss $`\mathcal L_{\mathrm{BC}}`$: §7.3
+- Gaussian initial action $`A^0\sim\mathcal N(0,I)`$: §7.4
+- velocity field $`v_\theta(A^t,o,t)`$: §7.4
+- Euler update $`A^{t+\Delta t}=A^t+v_\theta\Delta t`$: §7.5
+- OT interpolation $`A^t=(1-t)A^0+tA`$: §7.6
+- flow-matching BC loss $`\mathcal L^{\mathrm{FM}}_{\mathrm{BC}}`$: §7.7
+- heterogeneous mixture $`\mathcal D^H=\{\mathcal D_i\}`$와 hardware mapping: §7.8, §8
 
 그 밖의 attention, Rotate6D, loss decomposition, sequence length, latency/deadline 식은 원문 누락 부분을 설명하기 위한 **해설용 수식**으로 각각 표시했다.
 
@@ -1942,8 +1881,8 @@ A. published claim을 검증하려면 PDF식 velocity flow branch와 official-ch
 |---|---|---|
 | Table 1 | 누적 ablation | §11.1 |
 | Table 2 | 6 simulation benchmark 종합 | §11.4 |
-| Table 3 | 9M PEFT 대 $\pi_0$ | §11.6 |
-| Table 4 | DiT/MM-DiT/$\pi_0$-style/ours architecture | §16.1 |
+| Table 3 | 9M PEFT 대 $`\pi_0`$ | §11.6 |
+| Table 4 | DiT/MM-DiT/$`\pi_0`$-style/ours architecture | §16.1 |
 | Table 5 | multi-source 대 single-source | §16.2 |
 | Table 6 | 50 대 10 demonstrations | §16.3 |
 | Table 7 | prediction window | §16.4 |
@@ -1986,7 +1925,7 @@ PDF 27쪽 전체를 text extraction하고 144 DPI로 렌더해 페이지 구조�
 - downstream X-VLA의 hardware, wall-clock, peak memory
 - inference step 수를 포함한 benchmark별 exact server configuration
 - real-world control Hz, camera-to-action latency, safety/intervention protocol
-- Fig.6의 음수 $R^2$, Table 6의 대상 suite, Table 18 집계 차이의 저자 의도
+- Fig.6의 음수 $`R^2`$, Table 6의 대상 suite, Table 18 집계 차이의 저자 의도
 
 따라서 이 리뷰는 **논문의 구조·수식·보고 수치와 공개 코드의 실행 의미를 분리해 이해하기 위한 상세 해설**이며, 미보고 deployment 성능을 보충해서 주장하지 않는다.
 

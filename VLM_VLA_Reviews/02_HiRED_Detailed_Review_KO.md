@@ -180,19 +180,19 @@ LLaVA-NeXT 계열의 전형적인 고해상도 경로는 다음과 같다. [PDF 
 
 ViT self-attention의 한 head에서 입력 hidden state를 `X in R^{(N_ViT+1) x d_v}`라 하자. 첫 행이 CLS, 나머지가 patch다. [해설용 수식]
 
-$$
+```math
 Q_h = XW_h^Q,\qquad K_h = XW_h^K,
-$$
+```
 
-$$
+```math
 A_h = \operatorname{softmax}\left(\frac{Q_hK_h^\top}{\sqrt{d_h}}\right).
-$$
+```
 
 `A_h`의 shape은 `(N_ViT+1) x (N_ViT+1)`이다. 이 중 논문이 쓰는 값은 CLS가 query이고 patch `j`가 key인 행 원소다.
 
-$$
+```math
 a_{l,h}^{p_i}[j] = A_{l,h}^{p_i}[\mathrm{CLS},j].
-$$
+```
 
 행 softmax이므로 CLS 행 전체 합은 1이지만, patch 부분만 떼면 CLS-to-CLS 질량을 제외해 합이 1보다 작을 수 있다. 여러 head를 **더한다**는 것은 평균과 ranking이 같지만 score의 절대 범위는 달라진다. 모든 head를 같은 양의 상수 `1/H`로 나누더라도 Eq.(1)의 비율과 Eq.(2)의 top-k 순위는 변하지 않으므로, 합과 평균은 이 두 용도에서 이론적으로 동등하다. 단, "No agg"처럼 한 head만 쓰거나 head별 선택을 별도로 하는 것은 동등하지 않다.
 
@@ -200,9 +200,9 @@ $$
 
 LLM prefix 길이를 `S = S_text + S_visual`이라 하면 dense prefill self-attention의 score 계산은 layer당 대략 `O(S^2 d)`이고, MLP 및 projection 부분은 `O(S d^2)`다. decode 시 새 token 하나의 attention은 cached prefix에 대해 `O(Sd)`이며 KV cache 저장량은 대략 다음에 비례한다. [해설용 수식]
 
-$$
+```math
 M_{KV} \propto 2 \times L_{LLM} \times B \times S \times d_{KV} \times \text{bytes-per-element}.
-$$
+```
 
 HiRED는 `S_visual`을 줄여 LLM prefill, decode attention, KV cache를 줄인다. 하지만 **모든 partition의 ViT는 원래 길이로 이미 실행된다.** 그러므로 "전체 모델 FLOPs가 80% 감소"라고 읽으면 틀리다. 어느 부분이 얼마나 지배적인지는 모델, 이미지 partition 수, output length, kernel 구현에 달려 있다.
 
@@ -337,17 +337,15 @@ Table 3은 task마다 "높을수록 좋음"인 기본 LMMS-EVAL metric을 보고
 
 PruMerge+는 transcription 평균 token 비율이 55%인데도 HiRED-20%보다 TextVQA와 DocVQA가 낮다. 저자가 말한 11%, 26% lower는 상대 감소다. [리뷰어 재계산]
 
-$$
-\frac{61.4-54.4}{61.4}=11.40\%,\qquad
-\frac{60.8-44.6}{60.8}=26.64\%.
-$$
+```math
+\frac{61.4-54.4}{61.4}=11.40\%,\qquad \frac{60.8-44.6}{60.8}=26.64\%.
+```
 
 PruMerge 10%도 각각 `13%`, `37%` lower라는 서술과 맞는다.
 
-$$
-\frac{61.4-53.5}{61.4}=12.87\%,\qquad
-\frac{60.8-37.8}{60.8}=37.83\%.
-$$
+```math
+\frac{61.4-53.5}{61.4}=12.87\%,\qquad \frac{60.8-37.8}{60.8}=37.83\%.
+```
 
 ### 5.10 §5.2 Inference Efficiency
 
@@ -400,9 +398,9 @@ References는 PDF p.8-9에 있다. 이 리뷰는 참고문헌별 서평을 만�
 
 Algorithm 1 line 1의 입력은 다음과 같다. [PDF p.4, Algorithm 1]
 
-$$
+```math
 N_{\mathrm{budget}},\ N_{\mathrm{ViT}},\ \alpha,\ k,\ l_{\mathrm{init}},\ l_{\mathrm{final}},\ H,\ T_{p_i},\ \{a_{l,h}^{p_i}[j]\}.
-$$
+```
 
 - `N_budget`: 이번 sample이 LLM에 보낼 수 있는 visual-token 총 상한이다.
 - `N_ViT`: partition 하나의 후보 patch token 수다.
@@ -423,9 +421,9 @@ $$
 
 원문 비번호 식. Full-image 예산과 crop 공동 예산을 정하는 Algorithm 1 lines 2-3. 다음 §6.3의 뺄셈도 함께 발췌했다. [PDF p.4, §4.2; 출판본](https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326#page=4)
 
-$$
+```math
 N_{p_0}=\left\lfloor \alpha N_{\mathrm{budget}}\right\rfloor.
-$$
+```
 
 **연산 순서:** 실수 비율 `alpha`와 정수 총예산을 곱하고 floor로 내린다. `alpha=0.5`, `N_budget=101`이면 `N_{p_0}=floor(50.5)=50`이다.
 
@@ -435,9 +433,9 @@ $$
 
 ### 6.3 Algorithm line 3: 모든 crop의 공동 budget
 
-$$
+```math
 N_{\mathrm{sub}}=N_{\mathrm{budget}}-N_{p_0}.
-$$
+```
 
 이 값은 특정 crop의 budget이 아니라 `p_1...p_k`가 나눠 갖는 pool이다. 위 101-token 예에서는 `51`이다. 이 뺄셈 덕분에 full-image floor로 사라진 0.5가 정수 budget에서 유실되지 않고 crop pool로 간다.
 
@@ -451,14 +449,9 @@ $$
 
 원문 Eq. (1). Crop별 visual content score의 인쇄 수식과 식 번호. [PDF p.5, §4.2; 출판본](https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326#page=5)
 
-$$
-s_{p_i}:=
-\sum_{j\in T_{p_i}}
-\sum_{h=1}^{H}
-a_{l_{\mathrm{init}},h}^{p_0}[j],
-\qquad \forall i\in\{1,2,\ldots,k\}.
-\tag{1}
-$$
+```math
+s_{p_i}:= \sum_{j\in T_{p_i}} \sum_{h=1}^{H} a_{l_{\mathrm{init}},h}^{p_0}[j], \qquad \forall i\in\{1,2,\ldots,k\}. \qquad\text{(1)}
+```
 
 #### 항을 한 줄씩 읽기
 
@@ -475,9 +468,9 @@ $$
 
 Figure 4의 normalized score를 그대로 쓰면 다음과 같다.
 
-$$
+```math
 (s_{p_1},s_{p_2},s_{p_3},s_{p_4})=(0.32,0.08,0.58,0.02).
-$$
+```
 
 합은 1이며, `N_budget=100`, `alpha=0.5`이면 `N_sub=50`이다. 각 crop quota는 다음 절의 비번호 식으로 나온다.
 
@@ -497,31 +490,23 @@ $$
 
 원문 비번호 식. Algorithm 1 line 8의 정수 예산 배분. Crop 반복문의 범위를 보여 주는 원래 주석과 lines 7-9를 함께 발췌했다. [PDF p.4, §4.2; 출판본](https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326#page=4)
 
-$$
-N_{p_i}:=left\lfloor
-N_{\mathrm{sub}}\cdot
-\frac{s_{p_i}}{\sum_{j=1}^{k}s_{p_j}}
-\right\rfloor.
-$$
+```math
+N_{p_i}:=\left\lfloor N_{\mathrm{sub}}\cdot \frac{s_{p_i}}{\sum_{j=1}^{k}s_{p_j}} \right\rfloor.
+```
 
 `j`가 Eq.(1)의 patch index와 재사용되어 혼동될 수 있다. 여기 denominator의 `j=1...k`는 **crop index**다.
 
 Figure 4의 예에서는 다음과 같다.
 
-$$
-\begin{aligned}
-N_{p_1}&=\lfloor 50\cdot0.32\rfloor=16,\\
-N_{p_2}&=\lfloor 50\cdot0.08\rfloor=4,\\
-N_{p_3}&=\lfloor 50\cdot0.58\rfloor=29,\\
-N_{p_4}&=\lfloor 50\cdot0.02\rfloor=1.
-\end{aligned}
-$$
+```math
+\begin{aligned} N_{p_1}&=\lfloor 50\cdot0.32\rfloor=16,\\ N_{p_2}&=\lfloor 50\cdot0.08\rfloor=4,\\ N_{p_3}&=\lfloor 50\cdot0.58\rfloor=29,\\ N_{p_4}&=\lfloor 50\cdot0.02\rfloor=1. \end{aligned}
+```
 
 합이 정확히 50이라 예쁘게 맞지만 항상 그렇지는 않다. `N_sub=10`, 세 crop 비율이 `1/3`씩이면 모두 3이 되어 합은 9다. [해설용 수식]
 
-$$
+```math
 \sum_i\left\lfloor N_{\mathrm{sub}}r_i\right\rfloor\le N_{\mathrm{sub}}.
-$$
+```
 
 **[논문 미기재]** 남은 1개를 largest-remainder 방식으로 누구에게 줄지 정의하지 않는다. 따라서 Algorithm 1이 엄밀히 보장하는 것은 `sum_i N_{p_i} <= N_sub`, 즉 상한 준수이지 exact utilization이 아니다. 공개 코드도 `.int()` truncation 뒤 remainder를 재배분하지 않는다.
 
@@ -537,17 +522,13 @@ $$
 
 원문 Eq. (2). Partition 내부 feature importance의 인쇄 수식과 식 번호. [PDF p.5, §4.2; 출판본](https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326#page=5)
 
-$$
-f^{p_i}[j]:=
-\sum_{h=1}^{H}
-a_{l_{\mathrm{final}},h}^{p_i}[j],
-\tag{2}
-$$
+```math
+f^{p_i}[j]:= \sum_{h=1}^{H} a_{l_{\mathrm{final}},h}^{p_i}[j], \qquad\text{(2)}
+```
 
-$$
-\forall i\in\{0,1,\ldots,k\},\qquad
-\forall j\in\{1,2,\ldots,N_{\mathrm{ViT}}\}.
-$$
+```math
+\forall i\in\{0,1,\ldots,k\},\qquad \forall j\in\{1,2,\ldots,N_{\mathrm{ViT}}\}.
+```
 
 #### Eq.(1)과 다른 점
 
@@ -560,9 +541,9 @@ $$
 
 어떤 partition의 token A에 대한 네 head attention이 `(0.40,0.10,0.05,0.25)`, token B가 `(0.10,0.20,0.15,0.10)`이라면 다음과 같다.
 
-$$
+```math
 f[A]=0.80,\qquad f[B]=0.55.
-$$
+```
 
 budget이 1이면 A를 남긴다. 실제 H는 공개 구현에서 16이고, `topk`로 가장 큰 `N_{p_i}`개 index를 선택한다.
 
@@ -585,9 +566,9 @@ budget이 1이면 A를 남긴다. 실제 H는 공개 구현에서 16이고, `top
 
 **[공개 코드 확인, commit `c5978a...`]** LLaVA-NeXT 구현은 ViT encoder layer 0과 22의 `q_proj`, `k_proj`에 forward hook을 단다. Q/K를 `[B_partitions,H,N_all,d_h]`로 reshape한 뒤 다음 attention을 재계산한다. [공식 구현 lines 46-96](https://github.com/hasanar1f/HiRED/blob/c5978a580c88596699c9067ebed031fe4647e818/transformers/src/transformers/models/llava_next/modeling_llava_next.py#L46-L96)
 
-$$
+```math
 A=\operatorname{softmax}\left(QK^\top d_h^{-1/2}\right).
-$$
+```
 
 그 뒤 `[:, :, 0, -N_ViT:]`를 취한다. 즉 query index 0인 CLS 행, 마지막 576 key 위치인 patch 부분이며, head dimension은 합산한다. layer index는 정확히 0과 22, head 수는 16으로 hard-code되어 있다. Figure 3은 `Layer 22-23`을 함께 시각화하지만 Algorithm 1과 공개 코드는 selection에 **layer 22만** 쓴다. 따라서 본문의 "final layer"는 느슨한 서술이며 "물리적으로 가장 마지막 index 23을 쓴다"고 바꾸어 읽으면 안 된다. PDF p.5의 문장도 `(l_final = 22` 뒤 닫는 괄호가 빠진 듯 조판되어 있는데, 원문 표기는 그대로 두고 Eq.(2)와 코드가 지시하는 해석을 채택한다. [공식 구현 lines 535-563](https://github.com/hasanar1f/HiRED/blob/c5978a580c88596699c9067ebed031fe4647e818/transformers/src/transformers/models/llava_next/modeling_llava_next.py#L535-L563)
 
@@ -601,12 +582,9 @@ $$
 
 즉 코드가 실제로 쓰는 content score는 다음에 가깝다. [해설용 수식, 원문 식 아님]
 
-$$
-\tilde{s}_{p_i}=
-\sum_{j\in T_{p_i}}
-\mathbf{1}\left[j\in\operatorname{Top100}
-\left(\sum_h a_{l_{init},h}^{p_0}\right)\right].
-$$
+```math
+\tilde{s}_{p_i}= \sum_{j\in T_{p_i}} \mathbf{1}\left[j\in\operatorname{Top100} \left(\sum_h a_{l_{init},h}^{p_0}\right)\right].
+```
 
 이는 raw attention mass가 아니라 "초기층 top-100 salient 위치 중 이 구역에 몇 개가 있는가"다. 두 방법은 ranking과 분포가 달라질 수 있다. 예를 들어 한 crop에 매우 큰 attention 하나가 있고 다른 crop에 중간 attention 여러 개가 있으면 Eq.(1)과 binary count가 다른 quota를 줄 수 있다. 리뷰는 이를 조용히 동일시하지 않는다.
 
@@ -637,10 +615,9 @@ LLaVA-NeXT는 configured `vision_feature_layer`의 hidden state를 고르고 def
 
 따라서 공개 high-resolution 구현에서 실제 drop 위치는:
 
-$$
-\text{full ViT} \rightarrow \text{feature layer selection} \rightarrow
-\text{projector for all tokens} \rightarrow \text{HiRED mask} \rightarrow \text{LLM}.
-$$
+```math
+\begin{aligned} \text{full ViT} &\rightarrow \text{feature layer selection}\\ &\rightarrow \text{projector for all tokens}\\ &\rightarrow \text{HiRED mask} \rightarrow \text{LLM}. \end{aligned}
+```
 
 논문 Figure 1/4의 개념도만 보면 patch 선택을 projector 전에 할 수도 있어 보이지만, 공개 LLaVA-NeXT 코드는 projector 뒤다. 반면 공개 low-resolution LLaVA 구현은 selected ViT feature에 mask를 적용한 뒤 projector를 실행한다. 구현 경로별 차이를 기록해야 한다.
 
@@ -648,14 +625,13 @@ $$
 
 drop 전 후보는 `5x576=2880`개다.
 
-$$
+```math
 N_{budget}=\lfloor 2880\times0.2\rfloor=576.
-$$
+```
 
-$$
-N_{p_0}=\lfloor576\times0.5\rfloor=288,
-\qquad N_{sub}=288.
-$$
+```math
+N_{p_0}=\lfloor576\times0.5\rfloor=288, \qquad N_{sub}=288.
+```
 
 full-image는 layer 22 aggregated CLS attention 상위 288개를 남긴다.
 
@@ -663,10 +639,9 @@ full-image는 layer 22 aggregated CLS attention 상위 288개를 남긴다.
 
 논문 식을 따르는 예시로 normalized content ratio가 `(0.32,0.08,0.58,0.02)`라면 다음과 같다.
 
-$$
-(N_{p_1},N_{p_2},N_{p_3},N_{p_4})
-=(92,23,167,5),
-$$
+```math
+(N_{p_1},N_{p_2},N_{p_3},N_{p_4}) =(92,23,167,5),
+```
 
 왜냐하면 `(floor(92.16), floor(23.04), floor(167.04), floor(5.76))`이기 때문이다. 합은 287이므로 1 token이 floor 때문에 사용되지 않는다. 최종 selected count는 `288+287=575`, budget 576 이하가 된다.
 
@@ -911,9 +886,9 @@ KV cache 절감은 batch와 output length가 커질수록 커질 수 있으나, 
 
 이 논문에는 action chunk, policy refresh, control frequency, environment step이 없다. static image와 textual answer를 다룬다. 따라서 VLA 배포로 연결할 때 다음을 새로 정의해야 한다.
 
-$$
+```math
 f_{control}=\frac{1}{\text{per-policy-call latency}/C}
-$$
+```
 
 여기서 `C`는 한 policy call이 내는 action chunk 길이라는 [해설용 수식]일 뿐 HiRED 원문 식이 아니다. HiRED의 TTFT 개선을 곧바로 robot control Hz 개선으로 바꾸면 안 된다.
 

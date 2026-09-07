@@ -101,8 +101,8 @@
 1. **0.5B는 전체 모델 크기가 아니다.** Table 5/6의 `Params=0.5`는 backbone scale이다. DINOv2, SigLIP, multimodal projector, ActionQuery, Policy를 모두 합친 전체 추론 파라미터 수는 논문이 보고하지 않는다. 부록 F2는 Policy trainable 97.3M, VLA-Adapter 전체 trainable 197.2M을 별도로 보고한다.
 2. **“로봇 사전학습 없음”은 “로봇 데이터로 학습하지 않음”이 아니다.** Qwen2.5-0.5B 기반 Prismatic VLM은 대규모 embodied/robot pretraining을 받지 않았지만, 각 downstream LIBERO/CALVIN 로봇 demonstration으로 최대 150,000 step fine-tuning한다.
 3. **기본 action head는 flow matching이 아니다.** 출판본의 선택 모델은 L1 regression Policy다. 부록 B는 noise-prediction diffusion/DiT 대안을 짧게 다루지만 성능이 낮아 채택하지 않았다. 공식 저장소도 flow matching을 향후 업데이트 항목으로 둔다.
-4. **219.2 Hz는 로봇 제어 loop 주파수로 읽으면 안 된다.** 8-step chunk를 0.0365초에 생성했기 때문에 $8/0.0365=219.18$ action-vectors/s가 된다. 한 chunk를 만드는 policy refresh rate는 $1/0.0365=27.40$ calls/s이며, 실제 servo 주파수와 chunk를 몇 step 실행한 뒤 재계획하는지는 보고되지 않았다.
-5. **Bridge Attention의 핵심은 두 condition의 역할 분리다.** ActionQuery+proprioception은 완전히 주입하고, Raw branch만 $\tanh(g)$로 0에서 시작해 선택적으로 연다. 이 설계가 Table 8에서 95.0%로 가장 좋다.
+4. **219.2 Hz는 로봇 제어 loop 주파수로 읽으면 안 된다.** 8-step chunk를 0.0365초에 생성했기 때문에 $`8/0.0365=219.18`$ action-vectors/s가 된다. 한 chunk를 만드는 policy refresh rate는 $`1/0.0365=27.40`$ calls/s이며, 실제 servo 주파수와 chunk를 몇 step 실행한 뒤 재계획하는지는 보고되지 않았다.
+5. **Bridge Attention의 핵심은 두 condition의 역할 분리다.** ActionQuery+proprioception은 완전히 주입하고, Raw branch만 $`\tanh(g)`$로 0에서 시작해 선택적으로 연다. 이 설계가 Table 8에서 95.0%로 가장 좋다.
 6. **“all-layer가 좋다”는 LIBERO-Long의 이 실험 범위에서의 결론이다.** 다른 로봇, 카메라 수, action horizon, VLM 깊이에서도 항상 이긴다는 증명은 없다. all-layer hidden tap이 만드는 메모리와 bandwidth 비용도 별도로 측정하지 않았다.
 
 ---
@@ -143,7 +143,7 @@ Frozen 설정은 더 날카로운 실패를 보인다. 같은 LIBERO-Long에서 
 |---|---|---|---|
 | 마지막 층 raw feature만으로 작은 비로봇 VLM의 action mapping이 약함 | 어느 VLM 층이 Policy에 가장 유효한가? | raw feature는 중간 층에 세부 정보가 더 남는다 | single-layer와 all-layer raw condition 비교 |
 | raw feature는 task-relevant 정보의 선택이 어렵고 sequence가 김 | 학습 가능한 ActionQuery가 더 좋은 interface인가? | 깊은 ActionQuery가 앞선 시각·언어 문맥을 모아 action-oriented summary가 된다 | 64개 ActionQuery를 입력 sequence에 삽입하고 매 층 hidden state를 추출 |
-| raw와 ActionQuery 중 하나만 쓰면 특정 hard task에서 손실 | 둘을 어떻게 함께 쓸 것인가? | ActionQuery는 항상 강하게, raw는 필요한 만큼만 주입해야 한다 | 두 cross-attention+self-attention, raw branch에 zero-init $\tanh(g)$ gate |
+| raw와 ActionQuery 중 하나만 쓰면 특정 hard task에서 손실 | 둘을 어떻게 함께 쓸 것인가? | ActionQuery는 항상 강하게, raw는 필요한 만큼만 주입해야 한다 | 두 cross-attention+self-attention, raw branch에 zero-init $`\tanh(g)`$ gate |
 | 큰 VLM/로봇 pretraining은 비용이 큼 | bridge를 개선하면 작은 backbone으로 성능을 유지할 수 있는가? | action interface가 충분하면 0.5B backbone도 경쟁 가능 | Qwen2.5-0.5B Prismatic VLM, 24-layer Policy, LoRA fine-tuning |
 | diffusion head는 반복 denoising으로 느릴 수 있음 | 단순 회귀 head로 충분한가? | downstream fine-tuning action은 중복이 적어 L1이 유리할 수 있다 | 주 모델은 1-pass L1 Policy, DiT는 부록 비교로 제한 |
 
@@ -170,7 +170,7 @@ Frozen 설정은 더 날카로운 실패를 보인다. 같은 LIBERO-Long에서 
 | 중간 raw layer가 깊은 raw layer보다 대체로 낫다 | Fig.4, Table C1: layer 9 평균 89.8, layer 24 평균 85.8 | LIBERO-Long, 이 backbone/Policy 설정 | layer 13은 88.4이고 layer별 변동이 task-dependent하다. 다른 benchmark 검증 없음 |
 | 깊은 ActionQuery가 얕은 ActionQuery보다 대체로 낫다 | Table C2: layer 1 78.2, layer 24 90.2 | LIBERO-Long, 64 ActionQuery | layer 13이 76.6으로 layer 1보다 낮아 단조 증가가 아니다 |
 | all-layer condition이 single-layer보다 낫다 | raw 90.6, ActionQuery 92.6; 결합 95.0 | 통합된 24-layer Policy, LIBERO-Long | all-layer의 메모리/대역폭/latency 비용을 분리 측정하지 않음 |
-| raw와 ActionQuery를 함께 쓰되 raw만 learnable gate로 조절하는 것이 최선 | Table 8: $\tanh(g),1$이 95.0; $1,1$은 91.4 | LIBERO-Long | gate가 왜 안정성을 높였는지 gradient/statistics 분석 없음 |
+| raw와 ActionQuery를 함께 쓰되 raw만 learnable gate로 조절하는 것이 최선 | Table 8: $`\tanh(g),1`$이 95.0; $`1,1`$은 91.4 | LIBERO-Long | gate가 왜 안정성을 높였는지 gradient/statistics 분석 없음 |
 | 작은 0.5B backbone으로 대형 방법과 유사한 성능 | Table 5: 97.3 vs OpenVLA-OFT 97.1 | LIBERO 평균 success rate | `0.5B`는 전체 VLA 파라미터가 아니라 backbone label. baseline training budget 통일 여부 불충분 |
 | 로봇 사전학습 없이도 높은 성능 | B1/B2와 VLA-Adapter, Table 2 | backbone의 **사전학습**에 embodied data가 없음 | downstream robot demonstrations로 150k-step fine-tuning은 수행 |
 | frozen backbone에서도 강함 | Table 3: 86.4, SmolVLA보다 9.4 pp | LIBERO-Long | 비교 OFT의 interface가 frozen일 때 학습 불가능한 구조라 공정성 논쟁 가능 |
@@ -194,33 +194,27 @@ Prismatic VLM은 vision encoder가 만든 patch feature를 LLM embedding 차원�
 
 #### Cross-attention
 
-행동 latent $X$가 condition $C$를 읽을 때의 표준 multi-head cross-attention은 다음과 같다.
+행동 latent $`X`$가 condition $`C`$를 읽을 때의 표준 multi-head cross-attention은 다음과 같다.
 
-$$
-\mathrm{CA}(X,C)
-=\mathrm{Concat}_{h=1}^{n_h}
-\left[
-\mathrm{softmax}\!\left(
-\frac{(XW_Q^{(h)})(CW_K^{(h)})^\top}{\sqrt{d_h}}
-\right)(CW_V^{(h)})
-\right]W_O.
-$$
+```math
+\begin{aligned} &\mathrm{CA}(X,C)\\ &\quad=\mathrm{Concat}_{h=1}^{n_h} \left[ \mathrm{softmax}\!\left( \frac{(XW_Q^{(h)})(CW_K^{(h)})^\top}{\sqrt{d_h}} \right)(CW_V^{(h)}) \right]W_O. \end{aligned}
+```
 
-이 식은 **[해설용 수식]**이며 원문 번호가 아니다. Query 길이는 행동 horizon $H$, Key/Value 길이는 condition token 수다. 결과 길이는 다시 $H$이므로 “각 미래 행동 step이 어떤 visual/language token을 읽을지”를 학습한다.
+이 식은 **[해설용 수식]**이며 원문 번호가 아니다. Query 길이는 행동 horizon $`H`$, Key/Value 길이는 condition token 수다. 결과 길이는 다시 $`H`$이므로 “각 미래 행동 step이 어떤 visual/language token을 읽을지”를 학습한다.
 
 #### Action chunking
 
-한 번의 policy 호출에서 현재 action 하나가 아니라 미래 $H$개를 예측한다.
+한 번의 policy 호출에서 현재 action 하나가 아니라 미래 $`H`$개를 예측한다.
 
-$$
+```math
 A_t=[a_t,a_{t+1},\ldots,a_{t+H-1}]\in\mathbb{R}^{H\times D_a}.
-$$
+```
 
-이 역시 **[해설용 수식]**이다. 이 논문에서 LIBERO/CALVIN은 $H=8$, $D_a=7$이므로 출력은 $8\times7=56$개 연속값이다. “8-dim chunk”라는 Figure 1의 표현은 action dimension 8을 뜻하는 것이 아니라 **8-step chunk**를 뜻한다. 각 step의 action dimension은 7이다.
+이 역시 **[해설용 수식]**이다. 이 논문에서 LIBERO/CALVIN은 $`H=8`$, $`D_a=7`$이므로 출력은 $`8\times7=56`$개 연속값이다. “8-dim chunk”라는 Figure 1의 표현은 action dimension 8을 뜻하는 것이 아니라 **8-step chunk**를 뜻한다. 각 step의 action dimension은 7이다.
 
 #### LoRA와 frozen backbone
 
-LoRA는 원 weight $W$를 직접 전부 갱신하는 대신 낮은 rank 보정 $\Delta W=BA$를 학습한다. “LoRA fine-tuned”는 base weight가 고정돼도 VLM 계산 경로에 trainable adapter가 있다는 뜻이다. 반면 Table 3의 “Frozen”은 저자 설명상 backbone 쪽을 모두 고정하고 ActionQuery와 Policy만 학습하는 더 강한 제약이다. 두 설정을 혼동하면 안 된다.
+LoRA는 원 weight $`W`$를 직접 전부 갱신하는 대신 낮은 rank 보정 $`\Delta W=BA`$를 학습한다. “LoRA fine-tuned”는 base weight가 고정돼도 VLM 계산 경로에 trainable adapter가 있다는 뜻이다. 반면 Table 3의 “Frozen”은 저자 설명상 backbone 쪽을 모두 고정하고 ActionQuery와 Policy만 학습하는 더 강한 제약이다. 두 설정을 혼동하면 안 된다.
 
 ### 5.2 통합 notation/shape 사전
 
@@ -228,32 +222,32 @@ LoRA는 원 weight $W$를 직접 전부 갱신하는 대신 낮은 rank 보정 $
 
 | 기호/용어 | 의미 | 논문/부록 shape 또는 값 | 단위와 주의점 |
 |---|---|---|---|
-| $t$ | 현재 환경 timestep | scalar index | VLM/Policy layer index가 아니다 |
-| $M$ | VLM과 Policy의 layer 수 | 24 | 부록 F2. Qwen2.5-0.5B 설정 |
-| $\tau$ | L1 Policy layer index | $0\le\tau\le M-1$ | 부록 B에서는 diffusion timestep에도 $\tau$를 재사용해 과적재됨 |
-| $X_t^v$ | third-view RGB | LIBERO/CALVIN $224\times224\times3$ | 한 환경 시점의 이미지 |
-| $X_t^g$ | wrist/gripper RGB | LIBERO $224\times224\times3$, CALVIN $84\times84\times3$ | 코드 전처리 뒤 backbone 입력 크기는 별도 resize 가능 |
-| $L_t$ | 언어 지시 | token sequence, 길이 미기재 | LIBERO/CALVIN prompt template은 부록 A/E에 공개 |
-| $AQ_t$ | 입력 sequence에 삽입되는 학습 가능한 ActionQuery embedding | $N_{AQ}=64$, hidden $d=896$ | 환경 action token이 아니라 interface token |
-| $C_t^R$ | VLM 각 층의 Raw condition | $[B,N_R,d]$, $N_R$ 논문 미기재 | 저자는 vision-language representation이라 부름. 현재 코드는 vision-patch prefix를 추출 |
-| $C_t^{AQ}$ | 각 층의 ActionQuery hidden states | $[B,64,896]$ | 깊은 층일수록 앞선 문맥을 더 많이 집계한다는 가설 |
-| $P_t$ | proprioceptive state | 논문 차원 미기재 | 현재 LIBERO/CALVIN 코드 상수는 $D_p=8$ |
-| $\sigma_0(P_t)$ | 2-layer MLP로 만든 proprio token | $[B,1,896]$로 해석 | Policy condition에 이어 붙임 |
-| $H$ | action chunk horizon | 8 | action step 수. 환경 step과 동일한 간격인지는 task wrapper가 결정 |
-| $D_a$ | action vector 차원 | 7 | Franka 제어값. 각 성분의 물리 의미/단위는 논문 미기재 |
-| $A_t$ | GT action chunk | $[B,8,7]$ | 8 future steps, step마다 7 continuous values |
-| $A_t^0$ | L1 Policy 초기 행동 | all zeros | 원문은 $H$-step zeros라고만 표현 |
-| $\widetilde A_t^\tau$ | Policy layer $\tau$의 action latent | $[B,8,896]$로 해석 | 현재 코드는 step마다 7×896을 flatten한 뒤 896으로 projection |
-| $\widehat A_t^\tau$ | Bridge Attention 출력 | 원문 concat이면 $[B,8,3d]$ 가능 | 후속 projection 축이 원문에 명시되지 않음. 현재 코드는 joint attention으로 $[B,8,d]$ 유지 |
-| $g$ | Raw branch gate parameter | scalar, 0으로 초기화 | 현재 코드는 block마다 하나씩 있어 24 scalars |
-| $d$ | hidden size | 896 | 부록 F2 |
-| $n_h$ | attention head 수 | 8 | head dimension $d_h=896/8=112$ |
-| $\theta$ | 학습 파라미터 집합 | 정확한 포함 범위 식에서 미기재 | fine-tuned setting에서는 Policy+ActionQuery+LoRA 등을 포함한다고 해석 |
+| $`t`$ | 현재 환경 timestep | scalar index | VLM/Policy layer index가 아니다 |
+| $`M`$ | VLM과 Policy의 layer 수 | 24 | 부록 F2. Qwen2.5-0.5B 설정 |
+| $`\tau`$ | L1 Policy layer index | $`0\le\tau\le M-1`$ | 부록 B에서는 diffusion timestep에도 $`\tau`$를 재사용해 과적재됨 |
+| $`X_t^v`$ | third-view RGB | LIBERO/CALVIN $`224\times224\times3`$ | 한 환경 시점의 이미지 |
+| $`X_t^g`$ | wrist/gripper RGB | LIBERO $`224\times224\times3`$, CALVIN $`84\times84\times3`$ | 코드 전처리 뒤 backbone 입력 크기는 별도 resize 가능 |
+| $`L_t`$ | 언어 지시 | token sequence, 길이 미기재 | LIBERO/CALVIN prompt template은 부록 A/E에 공개 |
+| $`AQ_t`$ | 입력 sequence에 삽입되는 학습 가능한 ActionQuery embedding | $`N_{AQ}=64`$, hidden $`d=896`$ | 환경 action token이 아니라 interface token |
+| $`C_t^R`$ | VLM 각 층의 Raw condition | $`[B,N_R,d]`$, $`N_R`$ 논문 미기재 | 저자는 vision-language representation이라 부름. 현재 코드는 vision-patch prefix를 추출 |
+| $`C_t^{AQ}`$ | 각 층의 ActionQuery hidden states | $`[B,64,896]`$ | 깊은 층일수록 앞선 문맥을 더 많이 집계한다는 가설 |
+| $`P_t`$ | proprioceptive state | 논문 차원 미기재 | 현재 LIBERO/CALVIN 코드 상수는 $`D_p=8`$ |
+| $`\sigma_0(P_t)`$ | 2-layer MLP로 만든 proprio token | $`[B,1,896]`$로 해석 | Policy condition에 이어 붙임 |
+| $`H`$ | action chunk horizon | 8 | action step 수. 환경 step과 동일한 간격인지는 task wrapper가 결정 |
+| $`D_a`$ | action vector 차원 | 7 | Franka 제어값. 각 성분의 물리 의미/단위는 논문 미기재 |
+| $`A_t`$ | GT action chunk | $`[B,8,7]`$ | 8 future steps, step마다 7 continuous values |
+| $`A_t^0`$ | L1 Policy 초기 행동 | all zeros | 원문은 $`H`$-step zeros라고만 표현 |
+| $`\widetilde A_t^\tau`$ | Policy layer $`\tau`$의 action latent | $`[B,8,896]`$로 해석 | 현재 코드는 step마다 7×896을 flatten한 뒤 896으로 projection |
+| $`\widehat A_t^\tau`$ | Bridge Attention 출력 | 원문 concat이면 $`[B,8,3d]`$ 가능 | 후속 projection 축이 원문에 명시되지 않음. 현재 코드는 joint attention으로 $`[B,8,d]`$ 유지 |
+| $`g`$ | Raw branch gate parameter | scalar, 0으로 초기화 | 현재 코드는 block마다 하나씩 있어 24 scalars |
+| $`d`$ | hidden size | 896 | 부록 F2 |
+| $`n_h`$ | attention head 수 | 8 | head dimension $`d_h=896/8=112`$ |
+| $`\theta`$ | 학습 파라미터 집합 | 정확한 포함 범위 식에서 미기재 | fine-tuned setting에서는 Policy+ActionQuery+LoRA 등을 포함한다고 해석 |
 
 ### 5.3 모델 파라미터와 hyperparameter를 분리하기
 
-- **모델 파라미터**: Policy의 Linear/LN weight, attention projection, gate $g$, ActionQuery embedding, LoRA matrices, proprio MLP 등 gradient로 학습되는 값.
-- **hyperparameter**: $H=8$, $N_{AQ}=64$, $M=24$, head=8, batch=16, learning rate $10^{-4}$, max step 150k, warm-up 10% 등 연구자가 정하는 값.
+- **모델 파라미터**: Policy의 Linear/LN weight, attention projection, gate $`g`$, ActionQuery embedding, LoRA matrices, proprio MLP 등 gradient로 학습되는 값.
+- **hyperparameter**: $`H=8`$, $`N_{AQ}=64`$, $`M=24`$, head=8, batch=16, learning rate $`10^{-4}`$, max step 150k, warm-up 10% 등 연구자가 정하는 값.
 - **backbone scale 0.5B**: Qwen2.5 언어 backbone의 등급 표기. Policy 97.3M이나 vision encoders를 포함한 전체 VLA size가 아니다.
 - **전체 trainable 197.2M**: 부록 F2가 보고한 fine-tuning 중 gradient 대상 합계. 전체 resident parameter와 다르다.
 
@@ -300,16 +294,16 @@ VLA는 사전학습 VLM을 robot control에 사용하고, Open X-Embodiment 같�
 
 원문은 두 축으로 기존 bridge를 분류한다.
 
-1. **Raw features from VLMs**: 마지막 층(RoboVLMs), 중간 층(GR00T N1 style), 모든 층($\pi_0$ style). 마지막 층은 task semantics가 강하지만 정밀 시공간 정보가 약해질 수 있고, 중간/다층은 세부 feature를 보존할 수 있다는 논리다.
+1. **Raw features from VLMs**: 마지막 층(RoboVLMs), 중간 층(GR00T N1 style), 모든 층($`\pi_0`$ style). 마지막 층은 task semantics가 강하지만 정밀 시공간 정보가 약해질 수 있고, 중간/다층은 세부 feature를 보존할 수 있다는 논리다.
 2. **Additional Query as Interface**: learnable query가 VLM sequence에서 multimodal 문맥을 모아 Policy로 간다. OpenVLA-OFT가 대표 style이다.
 
-Figure 2는 이들을 네 개 그림으로 나열한다. 이 그림은 각 원 방법 전체 architecture를 동일 구현으로 재현한 것이 아니라 **condition의 type/layer 선택을 대표 work 이름으로 요약**한다. 뒤의 Table 7도 같은 의미다. 그러므로 90.6이라는 “$\pi_0$ style” 수치를 실제 공개 $\pi_0$ checkpoint 성능과 동일시하면 안 된다. `[첨부 PDF p.2, Fig.2; p.7, Table 7]`
+Figure 2는 이들을 네 개 그림으로 나열한다. 이 그림은 각 원 방법 전체 architecture를 동일 구현으로 재현한 것이 아니라 **condition의 type/layer 선택을 대표 work 이름으로 요약**한다. 뒤의 Table 7도 같은 의미다. 그러므로 90.6이라는 “$`\pi_0`$ style” 수치를 실제 공개 $`\pi_0`$ checkpoint 성능과 동일시하면 안 된다. `[첨부 PDF p.2, Fig.2; p.7, Table 7]`
 
 ### §3 VLA-Adapter Methodology
 
 #### §3.1 Preliminary
 
-한 시점 $t$의 입력은 third-view $X_t^v$, wrist/gripper-view $X_t^g$, instruction $L_t$, ActionQuery $AQ_t$다. DINOv2와 SigLIP이 두 이미지를 embedding하고, instruction은 tokenized된다. $M$층 VLM의 지정 layer에서 일반 hidden state $C_t^R$와 ActionQuery 위치 hidden state $C_t^{AQ}$를 추출해 Policy condition으로 보낸다. `[첨부 PDF p.2, §3.1]`
+한 시점 $`t`$의 입력은 third-view $`X_t^v`$, wrist/gripper-view $`X_t^g`$, instruction $`L_t`$, ActionQuery $`AQ_t`$다. DINOv2와 SigLIP이 두 이미지를 embedding하고, instruction은 tokenized된다. $`M`$층 VLM의 지정 layer에서 일반 hidden state $`C_t^R`$와 ActionQuery 위치 hidden state $`C_t^{AQ}`$를 추출해 Policy condition으로 보낸다. `[첨부 PDF p.2, §3.1]`
 
 backbone 비교는 다음 세 가지다.
 
@@ -329,10 +323,10 @@ Figure 3의 왼쪽은 통합 framework다. VLM 24층과 Policy 24층을 대응�
 
 | layer 사용 | feature type | 실험 의미 |
 |---|---|---|
-| single-layer | Raw | 하나의 VLM layer $C^R_i$를 모든 Policy layer가 재사용 |
-| single-layer | ActionQuery | 하나의 $C^{AQ}_i$를 모든 Policy layer가 재사용 |
-| all-layer | Raw | Policy layer $i$가 VLM layer $i$의 $C^R_i$ 사용 |
-| all-layer | ActionQuery | Policy layer $i$가 VLM layer $i$의 $C^{AQ}_i$ 사용 |
+| single-layer | Raw | 하나의 VLM layer $`C^R_i`$를 모든 Policy layer가 재사용 |
+| single-layer | ActionQuery | 하나의 $`C^{AQ}_i`$를 모든 Policy layer가 재사용 |
+| all-layer | Raw | Policy layer $`i`$가 VLM layer $`i`$의 $`C^R_i`$ 사용 |
+| all-layer | ActionQuery | Policy layer $`i`$가 VLM layer $`i`$의 $`C^{AQ}_i`$ 사용 |
 
 출판본 Figure 3의 caption에 따르면 single-layer는 (a),(b), all-layer는 (c),(d)다. 그런데 본문은 single-layer를 “(a),(c)”, all-layer를 “(b),(d)”라고 참조한다. 이는 각각 Raw 열/ActionQuery 열을 묶은 조합이므로 **본문 cross-reference 오류**로 보인다. 핵심 비교는 위 표처럼 layer 축과 type 축을 분리해야 한다.
 
@@ -354,15 +348,15 @@ Table 1은 평균만 보면 가려지는 hard-task 상보성을 보여 준다. S
 
 원문 Figure 5 — Raw branch의 Ratio, ActionQuery+proprio branch, action self-attention의 Q/K/V 경로를 확인할 수 있다. 이 개념도와 공식 코드의 차이는 §14에서 따로 다룬다. 출처: [AAAI PDF p.4, 인쇄 p.18641](https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893#page=4).
 
-Policy 입력은 $\{C_t^R,C_t^{AQ},A_t^{\tau=0},P_t\}$다. $A_t^0$는 $H$개의 zero action이며 LN+MLP로 hidden sequence $\widetilde A_t^0$가 된다. $P_t$는 2-layer MLP $\sigma_0$로 하나의 proprio embedding이 된다. 각 Policy block은 Bridge Attention과 FFN으로 구성되고, 24번 반복한 뒤 LN+MLP가 $8\times7$ action chunk를 낸다. `[첨부 PDF p.4, §3.3, Fig.5]`
+Policy 입력은 $`\{C_t^R,C_t^{AQ},A_t^{\tau=0},P_t\}`$다. $`A_t^0`$는 $`H`$개의 zero action이며 LN+MLP로 hidden sequence $`\widetilde A_t^0`$가 된다. $`P_t`$는 2-layer MLP $`\sigma_0`$로 하나의 proprio embedding이 된다. 각 Policy block은 Bridge Attention과 FFN으로 구성되고, 24번 반복한 뒤 LN+MLP가 $`8\times7`$ action chunk를 낸다. `[첨부 PDF p.4, §3.3, Fig.5]`
 
 Bridge Attention의 세 경로는 다음과 같다.
 
-- Raw cross-attention: $Q$는 action latent, $K,V$는 $\sigma_1(C_t^R)$. 출력에 $\tanh(g)$를 곱한다.
-- ActionQuery+proprio cross-attention: $Q$는 action latent, $K,V$는 $\sigma_2([C_t^{AQ};\sigma_0(P_t)])$. gate 없이 완전히 주입한다.
-- action self-attention: $Q,K,V$ 모두 action latent. 8개 미래 step 사이의 일관성을 학습한다.
+- Raw cross-attention: $`Q`$는 action latent, $`K,V`$는 $`\sigma_1(C_t^R)`$. 출력에 $`\tanh(g)`$를 곱한다.
+- ActionQuery+proprio cross-attention: $`Q`$는 action latent, $`K,V`$는 $`\sigma_2([C_t^{AQ};\sigma_0(P_t)])`$. gate 없이 완전히 주입한다.
+- action self-attention: $`Q,K,V`$ 모두 action latent. 8개 미래 step 사이의 일관성을 학습한다.
 
-$g=0$ 초기화는 학습 초기에 raw branch를 닫아 안정적인 ActionQuery branch에서 출발하게 한다. 하지만 $\tanh(g)\in[-1,1]$이므로 이것은 0-1 convex gate가 아니다. 음수가 되면 raw output의 부호를 반전할 수 있다.
+$`g=0`$ 초기화는 학습 초기에 raw branch를 닫아 안정적인 ActionQuery branch에서 출발하게 한다. 하지만 $`\tanh(g)\in[-1,1]`$이므로 이것은 0-1 convex gate가 아니다. 음수가 되면 raw output의 부호를 반전할 수 있다.
 
 Figure 5는 “세 attention output을 concatenate”하는 개념도를 보여 주지만, feature dimension을 다시 896으로 줄이는 projection은 본문에 명시하지 않는다. 현재 공식 코드는 세 key/value group을 이어 붙인 뒤 **하나의 softmax**를 적용해 output dimension을 896으로 유지한다. 이 차이는 [§14 코드 대조](#code-audit)에서 상세히 다룬다.
 
@@ -374,7 +368,7 @@ Figure 5는 “세 attention output을 concatenate”하는 개념도를 보여 
 
 ### §4 Experiments
 
-원문은 모든 실험을 4×NVIDIA H100 server에서 수행했다고 적고, LIBERO-Long으로 bridge 필요성과 ablation을, LIBERO 전체/CALVIN/real-world로 overall performance를 본다. Appendix F의 batch=16, 150k steps, AdamW, learning rate $10^{-4}$, warm-up 10%가 공통 설정으로 제시되지만, batch가 global인지 per-GPU인지와 정확한 precision은 논문에 없다. `[첨부 PDF pp.4-7, §4; 공식 arXiv v2 PDF pp.21-22, Appendix F]`
+원문은 모든 실험을 4×NVIDIA H100 server에서 수행했다고 적고, LIBERO-Long으로 bridge 필요성과 ablation을, LIBERO 전체/CALVIN/real-world로 overall performance를 본다. Appendix F의 batch=16, 150k steps, AdamW, learning rate $`10^{-4}`$, warm-up 10%가 공통 설정으로 제시되지만, batch가 global인지 per-GPU인지와 정확한 precision은 논문에 없다. `[첨부 PDF pp.4-7, §4; 공식 arXiv v2 PDF pp.21-22, Appendix F]`
 
 #### §4.1 Necessity of VLA-Adapter
 
@@ -441,15 +435,11 @@ Table 7은 last raw 85.8, last ActionQuery 90.2, intermediate raw 88.4, all raw 
 
 원문은 세 attention 결과를 다음처럼 적는다.
 
-$$
-\widehat{A}_t^\tau=
-\Big[
-\mathrm{CA}_1\!\big(\widetilde{A}_t^\tau,\sigma_1(C_t^R)\big)\cdot\tanh(g),
-\mathrm{CA}_2\!\big(\widetilde{A}_t^\tau,\sigma_2[C_t^{AQ},\sigma_0(P_t)]\big),
-\mathrm{SA}\!\big(\widetilde{A}_t^\tau,\widetilde{A}_t^\tau\big)
-\Big].
-\tag{arXiv v2 Eq.1}
-$$
+```math
+\begin{aligned} \widehat{A}_t^\tau=\Big[& \mathrm{CA}_1\!\big(\widetilde{A}_t^\tau,\sigma_1(C_t^R)\big)\cdot\tanh(g),\\ &\mathrm{CA}_2\!\big(\widetilde{A}_t^\tau,\sigma_2[C_t^{AQ},\sigma_0(P_t)]\big),\\ &\mathrm{SA}\!\big(\widetilde{A}_t^\tau,\widetilde{A}_t^\tau\big) \Big]. \end{aligned}
+```
+
+표기: arXiv v2 Eq.1.
 
 `[공식 arXiv v2 PDF p.5, §3.3, Eq.(1)]`
 
@@ -459,13 +449,13 @@ $$
 
 #### 기호와 shape
 
-- $\widetilde A_t^\tau\in\mathbb{R}^{B\times H\times d}$: layer $\tau$의 action latent. 기본값은 $H=8,d=896$.
-- $C_t^R\in\mathbb{R}^{B\times N_R\times d}$: 대응 VLM layer의 raw condition. $N_R$은 논문 미기재다. 현재 코드는 두 이미지의 512 patch position을 사용한다.
-- $C_t^{AQ}\in\mathbb{R}^{B\times64\times d}$: 64 ActionQuery 위치의 hidden state.
-- $\sigma_0(P_t)\in\mathbb{R}^{B\times1\times d}$: proprio token.
-- $[C_t^{AQ},\sigma_0(P_t)]\in\mathbb{R}^{B\times65\times d}$: token 축 concatenate.
-- 각 cross/self attention의 출력은 통상 $B\times8\times896$이다.
-- 마지막 대괄호가 feature-axis concat이라면 $\widehat A_t^\tau$는 $B\times8\times2688$이 된다. 그러나 어느 축으로 concatenate하는지, 다시 896으로 줄이는 projection이 무엇인지는 원문 식에 없다.
+- $`\widetilde A_t^\tau\in\mathbb{R}^{B\times H\times d}`$: layer $`\tau`$의 action latent. 기본값은 $`H=8,d=896`$.
+- $`C_t^R\in\mathbb{R}^{B\times N_R\times d}`$: 대응 VLM layer의 raw condition. $`N_R`$은 논문 미기재다. 현재 코드는 두 이미지의 512 patch position을 사용한다.
+- $`C_t^{AQ}\in\mathbb{R}^{B\times64\times d}`$: 64 ActionQuery 위치의 hidden state.
+- $`\sigma_0(P_t)\in\mathbb{R}^{B\times1\times d}`$: proprio token.
+- $`[C_t^{AQ},\sigma_0(P_t)]\in\mathbb{R}^{B\times65\times d}`$: token 축 concatenate.
+- 각 cross/self attention의 출력은 통상 $`B\times8\times896`$이다.
+- 마지막 대괄호가 feature-axis concat이라면 $`\widehat A_t^\tau`$는 $`B\times8\times2688`$이 된다. 그러나 어느 축으로 concatenate하는지, 다시 896으로 줄이는 projection이 무엇인지는 원문 식에 없다.
 
 #### 연산 순서
 
@@ -473,48 +463,44 @@ $$
 2. 첫 번째 cross-attention이 긴 raw token 집합을 읽는다.
 3. 두 번째 cross-attention이 64 ActionQuery와 proprio token을 읽는다.
 4. self-attention이 8개 미래 action step끼리 상호작용하게 한다.
-5. raw 출력에만 $\tanh(g)$를 곱한다.
+5. raw 출력에만 $`\tanh(g)`$를 곱한다.
 6. 세 출력을 결합해 다음 FFN에 보낸다.
 
 #### 왜 raw만 gate하는가
 
 Table 1/C1/C2의 논리는 다음과 같다. ActionQuery는 Policy를 위해 scratch에서 학습되는 압축 interface라 평균적으로 강하지만, 일부 hard task에서는 중간 raw feature가 더 낫다. 그래서 ActionQuery를 기본 통로로 두고 raw는 필요한 만큼만 열어 상보 정보를 얻는다.
 
-#### $g=0$에서 gradient가 흐르는 방식
+#### $`g=0`$에서 gradient가 흐르는 방식
 
-raw branch 출력을 $R_\phi=\mathrm{CA}_1(\cdot)$라고 하면 전체 raw 기여는
+raw branch 출력을 $`R_\phi=\mathrm{CA}_1(\cdot)`$라고 하면 전체 raw 기여는
 
-$$
+```math
 Y_R=\tanh(g)R_\phi.
-$$
+```
 
 **[해설용 수식]**으로 미분하면
 
-$$
-\frac{\partial Y_R}{\partial g}
-=(1-\tanh^2 g)R_\phi,
-\qquad
-\frac{\partial Y_R}{\partial\phi}
-=\tanh(g)\frac{\partial R_\phi}{\partial\phi}.
-$$
+```math
+\frac{\partial Y_R}{\partial g} =(1-\tanh^2 g)R_\phi, \qquad \frac{\partial Y_R}{\partial\phi} =\tanh(g)\frac{\partial R_\phi}{\partial\phi}.
+```
 
-$g=0$에서 $\partial Y_R/\partial g=R_\phi$이므로 gate는 첫 update부터 학습할 수 있다. 반면 $\partial Y_R/\partial\phi=0$이라 raw branch 내부 projection은 gate가 0이 아닌 값으로 움직이기 전까지 gradient를 받지 못한다. 이것이 zero-init의 안정화 효과이자 초기 학습 지연이다.
+$`g=0`$에서 $`\partial Y_R/\partial g=R_\phi`$이므로 gate는 첫 update부터 학습할 수 있다. 반면 $`\partial Y_R/\partial\phi=0`$이라 raw branch 내부 projection은 gate가 0이 아닌 값으로 움직이기 전까지 gradient를 받지 못한다. 이것이 zero-init의 안정화 효과이자 초기 학습 지연이다.
 
 #### 작은 수치 예시
 
-한 action position에서 raw/AQ/self branch가 각각 스칼라 $0.8,0.4,-0.1$을 냈다고 하자.
+한 action position에서 raw/AQ/self branch가 각각 스칼라 $`0.8,0.4,-0.1`$을 냈다고 하자.
 
-- $g=0$: raw 기여 0, 결합은 $[0,0.4,-0.1]$.
-- $g=0.5$: $\tanh(0.5)\approx0.462$, raw 기여 $0.370$.
-- $g=-0.5$: raw 기여 $-0.370$. raw를 “덜 사용”하는 데 그치지 않고 부호를 뒤집는다.
-- $|g|\to\infty$: $\tanh(g)\to\pm1$이고 gate gradient는 0에 가까워져 saturation한다.
+- $`g=0`$: raw 기여 0, 결합은 $`[0,0.4,-0.1]`$.
+- $`g=0.5`$: $`\tanh(0.5)\approx0.462`$, raw 기여 $`0.370`$.
+- $`g=-0.5`$: raw 기여 $`-0.370`$. raw를 “덜 사용”하는 데 그치지 않고 부호를 뒤집는다.
+- $`|g|\to\infty`$: $`\tanh(g)\to\pm1`$이고 gate gradient는 0에 가까워져 saturation한다.
 
-따라서 $\tanh$는 폭주를 제한하지만, attention weight 자체를 확률적으로 섞는 0-1 gate는 아니다.
+따라서 $`\tanh`$는 폭주를 제한하지만, attention weight 자체를 확률적으로 섞는 0-1 gate는 아니다.
 
 #### edge case와 미기재점
 
-- $C_t^R$가 noisy하면 초기에는 차단돼 안정적일 수 있다.
-- ActionQuery가 실패하는 task에서는 raw gate가 열릴 수 있지만, $g$가 layer별인지 global인지 원문은 모호하다. 현재 코드는 block마다 scalar 하나다.
+- $`C_t^R`$가 noisy하면 초기에는 차단돼 안정적일 수 있다.
+- ActionQuery가 실패하는 task에서는 raw gate가 열릴 수 있지만, $`g`$가 layer별인지 global인지 원문은 모호하다. 현재 코드는 block마다 scalar 하나다.
 - 모든 attention output을 단순 concat하면 parameter/memory가 늘고 후속 projection이 필요하다. 원문은 생략한다.
 - 현재 공식 코드의 실제 구현은 세 output concat이 아니라 key/value group concat 뒤 joint softmax다. 따라서 위 식은 architecture intent를 설명하지만 코드의 정확한 계산식은 아니다.
 
@@ -522,17 +508,11 @@ $g=0$에서 $\partial Y_R/\partial g=R_\phi$이므로 gate는 첫 update부터 �
 
 출판본의 원문 식은 다음과 같다.
 
-$$
-\min_\theta \mathcal{J}(\theta)
-=
-\mathbb{E}_{A_t,C_t^R,C_t^{AQ},\sigma_0(P_t)}
-\left[
-\left\|
-\pi_\theta\!\left(A_t^\tau,C_t^R,C_t^{AQ},\sigma_0(P_t)\right)-A_t
-\right\|_1
-\right].
-\tag{AAAI Eq.1}
-$$
+```math
+\begin{aligned} &\min_\theta \mathcal{J}(\theta)\\ &\quad= \mathbb{E}_{A_t,C_t^R,C_t^{AQ},\sigma_0(P_t)} \left[ \left\| \pi_\theta\!\left(A_t^\tau,C_t^R,C_t^{AQ},\sigma_0(P_t)\right)-A_t \right\|_1 \right]. \end{aligned}
+```
+
+표기: AAAI Eq.1.
 
 `[첨부 PDF p.4, 인쇄 p.18641, §3.4, Eq.(1)]`
 
@@ -540,19 +520,13 @@ $$
 
 원문 수식 대조 — [AAAI PDF p.4, 인쇄 p.18641, Eq.(1)](https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893#page=4). 두 줄과 식 번호를 함께 보존했다.
 
-arXiv v2 Eq.(2)는 입력과 expectation subscript에 Policy/diffusion과 혼동되는 layer index $\tau$를 추가한다.
+arXiv v2 Eq.(2)는 입력과 expectation subscript에 Policy/diffusion과 혼동되는 layer index $`\tau`$를 추가한다.
 
-$$
-\min_\theta \mathcal{J}(\theta)
-=
-\mathbb{E}_{A_t,C_t^R,C_t^{AQ},\sigma_0(P_t),\tau}
-\left[
-\left\|
-\pi_\theta\!\left(A_t^\tau,C_t^R,C_t^{AQ},\sigma_0(P_t),\tau\right)-A_t
-\right\|_1
-\right].
-\tag{arXiv v2 Eq.2}
-$$
+```math
+\begin{aligned} &\min_\theta \mathcal{J}(\theta)\\ &\quad= \mathbb{E}_{A_t,C_t^R,C_t^{AQ},\sigma_0(P_t),\tau} \left[ \left\| \pi_\theta\!\left(A_t^\tau,C_t^R,C_t^{AQ},\sigma_0(P_t),\tau\right)-A_t \right\|_1 \right]. \end{aligned}
+```
+
+표기: arXiv v2 Eq.2.
 
 `[공식 arXiv v2 PDF p.6, §3.4, Eq.(2)]`
 
@@ -562,10 +536,10 @@ $$
 
 #### 항별 의미
 
-- $A_t\in\mathbb{R}^{B\times8\times7}$: dataset의 ground-truth action chunk.
-- $A_t^\tau$ 또는 $\widetilde A_t^\tau$: Policy 내부 layer $\tau$에서의 latent. L1 모델의 입력은 $A_t^0=0$이다.
-- $\pi_\theta(\cdot)\in\mathbb{R}^{B\times8\times7}$: predicted normalized action chunk.
-- $\|X\|_1=\sum_i|X_i|$가 수학적 표기지만, code의 `torch.nn.L1Loss()` default는 전체 원소 **mean**이다. constant scale 차이는 optimum은 같지만 learning-rate 해석에 영향을 준다.
+- $`A_t\in\mathbb{R}^{B\times8\times7}`$: dataset의 ground-truth action chunk.
+- $`A_t^\tau`$ 또는 $`\widetilde A_t^\tau`$: Policy 내부 layer $`\tau`$에서의 latent. L1 모델의 입력은 $`A_t^0=0`$이다.
+- $`\pi_\theta(\cdot)\in\mathbb{R}^{B\times8\times7}`$: predicted normalized action chunk.
+- $`\|X\|_1=\sum_i|X_i|`$가 수학적 표기지만, code의 `torch.nn.L1Loss()` default는 전체 원소 **mean**이다. constant scale 차이는 optimum은 같지만 learning-rate 해석에 영향을 준다.
 - expectation은 training example과 condition, arXiv 식에서는 layer/timestep index에 걸친 평균을 뜻한다. 실제 mini-batch estimator가 사용된다.
 
 #### 왜 L1인가
@@ -574,30 +548,23 @@ L2는 큰 오차를 제곱해 outlier에 민감하고, L1은 각 성분의 절�
 
 #### gradient
 
-예측값 $\hat a$와 GT $a$ 한 성분에 대해
+예측값 $`\hat a`$와 GT $`a`$ 한 성분에 대해
 
-$$
-\frac{\partial |\hat a-a|}{\partial\hat a}
-=
-\begin{cases}
-+1,&\hat a>a,\\
--1,&\hat a<a,\\
-[-1,1],&\hat a=a.
-\end{cases}
-$$
+```math
+\frac{\partial |\hat a-a|}{\partial\hat a} = \begin{cases} +1,&\hat a\gt a,\\ -1,&\hat a\lt a,\\ [-1,1],&\hat a=a. \end{cases}
+```
 
-이는 **[해설용 수식]**이다. autodiff framework는 $\hat a=a$에서 보통 0 subgradient를 택한다. gradient는 output MLP→24 Policy blocks→Bridge Attention으로 역전파되고, default LoRA setting에서는 condition을 만든 VLM의 LoRA와 ActionQuery embedding에도 간다. Frozen setting에서는 VLM weight로 가는 경로가 끊기지만 ActionQuery embedding과 Policy는 계속 갱신된다.
+이는 **[해설용 수식]**이다. autodiff framework는 $`\hat a=a`$에서 보통 0 subgradient를 택한다. gradient는 output MLP→24 Policy blocks→Bridge Attention으로 역전파되고, default LoRA setting에서는 condition을 만든 VLM의 LoRA와 ActionQuery embedding에도 간다. Frozen setting에서는 VLM weight로 가는 경로가 끊기지만 ActionQuery embedding과 Policy는 계속 갱신된다.
 
 #### 작은 수치 예시
 
-간단히 $H=2,D_a=2$라 하고
+간단히 $`H=2,D_a=2`$라 하고
 
-$$
-A_t=\begin{bmatrix}0.0&0.3\\-0.2&1.0\end{bmatrix},\qquad
-\hat A_t=\begin{bmatrix}0.2&-0.1\\-0.1&0.7\end{bmatrix}.
-$$
+```math
+A_t=\begin{bmatrix}0.0&0.3\\-0.2&1.0\end{bmatrix},\qquad \hat A_t=\begin{bmatrix}0.2&-0.1\\-0.1&0.7\end{bmatrix}.
+```
 
-절대 오차는 $0.2,0.4,0.1,0.3$이다. 합은 1.0, mean L1은 0.25다. PyTorch code의 loss는 0.25에 해당한다. action 성분별 물리 단위가 다르면 정규화가 필수이며, 현재 코드는 각 dataset의 q01/q99 범위를 $[-1,1]$로 매핑한 뒤 loss를 계산한다. 논문 본문은 이 정규화 식을 설명하지 않는다.
+절대 오차는 $`0.2,0.4,0.1,0.3`$이다. 합은 1.0, mean L1은 0.25다. PyTorch code의 loss는 0.25에 해당한다. action 성분별 물리 단위가 다르면 정규화가 필수이며, 현재 코드는 각 dataset의 q01/q99 범위를 $`[-1,1]`$로 매핑한 뒤 loss를 계산한다. 논문 본문은 이 정규화 식을 설명하지 않는다.
 
 #### edge case
 
@@ -609,12 +576,11 @@ $$
 
 부록은 먼저 다음 forward-noising 식을 서술한다.
 
-$$
-A_t^\tau=\sqrt{\bar\alpha_\tau}A_t+
-\sqrt{1-\bar\alpha_\tau}\,\epsilon,
-\qquad \epsilon\sim\mathcal{N}(0,I).
-\tag{Appendix B, unnumbered}
-$$
+```math
+A_t^\tau=\sqrt{\bar\alpha_\tau}A_t+ \sqrt{1-\bar\alpha_\tau}\,\epsilon, \qquad \epsilon\sim\mathcal{N}(0,I).
+```
+
+표기: Appendix B, unnumbered.
 
 `[공식 arXiv v2 PDF p.19, Appendix B.2, 주요 비번호 식]`
 
@@ -622,46 +588,33 @@ $$
 
 원문 비번호 수식 대조 — [arXiv v2 PDF p.19, Appendix B.2](https://arxiv.org/pdf/2509.09372v2#page=19). noisy-action 식과 누적곱이 본문 안에 조판되어 있어 관련 네 줄을 함께 발췌했다. 제곱근과 product 상한을 임의로 고치지 않았으며, 아래에서 원문 표기와 통상 표기를 구분한다.
 
-신호 계수 $\sqrt{\bar\alpha_\tau}$는 diffusion timestep이 커질수록 줄고, noise 계수 $\sqrt{1-\bar\alpha_\tau}$는 커진다. $\bar\alpha_0\approx1$이면 거의 clean action, $\bar\alpha_T\approx0$이면 거의 Gaussian noise다.
+신호 계수 $`\sqrt{\bar\alpha_\tau}`$는 diffusion timestep이 커질수록 줄고, noise 계수 $`\sqrt{1-\bar\alpha_\tau}`$는 커진다. $`\bar\alpha_0\approx1`$이면 거의 clean action, $`\bar\alpha_T\approx0`$이면 거의 Gaussian noise다.
 
 그러나 원문 다음 문장은 시각적으로 다음처럼 적혀 있다.
 
-$$
-\sqrt{\bar\alpha_\tau}
-=\prod_{i=1}^{T}\alpha_i
-=\prod_{i=1}^{T}(1-\beta_i).
-\tag{원문 표기, 비번호}
-$$
+```math
+\sqrt{\bar\alpha_\tau} =\prod_{i=1}^{T}\alpha_i =\prod_{i=1}^{T}(1-\beta_i).
+```
+
+표기: 원문 표기, 비번호.
 
 통상 DDPM notation은 다음과 같다.
 
-$$
-\alpha_i=1-\beta_i,\qquad
-\bar\alpha_\tau=\prod_{i=1}^{\tau}\alpha_i,\qquad
-\sqrt{\bar\alpha_\tau}\text{가 clean-signal 계수}.
-\tag{해설용 표준 표기}
-$$
+```math
+\alpha_i=1-\beta_i,\qquad \bar\alpha_\tau=\prod_{i=1}^{\tau}\alpha_i,\qquad \sqrt{\bar\alpha_\tau}\text{가 clean-signal 계수}.
+```
 
-원문은 (i) product upper bound에 현재 timestep $\tau$ 대신 전체 $T$를 쓰고, (ii) product가 $\bar\alpha_\tau$인지 그 제곱근인지 혼동한다. 이는 표기상 오탈자 가능성이 높지만, 이 문서는 원문을 조용히 고치지 않는다.
+표기: 해설용 표준 표기.
+
+원문은 (i) product upper bound에 현재 timestep $`\tau`$ 대신 전체 $`T`$를 쓰고, (ii) product가 $`\bar\alpha_\tau`$인지 그 제곱근인지 혼동한다. 이는 표기상 오탈자 가능성이 높지만, 이 문서는 원문을 조용히 고치지 않는다.
 
 ### 7.5 Eq.(B-1): conditional AdaLN-Zero
 
 원문은 첫 DiT block을 예로 다음처럼 쓴다.
 
-$$
-\begin{aligned}
-\widetilde A_t^1
-&=A_t^1+\alpha_\tau\odot
-\varepsilon\!\left(\gamma_\tau\,\mathrm{LN}(A_t^1)+\beta_\tau\right)\\
-&=A_t^1+\sigma_2'(C_t^M)\odot
-\varepsilon\!\left(
-\sigma_1'^{(2)}(C_t^M)\,\mathrm{LN}(A_t^1)
-+\sigma_1'^{(1)}(C_t^M)
-\right),\\
-[\beta_\tau;\gamma_\tau]&=\sigma_1'(C_t^M).
-\end{aligned}
-\tag{B-1}
-$$
+```math
+\begin{aligned} \widetilde A_t^1 &=A_t^1+\alpha_\tau\odot \varepsilon\!\left(\gamma_\tau\,\mathrm{LN}(A_t^1)+\beta_\tau\right)\\ &=A_t^1+\sigma_2'(C_t^M)\odot \varepsilon\!\left( \sigma_1'^{(2)}(C_t^M)\,\mathrm{LN}(A_t^1) +\sigma_1'^{(1)}(C_t^M) \right),\\ [\beta_\tau;\gamma_\tau]&=\sigma_1'(C_t^M). \end{aligned} \qquad\text{(B-1)}
+```
 
 `[공식 arXiv v2 PDF p.18, Appendix B.1, Eq.(B-1)]`
 
@@ -671,10 +624,11 @@ $$
 
 또한 앞 문장은
 
-$$
+```math
 C_t^M=\sigma_1'(C_t^R)+\sigma_0(P_t)
-\tag{Appendix B.1, unnumbered}
-$$
+```
+
+표기: Appendix B.1, unnumbered.
 
 라고 한다.
 
@@ -685,41 +639,32 @@ $$
 #### 의미
 
 - LN으로 noisy action latent의 scale을 정규화한다.
-- $C_t^M$에서 나온 $\gamma_\tau$와 $\beta_\tau$가 channel별 scale/shift를 만든다.
-- $\varepsilon(\cdot)$는 원문 정의상 self-attention+projection module이다. Gaussian noise $\epsilon$과 비슷한 글자를 써서 혼동하기 쉽다.
-- $\alpha_\tau$는 residual gate로, condition이 현재 block update를 얼마나 강하게 주입할지 정한다.
-- $\odot$는 elementwise multiplication이다.
+- $`C_t^M`$에서 나온 $`\gamma_\tau`$와 $`\beta_\tau`$가 channel별 scale/shift를 만든다.
+- $`\varepsilon(\cdot)`$는 원문 정의상 self-attention+projection module이다. Gaussian noise $`\epsilon`$과 비슷한 글자를 써서 혼동하기 쉽다.
+- $`\alpha_\tau`$는 residual gate로, condition이 현재 block update를 얼마나 강하게 주입할지 정한다.
+- $`\odot`$는 elementwise multiplication이다.
 
-shape를 $A_t^1\in\mathbb{R}^{B\times H\times d}$라고 하면 $\beta,\gamma,\alpha$는 최소한 $d$ channel로 broadcast 가능한 $[B,d]$ 또는 $[B,1,d]$여야 한다. $C_t^M$에서 token dimension을 어떻게 pool하는지는 원문이 설명하지 않는다.
+shape를 $`A_t^1\in\mathbb{R}^{B\times H\times d}`$라고 하면 $`\beta,\gamma,\alpha`$는 최소한 $`d`$ channel로 broadcast 가능한 $`[B,d]`$ 또는 $`[B,1,d]`$여야 한다. $`C_t^M`$에서 token dimension을 어떻게 pool하는지는 원문이 설명하지 않는다.
 
 #### 원문 내부 불일치
 
-Eq.(B-1)의 두 번째 줄은 residual gate를 $\sigma_2'(C_t^M)$로 쓴다. 바로 다음 쪽 prose는 “$\alpha_\tau=\sigma_3'(C_t^M)$”라고 쓴다. 둘 중 무엇이 실제 모듈인지 논문만으로 확정할 수 없다. 또 Eq.(B-1)은 generic block index $\tau$를 쓰면서 left-hand side는 $\widetilde A_t^1$로 고정되어 있다. 첫 block 예시라면 맞지만 “모든 block에 반복”하는 일반식은 아래처럼 쓰는 편이 자연스럽다.
+Eq.(B-1)의 두 번째 줄은 residual gate를 $`\sigma_2'(C_t^M)`$로 쓴다. 바로 다음 쪽 prose는 “$`\alpha_\tau=\sigma_3'(C_t^M)`$”라고 쓴다. 둘 중 무엇이 실제 모듈인지 논문만으로 확정할 수 없다. 또 Eq.(B-1)은 generic block index $`\tau`$를 쓰면서 left-hand side는 $`\widetilde A_t^1`$로 고정되어 있다. 첫 block 예시라면 맞지만 “모든 block에 반복”하는 일반식은 아래처럼 쓰는 편이 자연스럽다.
 
-$$
-\widetilde A_t^\tau
-=A_t^\tau+\alpha_\tau\odot
-\varepsilon\!\left(\gamma_\tau\mathrm{LN}(A_t^\tau)+\beta_\tau\right).
-\tag{해설용 일반화}
-$$
+```math
+\widetilde A_t^\tau =A_t^\tau+\alpha_\tau\odot \varepsilon\!\left(\gamma_\tau\mathrm{LN}(A_t^\tau)+\beta_\tau\right).
+```
+
+표기: 해설용 일반화.
 
 ### 7.6 Eq.(B-2): DiT noise-prediction loss
 
 원문 PDF의 식을 그대로 구조화하면 다음과 같다.
 
-$$
-\min_\theta\mathcal{J}(\theta)=
-\mathbb{E}_{A_t,\epsilon\sim\mathcal N(0,I),C_t^{AQ},\sigma_1(P_t),\tau}
-\left[
-\left\|
-\pi_\theta\!\left(
-\sqrt{\bar\alpha_\tau}A_t+\sqrt{1-\bar\alpha_\tau},
-C_t^{AQ},\sigma_1(P_t),\tau
-\right)-\epsilon
-\right\|_2^2
-\right].
-\tag{B-2, 원문 표기}
-$$
+```math
+\begin{aligned} &\min_\theta\mathcal{J}(\theta)\\ &\quad= \mathbb{E}_{\substack{A_t,\epsilon\sim\mathcal N(0,I),\\C_t^{AQ},\sigma_1(P_t),\tau}} \left[ \left\| \pi_\theta\!\left( \begin{gathered} \sqrt{\bar\alpha_\tau}A_t+\sqrt{1-\bar\alpha_\tau},\\ C_t^{AQ},\sigma_1(P_t),\tau \end{gathered} \right)-\epsilon \right\|_2^2 \right]. \end{aligned}
+```
+
+표기: B-2, 원문 표기.
 
 `[공식 arXiv v2 PDF p.19, Appendix B.2, Eq.(B-2)]`
 
@@ -729,62 +674,55 @@ $$
 
 #### 중요한 표기 누락
 
-앞의 noisy-action 정의에는 두 번째 항에 $\epsilon$이 곱해지지만 Eq.(B-2)의 network input에는 $\sqrt{1-\bar\alpha_\tau}$ 뒤의 $\epsilon$이 보이지 않는다. 통상적인 noise-prediction 목적은 다음과 같다.
+앞의 noisy-action 정의에는 두 번째 항에 $`\epsilon`$이 곱해지지만 Eq.(B-2)의 network input에는 $`\sqrt{1-\bar\alpha_\tau}`$ 뒤의 $`\epsilon`$이 보이지 않는다. 통상적인 noise-prediction 목적은 다음과 같다.
 
-$$
-\mathbb{E}\left[
-\left\|
-\pi_\theta\!\left(
-\underbrace{\sqrt{\bar\alpha_\tau}A_t+
-\sqrt{1-\bar\alpha_\tau}\epsilon}_{A_t^\tau},
-C_t^R,C_t^{AQ},\sigma_0(P_t),\tau
-\right)-\epsilon
-\right\|_2^2
-\right].
-\tag{해설용 표준 noise-prediction 식}
-$$
+```math
+\mathbb{E}\left[ \left\| \pi_\theta\!\left( \begin{gathered} \underbrace{\sqrt{\bar\alpha_\tau}A_t+ \sqrt{1-\bar\alpha_\tau}\epsilon}_{A_t^\tau},\\ C_t^R,C_t^{AQ},\sigma_0(P_t),\tau \end{gathered} \right)-\epsilon \right\|_2^2 \right].
+```
 
-원문 B-2는 (i) input noise $\epsilon$ 곱이 빠지고, (ii) architecture 설명에서는 쓰는 $C_t^R$를 expectation/network argument에서 생략하고, (iii) proprio projector를 본문의 $\sigma_0$ 대신 $\sigma_1$로 표기한다. 실제 의도는 앞선 noisy-action 정의와 Figure B1을 고려할 때 표준식에 가까울 가능성이 크지만, 공식 부록만으로 정확한 학습 코드를 재구성할 수 없다.
+표기: 해설용 표준 noise-prediction 식.
+
+원문 B-2는 (i) input noise $`\epsilon`$ 곱이 빠지고, (ii) architecture 설명에서는 쓰는 $`C_t^R`$를 expectation/network argument에서 생략하고, (iii) proprio projector를 본문의 $`\sigma_0`$ 대신 $`\sigma_1`$로 표기한다. 실제 의도는 앞선 noisy-action 정의와 Figure B1을 고려할 때 표준식에 가까울 가능성이 크지만, 공식 부록만으로 정확한 학습 코드를 재구성할 수 없다.
 
 #### loss와 추론 역할
 
-학습 때는 무작위 $\tau$와 noise $\epsilon$을 뽑아 noisy action에서 noise를 맞힌다. 추론 때는 Gaussian action에서 시작해 여러 denoising step을 반복한다. L1 head가 한 번의 forward로 chunk를 내는 것과 달리, DiT는 solver step 수만큼 Policy가 반복 호출돼 latency가 늘 수 있다. 논문은 Table B1 성능만 수치로 주고 diffusion step 수, noise schedule, DDIM/DDPM solver, latency를 주지 않는다.
+학습 때는 무작위 $`\tau`$와 noise $`\epsilon`$을 뽑아 noisy action에서 noise를 맞힌다. 추론 때는 Gaussian action에서 시작해 여러 denoising step을 반복한다. L1 head가 한 번의 forward로 chunk를 내는 것과 달리, DiT는 solver step 수만큼 Policy가 반복 호출돼 latency가 늘 수 있다. 논문은 Table B1 성능만 수치로 주고 diffusion step 수, noise schedule, DDIM/DDPM solver, latency를 주지 않는다.
 
 #### 작은 예시
 
-$A=0.6$, $\bar\alpha_\tau=0.81$, $\epsilon=-0.5$라면
+$`A=0.6`$, $`\bar\alpha_\tau=0.81`$, $`\epsilon=-0.5`$라면
 
-$$
-A^\tau=0.9\times0.6+\sqrt{0.19}\times(-0.5)
-\approx0.54-0.218=0.322.
-$$
+```math
+A^\tau=0.9\times0.6+\sqrt{0.19}\times(-0.5) \approx0.54-0.218=0.322.
+```
 
-network는 condition과 $\tau$를 보고 $-0.5$를 예측한다. Eq.(B-2) 원문처럼 $\epsilon$을 input에서 빼면 두 번째 항은 단지 $+0.436$ 상수가 되어 noise sample과 무관하므로 noise prediction 문제가 성립하지 않는다. 이 점이 단순 표기 누락으로 보는 강한 근거다.
+network는 condition과 $`\tau`$를 보고 $`-0.5`$를 예측한다. Eq.(B-2) 원문처럼 $`\epsilon`$을 input에서 빼면 두 번째 항은 단지 $`+0.436`$ 상수가 되어 noise sample과 무관하므로 noise prediction 문제가 성립하지 않는다. 이 점이 단순 표기 누락으로 보는 강한 근거다.
 
 ### 7.7 수식에 없는 중요한 계산
 
 #### action unnormalization
 
-공식 코드는 LIBERO/CALVIN action을 q01/q99 기준으로 $[-1,1]$에 정규화하고, 추론 후 다음 역변환을 한다.
+공식 코드는 LIBERO/CALVIN action을 q01/q99 기준으로 $`[-1,1]`$에 정규화하고, 추론 후 다음 역변환을 한다.
 
-$$
-a_{\mathrm{phys}}
-=\frac{\hat a+1}{2}(q_{0.99}-q_{0.01}+10^{-8})+q_{0.01}.
-\tag{해설용, 코드 기반}
-$$
+```math
+a_{\mathrm{phys}} =\frac{\hat a+1}{2}(q_{0.99}-q_{0.01}+10^{-8})+q_{0.01}.
+```
+
+표기: 해설용, 코드 기반.
 
 outlier dimension을 mask할 수 있다. 이 단계가 빠지면 L1 output을 곧바로 robot command로 해석하게 되어 단위가 틀어진다. 논문은 q01/q99나 각 7 action component의 의미를 적지 않는다.
 
 #### CALVIN Avg. len
 
-prefix success rate를 $p_k=P(\text{at least }k\text{ subtasks complete})$라 하면 expected completed count는
+prefix success rate를 $`p_k=P(\text{at least }k\text{ subtasks complete})`$라 하면 expected completed count는
 
-$$
+```math
 \mathbb E[L]=\sum_{k=1}^{5}p_k.
-\tag{해설용 수식}
-$$
+```
 
-VLA-Adapter는 $(0.991+0.946+0.888+0.828+0.765)=4.418\rightarrow4.42$로 Table 6과 일치한다. 이 관계는 “Avg. len”을 단순 다섯 성공률의 산술평균으로 오해하지 않게 한다.
+표기: 해설용 수식.
+
+VLA-Adapter는 $`(0.991+0.946+0.888+0.828+0.765)=4.418\rightarrow4.42`$로 Table 6과 일치한다. 이 관계는 “Avg. len”을 단순 다섯 성공률의 산술평균으로 오해하지 않게 한다.
 
 ---
 
@@ -796,11 +734,11 @@ VLA-Adapter는 $(0.991+0.946+0.888+0.828+0.765)=4.418\rightarrow4.42$로 Table 6
 
 ### Step 0. 관측과 목표
 
-- third-view RGB $X_t^v$: $224\times224\times3$.
-- wrist RGB $X_t^g$: $224\times224\times3$.
+- third-view RGB $`X_t^v`$: $`224\times224\times3`$.
+- wrist RGB $`X_t^g`$: $`224\times224\times3`$.
 - instruction: `In: What action should the robot take to put both moka pots on the stove?\nOut:` 형태. 부록 A의 원문 template은 `instruction.lower()`를 삽입한다.
-- proprio $P_t$: `[논문 미기재]`; 현재 LIBERO 코드에서는 8 values.
-- 목표 action chunk $A_t$: 8 steps×7 dims.
+- proprio $`P_t`$: `[논문 미기재]`; 현재 LIBERO 코드에서는 8 values.
+- 목표 action chunk $`A_t`$: 8 steps×7 dims.
 
 ### Step 1. 두 vision encoder와 projector
 
@@ -812,40 +750,36 @@ DINOv2와 SigLIP이 이미지를 patch feature로 바꾸고 Prismatic projector�
 
 ### Step 3. 24-layer VLM
 
-Qwen2.5-0.5B 기반 VLM이 sequence를 24층 통과시킨다. 각 layer $i$에서 두 condition을 꺼낸다.
+Qwen2.5-0.5B 기반 VLM이 sequence를 24층 통과시킨다. 각 layer $`i`$에서 두 condition을 꺼낸다.
 
-- $C_{t,i}^{R}$: 논문은 raw vision-language latent라 표현.
-- $C_{t,i}^{AQ}\in\mathbb{R}^{1\times64\times896}$: ActionQuery 위치 hidden state.
+- $`C_{t,i}^{R}`$: 논문은 raw vision-language latent라 표현.
+- $`C_{t,i}^{AQ}\in\mathbb{R}^{1\times64\times896}`$: ActionQuery 위치 hidden state.
 
 `[코드 확인]` 현재 action head 경로는 각 layer에서 **처음 512 vision-patch positions**를 `task_latten_states`로 잡고, ActionQuery 64 positions를 따로 잡는다. instruction token positions를 raw branch에 직접 넘기지 않는다. ActionQuery는 sequence 후반에 있으므로 앞선 vision/language 문맥을 attention으로 모을 수 있다. 이 구현은 원문의 “raw vision-language representation”보다 구체적이며 다소 좁다.
 
 ### Step 4. Policy 초기 action latent
 
-개념상 $A_t^0$는 8-step all-zero action이다. `[코드 확인]` 실제 현재 L1 head는 먼저
+개념상 $`A_t^0`$는 8-step all-zero action이다. `[코드 확인]` 실제 현재 L1 head는 먼저
 
-$$
-0\in\mathbb{R}^{1\times(7\cdot8)\times896}
-\longrightarrow
-\mathrm{reshape}\in\mathbb{R}^{1\times8\times(7\cdot896)}
-\longrightarrow
-\mathrm{LN+Linear+ReLU}\in\mathbb{R}^{1\times8\times896}
-$$
+```math
+\begin{aligned} 0\in\mathbb{R}^{1\times(7\cdot8)\times896} &\longrightarrow \mathrm{reshape}\in\mathbb{R}^{1\times8\times(7\cdot896)}\\ &\longrightarrow \mathrm{LN+Linear+ReLU}\in\mathbb{R}^{1\times8\times896} \end{aligned}
+```
 
 로 만든다. 즉 각 미래 step은 7 action channel×896을 flatten한 6,272-dimensional vector에서 시작한다. Training phase에는 각 step/feature에 Gaussian 초기화된 perturbation을 더하는 코드가 있지만, forward 안에서 새 `nn.Parameter`로 생성되어 module parameter로 등록되지 않으므로 optimizer가 지속적으로 학습하지 못한다. 논문에는 이 perturbation이 없다.
 
 ### Step 5. 24개 Bridge block
 
-Policy block $i$는 다음 token group을 본다.
+Policy block $`i`$는 다음 token group을 본다.
 
 - self action: 길이 8.
-- ActionQuery+proprio: 길이 $64+1=65$.
+- ActionQuery+proprio: 길이 $`64+1=65`$.
 - raw visual/task: 길이 512.
 
-head=8, head dimension=112다. 각 action step의 query가 총 585개 key position을 경쟁적으로 읽고 output $[1,8,896]$을 만든다. raw group score만 block별 $\tanh(g_i)$로 scale된다. residual+FFN을 거쳐 다음 block으로 간다. VLM hidden layer $i+1$과 Policy block $i$가 대응한다.
+head=8, head dimension=112다. 각 action step의 query가 총 585개 key position을 경쟁적으로 읽고 output $`[1,8,896]`$을 만든다. raw group score만 block별 $`\tanh(g_i)`$로 scale된다. residual+FFN을 거쳐 다음 block으로 간다. VLM hidden layer $`i+1`$과 Policy block $`i`$가 대응한다.
 
 ### Step 6. continuous action output
 
-마지막 LN과 Linear가 $[1,8,896]\to[1,8,7]$을 만든다. 학습 때는 GT와 mean L1을 계산한다. 추론 때는 dataset q01/q99로 7개 축을 unnormalize한다.
+마지막 LN과 Linear가 $`[1,8,896]\to[1,8,7]`$을 만든다. 학습 때는 GT와 mean L1을 계산한다. 추론 때는 dataset q01/q99로 7개 축을 unnormalize한다.
 
 ### Step 7. robot execution
 
@@ -891,7 +825,7 @@ Table 3 설명은 backbone을 고정하고 **ActionQuery latent와 Policy만 scr
 - scheme: LoRA.
 - batch size: 16.
 - max training steps: 150,000.
-- learning rate: $10^{-4}$.
+- learning rate: $`10^{-4}`$.
 - scheduler: cosine annealing with warm-up이라고 prose에 서술.
 - warm-up: 전체 step의 10%.
 - ActionQuery: 64.
@@ -901,9 +835,9 @@ Table 3 설명은 backbone을 고정하고 **ActionQuery latent와 Policy만 scr
 - action chunk: 8.
 - intermediate layers: 1-24.
 
-`[논문 미기재]` batch 16이 GPU당인지 global인지, weight decay, Adam $\beta$ 값, gradient clipping, seed, data sampling 비율, evaluation checkpoint selection, exact precision, augmentation recipe는 부록 표에 없다.
+`[논문 미기재]` batch 16이 GPU당인지 global인지, weight decay, Adam $`\beta`$ 값, gradient clipping, seed, data sampling 비율, evaluation checkpoint selection, exact precision, augmentation recipe는 부록 표에 없다.
 
-`[코드 확인]` 현재 저장소의 README/finetune defaults는 paper recipe와 달라졌다. 예를 들어 공개 training command는 learning rate $2\times10^{-4}$와 Pro version을 사용하고, 소스에서 활성 scheduler는 `MultiStepLR`, cosine scheduler는 주석 처리돼 있다. 따라서 현재 repo command를 그대로 실행한 결과를 출판본 재현이라고 부르면 안 된다.
+`[코드 확인]` 현재 저장소의 README/finetune defaults는 paper recipe와 달라졌다. 예를 들어 공개 training command는 learning rate $`2\times10^{-4}`$와 Pro version을 사용하고, 소스에서 활성 scheduler는 `MultiStepLR`, cosine scheduler는 주석 처리돼 있다. 따라서 현재 repo command를 그대로 실행한 결과를 출판본 재현이라고 부르면 안 된다.
 
 ---
 
@@ -946,19 +880,18 @@ Inputs:
 
 ### 10.1 Policy refresh와 control frequency
 
-정책 latency를 $T_p$, 환경 servo frequency를 $f_e$, 한 번에 실제로 실행하는 action 수를 $k$라 하면 다음을 구분해야 한다.
+정책 latency를 $`T_p`$, 환경 servo frequency를 $`f_e`$, 한 번에 실제로 실행하는 action 수를 $`k`$라 하면 다음을 구분해야 한다.
 
-$$
-f_{\mathrm{policy,max}}=\frac{1}{T_p},\qquad
-f_{\mathrm{action-throughput}}=\frac{H}{T_p},\qquad
-f_{\mathrm{refresh,execution}}=\frac{f_e}{k}.
-\tag{해설용 수식}
-$$
+```math
+\begin{aligned} f_{\mathrm{policy,max}}&=\frac{1}{T_p},\\ f_{\mathrm{action-throughput}}&=\frac{H}{T_p},\\ f_{\mathrm{refresh,execution}}&=\frac{f_e}{k}. \end{aligned}
+```
 
-- 논문 수치 $T_p=0.0365$s, $H=8$이면 compute-only 최대 policy call rate는 27.40 Hz다.
-- action-vector throughput은 $8/0.0365=219.18$ vectors/s로 Table 4의 219.2와 일치한다.
-- 실제 robot이 20 Hz로 움직이고 $k=8$을 모두 실행한다고 **가정**하면 action chunk가 0.4초를 덮고 새 policy refresh는 2.5 Hz다. 20 Hz는 논문 값이 아닌 설명용 가정이다.
-- $k=1$로 receding-horizon 실행하면 매 environment step마다 재계획하지만 계산이 servo deadline을 만족해야 한다.
+표기: 해설용 수식.
+
+- 논문 수치 $`T_p=0.0365`$s, $`H=8`$이면 compute-only 최대 policy call rate는 27.40 Hz다.
+- action-vector throughput은 $`8/0.0365=219.18`$ vectors/s로 Table 4의 219.2와 일치한다.
+- 실제 robot이 20 Hz로 움직이고 $`k=8`$을 모두 실행한다고 **가정**하면 action chunk가 0.4초를 덮고 새 policy refresh는 2.5 Hz다. 20 Hz는 논문 값이 아닌 설명용 가정이다.
+- $`k=1`$로 receding-horizon 실행하면 매 environment step마다 재계획하지만 계산이 servo deadline을 만족해야 한다.
 
 즉 219.2라는 숫자는 실제 폐루프 반응 빈도나 안전 제어 빈도를 직접 말해 주지 않는다.
 
@@ -1011,16 +944,16 @@ VLA-Adapter−SmolVLA는 정확히 +9.4 pp다. 그러나 OpenVLA-OFT 0.0은 inte
 
 ### 11.4 Table 4: latency와 throughput
 
-| 방법 | Throughput (action steps/s) | Latency (s/chunk) | 재계산 $8/T$ |
+| 방법 | Throughput (action steps/s) | Latency (s/chunk) | 재계산 $`8/T`$ |
 |---|---:|---:|---:|
 | OpenVLA-OFT | 71.4 | 0.1120 | 71.43 |
 | VLA-Adapter | 219.2 | 0.0365 | 219.18 |
 
 `[첨부 PDF p.5, Table 4]`
 
-- latency 감소: $(0.1120-0.0365)/0.1120=67.41\%$.
-- throughput 배수: $219.2/71.4=3.070\times$.
-- 두 열은 독립 측정이라기보다 $H=8$로 서로 정확히 변환된다.
+- latency 감소: $`(0.1120-0.0365)/0.1120=67.41\%`$.
+- throughput 배수: $`219.2/71.4=3.070\times`$.
+- 두 열은 독립 측정이라기보다 $`H=8`$로 서로 정확히 변환된다.
 - arXiv v2 Table 4에만 OpenVLA 4.2/0.2396, fastest OFT without wrist/proprio 109.7/0.0729가 추가돼 있다. 출판본 최종 표에는 없다.
 
 ### 11.5 Table 5: LIBERO 전체
@@ -1036,8 +969,8 @@ VLA-Adapter−SmolVLA는 정확히 +9.4 pp다. 그러나 OpenVLA-OFT 0.0은 inte
 | Large | CoT-VLA | 7 | 87.5 | 91.6 | 87.6 | 69.0 | 81.1 |
 | Large | WorldVLA | 7 | 87.6 | 96.2 | 83.4 | 60.0 | 81.8 |
 | Small | SpatialVLA | 4 | 88.2 | 89.9 | 78.6 | 55.5 | 78.1 |
-| Small | $\pi_0$ | 3 | 96.8 | 98.8 | 95.8 | 85.2 | 94.2 |
-| Small | $\pi_0$-FAST | 3 | 96.4 | 96.8 | 88.6 | 60.2 | 85.5 |
+| Small | $`\pi_0`$ | 3 | 96.8 | 98.8 | 95.8 | 85.2 | 94.2 |
+| Small | $`\pi_0`$-FAST | 3 | 96.4 | 96.8 | 88.6 | 60.2 | 85.5 |
 | Small | SmolVLA | 2.2 | 93.0 | 94.0 | 91.0 | 77.0 | 88.8 |
 | Small | GR00T N1 | 2 | 94.4 | 97.6 | 93.0 | 90.6 | 93.9 |
 | Tiny | Seer | 0.57 | - | - | - | 78.7 | 78.7 |
@@ -1050,10 +983,10 @@ VLA-Adapter−SmolVLA는 정확히 +9.4 pp다. 그러나 OpenVLA-OFT 0.0은 inte
 
 재계산:
 
-- VLA-Adapter 평균: $(97.8+99.2+97.2+95.0)/4=97.30$.
-- Pro 평균: $(99.6+99.6+98.2+96.4)/4=98.45\rightarrow98.5$.
-- OpenVLA-OFT 평균: $(97.6+98.4+97.9+94.5)/4=97.10$.
-- VLA-Adapter와 VLA-OS의 Long 차이: $95.0-66.0=29.0$ pp. 원문 주장과 일치한다.
+- VLA-Adapter 평균: $`(97.8+99.2+97.2+95.0)/4=97.30`$.
+- Pro 평균: $`(99.6+99.6+98.2+96.4)/4=98.45\rightarrow98.5`$.
+- OpenVLA-OFT 평균: $`(97.6+98.4+97.9+94.5)/4=97.10`$.
+- VLA-Adapter와 VLA-OS의 Long 차이: $`95.0-66.0=29.0`$ pp. 원문 주장과 일치한다.
 - VLA-Adapter와 OpenVLA-OFT 평균 차이는 +0.2 pp로 매우 작다. 50회/task의 discrete success와 seed variance를 고려하면 “동급”은 말할 수 있어도 통계적으로 우월하다고 확정할 근거는 없다.
 
 arXiv v2 Table 5는 FlowVLA, TraceVLA, MolmoAct, ThinkAct, PD-VLA, 4D-VLA, NORA, GraspVLA를 더 포함한다. 이는 2025-09-22 preprint 표와 2026-03-14 출판본 표의 baseline selection이 다름을 뜻한다. 이 문서는 첨부 출판본을 주 비교표로 삼았다.
@@ -1101,7 +1034,7 @@ Table 7의 정확한 condition 결과:
 | Last | ✓ | ✗ | RoboVLMs | 85.8 |
 | Last | ✗ | ✓ | OpenVLA-OFT | 90.2 |
 | Intermediate | ✓ | ✗ | GR00T N1 | 88.4 |
-| All | ✓ | ✗ | $\pi_0$ | 90.6 |
+| All | ✓ | ✗ | $`\pi_0`$ | 90.6 |
 | All | ✗ | ✓ | N/A | 92.6 |
 | All | ✓ | ✓ | VLA-Adapter | 95.0 |
 
@@ -1109,10 +1042,10 @@ Table 8의 gate 결과:
 
 | Raw injection | ActionQuery injection | SR |
 |---|---|---:|
-| $\tanh(g)$ | 1 | **95.0** |
+| $`\tanh(g)`$ | 1 | **95.0** |
 | 1 | 1 | 91.4 |
-| 1 | $\tanh(g)$ | 91.0 |
-| $\tanh(g)$ | $\tanh(g)$ | 92.6 |
+| 1 | $`\tanh(g)`$ | 91.0 |
+| $`\tanh(g)`$ | $`\tanh(g)`$ | 92.6 |
 
 raw를 무조건 1로 주입하면 −3.6 pp, ActionQuery를 gate하면 −4.0 pp다. 둘 다 gate하는 것보다 raw만 gate하는 것이 +2.4 pp다. 이 결과는 bridge의 방향성, 즉 **selected raw + full ActionQuery**를 직접 지지한다.
 
@@ -1129,7 +1062,7 @@ raw를 무조건 1로 주입하면 −3.6 pp, ActionQuery를 gate하면 −4.0 p
 | Total trainable | 197.2M | 전체 resident/inference parameters와 다름 |
 | Training VRAM | batch 8에서 24.7GB vs 62GB | Figure 1. 측정 precision/checkpointing/optimizer state 범위 미기재 |
 | Latency | 0.0365 s per 8-step chunk | batch/device/warm-up/전처리 범위 미기재 |
-| Throughput | 219.2 action steps/s | $H/T$로 재계산 가능. policy refresh는 27.4 calls/s |
+| Throughput | 219.2 action steps/s | $`H/T`$로 재계산 가능. policy refresh는 27.4 calls/s |
 | FLOPs/MACs | 미기재 | all-layer bridge의 추가 attention 비용도 미기재 |
 | TTFT | 미기재 | autoregressive text generation이 아니므로 action-head latency가 더 직접적이나, first-call/JIT는 여전히 분리 필요 |
 | p50/p95/p99 latency | 미기재 | 실시간 제어에는 tail이 중요 |
@@ -1147,10 +1080,9 @@ raw를 무조건 1로 주입하면 −3.6 pp, ActionQuery를 gate하면 −4.0 p
 
 현재 코드처럼 두 이미지 512 raw positions, 64 ActionQuery, 24 layers, hidden 896, BF16이라 가정하면 condition tensor만 대략
 
-$$
-24\times(512+64)\times896\times2\ \text{bytes}
-\approx23.6\ \text{MiB}
-$$
+```math
+24\times(512+64)\times896\times2\ \text{bytes} \approx23.6\ \text{MiB}
+```
 
 다. 이는 **[해설용 계산]**이며 autograd buffer, QKV, attention score, VLM 내부 activation, allocator overhead를 포함하지 않는다. 학습 중 실제 peak memory는 훨씬 크다. 이 계산은 all-layer tap이 무료가 아님을 보여 줄 뿐, 논문의 측정값을 대체하지 않는다.
 
@@ -1186,7 +1118,7 @@ In: What action should the robot take to {instruction.lower()}?
 Out:
 ```
 
-출력은 “7-dimensional action vector”라고 적는다. 한 policy call이 8-step chunk를 내므로 전체 tensor는 $8\times7$이다. “7-DOF Franka Emika Panda”라는 부록 표현은 robot actuation과 output dimension을 연결하지만, translation/rotation/gripper의 component order와 단위는 공개하지 않는다.
+출력은 “7-dimensional action vector”라고 적는다. 한 policy call이 8-step chunk를 내므로 전체 tensor는 $`8\times7`$이다. “7-DOF Franka Emika Panda”라는 부록 표현은 robot actuation과 output dimension을 연결하지만, translation/rotation/gripper의 component order와 단위는 공개하지 않는다.
 
 ### Appendix B. DiT-Based Policy Network
 
@@ -1196,11 +1128,11 @@ Out:
 
 원문 Figure B1 — 아래의 초기 action에서 위의 출력으로 흐르는 DiT 구조와 scale/shift·residual 경로다. 출처: [arXiv v2 PDF p.19, Appendix B.1](https://arxiv.org/pdf/2509.09372v2#page=19).
 
-Figure B1의 DiT block은 conditional modulation→Bridge Attention→conditional FFN의 세 부분이다. noisy action $A_t^1$을 AdaLN-Zero로 modulate하고, $C_t^R$와 proprio에서 $C_t^M$을 만든다. action latent는 self-attention의 QKV, $C_t^R$와 $C_t^{AQ}$는 Bridge Attention의 KV다. $M$개 block 뒤 LN+MLP가 action chunk를 낸다. Eq.(B-1)의 표기 불일치는 [§7.5](#equations)에 정리했다. `[공식 arXiv v2 PDF pp.18-19, Fig.B1, Eq.(B-1)]`
+Figure B1의 DiT block은 conditional modulation→Bridge Attention→conditional FFN의 세 부분이다. noisy action $`A_t^1`$을 AdaLN-Zero로 modulate하고, $`C_t^R`$와 proprio에서 $`C_t^M`$을 만든다. action latent는 self-attention의 QKV, $`C_t^R`$와 $`C_t^{AQ}`$는 Bridge Attention의 KV다. $`M`$개 block 뒤 LN+MLP가 action chunk를 낸다. Eq.(B-1)의 표기 불일치는 [§7.5](#equations)에 정리했다. `[공식 arXiv v2 PDF pp.18-19, Fig.B1, Eq.(B-1)]`
 
 #### B.2 Training
 
-GT action에 Gaussian noise를 섞고 network가 noise를 예측하도록 MSE를 쓴다. Appendix는 DDPM류 설명이지만 exact schedule, timestep 수, solver, $x_0$-prediction 여부를 주지 않는다. Eq.(B-2)의 noise 곱 누락과 condition 표기 불일치 때문에 부록만으로 실행 가능한 구현을 만들 수 없다.
+GT action에 Gaussian noise를 섞고 network가 noise를 예측하도록 MSE를 쓴다. Appendix는 DDPM류 설명이지만 exact schedule, timestep 수, solver, $`x_0`$-prediction 여부를 주지 않는다. Eq.(B-2)의 noise 곱 누락과 condition 표기 불일치 때문에 부록만으로 실행 가능한 구현을 만들 수 없다.
 
 #### B.3 L1 vs DiT
 
@@ -1286,7 +1218,7 @@ Out:
 Table F1/F2는 [§9.4](#training-boundary)의 recipe를 준다. 중요한 추가 해석은 다음과 같다.
 
 - hidden 896/head 8이므로 head dimension 112.
-- “Layer $(\tau/M)=24$”는 VLM과 Policy가 모두 24 layer라는 뜻으로 읽힌다.
+- “Layer $`(\tau/M)=24`$”는 VLM과 Policy가 모두 24 layer라는 뜻으로 읽힌다.
 - total trainable 197.2M은 Policy 97.3M보다 약 2배다. 0.5B backbone 표기와 별개의 quantity다.
 - Paper의 “cosine-annealing scheduler” prose와 현재 code의 활성 MultiStepLR이 다르므로 version pinning이 필수다.
 
@@ -1320,11 +1252,11 @@ Appendix H는 OpenVLA-OFT L1 path가 action token embedding을 zero mask로 치�
 
 공개 code의 논리:
 
-1. action latent $x$에서 shared Q를 만든다.
+1. action latent $`x`$에서 shared Q를 만든다.
 2. self, ActionQuery+proprio(adapter), raw/task condition마다 별도 K/V projection을 쓴다.
 3. self Q/K와 condition K에 RoPE를 적용한다.
 4. self/AQ/raw score를 token 축으로 concat한다.
-5. raw/task score에만 $\tanh(g)$를 곱한다.
+5. raw/task score에만 $`\tanh(g)`$를 곱한다.
 6. **하나의 joint softmax** 후 concat된 V를 weighted sum한다.
 7. output projection, residual, FFN을 적용한다.
 
@@ -1368,7 +1300,7 @@ Table I1 결과:
 - output LN+Linear: 896→7 per step.
 - 최종: `[B,8,7]`.
 
-각 original block은 shared $Q,K,V,O$ projection과 one-layer residual FFN을 갖는다. Pro는 self/AQ/raw K,V를 분리한다.
+각 original block은 shared $`Q,K,V,O`$ projection과 one-layer residual FFN을 갖는다. Pro는 self/AQ/raw K,V를 분리한다.
 
 ### 14.3 논문 Eq.(1)과 코드 attention의 차이
 
@@ -1376,36 +1308,30 @@ Table I1 결과:
 
 **[해설용 코드 대응식]**은 다음에 가깝다.
 
-$$
-S=\frac{1}{\sqrt{d_h}}
-\left[
-QK_{self}^\top,
-QK_{AQ+P}^\top,
-\tanh(g)QK_R^\top
-\right],
-$$
+```math
+S=\frac{1}{\sqrt{d_h}} \left[ QK_{self}^\top, QK_{AQ+P}^\top, \tanh(g)QK_R^\top \right],
+```
 
-$$
-Y=\mathrm{softmax}(S)
-\left[V_{self};V_{AQ+P};V_R\right]W_O.
-$$
+```math
+Y=\mathrm{softmax}(S) \left[V_{self};V_{AQ+P};V_R\right]W_O.
+```
 
-독립 attention 세 개라면 각 branch softmax가 각각 1로 정규화되지만, joint softmax에서는 self/AQ/raw token이 동일 확률 질량을 놓고 경쟁한다. 이 차이는 gating의 실제 의미를 바꾼다. 특히 $g=0$이면 raw logits가 0이지만 raw V가 완전히 제거되는 것은 아니다. softmax에서 $e^0=1$이므로 다른 score에 따라 raw positions가 확률을 받을 수 있다. 원문처럼 **output에 0을 곱하는 gate**와 같지 않다. 이는 중요한 implementation/paper mismatch다.
+독립 attention 세 개라면 각 branch softmax가 각각 1로 정규화되지만, joint softmax에서는 self/AQ/raw token이 동일 확률 질량을 놓고 경쟁한다. 이 차이는 gating의 실제 의미를 바꾼다. 특히 $`g=0`$이면 raw logits가 0이지만 raw V가 완전히 제거되는 것은 아니다. softmax에서 $`e^0=1`$이므로 다른 score에 따라 raw positions가 확률을 받을 수 있다. 원문처럼 **output에 0을 곱하는 gate**와 같지 않다. 이는 중요한 implementation/paper mismatch다.
 
 ### 14.4 parameter count 재계산
 
-현재 code의 $d=896,D_a=7,H=8,M=24$를 그대로 세어 보면:
+현재 code의 $`d=896,D_a=7,H=8,M=24`$를 그대로 세어 보면:
 
-- original L1 head: 102,129,695 parameters = 102.13 decimal million = 97.40×$2^{20}$ units.
-- Pro L1 head: 217,864,223 parameters = 217.86 decimal million = 207.77×$2^{20}$ units.
+- original L1 head: 102,129,695 parameters = 102.13 decimal million = 97.40×$`2^{20}`$ units.
+- Pro L1 head: 217,864,223 parameters = 217.86 decimal million = 207.77×$`2^{20}`$ units.
 
-논문의 97.3M/207M은 decimal million보다 $2^{20}$로 나눈 값에 가깝다. 저자가 “M parameters”를 binary-mega 단위로 계산했을 가능성이 높다. 이는 architecture 규모의 대략 비교에는 작지만, exact parameter count를 보고할 때는 구분해야 한다.
+논문의 97.3M/207M은 decimal million보다 $`2^{20}`$로 나눈 값에 가깝다. 저자가 “M parameters”를 binary-mega 단위로 계산했을 가능성이 높다. 이는 architecture 규모의 대략 비교에는 작지만, exact parameter count를 보고할 때는 구분해야 한다.
 
 ### 14.5 training code와 paper recipe의 drift
 
 - [`finetune.py`](https://github.com/OpenHelix-Team/VLA-Adapter/blob/23fa0c9c159e2aa04341cdd3e924f44061311060/vla-scripts/finetune.py#L330-L418)는 VLM all hidden states를 모아 `torch.nn.L1Loss()`를 쓴다.
 - current config는 BF16 autocast를 사용한다. 이는 paper 표가 명시한 precision이 아니라 **현재 code 정보**다.
-- current README command는 LoRA rank 64, learning rate $2\times10^{-4}$, Pro version을 권장한다. Appendix F의 $10^{-4}$ original recipe와 다르다.
+- current README command는 LoRA rank 64, learning rate $`2\times10^{-4}`$, Pro version을 권장한다. Appendix F의 $`10^{-4}`$ original recipe와 다르다.
 - source에서 활성 scheduler는 `MultiStepLR(gamma=0.1)`, cosine annealing은 주석 처리돼 있어 Appendix F prose와 다르다.
 - LoRA target은 `all-linear`; ActionQuery는 명시적으로 `requires_grad=True`로 다시 켠다.
 - 현재 `use_fz` flag는 run name/checkpoint saving에 쓰이지만 확인한 경로에서 backbone `requires_grad=False`를 실제 설정하지 않는다. README도 frozen 실험 추가 공개를 TODO로 둔다. 그러므로 Table 3 frozen experiment의 정확한 script/config는 현재 repo만으로 완전 재현되지 않는다.
@@ -1423,7 +1349,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 ### 14.7 코드에서 드러난 추가 재현 위험
 
 - training phase의 `learnable_random_perturbations`는 forward 안에서 새 `nn.Parameter`를 만든다. module에 등록되지 않아 optimizer가 지속적으로 갱신하지 않는다. 이름과 실제 optimizer semantics가 다르다.
-- inference helper comment는 “action_dim×chunk placeholder”라고 하지만 실제 placeholder 수는 고정 `NUM_TOKENS=64`; $7×8=56$과 다르다. 64는 ActionQuery 수다.
+- inference helper comment는 “action_dim×chunk placeholder”라고 하지만 실제 placeholder 수는 고정 `NUM_TOKENS=64`; $`7×8=56`$과 다르다. 64는 ActionQuery 수다.
 - raw/task token 기본값 `num_task_tokens=512`는 두 224px view×256 patches를 가정한다. 카메라 수나 patch grid를 바꾸면 이 hard-coded split을 함께 검증해야 한다.
 - Pro의 FiLM module은 선언돼 있으나 forward 적용은 주석 처리돼 있다. model parameter에는 포함될 수 있지만 계산에는 쓰이지 않는다.
 
@@ -1450,7 +1376,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 
 - condition ablation 대부분이 LIBERO-Long 한 suite에 집중돼 finding의 외부 타당성이 제한된다.
 - all-layer가 single-layer보다 좋다는 결론에 compute/memory-matched control이 없다. 예를 들어 all-layer가 더 많은 parameter/projection 또는 activation을 사용하는지 공정 비교가 필요하다.
-- Table 7의 RoboVLMs/$\pi_0$/GR00T N1/OpenVLA-OFT는 전체 원 모델이 아니라 condition “style” 비교다. 이름만 보고 원 논문보다 우수하다고 읽기 쉽다.
+- Table 7의 RoboVLMs/$`\pi_0`$/GR00T N1/OpenVLA-OFT는 전체 원 모델이 아니라 condition “style” 비교다. 이름만 보고 원 논문보다 우수하다고 읽기 쉽다.
 - baseline result가 원 논문 또는 다른 published reproduction에서 왔고, 모두 동일 codebase/augmentation/seed/training budget으로 재실행된 것은 아니다.
 - 50 rollouts/task에 confidence interval, seed variance, significance test가 없다. per-task success rate의 분해능은 2 pp다.
 - real-world는 10회/category라 표본이 작고 failure distribution이 공개되지 않는다.
@@ -1459,7 +1385,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 
 - Eq.(B-1)/(B-2)에 명백한 표기 불일치와 noise 항 누락이 있어 DiT를 재현하기 어렵다.
 - Bridge Attention의 concat 축과 output projection이 본문에 없다.
-- $\tanh(g)$가 음수일 수 있는데 이를 “injection degree”라고만 표현하고 sign inversion 의미를 논의하지 않는다.
+- $`\tanh(g)`$가 음수일 수 있는데 이를 “injection degree”라고만 표현하고 sign inversion 의미를 논의하지 않는다.
 - all-zero action initialization에서 8 future step을 구별하는 positional mechanism이 출판본 original model 설명에 명확하지 않다.
 - L1 loss가 action 축별 동일 비중을 가정하며 gripper/translation/rotation의 scale·단위·mask를 논문이 설명하지 않는다.
 
@@ -1484,7 +1410,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 |---|---|
 | middle raw가 좋음 | 여러 benchmark/robot에서 layer sweep, seed≥3, layer representation probing |
 | ActionQuery가 multimodal을 집계 | attention rollout/causal intervention, language shuffle, image occlusion, token pruning |
-| raw gate가 안정화 | $g_i$ trajectory, gradient norm, attention entropy, gate fixed/positive sigmoid/softmax 비교 |
+| raw gate가 안정화 | $`g_i`$ trajectory, gradient norm, attention entropy, gate fixed/positive sigmoid/softmax 비교 |
 | all-layer가 효율적 | last/middle/top-k/all의 latency·peak memory·success Pareto |
 | small backbone이 충분 | 동일 total trainable params와 동일 GPU-hours로 0.5B/1.5B/3B/7B sweep |
 | frozen에서 우수 | OFT에도 trainable query를 허용한 matched-interface control |
@@ -1502,7 +1428,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 
 #### Gate 1. shape/unit 단위시험
 
-- [ ] LIBERO/CALVIN에서 $H=8,D_a=7,N_{AQ}=64,d=896,M=24$ 확인.
+- [ ] LIBERO/CALVIN에서 $`H=8,D_a=7,N_{AQ}=64,d=896,M=24`$ 확인.
 - [ ] two-view input이 512 raw patch positions가 되는지 runtime assert.
 - [ ] VLM hidden state count가 embedding output 포함 25개인지, Policy가 실제 layer 1-24를 쓰는지 확인.
 - [ ] VLM embedding output까지 포함한 action-head input `[B,25,576,896]`에서 raw 512/AQ 64 split을 확인하고, Policy 24 blocks가 indices 1-24를 소비하는지 확인.
@@ -1513,14 +1439,14 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 
 - [ ] default LoRA setting에서 vision/LLM/projector/ActionQuery/Policy별 `requires_grad`와 gradient norm 출력.
 - [ ] frozen setting에서 backbone gradient가 정확히 0이고 ActionQuery/Policy는 nonzero인지 확인.
-- [ ] $g=0$ 첫 step에서 gate gradient nonzero, raw projection gradient zero인지 확인.
+- [ ] $`g=0`$ 첫 step에서 gate gradient nonzero, raw projection gradient zero인지 확인.
 - [ ] forward 내부 생성 perturbation이 optimizer parameter인지 확인하고 의도에 맞게 수정/고정.
 
 #### Gate 3. data/protocol
 
 - [ ] `*_no_noops` dataset 여부와 filter 규칙 기록.
 - [ ] 각 suite의 train data, shuffle buffer, augmentation, seed, batch(global/per-device), grad accumulation 기록.
-- [ ] 150k step, LR $10^{-4}$, warm-up 10%, cosine schedule을 paper recipe로 별도 config화.
+- [ ] 150k step, LR $`10^{-4}`$, warm-up 10%, cosine schedule을 paper recipe로 별도 config화.
 - [ ] best checkpoint selection이 test rollouts를 보지 않도록 validation protocol 고정.
 - [ ] CALVIN ABC→D의 1,000 chain 목록과 instruction order 고정.
 
@@ -1540,8 +1466,8 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 - [ ] warm-up 후 1,000회 p50/p95/p99 CUDA-event latency.
 - [ ] camera decode/preprocess, vision encoders, projector, VLM, hidden extraction, Policy, unnormalize, environment step을 분해 측정.
 - [ ] peak allocated/reserved VRAM, model weight memory, activation memory 보고.
-- [ ] $H/T_p$ action throughput과 $1/T_p$ policy-call rate를 모두 보고.
-- [ ] action commit $k$와 actual servo frequency를 명시.
+- [ ] $`H/T_p`$ action throughput과 $`1/T_p`$ policy-call rate를 모두 보고.
+- [ ] action commit $`k`$와 actual servo frequency를 명시.
 
 #### Gate 6. real-world 안전/일반화
 
@@ -1563,8 +1489,8 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 
 - 7B 대신 0.5B language backbone을 사용해 weight bandwidth 부담을 줄일 가능성이 있다.
 - autoregressive action-token generation 대신 한 번에 8×7 continuous chunk를 출력한다.
-- Policy query 길이 $H=8$은 작고, Bridge Attention의 output length도 8이다.
-- static shape $M=24,H=8,d=896,N_{AQ}=64$를 고정하면 engine 최적화가 쉽다.
+- Policy query 길이 $`H=8`$은 작고, Bridge Attention의 output length도 8이다.
+- static shape $`M=24,H=8,d=896,N_{AQ}=64`$를 고정하면 engine 최적화가 쉽다.
 
 반대로 다음 병목은 남는다.
 
@@ -1579,7 +1505,7 @@ flow matching 결과나 구조를 이 논문의 성과로 설명하면 사실과
 #### Stage A. 정확성 기준선
 
 1. desktop/H100에서 paper-original checkpoint와 code commit을 고정한다.
-2. 동일 observation에 대해 layer별 $C^R,C^{AQ}$, gate, final normalized/unnormalized action을 dump한다.
+2. 동일 observation에 대해 layer별 $`C^R,C^{AQ}`$, gate, final normalized/unnormalized action을 dump한다.
 3. Thor port의 출력 오차를 action dimension별로 비교한다. hidden cosine similarity만으로 success를 보증하지 않는다.
 
 #### Stage B. component profiling
@@ -1614,7 +1540,7 @@ camera copy/resize
 - 먼저 BF16/FP16 parity를 맞춘다.
 - vision encoders, Qwen, Policy를 한꺼번에 INT8/FP8화하지 말고 component별 calibration한다.
 - action output은 작은 numerical error가 제어 오차로 증폭될 수 있으므로 final layer와 unnormalize는 더 높은 precision을 유지하는 mixed-precision control을 시험한다.
-- $g\approx0$인 raw branch는 quantization으로 sign/scale이 쉽게 왜곡될 수 있다. gate와 raw logits를 별도 histogram으로 검증한다.
+- $`g\approx0`$인 raw branch는 quantization으로 sign/scale이 쉽게 왜곡될 수 있다. gate와 raw logits를 별도 histogram으로 검증한다.
 - calibration set은 Spatial/Object/Goal/Long, CALVIN, 실제 카메라 lighting을 포함해야 한다.
 
 #### Stage E. token/layer 절감
@@ -1631,13 +1557,13 @@ all-layer가 정확도에 기여하지만 edge에서는 다음 Pareto ablation�
 
 ### 16.3 제어 시스템과 함께 최적화
 
-VLA inference만 빠르게 해도 robot이 더 잘 반응하는 것은 아니다. $k$개의 chunk action을 실행하는 동안 관측이 바뀐다. 다음 세 정책을 비교해야 한다.
+VLA inference만 빠르게 해도 robot이 더 잘 반응하는 것은 아니다. $`k`$개의 chunk action을 실행하는 동안 관측이 바뀐다. 다음 세 정책을 비교해야 한다.
 
-- $k=8$: compute 부담 최소, open-loop horizon 최대.
-- $k=1$: 매 step 재계획, 반응성 최대, compute 부담 최대.
-- adaptive $k$: uncertainty/scene motion이 크면 빨리 재계획.
+- $`k=8`$: compute 부담 최소, open-loop horizon 최대.
+- $`k=1`$: 매 step 재계획, 반응성 최대, compute 부담 최대.
+- adaptive $`k`$: uncertainty/scene motion이 크면 빨리 재계획.
 
-보고할 지표는 policy latency, servo deadline miss, action age, effective refresh Hz, success, collision/intervention이다. 논문의 219.2 action steps/s만으로 $k$를 결정할 수 없다.
+보고할 지표는 policy latency, servo deadline miss, action age, effective refresh Hz, success, collision/intervention이다. 논문의 219.2 action steps/s만으로 $`k`$를 결정할 수 없다.
 
 ### 16.4 Thor 성공 판정 gate
 
@@ -1645,7 +1571,7 @@ VLA inference만 빠르게 해도 robot이 더 잘 반응하는 것은 아니다
 - **Gate 2 no fallback**: unsupported operator로 CPU/alternate backend fallback이 없는지 trace 확인.
 - **Gate 3 E2E**: camera input부터 command enqueue까지 p95가 control deadline 이내.
 - **Gate 4 memory**: peak allocated/reserved, fragmentation, thermal steady-state에서 여유 확보.
-- **Gate 5 closed-loop**: 선택한 $k$에서 task success와 safety가 유지.
+- **Gate 5 closed-loop**: 선택한 $`k`$에서 task success와 safety가 유지.
 
 이 gate를 통과하기 전에는 “Thor 최적화 완료”나 “실시간 219 Hz 제어”라고 주장하지 않는다.
 
@@ -1687,9 +1613,9 @@ raw feature 평균에서는 layer 9가 좋았지만 task별 최적은 다르다.
 
 항상 그렇지 않다. Table C1의 raw all-layer T7=76은 layer 9의 90보다 낮다. 평균은 좋아도 개별 task regression이 있다.
 
-### Q9. $\tanh(g)$는 0과 1 사이의 gate인가?
+### Q9. $`\tanh(g)`$는 0과 1 사이의 gate인가?
 
-아니다. 범위는 −1에서 1이다. 음수이면 raw contribution의 부호를 반전할 수 있다. current code에서는 raw logits scaling이라 $g=0$이어도 raw V가 softmax를 통해 완전히 사라지지 않을 수 있다.
+아니다. 범위는 −1에서 1이다. 음수이면 raw contribution의 부호를 반전할 수 있다. current code에서는 raw logits scaling이라 $`g=0`$이어도 raw V가 softmax를 통해 완전히 사라지지 않을 수 있다.
 
 ### Q10. 219.2 Hz로 매초 219번 정책을 다시 계산하나?
 
@@ -1762,9 +1688,9 @@ arXiv 초록의 저자 보고지만 exact GPU, suite, precision, batch, step이 
 | AAAI Eq.(1) L1 objective | 첨부 p.4 | §7.3 | 재현·항/shape/gradient/예시/edge case 완료 |
 | arXiv Eq.(1) Bridge concat | arXiv p.5 | §7.2 | 재현·gate gradient·code mismatch 완료 |
 | arXiv Eq.(2) L1 objective | arXiv p.6 | §7.3 | 버전 번호 차이 포함 완료 |
-| $C_t^M=\sigma'_1(C_t^R)+\sigma_0(P_t)$ | arXiv p.18, B.1 비번호 | §7.5 | 완료 |
+| $`C_t^M=\sigma'_1(C_t^R)+\sigma_0(P_t)`$ | arXiv p.18, B.1 비번호 | §7.5 | 완료 |
 | Eq.(B-1) AdaLN-Zero | arXiv p.18 | §7.5 | 재현·shape·내부 불일치 완료 |
-| noisy action $A_t^\tau$ | arXiv p.19, B.2 비번호 | §7.4 | 재현·표준식 비교·예시 완료 |
+| noisy action $`A_t^\tau`$ | arXiv p.19, B.2 비번호 | §7.4 | 재현·표준식 비교·예시 완료 |
 | cumulative product 문장식 | arXiv p.19, B.2 비번호 | §7.4 | 원문과 통상 표기 분리 완료 |
 | Eq.(B-2) noise MSE | arXiv p.19 | §7.6 | 원문 noise 누락 보존·가능 해석 완료 |
 | 기타 설명용 식 | 본 리뷰 | 각 식에 `[해설용]` 표기 | 원문 번호를 만들지 않음 |

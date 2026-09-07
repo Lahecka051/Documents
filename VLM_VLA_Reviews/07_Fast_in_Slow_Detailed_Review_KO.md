@@ -67,7 +67,7 @@ FiS-VLA의 핵심은 “큰 VLM 하나와 작은 정책 헤드 하나”를 병�
 
 1. 마지막 2개 블록 공유형이 독립 복제형보다 RLBench 평균 0.69 대 0.61/0.59로 높다. [PDF p.30, Table 6]
 2. System 1에 robot state, 최신 RGB, point cloud를 순서대로 보태면 평균 성공률이 크게 오른다. [PDF p.8, Fig.3; p.31, Table 9]
-3. $L_{\mathrm{slow}}$를 제거하면 0.69에서 0.62로 하락하고, 언어 sub-task plan 감독을 쓰면 0.73으로 오른다. 이는 느린 문맥 감독이 행동 경로에 유용하다는 간접 증거다. [PDF p.8, §4.2]
+3. $`L_{\mathrm{slow}}`$를 제거하면 0.69에서 0.62로 하락하고, 언어 sub-task plan 감독을 쓰면 0.73으로 오른다. 이는 느린 문맥 감독이 행동 경로에 유용하다는 간접 증거다. [PDF p.8, §4.2]
 
 가장 중요한 한계도 세 가지다.
 
@@ -83,12 +83,11 @@ FiS-VLA의 핵심은 “큰 VLM 하나와 작은 정책 헤드 하나”를 병�
 
 전형적인 VLM 기반 VLA는 매 제어 시점에 다음을 반복한다.
 
-$$
-(I_t, l, r_t) \rightarrow \text{vision encoder} \rightarrow \text{projector} \rightarrow \text{LLM}_{1:L}
-\rightarrow \text{action tokens or action head}.
-$$
+```math
+\begin{aligned} (I_t, l, r_t)&\rightarrow \text{vision encoder} \rightarrow \text{projector}\\ &\rightarrow \text{LLM}_{1:L} \rightarrow \text{action tokens or action head}. \end{aligned}
+```
 
-여기서 $I_t$는 영상, $l$은 언어 지시, $r_t$는 robot state, $L$은 수십 개 Transformer block이다. 매 관측마다 수십억 파라미터의 LLM 전체를 실행하고, 행동을 autoregressive token으로 한 개씩 생성하면 두 가지 지연이 겹친다.
+여기서 $`I_t`$는 영상, $`l`$은 언어 지시, $`r_t`$는 robot state, $`L`$은 수십 개 Transformer block이다. 매 관측마다 수십억 파라미터의 LLM 전체를 실행하고, 행동을 autoregressive token으로 한 개씩 생성하면 두 가지 지연이 겹친다.
 
 - 영상 인코딩과 전체 LLM prefill이 매번 반복된다.
 - 행동 차원 또는 행동 시퀀스를 autoregressive하게 내면 토큰별 직렬 decode가 발생한다.
@@ -99,11 +98,11 @@ $$
 
 기존 동기식 dual-system은 대개 다음 흐름이다.
 
-$$
+```math
 z_t = \mathrm{VLM}(I_t,l), \qquad a_{t:t+H-1}=\mathrm{PolicyHead}(z_t,I_t,r_t).
-$$
+```
 
-System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정책이 System 1로 행동을 만든다. 비동기 버전은 $z_t$를 여러 빠른 호출 동안 캐시한다. 계산량은 줄지만, 저자의 문제 제기는 “새로 붙인 System 1이 인터넷 규모의 VLM pretraining을 직접 물려받지 못한다”는 것이다. System 1은 $z_t$라는 좁은 인터페이스만 보고, VLM 내부의 계층적 표현 변환을 자체 파라미터로 소유하지 않는다. [PDF p.2-3, Fig.1(a), §1-2]
+System 2인 VLM이 semantic latent $`z_t`$를 만들고, 별도 diffusion/flow 정책이 System 1로 행동을 만든다. 비동기 버전은 $`z_t`$를 여러 빠른 호출 동안 캐시한다. 계산량은 줄지만, 저자의 문제 제기는 “새로 붙인 System 1이 인터넷 규모의 VLM pretraining을 직접 물려받지 못한다”는 것이다. System 1은 $`z_t`$라는 좁은 인터페이스만 보고, VLM 내부의 계층적 표현 변환을 자체 파라미터로 소유하지 않는다. [PDF p.2-3, Fig.1(a), §1-2]
 
 구체적인 실패 가능성은 다음과 같다.
 
@@ -129,9 +128,9 @@ System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정
 | 기존 한계 | 연구 가설 | 설계 선택 | 검증 |
 |---|---|---|---|
 | 독립 System 1의 pretrained 지식 부족 | VLM 마지막 블록을 직접 재사용 | blocks 31-32를 공유 System 1로 사용 | Table 6 공유 대 복제 |
-| 전체 VLM의 낮은 호출률 | 고수준 latent는 여러 step 유지 가능 | blocks 1-30 latent를 1:$n$ 주기로 갱신 | Fig.3, Table 10 |
+| 전체 VLM의 낮은 호출률 | 고수준 latent는 여러 step 유지 가능 | blocks 1-30 latent를 1:$`n`$ 주기로 갱신 | Fig.3, Table 10 |
 | 오래된 latent만으로 반응하기 어려움 | 저수준 상태는 매번 새로 관측해야 함 | System 1에 RGB, PC, state 제공 | Fig.3, Table 9/12 |
-| diffusion fine-tuning의 catastrophic forgetting | AR 감독이 문맥 능력을 붙잡음 | $L_{\mathrm{fast}}+L_{\mathrm{slow}}$ | §4.2 training ablation |
+| diffusion fine-tuning의 catastrophic forgetting | AR 감독이 문맥 능력을 붙잡음 | $`L_{\mathrm{fast}}+L_{\mathrm{slow}}`$ | §4.2 training ablation |
 
 <a id="claims"></a>
 
@@ -140,7 +139,7 @@ System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정
 ### 3.1 주장 1: System 1을 System 2 안에 넣으면 성능과 속도를 동시에 얻는다
 
 - **[저자 보고]** 32-block LLaMA2 전체는 System 2로 유지하고, 마지막 2개 block을 System 1에서도 재사용한다. [PDF p.4-5, Fig.2, §3.2]
-- **근거**: RLBench 평균 0.69, 21.9 Hz at chunk 1; CogACT 0.61/9.8 Hz, $\pi_0$ 0.55/13.8 Hz. [PDF p.7, Table 1]
+- **근거**: RLBench 평균 0.69, 21.9 Hz at chunk 1; CogACT 0.61/9.8 Hz, $`\pi_0`$ 0.55/13.8 Hz. [PDF p.7, Table 1]
 - **범위**: RLBench 10개 single-arm task와 두 종류 dual-arm robot의 8개 task.
 - **한계**: 동일 입력 modality, 동일 action representation, 동일 diffusion step 수로 통제된 구조-only 비교가 아니다. 속도 측정 프로토콜도 없다.
 
@@ -153,7 +152,7 @@ System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정
 ### 3.3 주장 3: 이종 관측이 정확한 빠른 제어에 필요하다
 
 - **[저자 보고]** System 1이 slow latent만 볼 때 보고 평균은 0.22, state와 RGB를 더할수록 0.44/0.61, point cloud까지 포함하면 0.69다. [PDF p.31, Table 9]
-- **[재계산 경고]** Table 9의 마지막 행 10개 task 숫자를 그대로 평균하면 $(0.50+0.30+0.15+0+0.65+0.05+0.55+0.45+0+0)/10=0.265$로, 표의 0.22와 맞지 않는다. Figure 3 막대는 약 0.22다. 셀 중 하나 이상의 오탈자 또는 mean 오탈자가 의심되며 조용히 수정할 수 없다.
+- **[재계산 경고]** Table 9의 마지막 행 10개 task 숫자를 그대로 평균하면 $`(0.50+0.30+0.15+0+0.65+0.05+0.55+0.45+0+0)/10=0.265`$로, 표의 0.22와 맞지 않는다. Figure 3 막대는 약 0.22다. 셀 중 하나 이상의 오탈자 또는 mean 오탈자가 의심되며 조용히 수정할 수 없다.
 - **한계**: point cloud는 RGB-D front camera와 calibration에 의존한다. depth noise, calibration drift, point tokenizer latency에 대한 민감도 실험은 없다.
 
 ### 3.4 주장 4: 1:4 비동기 주기가 가장 좋다
@@ -164,14 +163,14 @@ System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정
 
 ### 3.5 주장 5: dual-aware co-training이 reasoning을 보존한다
 
-- **[저자 보고]** $L_{\mathrm{slow}}$ 제거 시 RLBench 평균 0.69에서 0.62로 하락한다. discrete action 대신 Gemini 생성 후 수동 검증한 task plan으로 System 2를 감독하면 0.73이다. [PDF p.8, §4.2]
+- **[저자 보고]** $`L_{\mathrm{slow}}`$ 제거 시 RLBench 평균 0.69에서 0.62로 하락한다. discrete action 대신 Gemini 생성 후 수동 검증한 task plan으로 System 2를 감독하면 0.73이다. [PDF p.8, §4.2]
 - **[리뷰어 해석]** 이는 느린 branch의 supervision이 좋은 conditioning을 만든다는 증거다. 그러나 일반 VLM reasoning 보존을 직접 측정한 것은 아니다. pre/post VQA, language planning accuracy, perplexity 또는 instruction following 평가가 없다.
 
 ### 3.6 주장 6: 일반화와 실제 로봇 성능이 높다
 
-- **[저자 보고]** AgileX 평균 0.68 대 $\pi_0$ 0.59, AlphaBot 0.74 대 0.61. [PDF p.9, Table 2]
-- **[재계산]** 8개 real task 전체 평균은 FiS $0.70625$, $\pi_0$ $0.60000$, 차이 $0.10625$, 즉 반올림한 +11 **절대 퍼센트포인트**다. 상대 향상률은 약 17.7%이므로 abstract의 “11%”는 상대 percent가 아니라 absolute point 차이로 읽어야 한다.
-- **[저자 보고]** 두 과제에서 object/background/lighting 변화를 줬을 때 FiS의 하락폭이 대체로 $\pi_0$보다 작다. [PDF p.10, Table 3]
+- **[저자 보고]** AgileX 평균 0.68 대 $`\pi_0`$ 0.59, AlphaBot 0.74 대 0.61. [PDF p.9, Table 2]
+- **[재계산]** 8개 real task 전체 평균은 FiS $`0.70625`$, $`\pi_0`$ $`0.60000`$, 차이 $`0.10625`$, 즉 반올림한 +11 **절대 퍼센트포인트**다. 상대 향상률은 약 17.7%이므로 abstract의 “11%”는 상대 percent가 아니라 absolute point 차이로 읽어야 한다.
+- **[저자 보고]** 두 과제에서 object/background/lighting 변화를 줬을 때 FiS의 하락폭이 대체로 $`\pi_0`$보다 작다. [PDF p.10, Table 3]
 - **한계**: 두 robot의 각 한 task, 세 수동 perturbation만으로 open-world generalization을 주장하기는 어렵다.
 
 <a id="notation"></a>
@@ -184,45 +183,45 @@ System 2인 VLM이 semantic latent $z_t$를 만들고, 별도 diffusion/flow 정
 
 | 기호/용어 | 의미 | 단위 |
 |---|---|---|
-| $t$ | 로봇/환경의 제어 시점 | environment step 또는 action index |
-| $k$ | 이 해설에서 쓰는 System 1 정책 호출 index | policy call |
-| $n$ | System 2:System 1 주기 1:$n$의 재사용 횟수 | fast policy calls per slow update |
-| $H$ | 한 정책 호출이 예측하는 action chunk 길이 | actions per policy call |
-| $\tau$ | diffusion noise timestep | diffusion index, robot time과 무관 |
-| $T$ | training diffusion step 총수, 논문은 100 | diffusion steps |
-| $D_t$ | Eq.(2)의 target token 개수 | language/action tokens; environment time이 아님 |
+| $`t`$ | 로봇/환경의 제어 시점 | environment step 또는 action index |
+| $`k`$ | 이 해설에서 쓰는 System 1 정책 호출 index | policy call |
+| $`n`$ | System 2:System 1 주기 1:$`n`$의 재사용 횟수 | fast policy calls per slow update |
+| $`H`$ | 한 정책 호출이 예측하는 action chunk 길이 | actions per policy call |
+| $`\tau`$ | diffusion noise timestep | diffusion index, robot time과 무관 |
+| $`T`$ | training diffusion step 총수, 논문은 100 | diffusion steps |
+| $`D_t`$ | Eq.(2)의 target token 개수 | language/action tokens; environment time이 아님 |
 
-원문은 $a_{t:t+H}$라고 써서 끝점을 포함하면 $H+1$개처럼 보이지만, 부록의 “chunk size $H$=1,2,4,8”과 공개 코드의 tensor shape `[B, action_chunk, action_dim]`은 $H$개 행동으로 구현한다. 따라서 이 문서에서는 실제 실험의 chunk를 $a_{t:t+H-1}$로 해석하되, 원문 표기는 따로 보존한다.
+원문은 $`a_{t:t+H}`$라고 써서 끝점을 포함하면 $`H+1`$개처럼 보이지만, 부록의 “chunk size $`H`$=1,2,4,8”과 공개 코드의 tensor shape `[B, action_chunk, action_dim]`은 $`H`$개 행동으로 구현한다. 따라서 이 문서에서는 실제 실험의 chunk를 $`a_{t:t+H-1}`$로 해석하되, 원문 표기는 따로 보존한다.
 
 ### 4.2 모델 및 관측 notation
 
 | 기호 | 뜻 | shape/범위 | 비고 |
 |---|---|---|---|
-| $\mathcal D$ | heterogeneous robot demonstration dataset | sample 집합 | trajectory와 frame을 구분해야 함 |
-| $l$ | language instruction | token sequence $[B,N_l]$ | 문자열 자체와 token ids 구분 |
-| $o_{t-1}$ | Eq. 문제설정의 multimodal observation | RGB, point cloud, state | 본문 prose는 $t$ 시점 관측도 말해 index가 일관되지 않음 |
-| $I_t^{(v)}$ | view $v$의 RGB | $[B,3,224,224]$ after resize | real robot은 3 views |
-| $P_t$ | point cloud | $[B,N_p,3]$ | RLBench는 $N_p=1024$로 downsample |
-| $p_i$ | 한 3D point | $\mathbb R^3$ | camera intrinsics/extrinsics로 depth를 역투영 |
-| $r_t$ | robot proprioceptive state | $[B,1,D_a]$로 embedding 전 | 정확한 구성은 embodiment별 상이 |
-| $f^{\mathrm{SigLIP}}$ | SigLIP image feature | $[B,N_v,1024]$ | [PDF p.5, §3.2] |
-| $f^{\mathrm{DINO}}$ | DINOv2 image feature | $[B,N_v,1152]$ | [PDF p.5, §3.2] |
-| $f^{\mathrm{vis}}$ | channel concat feature | $[B,N_v,2176]$ | 이후 projector가 LLM width로 사상 |
-| $d$ | LLaMA2 hidden width | 4096 | 7B backbone의 코드와 표준 구성; PDF는 직접 수치 미기재 |
-| $z_s$ | slow System 2 intermediate latent | $[B,N_s,d]$ | 기본 FiS는 block 30 뒤 hidden states |
-| $\tilde a$ | clean continuous action chunk | $[B,H,D_a]$ | $\tilde{}$는 정규화된 action으로 해석 |
-| $\eta$ | Gaussian noise | $[B,H,D_a]$ | $\mathcal N(0,I)$ |
-| $\tilde a_\tau$ | noised action | $[B,H,D_a]$ | diffusion input |
-| $\pi_{\theta_f}$ | fast denoiser/System 1 | output $[B,H,D_a]$ | noise $\eta$를 예측 |
-| $\theta$ | 전체 FiS-VLA parameter | 전체 집합 | $\theta_f\subseteq\theta$ |
+| $`\mathcal D`$ | heterogeneous robot demonstration dataset | sample 집합 | trajectory와 frame을 구분해야 함 |
+| $`l`$ | language instruction | token sequence $`[B,N_l]`$ | 문자열 자체와 token ids 구분 |
+| $`o_{t-1}`$ | Eq. 문제설정의 multimodal observation | RGB, point cloud, state | 본문 prose는 $`t`$ 시점 관측도 말해 index가 일관되지 않음 |
+| $`I_t^{(v)}`$ | view $`v`$의 RGB | $`[B,3,224,224]`$ after resize | real robot은 3 views |
+| $`P_t`$ | point cloud | $`[B,N_p,3]`$ | RLBench는 $`N_p=1024`$로 downsample |
+| $`p_i`$ | 한 3D point | $`\mathbb R^3`$ | camera intrinsics/extrinsics로 depth를 역투영 |
+| $`r_t`$ | robot proprioceptive state | $`[B,1,D_a]`$로 embedding 전 | 정확한 구성은 embodiment별 상이 |
+| $`f^{\mathrm{SigLIP}}`$ | SigLIP image feature | $`[B,N_v,1024]`$ | [PDF p.5, §3.2] |
+| $`f^{\mathrm{DINO}}`$ | DINOv2 image feature | $`[B,N_v,1152]`$ | [PDF p.5, §3.2] |
+| $`f^{\mathrm{vis}}`$ | channel concat feature | $`[B,N_v,2176]`$ | 이후 projector가 LLM width로 사상 |
+| $`d`$ | LLaMA2 hidden width | 4096 | 7B backbone의 코드와 표준 구성; PDF는 직접 수치 미기재 |
+| $`z_s`$ | slow System 2 intermediate latent | $`[B,N_s,d]`$ | 기본 FiS는 block 30 뒤 hidden states |
+| $`\tilde a`$ | clean continuous action chunk | $`[B,H,D_a]`$ | $`\tilde{}`$는 정규화된 action으로 해석 |
+| $`\eta`$ | Gaussian noise | $`[B,H,D_a]`$ | $`\mathcal N(0,I)`$ |
+| $`\tilde a_\tau`$ | noised action | $`[B,H,D_a]`$ | diffusion input |
+| $`\pi_{\theta_f}`$ | fast denoiser/System 1 | output $`[B,H,D_a]`$ | noise $`\eta`$를 예측 |
+| $`\theta`$ | 전체 FiS-VLA parameter | 전체 집합 | $`\theta_f\subseteq\theta`$ |
 
-$N_v$의 정확한 값은 PDF가 명시하지 않는다. 공식 코드 registry는 DINOv2 ViT-L/14와 SigLIP ViT-SO/14 at 224 px를 가리키므로 순수 patch grid는 흔히 $16\times16=256$이지만, CLS/register token 처리와 feature 선택에 따라 최종 $N_v$가 달라질 수 있다. 따라서 **PDF 확정 shape는 $N_v\times1024$와 $N_v\times1152$까지**다.
+$`N_v`$의 정확한 값은 PDF가 명시하지 않는다. 공식 코드 registry는 DINOv2 ViT-L/14와 SigLIP ViT-SO/14 at 224 px를 가리키므로 순수 patch grid는 흔히 $`16\times16=256`$이지만, CLS/register token 처리와 feature 선택에 따라 최종 $`N_v`$가 달라질 수 있다. 따라서 **PDF 확정 shape는 $`N_v\times1024`$와 $`N_v\times1152`$까지**다.
 
 ### 4.3 action space
 
 | 환경 | 제어 차원 | 원문 설명 |
 |---|---:|---|
-| RLBench, Franka Panda | 7 | relative position $[\Delta x,\Delta y,\Delta z]$ 3, Euler rotation 3, gripper open/close 1 |
+| RLBench, Franka Panda | 7 | relative position $`[\Delta x,\Delta y,\Delta z]`$ 3, Euler rotation 3, gripper open/close 1 |
 | AgileX dual-arm | 14 | end-effector pose control. 팔별 7차원으로 보이지만 PDF는 14차원의 세부 ordering을 명시하지 않음 |
 | AlphaBot dual-arm | 16 | joint position control. 두 7-DoF arm과 gripper를 합한 것으로 해석 가능하나 PDF는 세부 ordering 미기재 |
 
@@ -289,7 +288,7 @@ Figure 2. 비동기 관측, modality별 encoder, 공유 Transformer suffix와 �
 Figure 2를 왼쪽에서 오른쪽으로 읽으면 다음과 같다.
 
 1. 저주기 RGB와 language가 shared encoder/tokenizer를 거쳐 LLaMA blocks 1-30으로 간다.
-2. block 30 출력 $z_s$가 느린 comprehension latent다.
+2. block 30 출력 $`z_s`$가 느린 comprehension latent다.
 3. 고주기 RGB, point cloud, robot state, noisy actions가 각각 shared vision encoder, 3D tokenizer, state/action MLP를 거쳐 token sequence에 삽입된다.
 4. 결합 sequence가 **같은 LLaMA blocks 31-32**를 통과한다.
 5. diffusion head는 continuous action chunk를, autoregressive head는 discrete actions 또는 language plan을 학습한다.
@@ -298,17 +297,17 @@ Figure 2를 왼쪽에서 오른쪽으로 읽으면 다음과 같다.
 
 ### 5.5 §3.1 Problem Formulation [PDF p.4]
 
-저자는 heterogeneous demonstrations에서 observation과 instruction을 조건으로 temporally extended action sequence를 최대우도 학습한다. 자세한 식은 [§6.1](#eq-imitation)에서 해설한다. 중요한 index 문제는 Eq. prose가 $o_{t-1}$을 쓰지만 §3.3은 time $t$의 instruction/scene이 미래 행동을 안내한다고 쓰는 점이다. 이는 한-step 지연을 엄밀히 정의한 것이 아니라 dataset alignment 표기의 느슨함으로 보인다.
+저자는 heterogeneous demonstrations에서 observation과 instruction을 조건으로 temporally extended action sequence를 최대우도 학습한다. 자세한 식은 [§6.1](#eq-imitation)에서 해설한다. 중요한 index 문제는 Eq. prose가 $`o_{t-1}`$을 쓰지만 §3.3은 time $`t`$의 instruction/scene이 미래 행동을 안내한다고 쓰는 점이다. 이는 한-step 지연을 엄밀히 정의한 것이 아니라 dataset alignment 표기의 느슨함으로 보인다.
 
 ### 5.6 §3.2 FiS-VLA Architecture [PDF p.4-5]
 
 #### Vision encoder
 
-224×224 RGB를 SigLIP와 DINOv2에 동시에 넣는다. SigLIP의 $1024$ channel은 semantic alignment, DINOv2의 $1152$ channel은 local/detail representation 역할로 설명된다. 같은 token index에서 channel concat하면 $2176$-dim feature가 되고, pretrained vision-language projector가 LLM hidden width로 사상한다.
+224×224 RGB를 SigLIP와 DINOv2에 동시에 넣는다. SigLIP의 $`1024`$ channel은 semantic alignment, DINOv2의 $`1152`$ channel은 local/detail representation 역할로 설명된다. 같은 token index에서 channel concat하면 $`2176`$-dim feature가 되고, pretrained vision-language projector가 LLM hidden width로 사상한다.
 
 #### Point cloud encoder
 
-depth와 camera calibration으로 $P=\{p_i\in\mathbb R^3\}_{i=1}^{N_p}$를 만든다. 세 3D tokenizer block 각각이 FPS로 대표점을 고르고, kNN으로 local neighborhood를 모으고, learnable linear layer로 feature를 바꾼다. 그 token을 shared vision encoder와 projector로 통과시킨다.
+depth와 camera calibration으로 $`P=\{p_i\in\mathbb R^3\}_{i=1}^{N_p}`$를 만든다. 세 3D tokenizer block 각각이 FPS로 대표점을 고르고, kNN으로 local neighborhood를 모으고, learnable linear layer로 feature를 바꾼다. 그 token을 shared vision encoder와 projector로 통과시킨다.
 
 여기서 “shared encoder”의 장점은 3D token을 pretrained 2D visual space를 통해 LLM 공간에 맞춘다는 것이다. 그러나 3D point를 2D ViT가 처리할 수 있게 만드는 정확한 token layout, 각 stage의 point count/k, feature dimension은 PDF에 없다.
 
@@ -321,17 +320,17 @@ LLaMA2-7B는 32개 decoder block이다. 기본 FiS는 앞 30개가 slow latent�
 논문이 명시하는 보조 MLP는 다음과 같다.
 
 - vision-language projector: 2D/3D feature를 LLM text embedding space로 투영.
-- state encoder: proprioception $r_t$를 token embedding으로 투영.
-- timestep encoder: diffusion $\tau$를 embedding으로 투영.
-- action encoder: noised action $\tilde a_\tau$를 continuous token으로 투영.
+- state encoder: proprioception $`r_t`$를 token embedding으로 투영.
+- timestep encoder: diffusion $`\tau`$를 embedding으로 투영.
+- action encoder: noised action $`\tilde a_\tau`$를 continuous token으로 투영.
 
-공식 코드에서는 action/state embedder가 $D_a\rightarrow4096\rightarrow4096$ MLP이고, diffusion timestep은 sinusoidal 256-d feature 뒤 4096-d MLP, final head는 RMSNorm+MLP로 4096에서 $D_a$로 간다. 이는 [코드 확인]이며 PDF가 layer width와 activation을 모두 명시한 것은 아니다.
+공식 코드에서는 action/state embedder가 $`D_a\rightarrow4096\rightarrow4096`$ MLP이고, diffusion timestep은 sinusoidal 256-d feature 뒤 4096-d MLP, final head는 RMSNorm+MLP로 4096에서 $`D_a`$로 간다. 이는 [코드 확인]이며 PDF가 layer width와 activation을 모두 명시한 것은 아니다.
 
 ### 5.7 §3.3 Dual-System Coordination [PDF p.5-6]
 
 #### Asynchronous frequency design
 
-System 2는 instruction과 slow RGB를 block 30까지 처리해 $z_s$를 만든다. 이 latent는 다음 $n$번의 System 1 정책 호출에 재사용된다. System 1은 매 호출마다 최신 observation을 읽고 action chunk를 다시 생성한다. 저자는 $n\in\{1,2,4,8\}$을 실험하고 $n=4$를 선택한다.
+System 2는 instruction과 slow RGB를 block 30까지 처리해 $`z_s`$를 만든다. 이 latent는 다음 $`n`$번의 System 1 정책 호출에 재사용된다. System 1은 매 호출마다 최신 observation을 읽고 action chunk를 다시 생성한다. 저자는 $`n\in\{1,2,4,8\}`$을 실험하고 $`n=4`$를 선택한다.
 
 중요하게도 논문은 robot hardware가 두 GPU 병렬 inference를 지원하지 않아 Helix처럼 두 시스템을 병렬 배치하지 않았다고 밝힌다. 따라서 “asynchronous”는 wall-clock 동시 실행이 아니라 호출률 분리와 latent reuse를 뜻한다. slow refresh가 있는 호출은 blocks 1-30도 먼저 실행하므로 latency spike가 생길 수 있지만 평균/꼬리 지연은 보고하지 않는다.
 
@@ -370,26 +369,22 @@ pretraining은 OXE, DROID, RoboMIND 등을 섞은 860K+ trajectory, 36M frames, 
 
 원문 식:
 
-$$
-\max_{\theta}
-\mathbb E_{(a_{t:t+H},\,o_{t-1},\,l)\sim\mathcal D}
-\left[
-\log \pi_{\theta}(a_{t:t+H}\mid o_{t-1},l)
-\right].
-$$
+```math
+\max_{\theta} \mathbb E_{(a_{t:t+H},\,o_{t-1},\,l)\sim\mathcal D} \left[ \log \pi_{\theta}(a_{t:t+H}\mid o_{t-1},l) \right].
+```
 
 줄별 의미:
 
-1. $\theta$는 정책의 학습 파라미터다. 최적화는 demonstration action의 조건부 확률을 크게 만든다.
+1. $`\theta`$는 정책의 학습 파라미터다. 최적화는 demonstration action의 조건부 확률을 크게 만든다.
 2. 기대값의 sample은 action sequence, 직전 관측, 언어 지시의 묶음이다. trajectory 전체가 아니라 학습 window가 한 sample이 될 수 있다.
-3. $\pi_\theta(a_{t:t+H}\mid o_{t-1},l)$은 미래 action chunk의 joint conditional density/likelihood다. continuous diffusion에서는 이를 직접 normalized density로 계산하지 않고 denoising score/noise loss로 대체한다.
+3. $`\pi_\theta(a_{t:t+H}\mid o_{t-1},l)`$은 미래 action chunk의 joint conditional density/likelihood다. continuous diffusion에서는 이를 직접 normalized density로 계산하지 않고 denoising score/noise loss로 대체한다.
 4. 로그는 trajectory likelihood의 곱을 합으로 바꾸어 최적화를 안정화한다.
 
-**shape**: batch 기준 $a\in\mathbb R^{B\times H\times D_a}$로 보는 것이 구현과 맞다. 원문 $t:t+H$의 inclusive 표기는 $H+1$개처럼 보이는 표기 모호성이 있다.
+**shape**: batch 기준 $`a\in\mathbb R^{B\times H\times D_a}`$로 보는 것이 구현과 맞다. 원문 $`t:t+H`$의 inclusive 표기는 $`H+1`$개처럼 보이는 표기 모호성이 있다.
 
-**작은 예**: 상태와 지시가 같을 때 정답 action chunk A에 0.6, B에 0.3을 부여했다면 A sample의 log-likelihood는 $\log0.6\approx-0.511$이다. 최대화는 이 값을 0에 가깝게 만든다.
+**작은 예**: 상태와 지시가 같을 때 정답 action chunk A에 0.6, B에 0.3을 부여했다면 A sample의 log-likelihood는 $`\log0.6\approx-0.511`$이다. 최대화는 이 값을 0에 가깝게 만든다.
 
-**edge case**: multimodal demonstration이 서로 다른 embodiment/control space를 가지면 같은 $a$ 좌표가 다른 의미를 갖는다. 논문은 action reformulation과 normalization을 언급하지만 embodiment id, exact mask, coordinate convention을 식에 넣지 않는다.
+**edge case**: multimodal demonstration이 서로 다른 embodiment/control space를 가지면 같은 $`a`$ 좌표가 다른 의미를 갖는다. 논문은 action reformulation과 normalization을 언급하지만 embodiment id, exact mask, coordinate convention을 식에 넣지 않는다.
 
 ### 6.2 비번호식: vision/point/action 정의 [PDF p.4-5, §3.1-3.2]
 
@@ -399,18 +394,15 @@ $$
 
 원문의 주요 inline/display 관계를 합치면 다음과 같다.
 
-$$
-f^{\mathrm{SigLIP}}\in\mathbb R^{N_v\times1024},\qquad
-f^{\mathrm{DINO}}\in\mathbb R^{N_v\times1152},
-$$
+```math
+f^{\mathrm{SigLIP}}\in\mathbb R^{N_v\times1024},\qquad f^{\mathrm{DINO}}\in\mathbb R^{N_v\times1152},
+```
 
-$$
-f^{\mathrm{vis}}=\operatorname{Concat}_{\mathrm{channel}}
-\left(f^{\mathrm{SigLIP}},f^{\mathrm{DINO}}\right)
-\in\mathbb R^{N_v\times2176}.
-$$
+```math
+f^{\mathrm{vis}}=\operatorname{Concat}_{\mathrm{channel}} \left(f^{\mathrm{SigLIP}},f^{\mathrm{DINO}}\right) \in\mathbb R^{N_v\times2176}.
+```
 
-두 feature는 token 축이 아니라 channel 축으로 붙는다. token 위치가 대응한다는 가정이 필요하며, 서로 다른 encoder의 patch ordering/resolution을 같은 $N_v$로 맞춰야 한다. projector는 이를 $N_v\times d$로 바꾼다.
+두 feature는 token 축이 아니라 channel 축으로 붙는다. token 위치가 대응한다는 가정이 필요하며, 서로 다른 encoder의 patch ordering/resolution을 같은 $`N_v`$로 맞춰야 한다. projector는 이를 $`N_v\times d`$로 바꾼다.
 
 point cloud 정의:
 
@@ -418,27 +410,25 @@ point cloud 정의:
 
 원문 비번호식. Point cloud 집합과 점 개수의 정의를 포함한 인쇄 문장 발췌. [PDF p.5, §3.2 Point cloud encoder; 원문](https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf#page=5)
 
-$$
+```math
 P=\{p_i\in\mathbb R^3\}_{i=1}^{N_p}.
-$$
+```
 
-$p_i=(x_i,y_i,z_i)$는 camera 또는 robot/world 좌표계의 점이다. depth pixel $(u,v,z)$에서 intrinsics $K$를 쓰면 [해설용 수식]
+$`p_i=(x_i,y_i,z_i)`$는 camera 또는 robot/world 좌표계의 점이다. depth pixel $`(u,v,z)`$에서 intrinsics $`K`$를 쓰면 [해설용 수식]
 
-$$
-p_i^{\mathrm{cam}}=z_iK^{-1}[u_i,v_i,1]^\top,
-\qquad
-p_i^{\mathrm{world}}=T_{\mathrm{cam}\rightarrow\mathrm{world}}p_i^{\mathrm{cam}}.
-$$
+```math
+p_i^{\mathrm{cam}}=z_iK^{-1}[u_i,v_i,1]^\top, \qquad p_i^{\mathrm{world}}=T_{\mathrm{cam}\rightarrow\mathrm{world}}p_i^{\mathrm{cam}}.
+```
 
 이 식은 이해를 위한 표준 역투영이며 원문 번호식이 아니다. calibration 오차가 있으면 point token 자체가 체계적으로 이동한다.
 
 RLBench action은 [해설용 표기]
 
-$$
+```math
 a_t=[\Delta x,\Delta y,\Delta z,\phi,\theta,\psi,g]\in\mathbb R^7,
-$$
+```
 
-로 읽을 수 있다. $g$는 open/closed다. rotation의 Euler order와 단위는 미기재다.
+로 읽을 수 있다. $`g`$는 open/closed다. rotation의 Euler order와 단위는 미기재다.
 
 ### 6.3 비번호식: diffusion forward noising [PDF p.6, §3.4]
 
@@ -448,40 +438,39 @@ $$
 
 원문 식:
 
-$$
+```math
 \tau\sim\mathcal U(1,T),\qquad \eta\sim\mathcal N(0,I),\qquad T=100,
-$$
+```
 
-$$
-\tilde a_\tau=\sqrt{\beta_\tau}\,\tilde a+
-\sqrt{1-\beta_\tau}\,\eta.
-$$
+```math
+\tilde a_\tau=\sqrt{\beta_\tau}\,\tilde a+ \sqrt{1-\beta_\tau}\,\eta.
+```
 
 연산 순서:
 
-1. clean normalized chunk $\tilde a$와 같은 shape의 Gaussian noise $\eta$를 뽑는다.
-2. robot time과 무관한 diffusion index $\tau$를 뽑는다.
-3. clean action은 $\sqrt{\beta_\tau}$, noise는 $\sqrt{1-\beta_\tau}$로 scale한다.
+1. clean normalized chunk $`\tilde a`$와 같은 shape의 Gaussian noise $`\eta`$를 뽑는다.
+2. robot time과 무관한 diffusion index $`\tau`$를 뽑는다.
+3. clean action은 $`\sqrt{\beta_\tau}`$, noise는 $`\sqrt{1-\beta_\tau}`$로 scale한다.
 4. 두 tensor를 elementwise 더해 noised action token을 만든다.
 
 **표기 주의**: 표준 DDPM은 보통
 
-$$
+```math
 x_\tau=\sqrt{\bar\alpha_\tau}x_0+\sqrt{1-\bar\alpha_\tau}\epsilon
-$$
+```
 
-이라고 쓴다. 원문은 이 clean-signal 누적계수를 $\beta_\tau$라고 부르지만, 통상 $\beta_\tau$는 한 step의 noise variance를 뜻한다. 공개 코드는 실제로 `sqrt_alphas_cumprod`와 `sqrt_one_minus_alphas_cumprod`를 사용한다. 따라서 원문의 $\beta_\tau$는 구현상 $\bar\alpha_\tau$에 대응하는 것으로 보는 것이 맞다. 원문 표기를 조용히 $\bar\alpha$로 고치면 안 된다.
+이라고 쓴다. 원문은 이 clean-signal 누적계수를 $`\beta_\tau`$라고 부르지만, 통상 $`\beta_\tau`$는 한 step의 noise variance를 뜻한다. 공개 코드는 실제로 `sqrt_alphas_cumprod`와 `sqrt_one_minus_alphas_cumprod`를 사용한다. 따라서 원문의 $`\beta_\tau`$는 구현상 $`\bar\alpha_\tau`$에 대응하는 것으로 보는 것이 맞다. 원문 표기를 조용히 $`\bar\alpha`$로 고치면 안 된다.
 
-**수치 예**: $H=2,D_a=1$, $\tilde a=[0.2,-0.4]$, $\beta_\tau=0.64$, $\eta=[1,-0.5]$라 하자. $\sqrt{0.64}=0.8$, $\sqrt{0.36}=0.6$이므로
+**수치 예**: $`H=2,D_a=1`$, $`\tilde a=[0.2,-0.4]`$, $`\beta_\tau=0.64`$, $`\eta=[1,-0.5]`$라 하자. $`\sqrt{0.64}=0.8`$, $`\sqrt{0.36}=0.6`$이므로
 
-$$
+```math
 \tilde a_\tau=0.8[0.2,-0.4]+0.6[1,-0.5]=[0.76,-0.62].
-$$
+```
 
 **edge cases**:
 
-- $\beta_\tau\rightarrow1$: 입력은 거의 clean action인데 target은 여전히 noise다. 작은 noise를 정확히 분리해야 한다.
-- $\beta_\tau\rightarrow0$: 입력은 거의 pure noise이며 condition $c$가 행동 구조를 복원해야 한다.
+- $`\beta_\tau\rightarrow1`$: 입력은 거의 clean action인데 target은 여전히 noise다. 작은 noise를 정확히 분리해야 한다.
+- $`\beta_\tau\rightarrow0`$: 입력은 거의 pure noise이며 condition $`c`$가 행동 구조를 복원해야 한다.
 - 논문은 schedule을 “predefined”라고만 한다. 공개 코드는 cosine `squaredcos_cap_v2`를 사용하지만 최종 실험 PDF의 확정 조건으로 단정할 수 없다.
 
 <a id="eq-fast"></a>
@@ -494,41 +483,26 @@ $$
 
 원문 식:
 
-$$
-\mathcal L_{\mathrm{fast}}
-=
-\mathbb E_{\tau,c,\tilde a,\eta}
-\left[
-\left\|
-\eta-
-\pi_{\theta_f}
-\left(
-\sqrt{\beta_\tau}\tilde a+
-\sqrt{1-\beta_\tau}\eta,
-c,\tau
-\right)
-\right\|_2^2
-\right].
-\tag{1}
-$$
+```math
+\mathcal L_{\mathrm{fast}} = \mathbb E_{\tau,c,\tilde a,\eta} \left[ \left\| \eta- \pi_{\theta_f} \left( \sqrt{\beta_\tau}\tilde a+ \sqrt{1-\beta_\tau}\eta, c,\tau \right) \right\|_2^2 \right]. \qquad\text{(1)}
+```
 
 각 항:
 
-- $\pi_{\theta_f}$는 noised action, condition, timestep을 받아 noise를 예측하는 System 1이다.
-- $c=(z_s,x_f)$로 볼 수 있다. $z_s$는 저주기 System 2 latent, $x_f$는 고주기 RGB/PC/state condition이다.
-- 출력 shape는 $\eta$와 같은 $[B,H,D_a]$여야 한다.
-- $\|\cdot\|_2^2$는 모든 action/time coordinate의 squared error다. 공개 코드는 전체 원소 mean을 취한다.
+- $`\pi_{\theta_f}`$는 noised action, condition, timestep을 받아 noise를 예측하는 System 1이다.
+- $`c=(z_s,x_f)`$로 볼 수 있다. $`z_s`$는 저주기 System 2 latent, $`x_f`$는 고주기 RGB/PC/state condition이다.
+- 출력 shape는 $`\eta`$와 같은 $`[B,H,D_a]`$여야 한다.
+- $`\|\cdot\|_2^2`$는 모든 action/time coordinate의 squared error다. 공개 코드는 전체 원소 mean을 취한다.
 
-왜 noise를 예측하는가? 여러 가능한 action mode를 평균 action 하나로 회귀하지 않고, random noise에서 조건부 action sample로 가는 역과정을 배울 수 있기 때문이다. training에서 임의 $\tau$ 한 지점을 학습하면 전체 reverse chain을 근사할 수 있다.
+왜 noise를 예측하는가? 여러 가능한 action mode를 평균 action 하나로 회귀하지 않고, random noise에서 조건부 action sample로 가는 역과정을 배울 수 있기 때문이다. training에서 임의 $`\tau`$ 한 지점을 학습하면 전체 reverse chain을 근사할 수 있다.
 
-앞 예시에서 모델 예측이 $\hat\eta=[0.9,-0.4]$라면
+앞 예시에서 모델 예측이 $`\hat\eta=[0.9,-0.4]`$라면
 
-$$
-\eta-\hat\eta=[0.1,-0.1],\qquad
-\operatorname{MSE}=\frac{0.1^2+(-0.1)^2}{2}=0.01.
-$$
+```math
+\eta-\hat\eta=[0.1,-0.1],\qquad \operatorname{MSE}=\frac{0.1^2+(-0.1)^2}{2}=0.01.
+```
 
-**gradient 경로**: detach가 없다면 $\mathcal L_{\mathrm{fast}}$는 final action MLP, blocks 31-32, action/timestep/state encoders, fast RGB/point encoders뿐 아니라 $z_s$를 만든 blocks 1-30과 slow visual path에도 흐를 수 있다. 이것이 “fast가 slow 안에 있다”는 학습상의 의미다. 다만 freeze 설정에 따라 실제 update되는 모듈은 달라진다.
+**gradient 경로**: detach가 없다면 $`\mathcal L_{\mathrm{fast}}`$는 final action MLP, blocks 31-32, action/timestep/state encoders, fast RGB/point encoders뿐 아니라 $`z_s`$를 만든 blocks 1-30과 slow visual path에도 흐를 수 있다. 이것이 “fast가 slow 안에 있다”는 학습상의 의미다. 다만 freeze 설정에 따라 실제 update되는 모듈은 달라진다.
 
 **edge cases와 미기재**:
 
@@ -545,35 +519,30 @@ $$
 
 원문 식:
 
-$$
-\mathcal L_{\mathrm{slow}}
-=-
-\sum_{i=1}^{D_t}
-\log P(\hat a_i\mid \mathrm{context},\theta).
-\tag{2}
-$$
+```math
+\mathcal L_{\mathrm{slow}} =- \sum_{i=1}^{D_t} \log P(\hat a_i\mid \mathrm{context},\theta). \qquad\text{(2)}
+```
 
 각 항:
 
-- $D_t$는 discrete action target 또는 language plan의 token 길이다. diffusion $T$나 robot $t$가 아니다.
-- $\hat a_i$는 $i$번째 ground-truth token이다. language plan을 쓸 때 기호가 action처럼 보이지만 실제 target은 wordpiece일 수 있다.
+- $`D_t`$는 discrete action target 또는 language plan의 token 길이다. diffusion $`T`$나 robot $`t`$가 아니다.
+- $`\hat a_i`$는 $`i`$번째 ground-truth token이다. language plan을 쓸 때 기호가 action처럼 보이지만 실제 target은 wordpiece일 수 있다.
 - `context`는 language prompt, slow RGB, 앞선 target token과 필요한 multimodal embedding을 포함한다.
-- $P$는 LLM softmax가 주는 next-token probability다.
+- $`P`$는 LLM softmax가 주는 next-token probability다.
 
 Autoregressive factorization을 펼치면 [해설용 수식]
 
-$$
-P(\hat a_{1:D_t}\mid c)=
-\prod_{i=1}^{D_t}P(\hat a_i\mid c,\hat a_{<i}),
-$$
+```math
+P(\hat a_{1:D_t}\mid c)= \prod_{i=1}^{D_t}P(\hat a_i\mid c,\hat a_{\lt i}),
+```
 
 이고 음의 로그를 취하면 Eq.(2)의 합이 된다.
 
 **수치 예**: 두 target token의 확률이 0.8, 0.5면 sum loss는
 
-$$
+```math
 -\log0.8-\log0.5\approx0.223+0.693=0.916.
-$$
+```
 
 token mean이면 0.458이다. 원문 식은 sum을 쓰지만 공개 Hugging Face `output.loss`는 보통 valid token mean이다. 이 정규화 차이는 Eq.(3)의 상대 가중치에 영향을 주므로 재현 시 확인해야 한다.
 
@@ -587,25 +556,22 @@ token mean이면 0.458이다. 원문 식은 sum을 쓰지만 공개 Hugging Face
 
 원문 식:
 
-$$
-\mathcal L_{\mathrm{FiS-VLA}}
-=\mathcal L_{\mathrm{fast}}+\mathcal L_{\mathrm{slow}}.
-\tag{3}
-$$
+```math
+\mathcal L_{\mathrm{FiS-VLA}} =\mathcal L_{\mathrm{fast}}+\mathcal L_{\mathrm{slow}}. \qquad\text{(3)}
+```
 
 두 objective의 coefficient가 모두 1이다. 공개 training loop도 diffusion MSE에 `output.loss`를 그대로 더한다. [코드 확인] 따라서 실제 균형은 각 loss의 reduction, token 수, repeated diffusion samples에 의해 암묵적으로 정해진다.
 
 더 일반적인 [해설용 수식]은
 
-$$
-\mathcal L=\lambda_f\mathcal L_{\mathrm{fast}}+
-\lambda_s\mathcal L_{\mathrm{slow}}
-$$
+```math
+\mathcal L=\lambda_f\mathcal L_{\mathrm{fast}}+ \lambda_s\mathcal L_{\mathrm{slow}}
+```
 
-이지만, 논문은 $\lambda_f,\lambda_s$ sweep을 하지 않는다. 한쪽 scale이 지나치게 크면 다음 문제가 생긴다.
+이지만, 논문은 $`\lambda_f,\lambda_s`$ sweep을 하지 않는다. 한쪽 scale이 지나치게 크면 다음 문제가 생긴다.
 
-- $\lambda_f$ 지배: action은 맞지만 AR language/discrete generation이 망가질 수 있다.
-- $\lambda_s$ 지배: VLM token loss는 좋아도 continuous control gradient가 약해질 수 있다.
+- $`\lambda_f`$ 지배: action은 맞지만 AR language/discrete generation이 망가질 수 있다.
+- $`\lambda_s`$ 지배: VLM token loss는 좋아도 continuous control gradient가 약해질 수 있다.
 
 Eq.(3)은 단순 합이지만, 같은 blocks 31-32에 두 gradient가 들어간다는 점이 방법의 중심이다. gradient cosine similarity나 conflict 완화는 분석하지 않는다.
 
@@ -613,23 +579,22 @@ Eq.(3)은 단순 합이지만, 같은 blocks 31-32에 두 gradient가 들어간�
 
 ## 7. 실제 forward pass를 tensor 단위로 추적하기
 
-이 절은 Fig.2와 공개 구현을 함께 읽어, 그림의 화살표가 실제로 어떤 tensor를 만들고 어디에 재사용되는지 복원한 것이다. 아래 shape에서 $B$는 batch, $N_v$는 image patch token 수, $N_p$는 point token 수, $L_s$는 slow sequence length, $H$는 action chunk 길이, $D_a$는 한 step의 action 차원, $d$는 LLM hidden size다. 논문은 모든 중간 shape를 숫자로 명시하지 않으므로, 명시값과 기호값을 구분한다.
+이 절은 Fig.2와 공개 구현을 함께 읽어, 그림의 화살표가 실제로 어떤 tensor를 만들고 어디에 재사용되는지 복원한 것이다. 아래 shape에서 $`B`$는 batch, $`N_v`$는 image patch token 수, $`N_p`$는 point token 수, $`L_s`$는 slow sequence length, $`H`$는 action chunk 길이, $`D_a`$는 한 step의 action 차원, $`d`$는 LLM hidden size다. 논문은 모든 중간 shape를 숫자로 명시하지 않으므로, 명시값과 기호값을 구분한다.
 
 ### 7.1 Slow/System 2 경로: language와 RGB로 latent를 만든다
 
-1. **입력 구성**: instruction $l$, 저주기로 갱신되는 slow RGB image $o^{2D}_{t-1}$, 필요하면 teacher-forced discrete action 또는 language-plan token을 준비한다.
-2. **이중 vision feature**: 224×224 image를 SigLIP과 DINOv2에 각각 넣어 patch당 1,024차원과 1,152차원 feature를 얻는다. 같은 patch 위치끼리 concatenate하여 $[B,N_v,2176]$을 만든다.
-3. **projector**: MLP가 2,176차원을 LLM embedding 차원 $d$로 사상한다. text embedding과 함께 한 sequence로 배치되므로 slow transformer 입력은 개념적으로 $[B,L_s,d]$다.
-4. **blocks 1-30**: LLaMA2-7B의 앞 30개 block이 전체 slow context를 처리한다. 공개 구현에서 `llm_middle_layer=30`일 때 이 지점의 hidden tensor가 slow latent $z_s$다.
-5. **blocks 31-32 + LM head**: System 2의 autoregressive branch는 같은 $z_s$를 마지막 두 block에 계속 통과시켜 language plan 또는 discrete token을 예측한다. Eq.(2)가 이 branch를 학습한다.
-6. **latent 보관**: 비동기 실행에서는 $z_s$를 여러 fast call 동안 재사용한다. 이것은 attention key/value cache라기보다 **30번째 block까지 계산된 hidden sequence cache**다.
+1. **입력 구성**: instruction $`l`$, 저주기로 갱신되는 slow RGB image $`o^{2D}_{t-1}`$, 필요하면 teacher-forced discrete action 또는 language-plan token을 준비한다.
+2. **이중 vision feature**: 224×224 image를 SigLIP과 DINOv2에 각각 넣어 patch당 1,024차원과 1,152차원 feature를 얻는다. 같은 patch 위치끼리 concatenate하여 $`[B,N_v,2176]`$을 만든다.
+3. **projector**: MLP가 2,176차원을 LLM embedding 차원 $`d`$로 사상한다. text embedding과 함께 한 sequence로 배치되므로 slow transformer 입력은 개념적으로 $`[B,L_s,d]`$다.
+4. **blocks 1-30**: LLaMA2-7B의 앞 30개 block이 전체 slow context를 처리한다. 공개 구현에서 `llm_middle_layer=30`일 때 이 지점의 hidden tensor가 slow latent $`z_s`$다.
+5. **blocks 31-32 + LM head**: System 2의 autoregressive branch는 같은 $`z_s`$를 마지막 두 block에 계속 통과시켜 language plan 또는 discrete token을 예측한다. Eq.(2)가 이 branch를 학습한다.
+6. **latent 보관**: 비동기 실행에서는 $`z_s`$를 여러 fast call 동안 재사용한다. 이것은 attention key/value cache라기보다 **30번째 block까지 계산된 hidden sequence cache**다.
 
 중요한 해석은 System 2가 “앞 30개 block”만을 뜻하지 않는다는 것이다. 완전한 slow autoregressive 모델은 32개 block 전체를 사용한다. System 1이 그 안의 마지막 2개 block을 다시 사용하므로, 집합 관계는
 
-$$
-\text{System 1 blocks}=\{31,32\}\subset
-\text{System 2 blocks}=\{1,\ldots,32\}.
-$$
+```math
+\text{System 1 blocks}=\{31,32\}\subset \text{System 2 blocks}=\{1,\ldots,32\}.
+```
 
 이다. 제목의 *Fast-in-Slow*는 이 포함 관계를 가리킨다.
 
@@ -637,58 +602,56 @@ $$
 
 한 diffusion denoising step에서 fast branch는 다음 입력을 조합한다.
 
-- cached slow latent $z_s\in\mathbb R^{B\times L_s\times d}$,
-- 최신 fast RGB embedding $e^{2D}_t\in\mathbb R^{B\times N_v\times d}$,
-- point-cloud embedding $e^{3D}_t\in\mathbb R^{B\times N_p\times d}$,
-- robot state token $e^s_t$,
-- diffusion timestep token $e^\tau$,
-- noisy action-token sequence $e^a(\tilde a_\tau)\in\mathbb R^{B\times H\times d}$.
+- cached slow latent $`z_s\in\mathbb R^{B\times L_s\times d}`$,
+- 최신 fast RGB embedding $`e^{2D}_t\in\mathbb R^{B\times N_v\times d}`$,
+- point-cloud embedding $`e^{3D}_t\in\mathbb R^{B\times N_p\times d}`$,
+- robot state token $`e^s_t`$,
+- diffusion timestep token $`e^\tau`$,
+- noisy action-token sequence $`e^a(\tilde a_\tau)\in\mathbb R^{B\times H\times d}`$.
 
 공개 구현에 대응시키면 concat 이후의 개념적 tensor는
 
-$$
-x_f=\operatorname{concat}
-(z_s,e^{3D}_t,e^{2D}_t,e^s_t,e^\tau,e^a_\tau)
-\in\mathbb R^{B\times L_f\times d},
-$$
+```math
+x_f=\operatorname{concat} (z_s,e^{3D}_t,e^{2D}_t,e^s_t,e^\tau,e^a_\tau) \in\mathbb R^{B\times L_f\times d},
+```
 
-$$
+```math
 L_f=L_s+N_p+N_v+N_s+N_\tau+H.
-$$
+```
 
-이다. 이 sequence를 새 32-block VLM에 처음부터 통과시키지 않고, 공유된 blocks 31-32에만 넣는다. 마지막 action 위치의 hidden을 MLP로 투영해 $\hat\eta\in\mathbb R^{B\times H\times D_a}$를 예측한다. Eq.(1)이 이 값을 실제 Gaussian noise와 맞춘다.
+이다. 이 sequence를 새 32-block VLM에 처음부터 통과시키지 않고, 공유된 blocks 31-32에만 넣는다. 마지막 action 위치의 hidden을 MLP로 투영해 $`\hat\eta\in\mathbb R^{B\times H\times D_a}`$를 예측한다. Eq.(1)이 이 값을 실제 Gaussian noise와 맞춘다.
 
 ### 7.3 “공유”의 정확한 뜻
 
 공유 대상은 같은 모양의 별도 copy가 아니라 **동일한 마지막 두 transformer block parameter**다.
 
 - slow loss는 blocks 1-30 → shared blocks 31-32 → LM head를 사용한다.
-- fast loss는 cached $z_s$ + fast tokens → shared blocks 31-32 → action head를 사용한다.
+- fast loss는 cached $`z_s`$ + fast tokens → shared blocks 31-32 → action head를 사용한다.
 - 따라서 blocks 31-32는 언어적/고수준 표현과 연속 제어 표현을 동시에 받아야 한다.
-- 공개 코드에서 fast loss 경로의 $z_s$에 명시적 `detach`가 보이지 않으므로, joint full fine-tuning이라면 fast gradient가 blocks 1-30에도 도달할 수 있다. 다만 이는 공개 snapshot을 읽은 결론이며 논문 본문이 gradient graph를 명시한 것은 아니다.
+- 공개 코드에서 fast loss 경로의 $`z_s`$에 명시적 `detach`가 보이지 않으므로, joint full fine-tuning이라면 fast gradient가 blocks 1-30에도 도달할 수 있다. 다만 이는 공개 snapshot을 읽은 결론이며 논문 본문이 gradient graph를 명시한 것은 아니다.
 
 Table 6의 independent-copy 변형은 이 마지막 block들을 복제해 fast 전용으로 만든다. 하지만 copied block이 원래 학습 때 보던 layer-30 hidden 대신 System 2의 더 뒤 출력에 가까운 입력을 받을 수 있어, 그 비교는 “공유 유무”뿐 아니라 **입력 분포의 정렬 정도**도 함께 바꿀 가능성이 있다. 따라서 .69 대 .61/.59를 순수한 weight sharing 효과로만 읽는 것은 과하다.
 
 ### 7.4 한 control cycle의 구체 예
 
-$H=8$, slow:fast ratio가 1:4, DDIM step 수가 4라고 하자.
+$`H=8`$, slow:fast ratio가 1:4, DDIM step 수가 4라고 하자.
 
-1. fast call 0에서 slow RGB와 instruction으로 $z_s$를 갱신한다.
+1. fast call 0에서 slow RGB와 instruction으로 $`z_s`$를 갱신한다.
 2. 현재 fast RGB, point cloud, state를 token화한다.
-3. $[B,8,D_a]$ Gaussian noise에서 시작해 shared blocks 31-32/action head를 4번 호출하며 DDIM reverse update를 한다.
+3. $`[B,8,D_a]`$ Gaussian noise에서 시작해 shared blocks 31-32/action head를 4번 호출하며 DDIM reverse update를 한다.
 4. 얻은 8개 action을 환경에 순차 실행한다.
-5. fast call 1-3에서는 $z_s$를 그대로 쓰고 최신 관측으로 action chunk만 다시 만든다.
-6. fast call 4에서야 System 2를 다시 호출해 $z_s$를 갱신한다.
+5. fast call 1-3에서는 $`z_s`$를 그대로 쓰고 최신 관측으로 action chunk만 다시 만든다.
+6. fast call 4에서야 System 2를 다시 호출해 $`z_s`$를 갱신한다.
 
-공개 시뮬레이션 loop에서는 counter가 **chunk 실행 뒤에** 증가하고 slow refresh가 `slow_cnt % ratio == 0`일 때 발생한다. 따라서 $H=8$이면 최대 4 chunks, 즉 32 low-level actions 동안 같은 slow latent가 유지될 수 있다. 이는 “1:4”가 robot servo tick 네 번이 아니라 **policy invocation 네 번**이라는 뜻이다. [고정 commit의 실행 loop](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/scripts/sim.py#L209-L260)
+공개 시뮬레이션 loop에서는 counter가 **chunk 실행 뒤에** 증가하고 slow refresh가 `slow_cnt % ratio == 0`일 때 발생한다. 따라서 $`H=8`$이면 최대 4 chunks, 즉 32 low-level actions 동안 같은 slow latent가 유지될 수 있다. 이는 “1:4”가 robot servo tick 네 번이 아니라 **policy invocation 네 번**이라는 뜻이다. [고정 commit의 실행 loop](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/scripts/sim.py#L209-L260)
 
 ### 7.5 경계 조건과 실패 가능한 shape
 
-- $H$가 바뀌면 action-token 수와 action-head 출력 shape가 함께 바뀐다. padding/mask 규칙이 필요하지만 논문은 상세히 쓰지 않는다.
-- $z_s$의 sequence length가 instruction 길이나 image tokenization에 따라 달라지면 compiled static engine에서는 bucket 또는 padding이 필요하다.
+- $`H`$가 바뀌면 action-token 수와 action-head 출력 shape가 함께 바뀐다. padding/mask 규칙이 필요하지만 논문은 상세히 쓰지 않는다.
+- $`z_s`$의 sequence length가 instruction 길이나 image tokenization에 따라 달라지면 compiled static engine에서는 bucket 또는 padding이 필요하다.
 - point-cloud tokenizer가 1,024 raw points를 그대로 1,024 LLM tokens로 만드는지는 명시되지 않는다. FPS/kNN block의 downsample schedule이 재현에 필요하다.
 - fast RGB와 point cloud의 timestamp가 어긋나면 동일 장면의 2D/3D token이라는 가정이 깨진다. hardware synchronization 오차는 보고되지 않았다.
-- 오래된 $z_s$와 최신 $e^{2D}_t,e^{3D}_t,e^s_t$가 모순될 때 어떤 token을 우선하는지 명시적 gate가 없다. shared attention이 암묵적으로 해결해야 한다.
+- 오래된 $`z_s`$와 최신 $`e^{2D}_t,e^{3D}_t,e^s_t`$가 모순될 때 어떤 token을 우선하는지 명시적 gate가 없다. shared attention이 암묵적으로 해결해야 한다.
 
 <a id="training-inference"></a>
 
@@ -698,19 +661,19 @@ $H=8$, slow:fast ratio가 1:4, DDIM step 수가 4라고 하자.
 
 한 학습 example은 대략 다음 묶음이다.
 
-$$
+```math
 (l,o^{2D}_{t-1},o^{2D}_t,o^{3D}_t,s_t,a_{t:t+H},y^{slow}).
-$$
+```
 
-$y^{slow}$는 discrete robot-action token 또는 language-plan token이다. 논문은 slow와 fast 관측 시점을 일부러 다르게 뽑아 비동기 실행을 흉내 낸다고 설명하지만, offset 분포, 최대 지연, 동일 trajectory 안 sampling 규칙은 주지 않는다. 이는 구현 복제에서 가장 큰 숨은 변수 중 하나다.
+$`y^{slow}`$는 discrete robot-action token 또는 language-plan token이다. 논문은 slow와 fast 관측 시점을 일부러 다르게 뽑아 비동기 실행을 흉내 낸다고 설명하지만, offset 분포, 최대 지연, 동일 trajectory 안 sampling 규칙은 주지 않는다. 이는 구현 복제에서 가장 큰 숨은 변수 중 하나다.
 
 학습 절차는 다음으로 복원된다.
 
-1. slow RGB와 language를 blocks 1-30에 넣어 $z_s$를 계산한다.
-2. $z_s$를 blocks 31-32/LM head에 넣어 slow target의 cross-entropy $\mathcal L_{slow}$를 계산한다.
-3. action chunk를 정규화하고 $\tau\sim U\{1,\ldots,T\}$와 $\eta\sim\mathcal N(0,I)$를 뽑아 $\tilde a_\tau$를 만든다.
-4. $z_s$, 최신 fast multimodal tokens, $\tilde a_\tau$, timestep을 blocks 31-32/action head에 넣어 $\hat\eta$를 만든다.
-5. $\mathcal L_{fast}=\operatorname{MSE}(\eta,\hat\eta)$를 계산한다.
+1. slow RGB와 language를 blocks 1-30에 넣어 $`z_s`$를 계산한다.
+2. $`z_s`$를 blocks 31-32/LM head에 넣어 slow target의 cross-entropy $`\mathcal L_{slow}`$를 계산한다.
+3. action chunk를 정규화하고 $`\tau\sim U\{1,\ldots,T\}`$와 $`\eta\sim\mathcal N(0,I)`$를 뽑아 $`\tilde a_\tau`$를 만든다.
+4. $`z_s`$, 최신 fast multimodal tokens, $`\tilde a_\tau`$, timestep을 blocks 31-32/action head에 넣어 $`\hat\eta`$를 만든다.
+5. $`\mathcal L_{fast}=\operatorname{MSE}(\eta,\hat\eta)`$를 계산한다.
 6. 두 loss를 합해 한 번 역전파한다.
 
 공개 training strategy에서 실제 합은 diffusion loss에 Hugging Face `output.loss`를 더하는 형태다. [공개 training loss 합산](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/training/strategies/base_strategy.py#L298-L313) 논문 Eq.(1)의 합과 코드의 `.mean()` MSE, Eq.(2)의 합과 framework token mean 사이에는 reduction 차이가 있으므로 같은 coefficient 1이더라도 gradient scale은 식만 보고 재현할 수 없다.
@@ -718,31 +681,31 @@ $y^{slow}$는 discrete robot-action token 또는 language-plan token이다. 논�
 ### 8.2 initialization과 fine-tuning
 
 - backbone은 Prismatic VLM이며 vision tower는 SigLIP+DINOv2, language backbone은 LLaMA2-7B다.
-- fast branch용 last-$K$ transformer는 별도 random module이 아니라 pretrained block을 공유한다.
+- fast branch용 last-$`K`$ transformer는 별도 random module이 아니라 pretrained block을 공유한다.
 - point tokenizer, state/timestep/action encoders와 action head는 VLA adaptation을 위해 붙는 모듈이다.
 - 본문은 RLBench에서 full-parameter fine-tuning, 300 epochs, AdamW, mixed precision, 8×A800을 보고한다.
-- 공개 `train.sh` snapshot은 `--unfreeze_llm True`, `--unfreeze_vision True`, learning rate $2\times10^{-5}$, per-device batch 6, 8 GPU, action chunk 1, repeated diffusion sampling 4, language subgoal 사용을 예시한다. 이는 **공개 기본 script**이지 모든 논문 표의 정확한 실행 manifest임을 보장하지 않는다. [공개 train script](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/train.sh)
+- 공개 `train.sh` snapshot은 `--unfreeze_llm True`, `--unfreeze_vision True`, learning rate $`2\times10^{-5}`$, per-device batch 6, 8 GPU, action chunk 1, repeated diffusion sampling 4, language subgoal 사용을 예시한다. 이는 **공개 기본 script**이지 모든 논문 표의 정확한 실행 manifest임을 보장하지 않는다. [공개 train script](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/train.sh)
 
-보고된 global batch를 script 그대로 해석하면 gradient accumulation이 없을 때 $6\times8=48$이다. 그러나 effective batch, optimizer betas/weight decay, scheduler, warm-up, seed, checkpoint selection rule, 학습 시간과 peak memory는 PDF에 충분히 고정되어 있지 않다.
+보고된 global batch를 script 그대로 해석하면 gradient accumulation이 없을 때 $`6\times8=48`$이다. 그러나 effective batch, optimizer betas/weight decay, scheduler, warm-up, seed, checkpoint selection rule, 학습 시간과 peak memory는 PDF에 충분히 고정되어 있지 않다.
 
 ### 8.3 추론: diffusion reverse process
 
-논문은 forward noising을 주지만 reverse update의 식, solver 종류, inference step 수를 본문에 고정하지 않는다. 공개 RLBench test script는 $T=100$ training diffusion steps와 DDIM 4-step sampling, `ratio=4`, `llm_middle_layer=30`, fast point cloud/state 사용을 예시한다. [공개 test script](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/test_rlbench.sh)
+논문은 forward noising을 주지만 reverse update의 식, solver 종류, inference step 수를 본문에 고정하지 않는다. 공개 RLBench test script는 $`T=100`$ training diffusion steps와 DDIM 4-step sampling, `ratio=4`, `llm_middle_layer=30`, fast point cloud/state 사용을 예시한다. [공개 test script](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/test_rlbench.sh)
 
-DDIM 4 steps는 action을 네 번 실행한다는 뜻이 아니다. 같은 observation/action-noise bundle을 대상으로 neural network를 네 번 평가해 **하나의 action chunk**를 복원한다. 공개 diffusion implementation의 forward sampling은 standard cumulative-$\alpha$ 계수를 사용한다. [공개 `q_sample`](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/models/diffusion/models.py#L205-L230)
+DDIM 4 steps는 action을 네 번 실행한다는 뜻이 아니다. 같은 observation/action-noise bundle을 대상으로 neural network를 네 번 평가해 **하나의 action chunk**를 복원한다. 공개 diffusion implementation의 forward sampling은 standard cumulative-$`\alpha`$ 계수를 사용한다. [공개 `q_sample`](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/models/diffusion/models.py#L205-L230)
 
 ### 8.4 비동기 실행은 병렬 실행과 다르다
 
 논문의 asynchronous는 두 시스템의 **update frequency가 다름**을 뜻한다. Fig.2의 시간축에서 slow latent가 유지되는 동안 fast action은 여러 번 갱신된다. 공개 평가 loop는 한 GPU에서 slow call이 필요한 경우 먼저 끝낸 뒤 fast diffusion call을 수행하는 순차 구조다. 따라서 다음을 구분해야 한다.
 
-- **multi-rate/asynchronous semantics**: System 2는 매 $r$번째 policy call에만 갱신한다.
+- **multi-rate/asynchronous semantics**: System 2는 매 $`r`$번째 policy call에만 갱신한다.
 - **hardware concurrency**: 두 GPU stream/device가 동시에 계산한다.
 
 논문은 앞 항목을 구현·평가했으며 뒤 항목은 입증하지 않았다. System 2 refresh가 있는 call은 없는 call보다 느릴 가능성이 크므로 평균 action/s 하나로는 control jitter를 알 수 없다.
 
 ### 8.5 open-loop chunk 실행의 의미
 
-공개 `sim.py`는 policy가 반환한 `actions`를 `for action in actions` loop로 모두 실행한 뒤 다음 perception/policy call로 넘어간다. 따라서 $H>1$에서는 chunk 내부 action 사이에 새 image/point cloud를 받아 재계획하지 않는다. 이 선택은 effective action throughput을 높이지만 접촉·충돌·물체 미끄러짐 같은 빠른 외란에 대한 closed-loop bandwidth를 낮춘다.
+공개 `sim.py`는 policy가 반환한 `actions`를 `for action in actions` loop로 모두 실행한 뒤 다음 perception/policy call로 넘어간다. 따라서 $`H\gt 1`$에서는 chunk 내부 action 사이에 새 image/point cloud를 받아 재계획하지 않는다. 이 선택은 effective action throughput을 높이지만 접촉·충돌·물체 미끄러짐 같은 빠른 외란에 대한 closed-loop bandwidth를 낮춘다.
 
 또한 공개 loop의 `cur_robot_state`가 chunk 실행 과정에서 predicted target/action으로 갱신되는 부분은 실제 센서에서 매 action 뒤 읽은 state와 동일하다고 단정하기 어렵다. 실제 로봇 deployment에서는 measured joint/EEF state의 timestamp와 command state를 분리해 검증해야 한다.
 
@@ -802,7 +765,7 @@ while episode_not_done:
 - 학습량: 과제당 100 trajectories, multi-task setting.
 - FiS 학습: 300 epochs, AdamW, mixed precision, 8×NVIDIA A800, full fine-tuning.
 - 평가: latest epoch checkpoint로 task당 20 rollouts를 수행하고 이를 세 번 반복한다고 쓴다. 즉 방법당 nominal 600 rollouts지만, 표의 `±`가 세 반복의 표준편차인지 표준오차인지 명시하지 않는다.
-- 속도: RTX 4090, action chunk $H=1$. batch size, precision, diffusion steps, CUDA synchronization, warm-up, image/point preprocessing 포함 여부는 표 캡션에 없다.
+- 속도: RTX 4090, action chunk $`H=1`$. batch size, precision, diffusion steps, CUDA synchronization, warm-up, image/point preprocessing 포함 여부는 표 캡션에 없다.
 
 #### Table 1 전체 결과
 
@@ -810,7 +773,7 @@ while episode_not_done:
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | ManipLLM | .50 | .80 | .40 | .20 | .80 | .35 | .10 | .25 | .15 | .20 | .38±.04 | 2.2 Hz |
 | OpenVLA | .65 | .40 | .75 | .50 | .80 | .20 | .35 | .15 | .10 | .10 | .40±.04 | 6.3 Hz |
-| $\pi_0$ | .90 | .80 | .95 | .30 | .85 | .30 | .30 | .70 | .10 | .30 | .55±.03 | 13.8 Hz |
+| $`\pi_0`$ | .90 | .80 | .95 | .30 | .85 | .30 | .30 | .70 | .10 | .30 | .55±.03 | 13.8 Hz |
 | CogACT | .90 | .80 | .95 | .50 | .85 | .50 | .55 | .45 | .30 | .25 | .61±.04 | 9.8 Hz |
 | **FiS-VLA** | **1.00** | **1.00** | .95 | **.55** | **.90** | .50 | .50 | **.70** | **.55** | .20 | **.69±.03** | **21.9 Hz** |
 
@@ -820,11 +783,11 @@ while episode_not_done:
 
 - 각 task의 최고 baseline보다 **엄격히 높은 것**: Close box, Laptop, Sweep, Fridge, Wine의 5개.
 - 최고 baseline과 **동률 이상**: 위 5개에 Toilet, Phone, Frame을 더한 8개.
-- 뒤지는 것: Umbrella(.50 vs CogACT .55), Water(.20 vs $\pi_0$ .30/CogACT .25).
+- 뒤지는 것: Umbrella(.50 vs CogACT .55), Water(.20 vs $`\pi_0`$ .30/CogACT .25).
 
 따라서 가장 정확한 문장은 “5개 strict win, 3개 tie, 2개 loss”다. `superior`를 strict 우월로 읽으면 과장이고, top-performing을 tie 포함으로 읽으면 8/10이다.
 
-속도 배율은 $21.9/13.8=1.59\times$ 대 $\pi_0$, $21.9/9.8=2.23\times$ 대 CogACT다. 하지만 서로 다른 architecture의 parameter 수, diffusion evaluations, preprocessing scope가 한 표에 고정되지 않아 **시스템 수준 동등 조건 속도 비교**로는 불완전하다.
+속도 배율은 $`21.9/13.8=1.59\times`$ 대 $`\pi_0`$, $`21.9/9.8=2.23\times`$ 대 CogACT다. 하지만 서로 다른 architecture의 parameter 수, diffusion evaluations, preprocessing scope가 한 표에 고정되지 않아 **시스템 수준 동등 조건 속도 비교**로는 불완전하다.
 
 ### 9.3 §4.2 Ablation Study [PDF p.8, Fig.3; Appendix Table 8-10]
 
@@ -858,11 +821,11 @@ Fig.3은 세 막대그래프와 본문 training-strategy ablation을 통해 구�
 
 더 중요한 원문 수치 오류가 있다. 마지막 행의 task별 값은
 
-$$
+```math
 .50+.30+.15+.00+.65+.05+.55+.45+.00+.00=2.65,
-$$
+```
 
-따라서 평균은 $2.65/10=.265\approx.27$이다. Table 9와 Fig.3은 .22로 표시한다. 행 값, 평균, 그래프 중 무엇이 맞는지 원자료 없이는 결정할 수 없다. 재현 시 반드시 authors의 raw evaluation log로 정정해야 한다.
+따라서 평균은 $`2.65/10=.265\approx.27`$이다. Table 9와 Fig.3은 .22로 표시한다. 행 값, 평균, 그래프 중 무엇이 맞는지 원자료 없이는 결정할 수 없다. 재현 시 반드시 authors의 raw evaluation log로 정정해야 한다.
 
 #### (3) System 2:System 1 빈도 — Table 10
 
@@ -877,7 +840,7 @@ $$
 
 #### (4) dual-aware training과 plan supervision
 
-- $\mathcal L_{slow}$ 제거: .69 → .62, -7 pp.
+- $`\mathcal L_{slow}`$ 제거: .69 → .62, -7 pp.
 - discrete-action supervision: .69.
 - Gemini가 자동 생성하고 사람이 검수한 task-plan supervision: .73, +4 pp.
 
@@ -901,12 +864,12 @@ Figure 4. Rack placement, wiping, handover, pouring의 실제 로봇 keyframes. 
 
 | Platform | 모델 | Task 1 | Task 2 | Task 3 | Task 4 | 평균 |
 |---|---|---:|---:|---:|---:|---:|
-| AgileX | $\pi_0$ | .70 | .75 | .55 | .35 | .59 |
+| AgileX | $`\pi_0`$ | .70 | .75 | .55 | .35 | .59 |
 | AgileX | **FiS** | **.80** | .75 | **.70** | **.45** | **.68** |
-| AlphaBot | $\pi_0$ | .65 | .75 | .65 | .40 | .61 |
+| AlphaBot | $`\pi_0`$ | .65 | .75 | .65 | .40 | .61 |
 | AlphaBot | **FiS** | **.80** | **.80** | **.75** | **.60** | **.74** |
 
-원시 평균은 AgileX FiS .675, $\pi_0$ .5875; AlphaBot FiS .7375, $\pi_0$ .6125로 표 반올림과 맞는다. 8과제를 합치면 FiS .70625, $\pi_0$ .60000, 차이는 **10.625 percentage points**다. 본문의 “11% improvement”는 상대 17.7%보다 **약 11 pp 절대 향상**으로 읽는 것이 자연스럽다.
+원시 평균은 AgileX FiS .675, $`\pi_0`$ .5875; AlphaBot FiS .7375, $`\pi_0`$ .6125로 표 반올림과 맞는다. 8과제를 합치면 FiS .70625, $`\pi_0`$ .60000, 차이는 **10.625 percentage points**다. 본문의 “11% improvement”는 상대 17.7%보다 **약 11 pp 절대 향상**으로 읽는 것이 자연스럽다.
 
 Fig.4는 두 platform의 task 진행 keyframe을 보여 정성적으로 action sequence가 성립함을 보인다. 그러나 성공 기준, partial credit, 안전 개입 횟수, reset 조건, operator blinding, 실패 동영상 전체 공개 여부가 없어 정성 그림만으로 robustness를 판단할 수는 없다.
 
@@ -916,9 +879,9 @@ Fig.4는 두 platform의 task 진행 keyframe을 보여 정성적으로 action s
 
 Figure 5. 원 조건과 일반화 평가 조건; 빨간 상자는 원문의 변화 표시다. [PDF p.10, §4.4; 원문](https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf#page=10)
 
-`Place bottles at rack`과 `Pick bowl and place object` 두 과제에서 각각 unseen object, background, lighting 조건을 만든다. Fig.5의 red box는 학습 조건과 달라진 요소를 시각화한다. Table 3은 $\pi_0$와 FiS의 원 조건 성능 및 변화 조건 성능/하락폭을 비교한다.
+`Place bottles at rack`과 `Pick bowl and place object` 두 과제에서 각각 unseen object, background, lighting 조건을 만든다. Fig.5의 red box는 학습 조건과 달라진 요소를 시각화한다. Table 3은 $`\pi_0`$와 FiS의 원 조건 성능 및 변화 조건 성능/하락폭을 비교한다.
 
-| 과제/로봇 | 조건 | FiS | $\pi_0$ |
+| 과제/로봇 | 조건 | FiS | $`\pi_0`$ |
 |---|---|---:|---:|
 | Bottles/AgileX | Original | .70 | .55 |
 |  | unseen object | .55 (-21%) | .40 (-27%) |
@@ -942,7 +905,7 @@ Figure 5. 원 조건과 일반화 평가 조건; 빨간 상자는 원문의 변�
 참고문헌은 VLA foundation models, dual-system robotics, diffusion/flow policy, 3D manipulation, action chunking, RLBench 및 vision-language backbone 계보를 폭넓게 잇는다. 본 리뷰에서 읽어야 할 prior-art 축은 다음과 같다.
 
 - **대형 단일 VLA**: OpenVLA, RT 계열 등 generalization과 계산비의 trade-off.
-- **dual-system VLA**: $\pi_0$, CogACT 등 reasoning/planning과 action expert 분리.
+- **dual-system VLA**: $`\pi_0`$, CogACT 등 reasoning/planning과 action expert 분리.
 - **action generation**: diffusion policy, action chunking/ACT.
 - **3D 관측**: point-cloud 기반 geometry grounding.
 
@@ -1003,14 +966,14 @@ Appendix는 각 실제 과제가 평가하는 능력을 설명한다. basket/rac
 
 Figure 7. 왼쪽은 chunk size와 성공률·속도, 오른쪽은 multimodal input variants. [PDF p.29, Appendix B.1–B.2; 원문](https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf#page=29)
 
-| $H$ | 평균 성공률±표기 변동 | 핵심 의미 |
+| $`H`$ | 평균 성공률±표기 변동 | 핵심 의미 |
 |---:|---:|---|
 | 1 | .69±.03 | 완전 빈번 재관측 가능, 21.9 action/s |
 | 2 | .68±.03 | 거의 동일 |
 | 4 | .66±.04 | 소폭 하락 |
 | 8 | .69±.02 | 평균 회복, 117.7 effective action/s |
 
-평균 성공률은 비교적 안정적이지만 task별 변화는 크다. 예를 들어 $H=8$의 Close box는 1.00→.70으로 떨어지는 반면 Water plants는 .20→.65로 오른다. 평균만으로 chunk robustness를 일반화하면 이 이질성이 가려진다.
+평균 성공률은 비교적 안정적이지만 task별 변화는 크다. 예를 들어 $`H=8`$의 Close box는 1.00→.70으로 떨어지는 반면 Water plants는 .20→.65로 오른다. 평균만으로 chunk robustness를 일반화하면 이 이질성이 가려진다.
 
 저자는 chunking이 decision point와 compounding error를 줄이고 temporal consistency를 높인다고 설명한다. 반대로 chunk 안의 closed-loop correction 기회도 줄기 때문에 외란이 많은 접촉 과제에서는 trade-off가 있다. 117.7 Hz는 Appendix 문구에서도 `theoretical control frequency`다. 이 값을 sensor-feedback rate로 부르면 안 된다.
 
@@ -1114,51 +1077,50 @@ Fig.12는 네 실패 유형을 명시한다.
 | 지표 | 뜻 | FiS에서의 예 |
 |---|---|---|
 | sensor rate | 새 RGB/depth/state가 도착하는 빈도 | camera 설명은 30 Hz |
-| policy-call rate | 새 관측으로 action chunk를 재추론하는 빈도 | $H=8$ 수치에서 약 14.7 calls/s로 역산 |
+| policy-call rate | 새 관측으로 action chunk를 재추론하는 빈도 | $`H=8`$ 수치에서 약 14.7 calls/s로 역산 |
 | effective action rate | chunk의 action 수 ÷ 한 chunk 생성시간 | 저자 보고 최대 117.7 actions/s |
 | slow-latent refresh rate | blocks 1-30을 다시 실행하는 빈도 | ratio 1:4라면 약 3.68 refresh/s로 역산 |
 | actuator servo rate | low-level controller가 command를 적용하는 빈도 | 논문 미기재; 위 네 지표와 별개 |
 
-### 10.2 $H=1$ Table 1 수치
+### 10.2 $`H=1`$ Table 1 수치
 
 21.9 Hz를 policy call당 평균 wall time으로 역산하면
 
-$$
+```math
 \bar L_{H=1}=\frac{1}{21.9}=0.04566\text{ s}=45.66\text{ ms}.
-$$
+```
 
 이때 action 하나를 예측하므로 policy-call rate와 effective action rate가 수치상 같다. 그러나 실제 45.66 ms에 image resize, depth→point cloud, point downsampling, host-device copy, robot communication이 포함되는지는 미기재다.
 
-### 10.3 $H=8$ Appendix 수치
+### 10.3 $`H=8`$ Appendix 수치
 
 117.7 actions/s가 한 call에서 8개 action을 내는 theoretical effective rate라면
 
-$$
+```math
 \bar L_{chunk}=\frac{8}{117.7}=0.06797\text{ s}=67.97\text{ ms},
-$$
+```
 
-$$
+```math
 f_{policy}=\frac{1}{0.06797}=14.71\text{ calls/s}.
-$$
+```
 
 즉 neural policy가 새 observation을 117.7번 읽는 것이 아니라 평균 초당 약 14.7번 chunk를 만든다. 그 chunk 안의 8개 command를 순서대로 방출해 117.7 actions/s를 얻는 계산이다.
 
 기본 slow:fast ratio 1:4를 그대로 적용한다고 가정하면 [리뷰어 추정]
 
-$$
-f_{slow}=\frac{14.71}{4}=3.68\text{ Hz},\qquad
-\Delta t_{slow}\approx272\text{ ms}.
-$$
+```math
+f_{slow}=\frac{14.71}{4}=3.68\text{ Hz},\qquad \Delta t_{slow}\approx272\text{ ms}.
+```
 
-또한 slow latent 하나가 최대 $4\times8=32$ low-level actions에 걸쳐 재사용될 수 있다. 이 값은 저자가 직접 benchmark한 System 2 latency가 아니라 **보고된 평균과 공개 loop semantics로부터의 환산**이다.
+또한 slow latent 하나가 최대 $`4\times8=32`$ low-level actions에 걸쳐 재사용될 수 있다. 이 값은 저자가 직접 benchmark한 System 2 latency가 아니라 **보고된 평균과 공개 loop semantics로부터의 환산**이다.
 
 ### 10.4 평균 latency가 감추는 refresh jitter
 
-fast-only call latency를 $L_f$, slow refresh의 추가 latency를 $L_s$, ratio를 $r$이라 하면 long-run 평균은 대략
+fast-only call latency를 $`L_f`$, slow refresh의 추가 latency를 $`L_s`$, ratio를 $`r`$이라 하면 long-run 평균은 대략
 
-$$
+```math
 \bar L=L_f+\frac{L_s}{r}.
-$$
+```
 
 하지만 시간열은 균일하지 않다.
 
@@ -1169,7 +1131,7 @@ latent:     z0            z0      z0      z0       z4
 latency:   high           low     low     low      high
 ```
 
-robot 제어에서는 평균보다 refresh-call의 p95/p99 deadline miss가 더 중요할 수 있다. 논문은 $L_f$, $L_s$, first-call/JIT, p50/p95/p99, jitter histogram을 분해하지 않는다.
+robot 제어에서는 평균보다 refresh-call의 p95/p99 deadline miss가 더 중요할 수 있다. 논문은 $`L_f`$, $`L_s`$, first-call/JIT, p50/p95/p99, jitter histogram을 분해하지 않는다.
 
 ### 10.5 실제 측정에 필요한 timing boundary
 
@@ -1199,9 +1161,9 @@ CUDA event만으로는 GPU kernel time은 얻지만 sensor-to-actuator E2E는 �
 - dropped camera frames와 observation age,
 - action queue depth와 deadline miss,
 - TensorRT/ONNX unsupported op fallback,
-- $H$, ratio, solver step에 따른 success-latency-safety Pareto.
+- $`H`$, ratio, solver step에 따른 success-latency-safety Pareto.
 
-따라서 현재 증거로 말할 수 있는 것은 “저자가 정한 4090 protocol에서 $H=1$ FiS가 표의 baseline보다 높은 action-generation rate를 보였고, $H=8$에서는 theoretical effective action rate가 117.7에 도달했다”까지다. robot E2E closed-loop 117.7 Hz를 입증한 것은 아니다.
+따라서 현재 증거로 말할 수 있는 것은 “저자가 정한 4090 protocol에서 $`H=1`$ FiS가 표의 baseline보다 높은 action-generation rate를 보였고, $`H=8`$에서는 theoretical effective action rate가 117.7에 도달했다”까지다. robot E2E closed-loop 117.7 Hz를 입증한 것은 아니다.
 
 <a id="critique"></a>
 
@@ -1232,7 +1194,7 @@ task당 20 rollouts는 성공률 resolution이 5 pp다. 세 반복을 했더라�
 
 #### D. “reasoning 보존”은 간접 evidence다
 
-$\mathcal L_{slow}$ 제거 성능 하락과 plan label 향상은 slow supervision이 유용함을 보인다. 그러나 language reasoning accuracy, plan correctness, catastrophic forgetting을 직접 평가하지 않는다. 그러므로 “inherent reasoning capability를 preserved”했다기보다 “slow autoregressive auxiliary loss가 downstream success에 기여했다”가 증거에 맞다.
+$`\mathcal L_{slow}`$ 제거 성능 하락과 plan label 향상은 slow supervision이 유용함을 보인다. 그러나 language reasoning accuracy, plan correctness, catastrophic forgetting을 직접 평가하지 않는다. 그러므로 “inherent reasoning capability를 preserved”했다기보다 “slow autoregressive auxiliary loss가 downstream success에 기여했다”가 증거에 맞다.
 
 #### E. parameter-sharing ablation에 interface confound가 있다
 
@@ -1244,7 +1206,7 @@ Table 4 weight 합 불일치, dataset mapping·timestamp·normalization 미기�
 
 #### G. 높은 chunk rate와 closed-loop robustness의 trade-off가 덜 분석됐다
 
-$H=8$ 평균 성공률은 유지되지만 task별 변동이 크고 chunk 내부는 open loop다. 외란 주입, latency spike, camera drop, contact perturbation 실험이 필요하다.
+$`H=8`$ 평균 성공률은 유지되지만 task별 변동이 크고 chunk 내부는 open loop다. 외란 주입, latency spike, camera drop, contact perturbation 실험이 필요하다.
 
 #### H. 표·그림 품질 오류가 있다
 
@@ -1289,8 +1251,8 @@ Table 9 마지막 행의 평균(.22 vs task값 평균 .265), Table 4 sampling-we
 - [ ] exact git commit, environment lock, CUDA/cuDNN/PyTorch 버전
 - [ ] 모든 optimizer/scheduler/warm-up/weight-decay/gradient-clip 값
 - [ ] global/effective batch, accumulation, seed, data-worker seed
-- [ ] asynchronous offset distribution과 $z_s$ detach 여부
-- [ ] loss reduction, mask, $\lambda_f/\lambda_s$, repeated diffusion 의미
+- [ ] asynchronous offset distribution과 $`z_s`$ detach 여부
+- [ ] loss reduction, mask, $`\lambda_f/\lambda_s`$, repeated diffusion 의미
 - [ ] total steps/GPU-hours, peak memory, checkpoint selection
 
 #### 평가
@@ -1341,8 +1303,8 @@ MIG로 slow와 fast를 분리하면 isolation은 좋아질 수 있지만, 동일
 
 #### Gate 0 — correctness baseline
 
-- Jetson에서 PyTorch/eager BF16으로 $B=1$, RGB 224, PC 1,024, $H=1$, DDIM 4를 먼저 실행한다.
-- x86/4090 reference와 slow latent, $\hat\eta$, denoised action을 layer별 비교한다.
+- Jetson에서 PyTorch/eager BF16으로 $`B=1`$, RGB 224, PC 1,024, $`H=1`$, DDIM 4를 먼저 실행한다.
+- x86/4090 reference와 slow latent, $`\hat\eta`$, denoised action을 layer별 비교한다.
 - deterministic sample/seed에서 max/mean absolute error, action sign/quaternion/gripper parity를 저장한다.
 - 한 episode가 아니라 20-step 이상 반복해 memory leak, NaN, stall, cache-version error를 검사한다.
 
@@ -1373,7 +1335,7 @@ action/timestep embedding과 noisy-action-dependent attention만 step마다 갱�
 
 #### Gate 3 — TensorRT/compiled fixed shape
 
-- 우선 고정 shape: $B=1$, RGB 224×224, PC 1,024, $H\in\{1,8\}$, DDIM 4, 제한된 text-length buckets.
+- 우선 고정 shape: $`B=1`$, RGB 224×224, PC 1,024, $`H\in\{1,8\}`$, DDIM 4, 제한된 text-length buckets.
 - vision tower, blocks 1-30, suffix blocks, action MLP을 각각 engine/profile 단위로 나눠 cache lifecycle을 보존한다.
 - FPS/kNN/point grouping이 TensorRT에서 지원되지 않으면 custom CUDA/TensorRT plugin을 만들거나 해당 전처리만 최적화된 CUDA/PyTorch로 남긴다.
 - CUDA Graph는 reuse call의 고정 address/shape에 먼저 적용한다. slow refresh처럼 sequence length가 변하는 경로는 bucket별 graph가 필요하다.
@@ -1392,7 +1354,7 @@ action/timestep embedding과 noisy-action-dependent attention만 step마다 갱�
 - fast inference thread에 높은 priority를 주되 camera ingestion과 watchdog을 굶기지 않는다.
 - slow job이 deadline을 넘으면 오래된 결과를 뒤늦게 적용하지 말고 version/timestamp를 검사한다.
 - slow latent age, camera age, point-cloud age가 threshold를 넘으면 chunk를 축소하거나 safe stop한다.
-- contact/high-curvature 구간에서는 $H=1$ 또는 2, 자유공간 이동은 $H=8$로 바꾸는 adaptive chunk를 비교한다.
+- contact/high-curvature 구간에서는 $`H=1`$ 또는 2, 자유공간 이동은 $`H=8`$로 바꾸는 adaptive chunk를 비교한다.
 - slow refresh 직후 action queue를 취소/재계획할 수 있어야 한다.
 
 ### 12.4 Thor 실험 matrix
@@ -1416,7 +1378,7 @@ action/timestep embedding과 noisy-action-dependent attention만 step마다 갱�
 - **G2 품질**: 4090 BF16 reference 대비 task success 하락이 사전 정의 margin 이내.
 - **G3 안전**: collision, joint-limit, stale-cache fault injection에서 watchdog이 항상 개입.
 - **G4 지속성**: 목표 power mode에서 장시간 thermal steady-state로 deadline 유지.
-- **G5 공정 비교**: 같은 $H$/ratio/DDIM/timing boundary에서 4090과 Thor를 비교.
+- **G5 공정 비교**: 같은 $`H`$/ratio/DDIM/timing boundary에서 4090과 Thor를 비교.
 
 이 과정을 통과하기 전에는 “Thor에서 117.7 Hz”라고 쓰지 말고, **모델 kernel latency**, **policy refresh**, **effective chunk action rate**, **robot E2E rate**를 각각 보고해야 한다.
 
@@ -1448,13 +1410,13 @@ action/timestep embedding과 noisy-action-dependent attention만 step마다 갱�
 
 grasp/placement는 metric geometry와 depth relation이 중요하고, stale slow image만으로는 현재 gripper/object 관계를 놓칠 수 있다. Table 9에서 PC 제거가 .69→.61로 내려가는 결과가 이를 지지한다. 다만 point cloud 자체의 compute cost도 함께 측정해야 한다.
 
-### Q7. $o_{t-1}$와 $o_t$ 표기는 정확히 한 step 차이인가?
+### Q7. $`o_{t-1}`$와 $`o_t`$ 표기는 정확히 한 step 차이인가?
 
-개념적으로 slow 관측이 fast 관측보다 오래됐다는 뜻에 가깝다. ratio 1:4에서는 실제 cache age가 여러 policy call일 수 있다. 학습 asynchronous offset의 정확한 분포가 없어 $t-1$을 물리적으로 항상 한 frame 전이라고 보면 안 된다.
+개념적으로 slow 관측이 fast 관측보다 오래됐다는 뜻에 가깝다. ratio 1:4에서는 실제 cache age가 여러 policy call일 수 있다. 학습 asynchronous offset의 정확한 분포가 없어 $`t-1`$을 물리적으로 항상 한 frame 전이라고 보면 안 된다.
 
-### Q8. Eq.(1)의 $\beta_\tau$는 일반 diffusion의 beta인가?
+### Q8. Eq.(1)의 $`\beta_\tau`$는 일반 diffusion의 beta인가?
 
-식의 역할은 보통 $\bar\alpha_\tau$가 맡는 cumulative signal-retention coefficient와 같다. 일반적인 per-step noise variance $\beta_\tau$와 표기가 충돌한다. 공개 코드는 cumulative-alpha 계수를 써 standard forward noising을 구현하므로, 재현자는 이름보다 코드의 schedule 의미를 따라야 한다.
+식의 역할은 보통 $`\bar\alpha_\tau`$가 맡는 cumulative signal-retention coefficient와 같다. 일반적인 per-step noise variance $`\beta_\tau`$와 표기가 충돌한다. 공개 코드는 cumulative-alpha 계수를 써 standard forward noising을 구현하므로, 재현자는 이름보다 코드의 schedule 의미를 따라야 한다.
 
 ### Q9. Eq.(3)에 loss weight가 없는데 정말 동일 중요도인가?
 
@@ -1470,9 +1432,9 @@ coefficient는 1:1이지만 numerical scale은 reduction에 따라 다르다. �
 
 ### Q12. 21.9 Hz와 117.7 Hz는 모순인가?
 
-아니다. 전자는 $H=1$에서 action 하나/호출의 보고값이고, 후자는 $H=8$에서 chunk 하나가 8 actions를 내는 theoretical effective rate다. 후자를 역산한 policy-call rate는 약 14.7 Hz다.
+아니다. 전자는 $`H=1`$에서 action 하나/호출의 보고값이고, 후자는 $`H=8`$에서 chunk 하나가 8 actions를 내는 theoretical effective rate다. 후자를 역산한 policy-call rate는 약 14.7 Hz다.
 
-### Q13. $H=8$이면 완전한 117.7 Hz closed loop인가?
+### Q13. $`H=8`$이면 완전한 117.7 Hz closed loop인가?
 
 아니다. 공개 loop는 8개 action을 모두 실행한 뒤 새 observation을 받아 policy를 다시 호출한다. chunk 내부는 open loop이므로 feedback 관점의 policy rate는 약 14.7 Hz이고 camera는 30 Hz다. actuator의 내부 servo는 별도다.
 
@@ -1576,7 +1538,7 @@ Table 9의 `No PC, Img and State` 행이다. task별 합은 2.65이므로 평균
 | Table | 내용 | 해설/검산 위치 |
 |---:|---|---|
 | 1 | RLBench baseline success와 speed | §9.2, §10.2 |
-| 2 | 두 실제 robot에서 FiS 대 $\pi_0$ | §9.4 |
+| 2 | 두 실제 robot에서 FiS 대 $`\pi_0`$ | §9.4 |
 | 3 | unseen object/background/lighting | §9.5 |
 | 4 | 37 pretraining datasets와 sampling weights | §9.9; 합 불일치 지적 |
 | 5 | AgileX/AlphaBot hardware·joint range | §9.9 |
@@ -1596,6 +1558,6 @@ Fast-in-Slow의 가장 중요한 기여는 “큰 VLM을 매번 돌리지 않는
 
 1. 성공률 우위가 architecture만의 효과인지 추가 modality와 학습 recipe의 효과인지 완전히 분리하지 못했다.
 2. reasoning preservation을 독립적으로 측정하지 않았다.
-3. 117.7은 sensor-to-actuator closed-loop 실측이 아니라 $H=8$의 theoretical effective action rate다.
+3. 117.7은 sensor-to-actuator closed-loop 실측이 아니라 $`H=8`$의 theoretical effective action rate다.
 
 따라서 후속 작업의 올바른 목표는 표의 Hz를 그대로 이식하는 것이 아니다. 동일 조건의 structural ablation, component/E2E timing, stale-latent와 open-loop chunk의 안전성, Thor에서의 수치 parity를 단계별 gate로 통과시키는 것이다. 그 검증을 거치면 Fast-in-Slow는 단순한 “dual system” 명칭을 넘어, 제한된 edge compute에서 reasoning과 control 주기를 분리하는 실용적인 VLA deployment pattern이 될 가능성이 있다.

@@ -95,14 +95,14 @@ PDF 쪽수와 인쇄 쪽수의 대응은 `PDF p.1 = proceedings p.22826`, …, `
 
 ### 2.1 기존 adapter-style VLM의 병목
 
-고해상도 이미지를 패치로 나누면 패치 하나가 LLM 안의 시각 토큰 하나가 된다. 토큰 수를 $n$, LLM hidden width를 $d$라 하면 self-attention의 핵심 행렬곱은 토큰 수에 대해 대략 $O(n^2d)$이다. MLP와 projection도 $O(nd^2)$ 또는 $O(ndm)$이므로, 이미지 토큰이 수백 개 추가되면 LLM prefill의 모든 층에서 큰 비용이 든다. [PDF p.1–3, §1, §3.1]
+고해상도 이미지를 패치로 나누면 패치 하나가 LLM 안의 시각 토큰 하나가 된다. 토큰 수를 $`n`$, LLM hidden width를 $`d`$라 하면 self-attention의 핵심 행렬곱은 토큰 수에 대해 대략 $`O(n^2d)`$이다. MLP와 projection도 $`O(nd^2)`$ 또는 $`O(ndm)`$이므로, 이미지 토큰이 수백 개 추가되면 LLM prefill의 모든 층에서 큰 비용이 든다. [PDF p.1–3, §1, §3.1]
 
 FastV가 취한 계산 흐름은 단순하다.
 
 1. 얕은 LLM 층까지는 모든 이미지 토큰을 계산한다.
 2. 마지막 text token이 이미지 토큰에 주는 attention을 중요도로 간주한다.
-3. 중요도가 낮은 $R\%$의 이미지 토큰을 제거한다.
-4. 나머지 깊은 층은 $(1-R)n$개만 처리한다.
+3. 중요도가 낮은 $`R\%`$의 이미지 토큰을 제거한다.
+4. 나머지 깊은 층은 $`(1-R)n`$개만 처리한다.
 
 이 방식이 여러 VQA benchmark에서 성능을 거의 유지하자, “이미지 토큰은 매우 중복적이며 초기에 절반 이상 버려도 된다”는 인상이 강해졌다. 그러나 저자들은 여기서 평가의 역문제를 제기한다. **점수가 유지된 것이 올바른 시각 정보를 남겼기 때문인가, 아니면 benchmark가 정밀한 시각 grounding을 요구하지 않기 때문인가?** [PDF p.2, §1]
 
@@ -132,7 +132,7 @@ Figure 1(a)의 첫 예는 “나무 앞에 있는 동물은 무엇인가?”라�
 | 연구 질문 2 | localization 붕괴는 단순히 토큰 수 부족 때문인가, 잘못된 토큰 선택 때문인가? |
 | 관찰 | 얕은 층에서 남은 토큰이 이미지 하단에 몰리고, 깊은 층일수록 편향과 성능 손실이 줄어든다. |
 | 저자 가설 | raster-scan된 이미지 토큰 뒤에 text가 오므로, 마지막 text query와 위치상 가까운 하단 이미지 토큰이 RoPE의 장거리 감쇠 때문에 과대평가된다. |
-| 설계 선택 1 | 선택 점수 계산에서만 RoPE를 빼는 $\phi_{-R}$를 사용한다. |
+| 설계 선택 1 | 선택 점수 계산에서만 RoPE를 빼는 $`\phi_{-R}`$를 사용한다. |
 | 설계 선택 2 | 초기 attention이 아직 의미적 localization에 충분하지 않을 수 있으므로 stride 기반 균일 표본을 합쳐 전역 coverage를 보장한다. |
 | 설계 선택 3 | 깊은 층에서 attention criterion이 좋아진다는 결과를 이용해 두 번째 단계에서 더 공격적으로 줄인다. |
 
@@ -144,13 +144,13 @@ Figure 1(a)의 첫 예는 “나무 앞에 있는 동물은 무엇인가?”라�
 
 | 주장 | 핵심 근거 | 주장 범위 | 검토 |
 |---|---|---|---|
-| early visual token pruning의 효과는 task마다 크게 다르다. | Figure 2의 $K=3$, $R\in\{0.25,0.5,0.75,0.9\}$ sweep. 75% 제거 시 localization 4종은 86.0–91.0% 상대 하락, 비-localization 다수는 0.1–7.9% 하락. | 단일 Prism-SigLIP/Llama-2-7B 계열과 12개 benchmark. | [저자 보고] 강한 현상 기술. 다른 VLM·해상도·prompt 형식으로 자동 일반화할 수 없다. |
-| 초기 attention criterion은 이미지 하단 토큰을 편향적으로 남긴다. | $K=3,R=0.75$에서 평균 선택 y 위치가 이미지 높이의 80.7%, chi-square $p<0.05$; Figure 3(b) heatmap. | 평가한 모든 dataset 예시를 평균한 분포. | [저자 보고] 비균일성은 확인하지만 검정 통계량·자유도·bin·표본 수가 없어 효과 크기와 검정 설계를 재현하기 어렵다. |
-| 하단 편향의 원인은 RoPE 장거리 감쇠다. | raster 순서 논리, 얕은 층의 단거리 강조 선행연구, $\phi_{-R}$ 개입 후 $K=3$ localization 평균 5.9→16.7, 깊은 층에서 편향 감소. | 마지막 text token attention을 criterion으로 쓰는 이 구조. | [리뷰어 해석] 인과 근거는 중간 이상이지만 완결적이지 않다. scan order 반전, text/image 순서 교환, RoPE 주파수 sweep 같은 직접 대조가 없다. RoPE 제거는 위치 감쇠 외의 attention geometry도 바꾼다. |
+| early visual token pruning의 효과는 task마다 크게 다르다. | Figure 2의 $`K=3`$, $`R\in\{0.25,0.5,0.75,0.9\}`$ sweep. 75% 제거 시 localization 4종은 86.0–91.0% 상대 하락, 비-localization 다수는 0.1–7.9% 하락. | 단일 Prism-SigLIP/Llama-2-7B 계열과 12개 benchmark. | [저자 보고] 강한 현상 기술. 다른 VLM·해상도·prompt 형식으로 자동 일반화할 수 없다. |
+| 초기 attention criterion은 이미지 하단 토큰을 편향적으로 남긴다. | $`K=3,R=0.75`$에서 평균 선택 y 위치가 이미지 높이의 80.7%, chi-square $`p\lt 0.05`$; Figure 3(b) heatmap. | 평가한 모든 dataset 예시를 평균한 분포. | [저자 보고] 비균일성은 확인하지만 검정 통계량·자유도·bin·표본 수가 없어 효과 크기와 검정 설계를 재현하기 어렵다. |
+| 하단 편향의 원인은 RoPE 장거리 감쇠다. | raster 순서 논리, 얕은 층의 단거리 강조 선행연구, $`\phi_{-R}`$ 개입 후 $`K=3`$ localization 평균 5.9→16.7, 깊은 층에서 편향 감소. | 마지막 text token attention을 criterion으로 쓰는 이 구조. | [리뷰어 해석] 인과 근거는 중간 이상이지만 완결적이지 않다. scan order 반전, text/image 순서 교환, RoPE 주파수 sweep 같은 직접 대조가 없다. RoPE 제거는 위치 감쇠 외의 attention geometry도 바꾼다. |
 | 일반 VQA의 높은 점수는 얕은 층 정보 전달보다 benchmark의 낮은 fine-grained grounding 요구에서 온다. | 원래 FastV가 남긴 토큰만 입력 전부터 제공한 조건과 얕은 층 후 pruning 조건의 성능이 거의 같음(Figure 4). text-only와는 다수 task에서 차이가 남음. | 평가한 benchmark와 저장된 선택 mask. | [리뷰어 해석] “해당 benchmark의 이 모델·prompt에서 fine-grained 정보가 추가로 필요하지 않았다”는 결론은 강하다. benchmark 전체가 본질적으로 무의미하다고 확대하면 안 된다. |
-| RoPE-free criterion과 uniform ensemble은 초기 프루닝을 개선한다. | Table 1: $K=8$ localization 평균 $\phi_{-R}=27.3$, uniform=30.3, ensemble=35.6. 보충 Table A1의 DINOv2+SigLIP에서도 같은 방향. | 두 vision encoder 설정, 12 benchmark. | [저자 보고] 방향성 재현은 좋다. 그러나 seed·오차막대·통계검정·hyperparameter 선택 절차는 미기재다. |
-| FEATHER는 비슷한 이론 FLOPs에서 FastV보다 localization 평균이 5배 넘게 높다. | FastV 5.9 vs FEATHER 39.3, 이론 감소 68% vs 64%; PyramidDrop 28.9 at 65%. [Table A2] | 저자 모델과 평가 protocol. | [검산] $39.25/5.9=6.65\times$이다. “5× improvement”는 배수 표현이라 낮은 FastV 분모의 영향을 크게 받는다. 절대 차이 `+33.35`점도 같이 보는 편이 정직하다. |
-| 64% FLOPs 설정에서 layer 16 뒤 원래 시각 토큰의 3.3%만 남겨도 baseline 대비 localization 평균 하락은 26%다. | baseline 53.2, FEATHER 39.3; Figure 1, §4.3. | 후반 16개 LLM 층에 대한 token 비율. | [검산] $(53.225-39.25)/53.225=26.26\%$. “3.3%”는 모든 층 평균 token 비율이 아니라 두 번째 프루닝 뒤의 비율이다. |
+| RoPE-free criterion과 uniform ensemble은 초기 프루닝을 개선한다. | Table 1: $`K=8`$ localization 평균 $`\phi_{-R}=27.3`$, uniform=30.3, ensemble=35.6. 보충 Table A1의 DINOv2+SigLIP에서도 같은 방향. | 두 vision encoder 설정, 12 benchmark. | [저자 보고] 방향성 재현은 좋다. 그러나 seed·오차막대·통계검정·hyperparameter 선택 절차는 미기재다. |
+| FEATHER는 비슷한 이론 FLOPs에서 FastV보다 localization 평균이 5배 넘게 높다. | FastV 5.9 vs FEATHER 39.3, 이론 감소 68% vs 64%; PyramidDrop 28.9 at 65%. [Table A2] | 저자 모델과 평가 protocol. | [검산] $`39.25/5.9=6.65\times`$이다. “5× improvement”는 배수 표현이라 낮은 FastV 분모의 영향을 크게 받는다. 절대 차이 `+33.35`점도 같이 보는 편이 정직하다. |
+| 64% FLOPs 설정에서 layer 16 뒤 원래 시각 토큰의 3.3%만 남겨도 baseline 대비 localization 평균 하락은 26%다. | baseline 53.2, FEATHER 39.3; Figure 1, §4.3. | 후반 16개 LLM 층에 대한 token 비율. | [검산] $`(53.225-39.25)/53.225=26.26\%`$. “3.3%”는 모든 층 평균 token 비율이 아니라 두 번째 프루닝 뒤의 비율이다. |
 | 실제 실행시간도 개선된다. | 보충 Table A2/Figure A1: L40S 전체 suite GPU-hours baseline 20.3, FEATHER 15.7(64% FLOPs), 16.5(48%). | 한 L40S에서의 총 평가 runtime. | [저자 보고] end-to-end성 단서는 있으나 요청당 latency·TTFT·TPOT·throughput·peak memory가 없고 반복 측정도 없다. “서비스 latency 64% 감소”로 바꿔 말할 수 없다. |
 
 ---
@@ -161,27 +161,27 @@ Figure 1(a)의 첫 예는 “나무 앞에 있는 동물은 무엇인가?”라�
 
 | 기호/용어 | 뜻 | shape·단위 | 주의 |
 |---|---|---|---|
-| $x_{\mathrm{img}}$ | 입력 이미지 | 논문은 단일 샘플; 구현상 $[B,3,H,W]$ | 기본 모델은 384px naive resize를 사용한다고 공식 설정에 기록되어 있다. |
-| $x_{\mathrm{prompt}}$ | 텍스트 prompt token id | $[B,L_t]$ | $L_t$는 dataset 질문과 prompt template에 따라 달라진다. |
-| $f$ | pretrained vision backbone | SigLIP ViT-SO400M | 본문 기본 실험. 보충 A1은 DINOv2+SigLIP. |
-| $z_{\mathrm{img}}$ | vision feature | $[B,n,d_{\mathrm{vision}}]$ | 논문 식은 batch 차원을 생략한다. |
-| $p$ | vision-to-LLM adapter | 마지막 차원 $d_{\mathrm{vision}}\to d_{\mathrm{text}}$ | 본문은 “one-layer MLP with GELU”라고 쓴다. 공개 구현의 `MLPProjector`는 Linear–GELU–Linear다. 용어 차이를 §10에서 다룬다. |
-| $h_{\mathrm{img}}$ | projected image embeddings | $[B,n,d]$ | $d=d_{\mathrm{text}}$. |
-| $h_{\mathrm{prompt}}$ | prompt embeddings | $[B,L_t,d]$ | image tokens 뒤에 이어진다. |
-| $n$ | 최초 image token 수 | token/sample | SigLIP 384px, patch-14 설정과 stride-2가 196개라는 원문을 종합하면 $27\times27=729$개다. 이는 [공식 코드/구성으로 확인한 해석]이며 본문이 $n=729$라고 직접 쓰지는 않는다. |
-| $T$ | LLM transformer layer 수 | layer | Llama 2 7B 표준 설정은 32층. FEATHER 논문은 기호만 정의하고 숫자를 본문에 쓰지 않는다. |
-| $K$ | 프루닝 위치 | LLM layer index | 본문은 “after layer $K$”. 공식 구현은 해당 layer를 실행하기 직전에 이전 layer 상태로 점수를 계산한다. 0/1-based 표현을 재현 시 확인해야 한다. |
-| $R$ | 제거 비율 | fraction 또는 percent | $R=0.75$이면 75% 제거, 25% 유지. 코드의 `fastV_ratio` 입력은 제거율이지만 내부 변수는 `1-R`, 즉 유지율이다. |
-| $\hat n$ | 1단계 뒤 image token 수 | token/sample | $(1-R)n$; 정수 top-k에서는 내림이 들어간다. |
-| $d$ | LLM hidden width | feature | Llama 2 7B checkpoint 기준 4096. |
-| $m$ | FFN intermediate width | feature | Llama 2 7B 기준 11008. 논문 Eq.(1)은 고전적 2-linear FFN 비용으로 근사한다. |
-| $B$ | batch size | sample/batch | 논문 미기재. 공개 평가 코드 기본값은 device batch size 1. |
-| $H_a$ | attention head 수 | head | 논문 미기재; 점수는 head 평균을 취한다. |
-| $d_h$ | head dimension | feature/head | $d/H_a$. |
-| $\phi$ | pruning criterion | 규칙 | 점수 함수 자체 또는 규칙을 가리킨다. |
-| $g_\phi$ | criterion에 따른 ranking 함수 | image token index 순위 | top-k 결과가 실제 keep mask가 된다. |
-| $\rho_i$ | KNN local density | scalar/token | 정확한 정의와 neighbor 수는 본문에 없다. |
-| $\delta_i$ | 더 높은 density 토큰까지의 거리 지수 | squared feature-distance | Eq.(2). |
+| $`x_{\mathrm{img}}`$ | 입력 이미지 | 논문은 단일 샘플; 구현상 $`[B,3,H,W]`$ | 기본 모델은 384px naive resize를 사용한다고 공식 설정에 기록되어 있다. |
+| $`x_{\mathrm{prompt}}`$ | 텍스트 prompt token id | $`[B,L_t]`$ | $`L_t`$는 dataset 질문과 prompt template에 따라 달라진다. |
+| $`f`$ | pretrained vision backbone | SigLIP ViT-SO400M | 본문 기본 실험. 보충 A1은 DINOv2+SigLIP. |
+| $`z_{\mathrm{img}}`$ | vision feature | $`[B,n,d_{\mathrm{vision}}]`$ | 논문 식은 batch 차원을 생략한다. |
+| $`p`$ | vision-to-LLM adapter | 마지막 차원 $`d_{\mathrm{vision}}\to d_{\mathrm{text}}`$ | 본문은 “one-layer MLP with GELU”라고 쓴다. 공개 구현의 `MLPProjector`는 Linear–GELU–Linear다. 용어 차이를 §10에서 다룬다. |
+| $`h_{\mathrm{img}}`$ | projected image embeddings | $`[B,n,d]`$ | $`d=d_{\mathrm{text}}`$. |
+| $`h_{\mathrm{prompt}}`$ | prompt embeddings | $`[B,L_t,d]`$ | image tokens 뒤에 이어진다. |
+| $`n`$ | 최초 image token 수 | token/sample | SigLIP 384px, patch-14 설정과 stride-2가 196개라는 원문을 종합하면 $`27\times27=729`$개다. 이는 [공식 코드/구성으로 확인한 해석]이며 본문이 $`n=729`$라고 직접 쓰지는 않는다. |
+| $`T`$ | LLM transformer layer 수 | layer | Llama 2 7B 표준 설정은 32층. FEATHER 논문은 기호만 정의하고 숫자를 본문에 쓰지 않는다. |
+| $`K`$ | 프루닝 위치 | LLM layer index | 본문은 “after layer $`K`$”. 공식 구현은 해당 layer를 실행하기 직전에 이전 layer 상태로 점수를 계산한다. 0/1-based 표현을 재현 시 확인해야 한다. |
+| $`R`$ | 제거 비율 | fraction 또는 percent | $`R=0.75`$이면 75% 제거, 25% 유지. 코드의 `fastV_ratio` 입력은 제거율이지만 내부 변수는 `1-R`, 즉 유지율이다. |
+| $`\hat n`$ | 1단계 뒤 image token 수 | token/sample | $`(1-R)n`$; 정수 top-k에서는 내림이 들어간다. |
+| $`d`$ | LLM hidden width | feature | Llama 2 7B checkpoint 기준 4096. |
+| $`m`$ | FFN intermediate width | feature | Llama 2 7B 기준 11008. 논문 Eq.(1)은 고전적 2-linear FFN 비용으로 근사한다. |
+| $`B`$ | batch size | sample/batch | 논문 미기재. 공개 평가 코드 기본값은 device batch size 1. |
+| $`H_a`$ | attention head 수 | head | 논문 미기재; 점수는 head 평균을 취한다. |
+| $`d_h`$ | head dimension | feature/head | $`d/H_a`$. |
+| $`\phi`$ | pruning criterion | 규칙 | 점수 함수 자체 또는 규칙을 가리킨다. |
+| $`g_\phi`$ | criterion에 따른 ranking 함수 | image token index 순위 | top-k 결과가 실제 keep mask가 된다. |
+| $`\rho_i`$ | KNN local density | scalar/token | 정확한 정의와 neighbor 수는 본문에 없다. |
+| $`\delta_i`$ | 더 높은 density 토큰까지의 거리 지수 | squared feature-distance | Eq.(2). |
 
 **단위 분리:** 이 논문에서 `token`은 시각 patch token 또는 text token이다. `frame`은 없다. `action step`, `environment step`, `action chunk`, `policy refresh`도 없다. LLM의 autoregressive decoding step은 출력 text token 하나를 생성하는 step이지만, 논문은 이를 별도 latency 지표로 분석하지 않는다.
 
@@ -189,15 +189,13 @@ Figure 1(a)의 첫 예는 “나무 앞에 있는 동물은 무엇인가?”라�
 
 2D 이미지 패치를 1D 토큰 열로 만들 때 보통 위에서 아래, 각 행은 왼쪽에서 오른쪽인 raster-scan 순서를 쓴다. 이미지 토큰 뒤에 prompt token을 붙이면 마지막 prompt token의 위치 인덱스는 모든 이미지 토큰보다 크다. 따라서 하단 행의 패치는 상단 행보다 마지막 prompt token과 1D 위치 거리가 짧다.
 
-RoPE는 query와 key를 위치별 회전행렬로 변환한다. 위치 $a$의 query와 위치 $b$의 key의 내적은 다음 상대 위치 형태로 쓸 수 있다.
+RoPE는 query와 key를 위치별 회전행렬로 변환한다. 위치 $`a`$의 query와 위치 $`b`$의 key의 내적은 다음 상대 위치 형태로 쓸 수 있다.
 
-$$
-\tilde q_a^\top \tilde k_b
-= (R_a q_a)^\top(R_b k_b)
-= q_a^\top R_{b-a}k_b.
-$$
+```math
+\tilde q_a^\top \tilde k_b = (R_a q_a)^\top(R_b k_b) = q_a^\top R_{b-a}k_b.
+```
 
-이 식은 **[해설용 수식]**이다. FEATHER의 번호 수식이 아니다. $R_{b-a}$ 때문에 score가 상대 거리 $b-a$의 영향을 받는다. 저자들이 인용한 장거리 감쇠 관점에서는 얕은 층일수록 멀리 떨어진 상단 패치가 불리하고, 가까운 하단 패치가 의미와 무관하게 유리할 수 있다. [PDF p.5–6, §3.3–4.1]
+이 식은 **[해설용 수식]**이다. FEATHER의 번호 수식이 아니다. $`R_{b-a}`$ 때문에 score가 상대 거리 $`b-a`$의 영향을 받는다. 저자들이 인용한 장거리 감쇠 관점에서는 얕은 층일수록 멀리 떨어진 상단 패치가 불리하고, 가까운 하단 패치가 의미와 무관하게 유리할 수 있다. [PDF p.5–6, §3.3–4.1]
 
 단, “RoPE이면 언제나 모든 query-key 쌍에서 attention이 거리와 함께 단조 감소한다”는 정리로 이해하면 안 된다. 실제 score는 content vector, head별 주파수, 학습된 projection과 softmax 경쟁의 함수다. 논문의 주장은 평균적 장거리 감쇠가 이 특정 ranking rule에 구조적 bias를 만든다는 경험적 설명이다.
 
@@ -205,11 +203,11 @@ $$
 
 RefCOCO 계열 구현은 예측 box와 정답 box의 IoU가 0.5 이상이면 정답으로 센다. OCID-Ref는 clutter 때문에 표준 protocol상 IoU 0.25 이상을 사용한다. [공식 코드 확인]
 
-$$
+```math
 \mathrm{IoU}(B_p,B_g)=\frac{|B_p\cap B_g|}{|B_p\cup B_g|}.
-$$
+```
 
-이 식은 **[해설용 수식]**이다. 예를 들어 정답이 이미지 상단에 있고 하단 token만 남으면 물체 종류를 맞히더라도 $B_p$의 위치가 틀려 교집합이 작아진다. 반면 “무슨 동물인가?”는 `cow`라는 category evidence 하나만 남아도 맞을 수 있다. TextVQA 역시 OCR-system token을 prompt에서 제거했기 때문에 특정 글자 영역을 직접 읽어야 하며, 그래서 일반 VQA보다 localization과 비슷한 민감도를 보인다.
+이 식은 **[해설용 수식]**이다. 예를 들어 정답이 이미지 상단에 있고 하단 token만 남으면 물체 종류를 맞히더라도 $`B_p`$의 위치가 틀려 교집합이 작아진다. 반면 “무슨 동물인가?”는 `cow`라는 category evidence 하나만 남아도 맞을 수 있다. TextVQA 역시 OCR-system token을 prompt에서 제거했기 때문에 특정 글자 영역을 직접 읽어야 하며, 그래서 일반 VQA보다 localization과 비슷한 민감도를 보인다.
 
 ---
 
@@ -225,21 +223,21 @@ $$
 
 원문 비번호 식. Vision feature와 차원. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
-$$
+```math
 z_{\mathrm{img}}=f(x_{\mathrm{img}})\in\mathbb{R}^{n\times d_{\mathrm{vision}}}.
-$$
+```
 
 항별 의미는 다음과 같다.
 
-- $x_{\mathrm{img}}$: 전처리된 이미지.
-- $f$: frozen pretrained vision backbone.
-- $n$: 패치 토큰 수.
-- $d_{\mathrm{vision}}$: vision encoder feature dimension.
-- $z_{\mathrm{img}}[i]$: $i$번째 패치의 시각 feature vector.
+- $`x_{\mathrm{img}}`$: 전처리된 이미지.
+- $`f`$: frozen pretrained vision backbone.
+- $`n`$: 패치 토큰 수.
+- $`d_{\mathrm{vision}}`$: vision encoder feature dimension.
+- $`z_{\mathrm{img}}[i]`$: $`i`$번째 패치의 시각 feature vector.
 
-연산 순서는 `resize/normalize → patchify → ViT blocks → patch features`다. 논문은 class token 포함 여부, 어느 SigLIP layer의 feature인지, $d_{\mathrm{vision}}$ 값을 본문에 쓰지 않는다. 공개 Prismatic 코드에서 선택된 backbone의 intermediate patch feature를 쓰지만, 논문만으로는 정확한 차원을 복원할 수 없다.
+연산 순서는 `resize/normalize → patchify → ViT blocks → patch features`다. 논문은 class token 포함 여부, 어느 SigLIP layer의 feature인지, $`d_{\mathrm{vision}}`$ 값을 본문에 쓰지 않는다. 공개 Prismatic 코드에서 선택된 backbone의 intermediate patch feature를 쓰지만, 논문만으로는 정확한 차원을 복원할 수 없다.
 
-학습 시 $f$는 frozen이므로 loss gradient가 $z_{\mathrm{img}}$까지 계산될 수는 있어도 $f$의 parameter는 갱신하지 않는다. 공식 구현은 `torch.set_grad_enabled(vision_backbone_requires_grad)`로 frozen 단계의 graph 생성도 피한다. FEATHER 추론에서는 전체가 inference mode이므로 gradient가 없다.
+학습 시 $`f`$는 frozen이므로 loss gradient가 $`z_{\mathrm{img}}`$까지 계산될 수는 있어도 $`f`$의 parameter는 갱신하지 않는다. 공식 구현은 `torch.set_grad_enabled(vision_backbone_requires_grad)`로 frozen 단계의 graph 생성도 피한다. FEATHER 추론에서는 전체가 inference mode이므로 gradient가 없다.
 
 #### 식 B: adapter projection
 
@@ -249,19 +247,19 @@ $$
 
 원문 비번호 식. LLM 차원으로의 투영. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
-$$
+```math
 h_{\mathrm{img}}=p(z_{\mathrm{img}})\in\mathbb{R}^{n\times d_{\mathrm{text}}}.
-$$
+```
 
-$p$는 각 패치 feature를 독립적으로 LLM embedding space로 보낸다. token 축 $n$은 유지되고 feature 축만 $d_{\mathrm{vision}}\to d_{\mathrm{text}}$로 변한다. 공개 구현의 기본 `MLPProjector`는 다음과 같다.
+$`p`$는 각 패치 feature를 독립적으로 LLM embedding space로 보낸다. token 축 $`n`$은 유지되고 feature 축만 $`d_{\mathrm{vision}}\to d_{\mathrm{text}}`$로 변한다. 공개 구현의 기본 `MLPProjector`는 다음과 같다.
 
-$$
+```math
 h_i=W_2\,\mathrm{GELU}(W_1z_i+b_1)+b_2.
-$$
+```
 
-이 식은 **[공식 코드 기반 해설용 수식]**이다. $W_1\in\mathbb{R}^{d\times d_{\mathrm{vision}}}$, $W_2\in\mathbb{R}^{d\times d}$다. 논문이 “one-layer MLP”라고 부른 표현과 두 Linear layer 구현 사이에는 용어상 불일치가 있다.
+이 식은 **[공식 코드 기반 해설용 수식]**이다. $`W_1\in\mathbb{R}^{d\times d_{\mathrm{vision}}}`$, $`W_2\in\mathbb{R}^{d\times d}`$다. 논문이 “one-layer MLP”라고 부른 표현과 두 Linear layer 구현 사이에는 용어상 불일치가 있다.
 
-작은 shape 예를 들면 batch를 포함해 $z$가 `[1,729,d_vision]`이면 $p(z)$는 `[1,729,4096]`이다. $p$는 token 간 정보를 섞지 않고 각 token의 channel만 바꾼다. 따라서 spatial mixing은 이미 vision encoder 또는 뒤의 LLM attention에서 일어난다.
+작은 shape 예를 들면 batch를 포함해 $`z`$가 `[1,729,d_vision]`이면 $`p(z)`$는 `[1,729,4096]`이다. $`p`$는 token 간 정보를 섞지 않고 각 token의 channel만 바꾼다. 따라서 spatial mixing은 이미 vision encoder 또는 뒤의 LLM attention에서 일어난다.
 
 #### 식 C: text embedding과 LM 입력
 
@@ -275,54 +273,41 @@ $$
 
 원문 비번호 식. 시각·텍스트 embedding 결합과 출력. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
-$$
-h_{\mathrm{prompt}}=\mathrm{embed}(x_{\mathrm{prompt}}),
-\qquad
-y=\mathrm{LM}([h_{\mathrm{img}};h_{\mathrm{prompt}}]).
-$$
+```math
+h_{\mathrm{prompt}}=\mathrm{embed}(x_{\mathrm{prompt}}), \qquad y=\mathrm{LM}([h_{\mathrm{img}};h_{\mathrm{prompt}}]).
+```
 
 세미콜론은 sequence 축 concatenation이다. 공개 구현은 첫 BOS embedding 뒤에 projected patch embeddings를 삽입하고 나머지 prompt embeddings를 붙인다. 즉 보다 정확한 구현 순서는 `[BOS; image patches; rest of prompt]`다. image patch 위치의 label은 `-100`으로 mask되어 language-model loss를 직접 받지 않는다.
 
 학습 loss는 다음 next-token cross entropy다.
 
-$$
-\mathcal L_{\mathrm{LM}}
-=-\sum_{t\in\mathcal T_{\mathrm{answer}}}
-\log p_\theta(x_t\mid x_{<t},x_{\mathrm{img}}).
-$$
+```math
+\mathcal L_{\mathrm{LM}} =-\sum_{t\in\mathcal T_{\mathrm{answer}}} \log p_\theta(x_t\mid x_{\lt t},x_{\mathrm{img}}).
+```
 
 이 식은 **[해설용 수식]**이다. 논문은 별도의 FEATHER loss를 제시하지 않는다. FEATHER의 top-k는 inference-time discrete selection이므로 이를 학습시키는 gradient path가 없다.
 
 ### 5.2 attention criterion: 원문 설명을 tensor 연산으로 풀기
 
-원문은 $\phi_{\mathrm{original}}$을 “마지막 text token이 받은/보낸 attention score”라는 문장으로 정의하며 별도 번호 식을 주지 않는다. 공식 구현을 기준으로 정확히 쓰면 pruning 직전 hidden state $H\in\mathbb{R}^{B\times L\times d}$를 input RMSNorm한 뒤 다음을 계산한다. [PDF p.3, §3.1; p.6, §4.1]
+원문은 $`\phi_{\mathrm{original}}`$을 “마지막 text token이 받은/보낸 attention score”라는 문장으로 정의하며 별도 번호 식을 주지 않는다. 공식 구현을 기준으로 정확히 쓰면 pruning 직전 hidden state $`H\in\mathbb{R}^{B\times L\times d}`$를 input RMSNorm한 뒤 다음을 계산한다. [PDF p.3, §3.1; p.6, §4.1]
 
-$$
-Q=\mathrm{reshape}(HW_Q)\in\mathbb{R}^{B\times H_a\times L\times d_h},
-\qquad
-K=\mathrm{reshape}(HW_K)\in\mathbb{R}^{B\times H_{kv}\times L\times d_h}.
-$$
+```math
+\begin{aligned} Q&=\mathrm{reshape}(HW_Q)\in\mathbb{R}^{B\times H_a\times L\times d_h},\\ K&=\mathrm{reshape}(HW_K)\in\mathbb{R}^{B\times H_{kv}\times L\times d_h}. \end{aligned}
+```
 
-GQA의 key/value head는 `repeat_kv`로 query head 수에 맞춘다. 마지막 text query만 $Q_{:,:,-1:,:}$, image token key만 $K_{:,:,\mathcal I,:}$로 뽑는다.
+GQA의 key/value head는 `repeat_kv`로 query head 수에 맞춘다. 마지막 text query만 $`Q_{:,:,-1:,:}`$, image token key만 $`K_{:,:,\mathcal I,:}`$로 뽑는다.
 
-$$
-s_i^{(h)}
-=\frac{\tilde q_{\mathrm{last}}^{(h)\top}
-\tilde k_i^{(h)}}{\sqrt{d_h}},
-\qquad
-a_i^{(h)}
-=\mathrm{softmax}_{i\in\mathcal I}(s_i^{(h)}),
-\qquad
-\phi_i=\frac1{H_a}\sum_{h=1}^{H_a}a_i^{(h)}.
-$$
+```math
+\begin{aligned} s_i^{(h)} &=\frac{\tilde q_{\mathrm{last}}^{(h)\top} \tilde k_i^{(h)}}{\sqrt{d_h}},\\ a_i^{(h)} &=\mathrm{softmax}_{i\in\mathcal I}(s_i^{(h)}),\\ \phi_i&=\frac1{H_a}\sum_{h=1}^{H_a}a_i^{(h)}. \end{aligned}
+```
 
 모두 **[해설용 수식]**이다. shape은 score가 `[B,H_a,1,n]`, head 평균 후 `[n]`이다. 구현은 image token 사이에서만 softmax한 뒤 head 평균을 취하고 top-k를 고른다. value vector는 이 ranking score 계산에 사용하지 않는다.
 
-- $\phi_{\mathrm{original}}$: $\tilde q=R_{p_q}q$, $\tilde k_i=R_{p_i}k_i$로 RoPE 적용.
-- $\phi_{-R}$: $\tilde q=q$, $\tilde k_i=k_i$로 **선택용 score 계산에서만** RoPE 미적용.
+- $`\phi_{\mathrm{original}}`$: $`\tilde q=R_{p_q}q`$, $`\tilde k_i=R_{p_i}k_i`$로 RoPE 적용.
+- $`\phi_{-R}`$: $`\tilde q=q`$, $`\tilde k_i=k_i`$로 **선택용 score 계산에서만** RoPE 미적용.
 - 실제 decoder layer forward: 두 경우 모두 원래 RoPE를 적용한다.
 
-작은 예에서 세 이미지 token의 content score가 RoPE 없이 `[1.2,1.0,0.8]`이고 위치 효과가 `[−0.8,−0.3,+0.4]`처럼 더 가까운 뒤쪽 token을 밀어준다면, 원래 score는 `[0.4,0.7,1.2]`가 되어 의미상 가장 강한 첫 token 대신 마지막 token을 고른다. $\phi_{-R}$는 `[1.2,1.0,0.8]` 순위를 회복한다. 이는 작동 원리를 보여 주는 **설명용 예시**이지 논문이 측정한 attention 값이 아니다.
+작은 예에서 세 이미지 token의 content score가 RoPE 없이 `[1.2,1.0,0.8]`이고 위치 효과가 `[−0.8,−0.3,+0.4]`처럼 더 가까운 뒤쪽 token을 밀어준다면, 원래 score는 `[0.4,0.7,1.2]`가 되어 의미상 가장 강한 첫 token 대신 마지막 token을 고른다. $`\phi_{-R}`$는 `[1.2,1.0,0.8]` 순위를 회복한다. 이는 작동 원리를 보여 주는 **설명용 예시**이지 논문이 측정한 attention 값이 아니다.
 
 edge case는 다음과 같다.
 
@@ -341,13 +326,13 @@ edge case는 다음과 같다.
 
 ![원문 비번호 식: 단일 layer 비용 C](assets/03_FEATHER/equations/unnumbered_flops.png)
 
-원문 비번호 식. 단일 layer 비용 $C$. [PDF p.3, §3.1; 원문 PDF][feather-main]
+원문 비번호 식. 단일 layer 비용 $`C`$. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
-원문 인라인 식의 마지막 항은 인쇄상 $2nd_m$처럼 $m$이 아래첨자로 내려가 있다. 같은 문단이 $m$을 FFN 중간 차원으로 정의하고 Eq. (1)의 분자는 $2\hat n d m$으로 인쇄되어 있으므로, 아래 기존 해설·검산은 곱 $2ndm$으로 해석한다. 원문 이미지는 이 표기 차이까지 그대로 보존한다.
+원문 인라인 식의 마지막 항은 인쇄상 $`2nd_m`$처럼 $`m`$이 아래첨자로 내려가 있다. 같은 문단이 $`m`$을 FFN 중간 차원으로 정의하고 Eq. (1)의 분자는 $`2\hat n d m`$으로 인쇄되어 있으므로, 아래 기존 해설·검산은 곱 $`2ndm`$으로 해석한다. 원문 이미지는 이 표기 차이까지 그대로 보존한다.
 
-$$
+```math
 C=4nd^2+2n^2d+2ndm.
-$$
+```
 
 그 뒤 원문 Eq.(1)은 다음과 같이 인쇄되어 있다.
 
@@ -355,100 +340,86 @@ $$
 
 원문 Eq. (1). FLOPs 감소율. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
-$$
-1-
-\frac{
-K C+(T-K)(4\hat n d^2+2\hat n^2d+2\hat n d m)
-}{C}.
-\tag{1, 원문 표기}
-$$
+```math
+1- \frac{ K C+(T-K)(4\hat n d^2+2\hat n^2d+2\hat n d m) }{C}.
+```
 
-여기서 $\hat n=(1-R)n$이다. 원문에는 `(1-R%) * n`처럼 쓰였지만, $R=0.75$를 쓰는 실험 문맥에서는 제거율 fraction으로 해석해야 한다.
+표기: 1, 원문 표기.
+
+여기서 $`\hat n=(1-R)n`$이다. 원문에는 `(1-R%) * n`처럼 쓰였지만, $`R=0.75`$를 쓰는 실험 문맥에서는 제거율 fraction으로 해석해야 한다.
 
 ![원문 비번호 식: pruning 이후 남은 시각 토큰 수](assets/03_FEATHER/equations/unnumbered_retention.png)
 
-원문 비번호 식. 남은 시각 토큰 수 $\hat n$. [PDF p.3, §3.1; 원문 PDF][feather-main]
+원문 비번호 식. 남은 시각 토큰 수 $`\hat n`$. [PDF p.3, §3.1; 원문 PDF][feather-main]
 
 #### 각 항의 계산
 
-1. $4nd^2$: self-attention의 $Q,K,V,O$ 네 projection. token마다 $d\times d$ 행렬곱 네 번이다.
-2. $2n^2d$: $QK^\top$와 attention-weighted $AV$ 두 행렬곱.
-3. $2ndm$: 고전적인 two-linear FFN의 $d\to m$와 $m\to d$ projection.
-4. $KC$: 프루닝 전 $K$개 층의 full-token 비용.
-5. $(T-K)C(\hat n)$: 프루닝 뒤 나머지 층의 reduced-token 비용.
+1. $`4nd^2`$: self-attention의 $`Q,K,V,O`$ 네 projection. token마다 $`d\times d`$ 행렬곱 네 번이다.
+2. $`2n^2d`$: $`QK^\top`$와 attention-weighted $`AV`$ 두 행렬곱.
+3. $`2ndm`$: 고전적인 two-linear FFN의 $`d\to m`$와 $`m\to d`$ projection.
+4. $`KC`$: 프루닝 전 $`K`$개 층의 full-token 비용.
+5. $`(T-K)C(\hat n)`$: 프루닝 뒤 나머지 층의 reduced-token 비용.
 6. `1 - reduced/full`: 감소율.
 
 #### 반드시 알아야 할 원문 불일치
 
-**[검산] Eq.(1)의 분모 $C$는 그대로는 잘못이다.** $C$를 “한 layer의 FLOPs”라고 바로 앞에서 정의했으므로, $T$개 층의 baseline은 $TC$다. 인쇄식대로라면 $K>1$에서 분자가 이미 $C$보다 커져 감소율이 큰 음수가 된다. 표의 68%, 56% 값을 재현하려면 다음처럼 읽어야 한다.
+**[검산] Eq.(1)의 분모 $`C`$는 그대로는 잘못이다.** $`C`$를 “한 layer의 FLOPs”라고 바로 앞에서 정의했으므로, $`T`$개 층의 baseline은 $`TC`$다. 인쇄식대로라면 $`K\gt 1`$에서 분자가 이미 $`C`$보다 커져 감소율이 큰 음수가 된다. 표의 68%, 56% 값을 재현하려면 다음처럼 읽어야 한다.
 
-$$
-\boxed{
-\mathrm{Reduction}_{\mathrm{1stage}}
-=1-
-\frac{KC+(T-K)C(\hat n)}{TC}
-}
-\qquad\text{[해설용 교정식]}
-$$
+```math
+\boxed{ \mathrm{Reduction}_{\mathrm{1stage}} =1- \frac{KC+(T-K)C(\hat n)}{TC} } \qquad\text{[해설용 교정식]}
+```
 
 원문을 조용히 수정한 것이 아니라, **원문 표기와 표 수치를 동시에 만족하는 가능한 해석**을 분리해 적은 것이다.
 
 또 다른 근사 한계가 있다.
 
-- 실제 Llama 2 FFN은 SwiGLU 계열로 gate/up/down 세 projection을 사용하므로 고전적 $2ndm$보다 항이 하나 더 필요하다. 논문 식은 구현의 정확한 Llama FLOPs라기보다 공통 Transformer 근사다.
-- text token 수가 식에 없다. 실제 self-attention은 image와 text를 합친 $L=n+L_t$에 작용한다.
+- 실제 Llama 2 FFN은 SwiGLU 계열로 gate/up/down 세 projection을 사용하므로 고전적 $`2ndm`$보다 항이 하나 더 필요하다. 논문 식은 구현의 정확한 Llama FLOPs라기보다 공통 Transformer 근사다.
+- text token 수가 식에 없다. 실제 self-attention은 image와 text를 합친 $`L=n+L_t`$에 작용한다.
 - vision encoder, adapter, lm_head, KV cache, autoregressive decoding, 선택 score, `topk`, `unique`, gather/scatter 비용이 빠져 있다.
 - “FLOPS” 대문자 표기는 연산량을 뜻하지만, multiply-add를 한 번 또는 두 FLOP로 세는 convention도 명시되지 않았다. 비율에서는 일부 상쇄되지만 절대 FLOPs에는 중요하다.
 
 #### 숫자 예시와 표 재현
 
-Llama 2 7B의 $T=32,d=4096,m=11008$, SigLIP의 $n=729$를 넣고 논문 근사를 그대로 사용하면:
+Llama 2 7B의 $`T=32,d=4096,m=11008`$, SigLIP의 $`n=729`$를 넣고 논문 근사를 그대로 사용하면:
 
-$$
+```math
 C(729)=119{,}015{,}350{,}272,
-$$
+```
 
-$$
+```math
 C(0.25\times729)=28{,}937{,}544{,}192.
-$$
+```
 
-$K=3,R=0.75$에 대한 교정식은
+$`K=3,R=0.75`$에 대한 교정식은
 
-$$
-1-
-\frac{3C(729)+29C(182.25)}{32C(729)}
-=0.6859\approx68.6\%.
-$$
+```math
+1- \frac{3C(729)+29C(182.25)}{32C(729)} =0.6859\approx68.6\%.
+```
 
-이는 Table 1의 68%와 rounding 범위에서 일치한다. $K=8,R=0.75$이면 56.76%로 Table 1의 56%와 일치한다. 따라서 분모가 $TC$여야 한다는 해석은 단순 추측이 아니라 표 숫자로 검증된다.
+이는 Table 1의 68%와 rounding 범위에서 일치한다. $`K=8,R=0.75`$이면 56.76%로 Table 1의 56%와 일치한다. 따라서 분모가 $`TC`$여야 한다는 해석은 단순 추측이 아니라 표 숫자로 검증된다.
 
 edge case도 교정식으로 확인할 수 있다.
 
-- $R=0$: $\hat n=n$, reduction $=0$.
-- $K=T$: 마지막 층 뒤에 잘라도 계산을 이미 끝냈으므로 reduction $=0$.
-- $R=1,K=0$: 이 근사에서 image-token LLM 비용이 모두 사라져 reduction $=1$이지만, 실제 시스템의 vision encoder/text/decode 비용은 남는다.
-- $n$이 작고 $d,m$이 매우 크면 linear-in-$n$ projection/FFN 항이 지배해, token 수 75% 감소가 FLOPs 75% 감소보다 작을 수 있다.
+- $`R=0`$: $`\hat n=n`$, reduction $`=0`$.
+- $`K=T`$: 마지막 층 뒤에 잘라도 계산을 이미 끝냈으므로 reduction $`=0`$.
+- $`R=1,K=0`$: 이 근사에서 image-token LLM 비용이 모두 사라져 reduction $`=1`$이지만, 실제 시스템의 vision encoder/text/decode 비용은 남는다.
+- $`n`$이 작고 $`d,m`$이 매우 크면 linear-in-$`n`$ projection/FFN 항이 지배해, token 수 75% 감소가 FLOPs 75% 감소보다 작을 수 있다.
 
 #### FEATHER 2단계용 일반화
 
-첫 프루닝을 $K_1=8$, 둘째를 $K_2=16$이라 하고 실제 남은 token 수를 $n_1,n_2$라 하면:
+첫 프루닝을 $`K_1=8`$, 둘째를 $`K_2=16`$이라 하고 실제 남은 token 수를 $`n_1,n_2`$라 하면:
 
-$$
-\mathrm{Reduction}_{\mathrm{2stage}}
-=1-
-\frac{
-K_1C(n)+(K_2-K_1)C(n_1)+(T-K_2)C(n_2)
-}{TC(n)}.
-\qquad\text{[해설용 수식]}
-$$
+```math
+\mathrm{Reduction}_{\mathrm{2stage}} =1- \frac{ K_1C(n)+(K_2-K_1)C(n_1)+(T-K_2)C(n_2) }{TC(n)}. \qquad\text{[해설용 수식]}
+```
 
-공식 FEATHER script는 $R=0.7$, stride 3을 사용한다. 첫 단계 top-k는 약 $0.3n$, 균일 격자는 $9\times9=81$개이며 중복을 제거한다. top-k와 균일 표본이 무작위 독립이라고 단순 가정한 기대 합집합 비율은
+공식 FEATHER script는 $`R=0.7`$, stride 3을 사용한다. 첫 단계 top-k는 약 $`0.3n`$, 균일 격자는 $`9\times9=81`$개이며 중복을 제거한다. top-k와 균일 표본이 무작위 독립이라고 단순 가정한 기대 합집합 비율은
 
-$$
+```math
 0.3+\frac19-0.3\cdot\frac19=0.377\overline7.
-$$
+```
 
-따라서 $n_1\approx275.4$이고, 둘째 단계가 그중 $0.3^2=0.09$를 남기면 $n_2\approx24.8$, 원래의 약 3.40%다. 이를 위 식에 넣으면 64.13%가 되어 저자 보고 64%와 맞는다. 실제 $n_1,n_2$는 top-k와 stride 표본의 중복 및 정수 내림 때문에 샘플별로 달라질 수 있다.
+따라서 $`n_1\approx275.4`$이고, 둘째 단계가 그중 $`0.3^2=0.09`$를 남기면 $`n_2\approx24.8`$, 원래의 약 3.40%다. 이를 위 식에 넣으면 64.13%가 되어 저자 보고 64%와 맞는다. 실제 $`n_1,n_2`$는 top-k와 stride 표본의 중복 및 정수 내림 때문에 샘플별로 달라질 수 있다.
 
 ### 5.4 Eq.(2): KNN density peak의 거리 지수
 
@@ -458,63 +429,48 @@ $$
 
 원문 Eq. (2). Density peak 거리 지수. [PDF p.6, §4.1; 원문 PDF][feather-main]
 
-$$
-\delta_i=
-\begin{cases}
-\displaystyle
-\min_{j:\rho_j>\rho_i}
-\left\lVert z_{\mathrm{img}}[i]-z_{\mathrm{img}}[j]\right\rVert_2^2,
-& \text{if }\exists j\text{ such that }\rho_j>\rho_i,\\[8pt]
-\displaystyle
-\max_j
-\left\lVert z_{\mathrm{img}}[i]-z_{\mathrm{img}}[j]\right\rVert_2^2,
-& \text{otherwise.}
-\end{cases}
-\tag{2}
-$$
+```math
+\delta_i= \begin{cases} \displaystyle \min_{j:\rho_j\gt \rho_i} \left\lVert z_{\mathrm{img}}[i]-z_{\mathrm{img}}[j]\right\rVert_2^2, & \text{if }\exists j\text{ such that }\rho_j\gt \rho_i,\\[8pt] \displaystyle \max_j \left\lVert z_{\mathrm{img}}[i]-z_{\mathrm{img}}[j]\right\rVert_2^2, & \text{otherwise.} \end{cases} \qquad\text{(2)}
+```
 
 한 줄씩 해석하면 다음과 같다.
 
-1. $z_{\mathrm{img}}[i]\in\mathbb{R}^{d_{\mathrm{vision}}}$는 $i$번째 visual feature다.
-2. $\rho_i$는 K-nearest neighbors로 구한 local density scalar다.
-3. 자신보다 density가 높은 token이 있으면, 그중 feature space에서 가장 가까운 token까지의 제곱거리를 $\delta_i$로 쓴다.
+1. $`z_{\mathrm{img}}[i]\in\mathbb{R}^{d_{\mathrm{vision}}}`$는 $`i`$번째 visual feature다.
+2. $`\rho_i`$는 K-nearest neighbors로 구한 local density scalar다.
+3. 자신보다 density가 높은 token이 있으면, 그중 feature space에서 가장 가까운 token까지의 제곱거리를 $`\delta_i`$로 쓴다.
 4. 자신이 최고 density라서 더 높은 token이 없으면, 전체 token 중 가장 먼 점까지의 제곱거리를 준다.
-5. 최종 중요도는 $\rho_i\delta_i$다. density가 높으면서 다른 고밀도 군집과 멀리 떨어진 “density peak”를 선호한다.
+5. 최종 중요도는 $`\rho_i\delta_i`$다. density가 높으면서 다른 고밀도 군집과 멀리 떨어진 “density peak”를 선호한다.
 
-shape과 단위는 $\rho_i,\delta_i,\rho_i\delta_i$ 모두 token당 scalar다. $\delta_i$의 단위는 embedding coordinate의 제곱 거리다. embedding scale을 두 배로 하면 $\delta_i$는 네 배가 되므로 feature normalization 여부가 중요하지만 원문은 명시하지 않는다.
+shape과 단위는 $`\rho_i,\delta_i,\rho_i\delta_i`$ 모두 token당 scalar다. $`\delta_i`$의 단위는 embedding coordinate의 제곱 거리다. embedding scale을 두 배로 하면 $`\delta_i`$는 네 배가 되므로 feature normalization 여부가 중요하지만 원문은 명시하지 않는다.
 
-작은 예를 들자. 세 token A, B, C의 density가 `[0.9, 0.7, 0.4]`, 제곱거리가 $d^2(A,B)=1$, $d^2(A,C)=9$, $d^2(B,C)=4$라 하자.
+작은 예를 들자. 세 token A, B, C의 density가 `[0.9, 0.7, 0.4]`, 제곱거리가 $`d^2(A,B)=1`$, $`d^2(A,C)=9`$, $`d^2(B,C)=4`$라 하자.
 
-- A는 더 높은 density가 없으므로 $\delta_A=\max(1,9)=9$, score $=0.9\times9=8.1$.
-- B는 A가 더 조밀하고 가장 가까우므로 $\delta_B=1$, score $=0.7$.
-- C는 더 조밀한 A/B 중 B가 가까우므로 $\delta_C=4$, score $=1.6$.
+- A는 더 높은 density가 없으므로 $`\delta_A=\max(1,9)=9`$, score $`=0.9\times9=8.1`$.
+- B는 A가 더 조밀하고 가장 가까우므로 $`\delta_B=1`$, score $`=0.7`$.
+- C는 더 조밀한 A/B 중 B가 가까우므로 $`\delta_C=4`$, score $`=1.6`$.
 
 따라서 A와 C가 서로 다른 대표 군집 중심처럼 먼저 선택될 수 있다.
 
 원문의 재현 한계는 분명하다.
 
-- $\rho_i$의 정확한 수식이 없다.
-- KNN의 $k$, 거리 normalization, self-neighbor 포함 여부가 없다.
+- $`\rho_i`$의 정확한 수식이 없다.
+- KNN의 $`k`$, 거리 normalization, self-neighbor 포함 여부가 없다.
 - 동일한 최대 density가 여러 개일 때 `>` 조건 때문에 모두 두 번째 branch로 가는지 tie-breaking이 없다.
 - Table 1에서는 196개 token을 선택한다고만 하며 계산 비용 자체는 FLOPs 표에 거의 반영되지 않는다.
 
 ### 5.5 균일 표본과 ensemble의 비번호 규칙
 
-$\phi_{\mathrm{uniform}}$은 2D grid에서 고정 stride로 뽑는다. 27×27 grid에 stride 2면 행·열 인덱스 `0,2,…,26`을 선택해 14×14=196개다. coverage는 보장하지만 특정 작은 물체 주변을 조밀하게 남기는 능력은 없다. [PDF p.6, §4.1]
+$`\phi_{\mathrm{uniform}}`$은 2D grid에서 고정 stride로 뽑는다. 27×27 grid에 stride 2면 행·열 인덱스 `0,2,…,26`을 선택해 14×14=196개다. coverage는 보장하지만 특정 작은 물체 주변을 조밀하게 남기는 능력은 없다. [PDF p.6, §4.1]
 
 ensemble은 score를 더하는 방식이 아니라 **index set의 합집합**이다.
 
-$$
-\mathcal I_{\mathrm{ens}}
-=\mathrm{TopK}(\phi_{-R},k)
-\cup
-\mathcal I_{\mathrm{stride}}.
-\qquad\text{[해설용 수식]}
-$$
+```math
+\mathcal I_{\mathrm{ens}} =\mathrm{TopK}(\phi_{-R},k) \cup \mathcal I_{\mathrm{stride}}. \qquad\text{[해설용 수식]}
+```
 
 공식 구현은 `torch.cat → torch.unique(sorted=True)`로 중복을 제거한다. 따라서 이름의 `+`는 score addition이 아니다. text-conditioned top-k가 좁은 중요 영역을, uniform subset이 화면 전체의 안전망을 제공한다.
 
-두 번째 단계의 원문 표현 “retain $(1-R)^2\%$ of the remaining tokens”는 문자 그대로 읽으면 $R=0.7$일 때 0.09%라는 잘못된 뜻이 된다. 공식 코드는 `current_count × (1-R)^2`, 즉 **남은 token의 9%**를 선택한다. 원래 token 대비 비율은 첫 단계 합집합 크기에 0.09를 곱한 값이다. [PDF p.7–8, §4.2; 공식 코드 확인]
+두 번째 단계의 원문 표현 “retain $`(1-R)^2\%`$ of the remaining tokens”는 문자 그대로 읽으면 $`R=0.7`$일 때 0.09%라는 잘못된 뜻이 된다. 공식 코드는 `current_count × (1-R)^2`, 즉 **남은 token의 9%**를 선택한다. 원래 token 대비 비율은 첫 단계 합집합 크기에 0.09를 곱한 값이다. [PDF p.7–8, §4.2; 공식 코드 확인]
 
 ![원문 비번호 식: 두 번째 pruning 단계의 유지 비율](assets/03_FEATHER/equations/unnumbered_stage2.png)
 
@@ -551,31 +507,31 @@ FEATHER의 위치는 후자 중에서도 **LLM 내부, training-free, attention-
 
 ### 6.4 §3.1 Preliminary
 
-§3.1은 $f\rightarrow p\rightarrow\mathrm{LM}$의 adapter-style VLM을 정의하고 Eq.(1)로 한 transformer layer의 image-token 관련 비용을 근사한다. 이후 pruning framework는 layer $K$ 뒤에 criterion $\phi$로 token ranking $g_\phi$를 만들고, 하위 $R\%$를 버리는 것으로 설명한다. [PDF p.3, §3.1]
+§3.1은 $`f\rightarrow p\rightarrow\mathrm{LM}`$의 adapter-style VLM을 정의하고 Eq.(1)로 한 transformer layer의 image-token 관련 비용을 근사한다. 이후 pruning framework는 layer $`K`$ 뒤에 criterion $`\phi`$로 token ranking $`g_\phi`$를 만들고, 하위 $`R\%`$를 버리는 것으로 설명한다. [PDF p.3, §3.1]
 
-여기서 “image-token 관련”이라는 수식 범위를 놓치면 안 된다. 실제 sequence에는 prompt token도 있고 generation이 시작되면 KV cache와 새 text token이 추가된다. Eq.(1)은 이를 생략한 정적 prefill 근사다. 또한 $K$ 이전 layer는 full $n$, 이후 layer는 $\hat n$이라는 piecewise schedule을 가정한다.
+여기서 “image-token 관련”이라는 수식 범위를 놓치면 안 된다. 실제 sequence에는 prompt token도 있고 generation이 시작되면 KV cache와 새 text token이 추가된다. Eq.(1)은 이를 생략한 정적 prefill 근사다. 또한 $`K`$ 이전 layer는 full $`n`$, 이후 layer는 $`\hat n`$이라는 piecewise schedule을 가정한다.
 
 ### 6.5 §3.2 Task-dependent 성능 분석
 
-저자들은 Prism-SigLIP+Llama-2-7B에 FastV를 넣고 $K=3$, $R\in\{0.25,0.50,0.75,0.90\}$를 sweep한다. 네 localization dataset과 여덟 non-localization benchmark를 비교한 Figure 2에서, 75% 제거 시 localization은 baseline 대비 86.0–91.0% 상대 하락한다. 반면 대부분의 non-localization task는 0.1–7.9% 하락이고 TextVQA만 42.0%로 크게 떨어진다고 본문은 보고한다. [PDF p.4, Fig.2, §3.2]
+저자들은 Prism-SigLIP+Llama-2-7B에 FastV를 넣고 $`K=3`$, $`R\in\{0.25,0.50,0.75,0.90\}`$를 sweep한다. 네 localization dataset과 여덟 non-localization benchmark를 비교한 Figure 2에서, 75% 제거 시 localization은 baseline 대비 86.0–91.0% 상대 하락한다. 반면 대부분의 non-localization task는 0.1–7.9% 하락이고 TextVQA만 42.0%로 크게 떨어진다고 본문은 보고한다. [PDF p.4, Fig.2, §3.2]
 
 TextVQA가 예외인 이유에 대한 저자 설명은 외부 OCR token을 prompt에 넣지 않았기 때문에 local text region을 시각 토큰에서 읽어야 한다는 것이다. 이 결과는 “VQA 대 localization”이라는 이름보다 **정답을 만들기 위해 얼마나 세밀한 공간·문자 정보가 필요한가**가 더 근본적인 분기임을 시사한다.
 
-다만 Figure 2는 한 모델, 한 prompt/evaluator, 한 $K$에서의 상대 변화다. 각 점의 seed 분산이나 신뢰구간이 없으며, 90% 제거에서 생성 포맷 실패가 localization 하락에 얼마나 기여했는지도 분리하지 않는다.
+다만 Figure 2는 한 모델, 한 prompt/evaluator, 한 $`K`$에서의 상대 변화다. 각 점의 seed 분산이나 신뢰구간이 없으며, 90% 제거에서 생성 포맷 실패가 localization 하락에 얼마나 기여했는지도 분리하지 않는다.
 
 ### 6.6 §3.3 Attention criterion의 spatial bias
 
-Figure 3(a)는 “a bowl of blueberries”를 대상으로 $K=3,8,16,24$에서 남긴 토큰의 실제 위치를 그린다. Raster-scan 뒤 마지막 prompt query와 1D 위치상 가까운 image 하단이 RoPE 때문에 유리할 수 있다는 가설은 §3.3 본문의 설명이다. Figure 3(b)는 실제 $K=3,R=0.75$ keep frequency가 하단에 몰리는 것을 보여 주며, 선택 token의 평균 y 좌표는 이미지 높이의 80.7%다. 저자는 균일분포와의 chi-square test에서 $p<0.05$라고 보고한다. [PDF p.4–5, Fig.3, §3.3]
+Figure 3(a)는 “a bowl of blueberries”를 대상으로 $`K=3,8,16,24`$에서 남긴 토큰의 실제 위치를 그린다. Raster-scan 뒤 마지막 prompt query와 1D 위치상 가까운 image 하단이 RoPE 때문에 유리할 수 있다는 가설은 §3.3 본문의 설명이다. Figure 3(b)는 실제 $`K=3,R=0.75`$ keep frequency가 하단에 몰리는 것을 보여 주며, 선택 token의 평균 y 좌표는 이미지 높이의 80.7%다. 저자는 균일분포와의 chi-square test에서 $`p\lt 0.05`$라고 보고한다. [PDF p.4–5, Fig.3, §3.3]
 
-Figure 3(c)의 위·아래 plot은 각각 localization과 non-localization 평균 정확도 대 FLOPs 감소율이며, Figure 3(b)의 heatmap은 $K$를 뒤로 옮길수록 spatial bias가 약해짐을 보여 준다. Figure 3에 (d)는 없다. 이는 더 깊은 representation이 semantic relevance를 잘 표현한다는 해석과 맞지만, 동시에 $K$가 커질수록 pruning 전 full-token 계산이 늘어 FLOPs 절감이 줄어드는 trade-off가 있다.
+Figure 3(c)의 위·아래 plot은 각각 localization과 non-localization 평균 정확도 대 FLOPs 감소율이며, Figure 3(b)의 heatmap은 $`K`$를 뒤로 옮길수록 spatial bias가 약해짐을 보여 준다. Figure 3에 (d)는 없다. 이는 더 깊은 representation이 semantic relevance를 잘 표현한다는 해석과 맞지만, 동시에 $`K`$가 커질수록 pruning 전 full-token 계산이 늘어 FLOPs 절감이 줄어드는 trade-off가 있다.
 
-검정 해석은 제한적으로 해야 한다. $p<0.05$는 “균일하지 않음”에 대한 증거이지, 편향의 크기나 RoPE가 유일한 원인임을 증명하지 않는다. bin 수, 자유도, 검정통계량, 관측 독립성, 총 sample 수가 기재되지 않아 정확한 통계 재현도 어렵다.
+검정 해석은 제한적으로 해야 한다. $`p\lt 0.05`$는 “균일하지 않음”에 대한 증거이지, 편향의 크기나 RoPE가 유일한 원인임을 증명하지 않는다. bin 수, 자유도, 검정통계량, 관측 독립성, 총 sample 수가 기재되지 않아 정확한 통계 재현도 어렵다.
 
 ### 6.7 §3.4 왜 VQA 점수는 살아남는가
 
 Figure 4의 핵심 대조는 다음 세 조건이다.
 
-1. 정상 FastV: full visual sequence가 layer $K$까지 흐른 뒤 선택한다.
+1. 정상 FastV: full visual sequence가 layer $`K`$까지 흐른 뒤 선택한다.
 2. **pre-prune control**: 정상 FastV가 선택했을 바로 그 token subset만 입력 시점부터 제공한다.
 3. text-only: 시각 토큰을 제거한다.
 
@@ -587,15 +543,15 @@ VizWiz·AI2D 같은 일부 task의 작은 차이는 plot 해상도와 evaluator 
 
 이 절은 세 criterion을 비교한다.
 
-- $\phi_{-R}$: 마지막 text query–image key attention을 계산할 때 RoPE만 제거한다.
-- $\phi_{\mathrm{KNN}}$: vision feature의 density peak score $\rho_i\delta_i$를 쓴다.
-- $\phi_{\mathrm{uniform}}$: 27×27 grid를 stride 2로 샘플링해 196개를 남긴다.
+- $`\phi_{-R}`$: 마지막 text query–image key attention을 계산할 때 RoPE만 제거한다.
+- $`\phi_{\mathrm{KNN}}`$: vision feature의 density peak score $`\rho_i\delta_i`$를 쓴다.
+- $`\phi_{\mathrm{uniform}}`$: 27×27 grid를 stride 2로 샘플링해 196개를 남긴다.
 
-Table 1은 같은 $K$에서 이들을 평가하고, $\phi_{-R}+\phi_{\mathrm{uniform}}$의 index 합집합이 localization과 non-localization 사이에서 가장 좋은 균형을 보인다고 보고한다. KNN은 content 다양성을 노리지만 localization에서 uniform보다 약하고, 정확한 density 구현이 논문에 빠져 있어 재현성도 가장 낮다. [PDF p.6–7, Eq.(2), Table 1, §4.1]
+Table 1은 같은 $`K`$에서 이들을 평가하고, $`\phi_{-R}+\phi_{\mathrm{uniform}}`$의 index 합집합이 localization과 non-localization 사이에서 가장 좋은 균형을 보인다고 보고한다. KNN은 content 다양성을 노리지만 localization에서 uniform보다 약하고, 정확한 density 구현이 논문에 빠져 있어 재현성도 가장 낮다. [PDF p.6–7, Eq.(2), Table 1, §4.1]
 
 ### 6.9 §4.2 FEATHER: Coarse-to-fine Pruning
 
-FEATHER의 layer schedule은 $K_1=8$, $K_2=16$이다. 공식 평가 설정은 첫 단계에서 제거율 0.7의 RoPE-free top-k와 stride-3 uniform indices를 합치고, 둘째 단계에서 남은 token 수에 $(1-R)^2=0.09$를 곱한 개수만 RoPE-free top-k로 남긴다. [PDF p.7–8, §4.2; Fig.1(b), PDF p.1; 공식 코드 확인]
+FEATHER의 layer schedule은 $`K_1=8`$, $`K_2=16`$이다. 공식 평가 설정은 첫 단계에서 제거율 0.7의 RoPE-free top-k와 stride-3 uniform indices를 합치고, 둘째 단계에서 남은 token 수에 $`(1-R)^2=0.09`$를 곱한 개수만 RoPE-free top-k로 남긴다. [PDF p.7–8, §4.2; Fig.1(b), PDF p.1; 공식 코드 확인]
 
 Figure 1(b)와 보충 Figure A4의 FEATHER 열에서 첫 단계는 foreground 후보와 전역 grid를 함께 남기는 **coarse coverage**, 둘째 단계는 deeper attention으로 세밀한 relevant region을 고르는 **fine selection** 역할을 확인할 수 있다. 이 설계는 두 개의 독립 predictor를 학습하는 coarse-to-fine detector가 아니라, 같은 LLM의 서로 다른 depth에서 두 번 index selection을 수행하는 것이다. Figure 5는 이 설계의 성능을 FastV·PyramidDrop과 비교하는 그래프다.
 
@@ -619,18 +575,18 @@ Acknowledgments는 NSF Grant No. 2026498, Stanford AIMI-HAI Partnership Grant, �
 
 예시 입력을 이미지 `I`, 질문 “Where is the player in a white shirt and black shorts?”라고 하자. batch size 1, 384×384 입력, 729개 image token이라는 공식 설정 기반 예를 쓴다.
 
-1. **전처리**: 이미지를 384×384로 naive resize하고 정규화한다. shape은 $[1,3,384,384]$.
-2. **vision encoder**: SigLIP ViT-SO/14가 patch representation $z_{\mathrm{img}}$를 만든다. 예시 shape은 $[1,729,d_{\mathrm{vision}}]$.
-3. **projector**: Linear–GELU–Linear adapter가 $h_{\mathrm{img}}\in\mathbb{R}^{1\times729\times4096}$로 맞춘다.
-4. **텍스트 결합**: BOS·image embeddings·prompt embeddings를 이어 $[1,1+729+L_t,4096]$ sequence를 만든다. attention mask와 position ids도 같은 길이로 만든다.
+1. **전처리**: 이미지를 384×384로 naive resize하고 정규화한다. shape은 $`[1,3,384,384]`$.
+2. **vision encoder**: SigLIP ViT-SO/14가 patch representation $`z_{\mathrm{img}}`$를 만든다. 예시 shape은 $`[1,729,d_{\mathrm{vision}}]`$.
+3. **projector**: Linear–GELU–Linear adapter가 $`h_{\mathrm{img}}\in\mathbb{R}^{1\times729\times4096}`$로 맞춘다.
+4. **텍스트 결합**: BOS·image embeddings·prompt embeddings를 이어 $`[1,1+729+L_t,4096]`$ sequence를 만든다. attention mask와 position ids도 같은 길이로 만든다.
 5. **layer 0–7**: 모든 image token을 포함해 정상 Llama decoder block을 실행한다.
-6. **layer 8 직전 선택**: 이전 hidden state를 layer norm한 뒤 $q=W_qh$, $k=W_kh$를 계산한다. 마지막 text token query와 image key의 $qk^\top/\sqrt{d_h}$에 softmax를 취하고 head 평균을 낸다. 이 **선택용 경로에는 RoPE를 적용하지 않는다**.
-7. **첫 keep set**: score 상위 약 $0.3n$와 2D stride-3 grid를 합치고 중복을 제거한다. non-image token은 전부 유지한다. index를 정렬해 raster/text 상대 순서를 보존하고 hidden state, mask, position ids를 동일하게 gather한다.
+6. **layer 8 직전 선택**: 이전 hidden state를 layer norm한 뒤 $`q=W_qh`$, $`k=W_kh`$를 계산한다. 마지막 text token query와 image key의 $`qk^\top/\sqrt{d_h}`$에 softmax를 취하고 head 평균을 낸다. 이 **선택용 경로에는 RoPE를 적용하지 않는다**.
+7. **첫 keep set**: score 상위 약 $`0.3n`$와 2D stride-3 grid를 합치고 중복을 제거한다. non-image token은 전부 유지한다. index를 정렬해 raster/text 상대 순서를 보존하고 hidden state, mask, position ids를 동일하게 gather한다.
 8. **layer 8–15**: 축소 sequence를 정상 decoder block—실제 RoPE 포함—으로 처리한다.
-9. **layer 16 직전 선택**: 다시 현재 hidden state에서 RoPE-free score를 계산한다. 현재 image token 수의 $0.09$개만 top-k로 유지하며 이번에는 uniform set을 합치지 않는다.
+9. **layer 16 직전 선택**: 다시 현재 hidden state에서 RoPE-free score를 계산한다. 현재 image token 수의 $`0.09`$개만 top-k로 유지하며 이번에는 uniform set을 합치지 않는다.
 10. **layer 16–31와 생성**: 더 작은 visual context로 남은 prefill을 끝내고, autoregressive하게 text/좌표 token을 생성한다. 공개 평가 wrapper는 기본적으로 `do_sample=False`, 최대 생성 길이 128이다. [공식 코드 확인]
 
-이 경로에서 token score는 prune event마다 한 번만 계산된다. score tensor의 개념적 shape은 $[B,H_a,1,n_{\mathrm{current}}]$, head 평균 뒤 $[B,n_{\mathrm{current}}]$이다. keep indices는 sample마다 달라질 수 있지만 공개 구현과 평가 기본값은 batch size 1이어서 variable-length batch packing 문제를 피한다.
+이 경로에서 token score는 prune event마다 한 번만 계산된다. score tensor의 개념적 shape은 $`[B,H_a,1,n_{\mathrm{current}}]`$, head 평균 뒤 $`[B,n_{\mathrm{current}}]`$이다. keep indices는 sample마다 달라질 수 있지만 공개 구현과 평가 기본값은 batch size 1이어서 variable-length batch packing 문제를 피한다.
 
 ### 7.2 학습되는 것과 고정되는 것
 
@@ -638,8 +594,8 @@ FEATHER 자체는 **추론 시점 규칙**이므로 추가 dataset, loss, optimi
 
 | 구성요소 | 기반 VLM 학습 | FEATHER 적용 시 |
 |---|---|---|
-| SigLIP vision backbone $f$ | frozen | frozen, 하지만 모든 patch를 정상 인코딩 |
-| MLP projector $p$ | trainable | checkpoint 고정 |
+| SigLIP vision backbone $`f`$ | frozen | frozen, 하지만 모든 patch를 정상 인코딩 |
+| MLP projector $`p`$ | trainable | checkpoint 고정 |
 | Llama 2 7B | trainable/fine-tuned | checkpoint 고정 |
 | RoPE-free selection | 없음 | 학습 parameter 없음 |
 | top-k / stride union | 없음 | 비미분 결정 규칙 |
@@ -712,9 +668,9 @@ function FEATHER_FORWARD(image, prompt, R=0.7, K1=8, K2=16, stride=3):
 
 Figure 2. Pruning 비율에 따른 정확도와 데이터셋별 변화. [PDF p.4, §3.2; 원문 PDF][feather-main]
 
-Figure 2의 왼쪽·가운데 plot은 x축 **FLOPs 감소율**, y축 **그룹 평균 정확도**다. 각 점에 제거율 $R$을 별도로 표시한다. 오른쪽 radar plot은 12개 dataset의 점수를 baseline 및 각 pruning 비율별로 비교한다. $K=3$을 고정하고 $R=25,50,75,90\%$를 비교하며 localization 평균은 가파르게 떨어지는 반면, non-localization 평균은 75%까지 완만하다. TextVQA가 두 군 사이의 예외다. 앞서 인용한 상대 하락률은 §3.2 본문의 비교값이며 plot의 y축 자체가 상대 하락률인 것은 아니다. [PDF p.4, Fig.2]
+Figure 2의 왼쪽·가운데 plot은 x축 **FLOPs 감소율**, y축 **그룹 평균 정확도**다. 각 점에 제거율 $`R`$을 별도로 표시한다. 오른쪽 radar plot은 12개 dataset의 점수를 baseline 및 각 pruning 비율별로 비교한다. $`K=3`$을 고정하고 $`R=25,50,75,90\%`$를 비교하며 localization 평균은 가파르게 떨어지는 반면, non-localization 평균은 75%까지 완만하다. TextVQA가 두 군 사이의 예외다. 앞서 인용한 상대 하락률은 §3.2 본문의 비교값이며 plot의 y축 자체가 상대 하락률인 것은 아니다. [PDF p.4, Fig.2]
 
-- 원문이 강조한 $R=75\%$: localization 상대 하락 86.0–91.0%, 일반 benchmark 다수 0.1–7.9%, TextVQA 42.0%.
+- 원문이 강조한 $`R=75\%`$: localization 상대 하락 86.0–91.0%, 일반 benchmark 다수 0.1–7.9%, TextVQA 42.0%.
 - 이 그림은 **같은 FLOPs 절감이 같은 정보 손실을 뜻하지 않는다**는 핵심 증거다.
 - 오른쪽 radar에는 baseline의 데이터셋별 점수가 인쇄되어 있다. 서로 다른 지표의 절대점수와 상대 하락률을 함께 읽어 낮은 분모 효과를 확인해야 한다.
 - error bar가 없으므로 작은 차이를 통계적 우열로 읽으면 안 된다.
@@ -725,9 +681,9 @@ Figure 2의 왼쪽·가운데 plot은 x축 **FLOPs 감소율**, y축 **그룹 �
 
 Figure 3. Pruning layer에 따른 선택 위치와 성능. [PDF p.5, §3.3; 원문 PDF][feather-main]
 
-Figure 3(a)는 $K=3,8,16,24$의 retained-token 예시, (b)는 각 layer의 선택 빈도 heatmap과 공통 colorbar, (c)는 localization·non-localization의 정확도 대 FLOPs 감소율을 보여 준다. 모든 조건에서 $R=0.75$를 사용한다. [PDF p.5, Fig.3]
+Figure 3(a)는 $`K=3,8,16,24`$의 retained-token 예시, (b)는 각 layer의 선택 빈도 heatmap과 공통 colorbar, (c)는 localization·non-localization의 정확도 대 FLOPs 감소율을 보여 준다. 모든 조건에서 $`R=0.75`$를 사용한다. [PDF p.5, Fig.3]
 
-평균 y=80.7%는 선택 질량이 이미지 높이의 약 4/5 지점에 있다는 뜻이다. 이는 좌표계가 위에서 0, 아래에서 1일 때 강한 하단 편향이다. 그러나 평균 하나는 bimodal 여부나 dataset별 차이를 숨긴다. heatmap의 색상 빈도와 chi-square $p<0.05$가 함께 방향을 지지하지만, per-image 분산·effect size·검정 상세가 없다.
+평균 y=80.7%는 선택 질량이 이미지 높이의 약 4/5 지점에 있다는 뜻이다. 이는 좌표계가 위에서 0, 아래에서 1일 때 강한 하단 편향이다. 그러나 평균 하나는 bimodal 여부나 dataset별 차이를 숨긴다. heatmap의 색상 빈도와 chi-square $`p\lt 0.05`$가 함께 방향을 지지하지만, per-image 분산·effect size·검정 상세가 없다.
 
 ### 8.4 Table 1: SigLIP에서 criterion ablation 전체 수치
 
@@ -735,67 +691,67 @@ Figure 3(a)는 $K=3,8,16,24$의 retained-token 예시, (b)는 각 layer의 선�
 
 #### Localization
 
-| $K$ | Criterion | FLOPs↓ | Avg | OCID-Ref | RefCOCOg | RefCOCO+ | RefCOCO |
+| $`K`$ | Criterion | FLOPs↓ | Avg | OCID-Ref | RefCOCOg | RefCOCO+ | RefCOCO |
 |---:|---|---:|---:|---:|---:|---:|---:|
-| 3 | $\phi_{\mathrm{original}}$ | 68% | 5.9 | 5.7 | 5.1 | 6.1 | 6.7 |
-| 3 | $\phi_{-R}$ | 68% | 16.7 | 22.9 | 15.1 | 13.3 | 15.3 |
-| 3 | $\phi_{\mathrm{KNN}}$ | 66% | 23.9 | 15.1 | 24.9 | 26.0 | 29.6 |
-| 3 | $\phi_{\mathrm{uniform}}$ | 66% | 28.0 | 20.6 | 28.6 | 29.7 | 33.3 |
-| 3 | $\phi_{-R}+\phi_{\mathrm{uniform}}$ | 61% | 27.2 | 29.1 | 27.2 | 24.7 | 27.7 |
-| 8 | $\phi_{\mathrm{original}}$ | 56% | 23.3 | 19.4 | 23.5 | 24.0 | 26.3 |
-| 8 | $\phi_{-R}$ | 56% | 27.3 | 27.1 | 26.7 | 26.4 | 29.2 |
-| 8 | $\phi_{\mathrm{KNN}}$ | 55% | 23.6 | 15.4 | 24.4 | 25.2 | 29.4 |
-| 8 | $\phi_{\mathrm{uniform}}$ | 55% | 30.3 | 24.6 | 31.0 | 30.9 | 34.8 |
-| 8 | $\phi_{-R}+\phi_{\mathrm{uniform}}$ | 50% | 35.6 | 32.0 | 35.9 | 35.4 | 38.8 |
+| 3 | $`\phi_{\mathrm{original}}`$ | 68% | 5.9 | 5.7 | 5.1 | 6.1 | 6.7 |
+| 3 | $`\phi_{-R}`$ | 68% | 16.7 | 22.9 | 15.1 | 13.3 | 15.3 |
+| 3 | $`\phi_{\mathrm{KNN}}`$ | 66% | 23.9 | 15.1 | 24.9 | 26.0 | 29.6 |
+| 3 | $`\phi_{\mathrm{uniform}}`$ | 66% | 28.0 | 20.6 | 28.6 | 29.7 | 33.3 |
+| 3 | $`\phi_{-R}+\phi_{\mathrm{uniform}}`$ | 61% | 27.2 | 29.1 | 27.2 | 24.7 | 27.7 |
+| 8 | $`\phi_{\mathrm{original}}`$ | 56% | 23.3 | 19.4 | 23.5 | 24.0 | 26.3 |
+| 8 | $`\phi_{-R}`$ | 56% | 27.3 | 27.1 | 26.7 | 26.4 | 29.2 |
+| 8 | $`\phi_{\mathrm{KNN}}`$ | 55% | 23.6 | 15.4 | 24.4 | 25.2 | 29.4 |
+| 8 | $`\phi_{\mathrm{uniform}}`$ | 55% | 30.3 | 24.6 | 31.0 | 30.9 | 34.8 |
+| 8 | $`\phi_{-R}+\phi_{\mathrm{uniform}}`$ | 50% | 35.6 | 32.0 | 35.9 | 35.4 | 38.8 |
 
 #### Open-ended VQA
 
-| $K$ | Criterion | Avg | TextVQA | GQA | VQAv2 | VizWiz |
+| $`K`$ | Criterion | Avg | TextVQA | GQA | VQAv2 | VizWiz |
 |---:|---|---:|---:|---:|---:|---:|
-| 3 | $\phi_{\mathrm{original}}$ | 54.8 | 31.8 | 58.4 | 72.7 | 56.3 |
-| 3 | $\phi_{-R}$ | 59.0 | 41.6 | 61.2 | 76.0 | 57.3 |
-| 3 | $\phi_{\mathrm{KNN}}$ | 58.4 | 39.9 | 60.9 | 74.4 | 58.4 |
-| 3 | $\phi_{\mathrm{uniform}}$ | 59.0 | 41.4 | 61.8 | 75.9 | 57.1 |
+| 3 | $`\phi_{\mathrm{original}}`$ | 54.8 | 31.8 | 58.4 | 72.7 | 56.3 |
+| 3 | $`\phi_{-R}`$ | 59.0 | 41.6 | 61.2 | 76.0 | 57.3 |
+| 3 | $`\phi_{\mathrm{KNN}}`$ | 58.4 | 39.9 | 60.9 | 74.4 | 58.4 |
+| 3 | $`\phi_{\mathrm{uniform}}`$ | 59.0 | 41.4 | 61.8 | 75.9 | 57.1 |
 | 3 | ensemble | 61.2 | 46.6 | 62.3 | 77.4 | 58.4 |
-| 8 | $\phi_{\mathrm{original}}$ | 59.8 | 45.0 | 60.3 | 76.1 | 57.8 |
-| 8 | $\phi_{-R}$ | 61.4 | 49.0 | 61.5 | 77.4 | 57.8 |
-| 8 | $\phi_{\mathrm{KNN}}$ | 58.6 | 40.2 | 61.1 | 74.5 | 58.5 |
-| 8 | $\phi_{\mathrm{uniform}}$ | 59.3 | 42.2 | 61.8 | 76.0 | 57.4 |
+| 8 | $`\phi_{\mathrm{original}}`$ | 59.8 | 45.0 | 60.3 | 76.1 | 57.8 |
+| 8 | $`\phi_{-R}`$ | 61.4 | 49.0 | 61.5 | 77.4 | 57.8 |
+| 8 | $`\phi_{\mathrm{KNN}}`$ | 58.6 | 40.2 | 61.1 | 74.5 | 58.5 |
+| 8 | $`\phi_{\mathrm{uniform}}`$ | 59.3 | 42.2 | 61.8 | 76.0 | 57.4 |
 | 8 | ensemble | 62.7 | 51.7 | 62.4 | 78.1 | 58.6 |
 
 #### Challenge sets
 
-| $K$ | Criterion | Avg | POPE | TallyQA | VSR | AI2D |
+| $`K`$ | Criterion | Avg | POPE | TallyQA | VSR | AI2D |
 |---:|---|---:|---:|---:|---:|---:|
-| 3 | $\phi_{\mathrm{original}}$ | 64.0 | 83.2 | 57.1 | 63.3 | 52.4 |
-| 3 | $\phi_{-R}$ | 64.7 | 85.2 | 58.2 | 62.2 | 53.2 |
-| 3 | $\phi_{\mathrm{KNN}}$ | 62.8 | 81.2 | 55.9 | 61.5 | 52.8 |
-| 3 | $\phi_{\mathrm{uniform}}$ | 64.6 | 85.2 | 58.1 | 61.9 | 53.0 |
+| 3 | $`\phi_{\mathrm{original}}`$ | 64.0 | 83.2 | 57.1 | 63.3 | 52.4 |
+| 3 | $`\phi_{-R}`$ | 64.7 | 85.2 | 58.2 | 62.2 | 53.2 |
+| 3 | $`\phi_{\mathrm{KNN}}`$ | 62.8 | 81.2 | 55.9 | 61.5 | 52.8 |
+| 3 | $`\phi_{\mathrm{uniform}}`$ | 64.6 | 85.2 | 58.1 | 61.9 | 53.0 |
 | 3 | ensemble | 65.4 | 86.0 | 58.9 | 62.7 | 54.0 |
-| 8 | $\phi_{\mathrm{original}}$ | 64.6 | 85.4 | 57.5 | 62.6 | 53.0 |
-| 8 | $\phi_{-R}$ | 65.5 | 86.7 | 58.6 | 63.0 | 53.7 |
-| 8 | $\phi_{\mathrm{KNN}}$ | 62.9 | 81.4 | 56.2 | 60.9 | 53.0 |
-| 8 | $\phi_{\mathrm{uniform}}$ | 64.4 | 85.3 | 57.9 | 61.0 | 53.2 |
+| 8 | $`\phi_{\mathrm{original}}`$ | 64.6 | 85.4 | 57.5 | 62.6 | 53.0 |
+| 8 | $`\phi_{-R}`$ | 65.5 | 86.7 | 58.6 | 63.0 | 53.7 |
+| 8 | $`\phi_{\mathrm{KNN}}`$ | 62.9 | 81.4 | 56.2 | 60.9 | 53.0 |
+| 8 | $`\phi_{\mathrm{uniform}}`$ | 64.4 | 85.3 | 57.9 | 61.0 | 53.2 |
 | 8 | ensemble | 66.0 | 87.4 | 59.1 | 63.6 | 54.0 |
 
 재계산과 해석은 다음과 같다.
 
-- $K=3$에서 RoPE 제거의 localization 상대개선은 $(16.7-5.9)/5.9=183.05\%$다.
-- $K=8$에서는 $(27.3-23.3)/23.3=17.17\%$다. 편향이 깊은 층에서 이미 약해진다는 가설과 맞는다.
-- $\phi_{-R}$만 비교해도 $K=3\rightarrow8$은 $(27.3-16.7)/16.7=63.47\%$ 개선이지만, FLOPs 절감은 68%에서 56%로 줄어든다.
-- $K=3$ ensemble은 $\phi_{-R}$보다 62.87% 높지만 uniform보다 2.86% 낮다. 반면 $K=8$ ensemble은 $\phi_{-R}$보다 30.40%, uniform보다 17.49% 높다. 즉 두 cue의 보완성이 깊은 층에서 더 분명하다.
-- ensemble은 union 때문에 더 많은 token을 남겨 FLOPs 감소가 작다. 같은 $K$ 행의 criterion끼리도 비용이 정확히 같지 않으므로 성능만 비교하면 불공정하다.
+- $`K=3`$에서 RoPE 제거의 localization 상대개선은 $`(16.7-5.9)/5.9=183.05\%`$다.
+- $`K=8`$에서는 $`(27.3-23.3)/23.3=17.17\%`$다. 편향이 깊은 층에서 이미 약해진다는 가설과 맞는다.
+- $`\phi_{-R}`$만 비교해도 $`K=3\rightarrow8`$은 $`(27.3-16.7)/16.7=63.47\%`$ 개선이지만, FLOPs 절감은 68%에서 56%로 줄어든다.
+- $`K=3`$ ensemble은 $`\phi_{-R}`$보다 62.87% 높지만 uniform보다 2.86% 낮다. 반면 $`K=8`$ ensemble은 $`\phi_{-R}`$보다 30.40%, uniform보다 17.49% 높다. 즉 두 cue의 보완성이 깊은 층에서 더 분명하다.
+- ensemble은 union 때문에 더 많은 token을 남겨 FLOPs 감소가 작다. 같은 $`K`$ 행의 criterion끼리도 비용이 정확히 같지 않으므로 성능만 비교하면 불공정하다.
 
 ### 8.5 Table 2: 선택 token의 early information transfer control
 
-Table 2는 RoPE-free criterion $\phi_{-R}$가 $K=3$ 또는 $K=8$에서 선택한 token을 각각 layer 0부터 넣는 조건의 localization 결과를 비교한다. 표의 목적은 depth별 criterion의 선택 품질을 비교하면서 “좋은 token이 얕은 층을 지나며 버린 token 정보를 흡수했기 때문”이라는 가설을 분리하는 것이다. 이는 Figure 4의 FastV control과 관련되지만 동일 criterion 실험은 아니다. [PDF p.7, §4.1, Table 2]
+Table 2는 RoPE-free criterion $`\phi_{-R}`$가 $`K=3`$ 또는 $`K=8`$에서 선택한 token을 각각 layer 0부터 넣는 조건의 localization 결과를 비교한다. 표의 목적은 depth별 criterion의 선택 품질을 비교하면서 “좋은 token이 얕은 층을 지나며 버린 token 정보를 흡수했기 때문”이라는 가설을 분리하는 것이다. 이는 Figure 4의 FastV control과 관련되지만 동일 criterion 실험은 아니다. [PDF p.7, §4.1, Table 2]
 
 | 선택 mask의 원래 layer | OCID-Ref | RefCOCOg | RefCOCO+ | RefCOCO | Avg |
 |---:|---:|---:|---:|---:|---:|
-| $K=3$ mask를 입력부터 사용 | 23.8 | 16.2 | 14.5 | 16.3 | 17.7 |
-| $K=8$ mask를 입력부터 사용 | 26.7 | 29.8 | 26.8 | 29.8 | 28.3 |
+| $`K=3`$ mask를 입력부터 사용 | 23.8 | 16.2 | 14.5 | 16.3 | 17.7 |
+| $`K=8`$ mask를 입력부터 사용 | 26.7 | 29.8 | 26.8 | 29.8 | 28.3 |
 
-깊은 층에서 고른 subset 자체가 더 좋고, 그 subset을 처음부터 써도 낫다. 따라서 layer depth 효과의 상당 부분은 버려질 token이 남은 token으로 정보를 전달한 결과보다 **ranking criterion의 성숙도**로 설명된다. 다만 $K=3$과 $K=8$ hidden state에서 얻은 서로 다른 mask를 비교하므로 동일 mask·동일 계산량의 완전한 인과 실험은 아니다.
+깊은 층에서 고른 subset 자체가 더 좋고, 그 subset을 처음부터 써도 낫다. 따라서 layer depth 효과의 상당 부분은 버려질 token이 남은 token으로 정보를 전달한 결과보다 **ranking criterion의 성숙도**로 설명된다. 다만 $`K=3`$과 $`K=8`$ hidden state에서 얻은 서로 다른 mask를 비교하므로 동일 mask·동일 계산량의 완전한 인과 실험은 아니다.
 
 ### 8.6 Figure 4: 정상 pruning, pre-prune, text-only
 
@@ -821,39 +777,39 @@ Figure 5의 왼쪽·가운데 그래프는 각각 localization·non-localization
 
 ### 8.8 Supplement A1 / Table A1: DINOv2+SigLIP encoder 대조
 
-보충 §A1은 vision encoder를 DINOv2+SigLIP 조합으로 바꾸고 $K=3$ criterion 실험을 반복한다. 방향은 기본 SigLIP 실험과 같다. RoPE 제거는 original attention보다 localization을 27.2→37.2로 올리고, uniform은 38.3, ensemble은 46.3이다. [Supplement p.1, Table A1]
+보충 §A1은 vision encoder를 DINOv2+SigLIP 조합으로 바꾸고 $`K=3`$ criterion 실험을 반복한다. 방향은 기본 SigLIP 실험과 같다. RoPE 제거는 original attention보다 localization을 27.2→37.2로 올리고, uniform은 38.3, ensemble은 46.3이다. [Supplement p.1, Table A1]
 
 #### Localization
 
 | Criterion | FLOPs↓ | Avg | OCID-Ref | RefCOCOg | RefCOCO+ | RefCOCO |
 |---|---:|---:|---:|---:|---:|---:|
-| $\phi_{\mathrm{original}}$ | 68% | 27.2 | 21.9 | 27.7 | 27.8 | 31.1 |
-| $\phi_{-R}$ | 68% | 37.2 | 37.0 | 38.7 | 34.9 | 38.1 |
-| $\phi_{\mathrm{KNN}}$ | 66% | 20.5 | 13.4 | 22.1 | 22.0 | 24.6 |
-| $\phi_{\mathrm{uniform}}$ | 66% | 38.3 | 32.7 | 38.8 | 38.8 | 42.7 |
+| $`\phi_{\mathrm{original}}`$ | 68% | 27.2 | 21.9 | 27.7 | 27.8 | 31.1 |
+| $`\phi_{-R}`$ | 68% | 37.2 | 37.0 | 38.7 | 34.9 | 38.1 |
+| $`\phi_{\mathrm{KNN}}`$ | 66% | 20.5 | 13.4 | 22.1 | 22.0 | 24.6 |
+| $`\phi_{\mathrm{uniform}}`$ | 66% | 38.3 | 32.7 | 38.8 | 38.8 | 42.7 |
 | ensemble | 61% | 46.3 | 41.6 | 47.3 | 46.0 | 50.1 |
 
 #### Open-ended VQA
 
 | Criterion | Avg | TextVQA | GQA | VQAv2 | VizWiz |
 |---|---:|---:|---:|---:|---:|
-| $\phi_{\mathrm{original}}$ | 56.6 | 35.6 | 59.1 | 74.0 | 57.7 |
-| $\phi_{-R}$ | 60.1 | 45.4 | 60.4 | 76.5 | 58.2 |
-| $\phi_{\mathrm{KNN}}$ | 54.2 | 29.9 | 60.0 | 70.2 | 57.0 |
-| $\phi_{\mathrm{uniform}}$ | 58.3 | 37.6 | 61.9 | 75.8 | 58.0 |
+| $`\phi_{\mathrm{original}}`$ | 56.6 | 35.6 | 59.1 | 74.0 | 57.7 |
+| $`\phi_{-R}`$ | 60.1 | 45.4 | 60.4 | 76.5 | 58.2 |
+| $`\phi_{\mathrm{KNN}}`$ | 54.2 | 29.9 | 60.0 | 70.2 | 57.0 |
+| $`\phi_{\mathrm{uniform}}`$ | 58.3 | 37.6 | 61.9 | 75.8 | 58.0 |
 | ensemble | 61.3 | 46.8 | 62.0 | 77.7 | 58.7 |
 
 #### Challenge sets
 
 | Criterion | Avg | POPE | TallyQA | VSR | AI2D |
 |---|---:|---:|---:|---:|---:|
-| $\phi_{\mathrm{original}}$ | 66.1 | 84.6 | 60.2 | 67.1 | 52.7 |
-| $\phi_{-R}$ | 66.3 | 85.9 | 61.1 | 65.1 | 52.9 |
-| $\phi_{\mathrm{KNN}}$ | 60.5 | 77.7 | 51.9 | 61.9 | 50.7 |
-| $\phi_{\mathrm{uniform}}$ | 65.8 | 85.9 | 60.2 | 65.0 | 52.2 |
+| $`\phi_{\mathrm{original}}`$ | 66.1 | 84.6 | 60.2 | 67.1 | 52.7 |
+| $`\phi_{-R}`$ | 66.3 | 85.9 | 61.1 | 65.1 | 52.9 |
+| $`\phi_{\mathrm{KNN}}`$ | 60.5 | 77.7 | 51.9 | 61.9 | 50.7 |
+| $`\phi_{\mathrm{uniform}}`$ | 65.8 | 85.9 | 60.2 | 65.0 | 52.2 |
 | ensemble | 66.8 | 86.9 | 61.6 | 65.4 | 53.3 |
 
-이 encoder에서는 original $K=3$ localization이 이미 27.2라 기본 SigLIP의 5.9보다 훨씬 높다. 즉 bias의 심각도는 vision representation에도 의존한다. 그럼에도 같은 encoder 내부에서 $\phi_{-R}$와 coverage가 개선되는 것은 criterion 효과의 외적 타당성을 조금 넓힌다. 단, 서로 다른 encoder 간 절대점수 차이는 tokenization, feature dim, pretraining과 VLM 학습 전체가 달라 원인 하나로 귀속할 수 없다.
+이 encoder에서는 original $`K=3`$ localization이 이미 27.2라 기본 SigLIP의 5.9보다 훨씬 높다. 즉 bias의 심각도는 vision representation에도 의존한다. 그럼에도 같은 encoder 내부에서 $`\phi_{-R}`$와 coverage가 개선되는 것은 criterion 효과의 외적 타당성을 조금 넓힌다. 단, 서로 다른 encoder 간 절대점수 차이는 tokenization, feature dim, pretraining과 VLM 학습 전체가 달라 원인 하나로 귀속할 수 없다.
 
 ### 8.9 Supplement A2 / Table A2: FEATHER와 baseline의 전 dataset 비교
 
@@ -909,10 +865,10 @@ Table A2는 두 계산 예산 구간에서 FastV, PyramidDrop, FEATHER를 비교
 
 주요 수치를 다시 계산하면 다음과 같다.
 
-- 고절감 구간에서 FEATHER/FastV localization 비는 $39.25/5.9=6.65\times$, 절대 차이는 약 `+33.35`점이다.
-- FEATHER와 PyramidDrop의 상대 차이는 $(39.25-28.95)/28.95=35.58\%$로 본문의 “36%”와 반올림상 일치한다.
-- baseline 대비 FEATHER localization 상대 하락은 $(53.225-39.25)/53.225=26.26\%$다.
-- FEATHER 고절감 설정은 baseline 대비 GPU-hours가 $(20.3-15.7)/20.3=22.66\%$ 줄었다. 이 값은 이론 FLOPs 64% 감소와 크게 다르다.
+- 고절감 구간에서 FEATHER/FastV localization 비는 $`39.25/5.9=6.65\times`$, 절대 차이는 약 `+33.35`점이다.
+- FEATHER와 PyramidDrop의 상대 차이는 $`(39.25-28.95)/28.95=35.58\%`$로 본문의 “36%”와 반올림상 일치한다.
+- baseline 대비 FEATHER localization 상대 하락은 $`(53.225-39.25)/53.225=26.26\%`$다.
+- FEATHER 고절감 설정은 baseline 대비 GPU-hours가 $`(20.3-15.7)/20.3=22.66\%`$ 줄었다. 이 값은 이론 FLOPs 64% 감소와 크게 다르다.
 - FastV 고절감은 15.1시간으로 FEATHER 15.7시간보다 빠르지만 localization은 5.9 대 39.3이다. 효율성 비교는 단일 scalar ranking보다 품질 제약 아래 최소 runtime으로 보는 편이 맞다.
 - 저절감 구간은 FLOPs가 45/46/48%로 완전히 같지 않다. FEATHER가 성능과 GPU-hours 모두 유리하지만 반복 측정 분산이 없어 0.3시간 차이의 통계적 안정성은 알 수 없다.
 
@@ -974,19 +930,19 @@ Table A3의 전 수치는 다음과 같다. `pos shuffled`는 image token의 pos
 | FEATHER | 66.1 | 87.7 | 59.1 | 63.4 | 54.2 |
 | FEATHER, pos shuffled | 63.2 | 86.0 | 55.7 | 58.8 | 52.5 |
 
-position shuffle의 상대 하락은 baseline localization에서 $(53.2-8.0)/53.2=84.96\%$, FEATHER에서 $(39.3-5.3)/39.3=86.51\%$다. TextVQA는 각각 19.67%, 18.87% 하락한다. 다른 VQA/challenge 평균은 훨씬 덜 하락한다. 위치 정보가 grounding에 필요하다는 결론은 매우 강하지만, 이 실험은 **RoPE 장거리 감쇠의 원인 검증**과는 다르다. 위치를 무작위화하면 위치 의미가 파괴되는 것은 당연하며, RoPE-free *selection score*가 하단 편향을 만드는 정확한 경로는 별도 ablation이 필요하다.
+position shuffle의 상대 하락은 baseline localization에서 $`(53.2-8.0)/53.2=84.96\%`$, FEATHER에서 $`(39.3-5.3)/39.3=86.51\%`$다. TextVQA는 각각 19.67%, 18.87% 하락한다. 다른 VQA/challenge 평균은 훨씬 덜 하락한다. 위치 정보가 grounding에 필요하다는 결론은 매우 강하지만, 이 실험은 **RoPE 장거리 감쇠의 원인 검증**과는 다르다. 위치를 무작위화하면 위치 의미가 파괴되는 것은 당연하며, RoPE-free *selection score*가 하단 편향을 만드는 정확한 경로는 별도 ablation이 필요하다.
 
 FasterVLM/VisionZip에 대해 저자는 “positional information is not maintained”라고 설명하지만, 이들 방법의 공식 구현을 동일 저장소에서 완전히 재구현했는지, 각 방법의 최적 hyperparameter를 어떻게 선택했는지, position ids를 유지한 대조 버전을 만들었는지는 보충자료에 충분히 기재하지 않는다.
 
 ### 8.12 Supplement A5 / Figures A2–A4: criterion·방법별 qualitative mask
 
-- **Figure A2**: $K=3$에서 original attention, RoPE-free, KNN, uniform, ensemble의 keep mask를 여러 이미지에 겹쳐 보인다. original은 하단 집중, uniform은 전역 격자, ensemble은 foreground 집중과 coverage를 함께 보인다. [Supplement p.3, Fig.A2]
+- **Figure A2**: $`K=3`$에서 original attention, RoPE-free, KNN, uniform, ensemble의 keep mask를 여러 이미지에 겹쳐 보인다. original은 하단 집중, uniform은 전역 격자, ensemble은 foreground 집중과 coverage를 함께 보인다. [Supplement p.3, Fig.A2]
 
 ![Figure A2. Layer 3에서 다섯 pruning criterion의 retained token](assets/03_FEATHER/figures/figure_a2.png)
 
 Figure A2. Layer 3 criterion별 토큰 선택. [Supplement PDF p.3, §A5.1; 원문 보충 PDF][feather-supp]
 
-- **Figure A3**: 같은 비교를 $K=8$에서 반복한다. deeper attention의 foreground 집중이 더 뚜렷하고 original의 하단 bias가 완화된다. [Supplement p.4, Fig.A3]
+- **Figure A3**: 같은 비교를 $`K=8`$에서 반복한다. deeper attention의 foreground 집중이 더 뚜렷하고 original의 하단 bias가 완화된다. [Supplement p.4, Fig.A3]
 
 ![Figure A3. Layer 8에서 다섯 pruning criterion의 retained token](assets/03_FEATHER/figures/figure_a3.png)
 
@@ -1024,18 +980,9 @@ FEATHER가 줄이는 핵심은 LLM prefill의 image-token 길이다. Vision enco
 
 실제 시간은 대략 다음처럼 분해해야 한다.
 
-$$
-t_{\mathrm{E2E}}
-=t_{\mathrm{preprocess}}
-+t_{\mathrm{vision}}
-+t_{\mathrm{adapter}}
-+t_{\mathrm{LLM\ prefill}}
-+t_{\mathrm{criterion}}
-+t_{\mathrm{topk/gather}}
-+t_{\mathrm{decode}}
-+t_{\mathrm{postprocess}}.
-\qquad\text{[해설용 수식]}
-$$
+```math
+\begin{aligned} t_{\mathrm{E2E}} &=t_{\mathrm{preprocess}}+t_{\mathrm{vision}} +t_{\mathrm{adapter}}+t_{\mathrm{LLM\ prefill}}\\ &\quad+t_{\mathrm{criterion}}+t_{\mathrm{topk/gather}} +t_{\mathrm{decode}}+t_{\mathrm{postprocess}}.\\ &\qquad\text{[해설용 수식]} \end{aligned}
+```
 
 Eq.(1)이 크게 줄여도 고정비인 vision encoder와 CPU 전처리가 크면 Amdahl의 법칙 때문에 E2E 개선은 제한된다. token 수가 작아지면 GEMM의 arithmetic intensity와 GPU occupancy가 떨어질 수 있고, 동적 `topk/unique/gather`는 메모리 이동·kernel launch·graph break를 만든다. batch size가 커지면 sample별 서로 다른 keep 길이를 padding해야 해 절감이 희석될 수도 있다.
 
@@ -1043,14 +990,13 @@ Eq.(1)이 크게 줄여도 고정비인 vision encoder와 CPU 전처리가 크�
 
 ### 9.3 논문 수치로 본 Amdahl형 경고
 
-FEATHER 고절감 설정의 이론 FLOPs 감소는 64%지만 L40S GPU-hours 감소는 22.66%다. 전체시간 $t$ 중 Eq.(1) 대상 구간 비중을 $s$라 하고 그 구간이 이상적으로 64% 단축된다고 단순화하면 최대 전체 speedup은
+FEATHER 고절감 설정의 이론 FLOPs 감소는 64%지만 L40S GPU-hours 감소는 22.66%다. 전체시간 $`t`$ 중 Eq.(1) 대상 구간 비중을 $`s`$라 하고 그 구간이 이상적으로 64% 단축된다고 단순화하면 최대 전체 speedup은
 
-$$
-S=\frac{1}{(1-s)+s(1-0.64)}.
-\qquad\text{[해설용 수식]}
-$$
+```math
+S=\frac{1}{(1-s)+s(1-0.64)}. \qquad\text{[해설용 수식]}
+```
 
-실제 20.3/15.7=1.293배를 그대로 이 식에 대입하면 $s\approx0.354$다. 이는 정확한 profiler 분해가 아니라 “이 workload에서는 이론 대상 외 비용이 상당하다”는 감도 해석일 뿐이다. FastV와 FEATHER의 overhead 차이, I/O, cache, dataset별 출력 길이가 섞여 있으므로 시스템 구성비로 단정하면 안 된다.
+실제 20.3/15.7=1.293배를 그대로 이 식에 대입하면 $`s\approx0.354`$다. 이는 정확한 profiler 분해가 아니라 “이 workload에서는 이론 대상 외 비용이 상당하다”는 감도 해석일 뿐이다. FastV와 FEATHER의 overhead 차이, I/O, cache, dataset별 출력 길이가 섞여 있으므로 시스템 구성비로 단정하면 안 된다.
 
 ---
 
@@ -1077,12 +1023,12 @@ $$
 
 | 항목 | 원문 | 검토 결과 |
 |---|---|---|
-| Eq.(1) 분모 | 한-layer $C$ | 표를 재현하려면 $TC$여야 한다. 인쇄상 오류로 판단된다. |
-| FFN 비용 | $2ndm$ | Llama 2 SwiGLU는 gate/up/down 세 projection이라 exact 구현 FLOPs가 아니다. |
+| Eq.(1) 분모 | 한-layer $`C`$ | 표를 재현하려면 $`TC`$여야 한다. 인쇄상 오류로 판단된다. |
+| FFN 비용 | $`2ndm`$ | Llama 2 SwiGLU는 gate/up/down 세 projection이라 exact 구현 FLOPs가 아니다. |
 | adapter | “one-layer MLP with GELU” | 공개 `MLPProjector`는 Linear–GELU–Linear. “한 hidden layer”라는 의미일 수 있으나 표현은 모호하다. |
-| second stage | “$(1-R)^2\%$ of remaining” | 공개 코드는 fraction $(1-R)^2$를 곱한다. $R=0.7$이면 9%, 0.09%가 아니다. |
-| layer $K$ | “after layer $K$” | 구현은 target layer 실행 직전에 이전 hidden state로 선택한다. index convention을 고정해야 한다. |
-| KNN density | $\rho_i\delta_i$ | $\rho_i$ 수식, $k$, normalization, tie 처리 미기재. |
+| second stage | “$`(1-R)^2\%`$ of remaining” | 공개 코드는 fraction $`(1-R)^2`$를 곱한다. $`R=0.7`$이면 9%, 0.09%가 아니다. |
+| layer $`K`$ | “after layer $`K`$” | 구현은 target layer 실행 직전에 이전 hidden state로 선택한다. index convention을 고정해야 한다. |
+| KNN density | $`\rho_i\delta_i`$ | $`\rho_i`$ 수식, $`k`$, normalization, tie 처리 미기재. |
 | runtime | Figure A1/Table A2 | hardware는 L40S지만 software versions·warm-up·반복·분산 미기재. |
 
 ### 10.4 공정한 비교를 위해 더 필요한 control
@@ -1105,13 +1051,13 @@ $$
 - [ ] CUDA, driver, PyTorch, Transformers, FlashAttention/SDPA backend, `timm`, Prismatic revision을 기록한다.
 - [ ] dataset version, split, image checksum, annotation 변환, prompt template와 evaluator를 고정한다.
 - [ ] precision, batch size, seed, `max_new_tokens`, sampling 옵션을 기록한다.
-- [ ] $K_1,K_2,R$, stride, top-k rounding, union 중복 제거, position-id 처리, padding 방식을 config로 저장한다.
+- [ ] $`K_1,K_2,R`$, stride, top-k rounding, union 중복 제거, position-id 처리, padding 방식을 config로 저장한다.
 - [ ] 원시 prediction, keep indices, layerwise token count, timing trace를 보관한다.
 
 ### 11.2 최소 기능 검증
 
 1. **no-prune parity**: pruning을 끈 수정 모델이 원본 logits/생성 결과와 허용 오차 내에서 같아야 한다.
-2. **$R=0$ identity**: FEATHER 경로를 켜되 $R=0$으로 두었을 때 token 손실이 없어야 한다.
+2. **$`R=0`$ identity**: FEATHER 경로를 켜되 $`R=0`$으로 두었을 때 token 손실이 없어야 한다.
 3. **index integrity**: BOS와 모든 text token이 유지되고 image token 순서가 오름차순인지 assert한다.
 4. **mask/position alignment**: hidden, mask, position ids의 sequence dimension이 항상 같아야 한다.
 5. **RoPE isolation**: selection score 경로만 no-RoPE이고 실제 decoder attention은 baseline RoPE와 동일한지 unit test한다.
@@ -1125,8 +1071,8 @@ $$
 2. 마지막 text token index가 padding이 아닌 실제 마지막 prompt token인지 확인한다.
 3. image token span에 BOS/특수 토큰이 섞이지 않았는지 확인한다.
 4. pruning 전후 position ids를 재번호화했는지, 원래 값을 보존했는지 확인한다.
-5. top-k ratio가 제거율 $R$인지 유지율 $1-R$인지 확인한다.
-6. stage 2가 `current_count × (1-R)^2`인지, 원래 $n$에 곱했는지 확인한다.
+5. top-k ratio가 제거율 $`R`$인지 유지율 $`1-R`$인지 확인한다.
+6. stage 2가 `current_count × (1-R)^2`인지, 원래 $`n`$에 곱했는지 확인한다.
 7. dataset evaluator threshold—OCID 0.25, RefCOCO 계열 0.5—와 좌표 normalization을 확인한다.
 8. generation length와 prompt template를 확인한다. 정답 의미가 같아도 box 문자열 parser가 실패할 수 있다.
 
@@ -1135,7 +1081,7 @@ $$
 | 파일 | 최소 컬럼/내용 |
 |---|---|
 | `environment.json` | git hash, model hash, driver/CUDA/framework/backend, device |
-| `run_config.yaml` | dataset, split, seed, precision, batch, $K_1,K_2,R$, stride |
+| `run_config.yaml` | dataset, split, seed, precision, batch, $`K_1,K_2,R`$, stride |
 | `predictions.jsonl` | sample id, prompt, target, raw output, parsed output, metric |
 | `token_trace.jsonl` | sample id, layer, before/after count, keep indices, criterion time |
 | `timing.jsonl` | preprocess, vision, adapter, prefill segments, prune, decode, total |
@@ -1160,7 +1106,7 @@ NVIDIA 문서는 `nvpmodel`로 power mode를 확인·변경할 수 있고, Thor 
 1. `nvpmodel -q`, JetPack/L4T, CUDA, driver, PyTorch와 attention backend를 기록한다.
 2. 원본 Prism-SigLIP checkpoint를 BF16, batch 1로 로드한다. CPU offload 없이 peak memory와 첫 forward 성공 여부를 확인한다.
 3. 작은 고정 샘플 20개로 baseline을 20회 반복해 OOM, NaN, malformed output, hang, thermal throttle 여부를 검사한다.
-4. FEATHER를 켠 no-prune parity와 $R=0$ identity test를 통과시킨다.
+4. FEATHER를 켠 no-prune parity와 $`R=0`$ identity test를 통과시킨다.
 
 **Gate 0:** baseline/FEATHER가 같은 evaluator에서 결정론적으로 실행되고, 20회 연속 오류가 없으며, logits 또는 생성 parity test가 통과해야 다음 단계로 간다.
 
@@ -1252,9 +1198,9 @@ VLA에서는 프루닝 mask가 시간에 따라 흔들리면 action jitter가 �
 
 아니다. text-only보다 선택된 시각 token이 대체로 낫다. 결론은 해당 benchmark가 이 설정에서 **아주 세밀한 공간 정보**를 충분히 요구하지 않을 수 있다는 것이다.
 
-### Q6. $\phi_{-R}$이 항상 최선인가?
+### Q6. $`\phi_{-R}`$이 항상 최선인가?
 
-아니다. $K=3$에서는 uniform이 localization 평균 28.0으로 $\phi_{-R}$ 16.7보다 높다. FEATHER는 의미 score와 coverage를 조합하고 깊이별 schedule을 쓴다.
+아니다. $`K=3`$에서는 uniform이 localization 평균 28.0으로 $`\phi_{-R}`$ 16.7보다 높다. FEATHER는 의미 score와 coverage를 조합하고 깊이별 schedule을 쓴다.
 
 ### Q7. ensemble은 두 score를 더한 것인가?
 
@@ -1262,7 +1208,7 @@ VLA에서는 프루닝 mask가 시간에 따라 흔들리면 action jitter가 �
 
 ### Q8. KNN 결과를 논문만 보고 완전히 재현할 수 있는가?
 
-어렵다. density $\rho_i$의 정확한 계산식, neighbor 수, normalization과 tie 처리가 빠져 있다.
+어렵다. density $`\rho_i`$의 정확한 계산식, neighbor 수, normalization과 tie 처리가 빠져 있다.
 
 ### Q9. localization 향상 5×는 어떤 뜻인가?
 
@@ -1293,7 +1239,7 @@ FEATHER의 가장 중요한 공헌은 더 복잡한 selector를 만든 것이 �
 - [x] §3.2 Task-dependent analysis와 Figure 2
 - [x] §3.3 spatial bias와 Figure 3(a–c)
 - [x] §3.4 early information transfer와 Figure 4; §4.1 criterion 선택 품질과 Table 2
-- [x] §4.1 $\phi_{-R}$, KNN Eq.(2), uniform, ensemble, Table 1
+- [x] §4.1 $`\phi_{-R}`$, KNN Eq.(2), uniform, ensemble, Table 1
 - [x] §4.2 coarse-to-fine FEATHER와 Figure 1(b), Figure A4
 - [x] §4.3 evaluation과 Figure 5, 핵심 재계산
 - [x] §5 Conclusion, Acknowledgments, References 범위 확인

@@ -83,7 +83,7 @@ OpenVLA 계열 7B VLA를 단순화하면 다음 순서다.
 1. 한 개 이상의 카메라 영상에서 두 비전 백본(SigLIP, DINOv2)이 많은 patch token을 만든다.
 2. 두 백본 특징을 projector로 LLM hidden dimension에 맞추고, instruction token과 연결한다.
 3. 7B LLM이 긴 `[vision, language, action]` sequence를 여러 층 처리한다.
-4. 원래 OpenVLA식 이산 행동 표현은 행동 한 step의 각 차원을 순차 token으로 생성한다. 논문 예시처럼 7-DoF라면 step마다 7개, 길이 $K$ 청크라면 $K D$개의 의존적 예측이 생긴다.
+4. 원래 OpenVLA식 이산 행동 표현은 행동 한 step의 각 차원을 순차 token으로 생성한다. 논문 예시처럼 7-DoF라면 step마다 7개, 길이 $`K`$ 청크라면 $`K D`$개의 의존적 예측이 생긴다.
 5. 로봇은 얻은 action 또는 action chunk를 실행하고 새 관측을 받는다.
 
 이 흐름의 병목은 단순히 “7B가 크다”가 아니다. patch token 수가 attention의 sequence 축을 키우고, instruction과 무관한 patch에도 같은 계산을 쓰며, action을 autoregressive하게 내면 한 번의 정책 갱신에 여러 serial forward가 필요하다. 저자는 7B VLA의 LIBERO 단일-task action-chunk fine-tuning이 80GB A100 기준 600 GPU-hour 이상이라는 사례를 든다. 이는 CogVLA 자체 측정치가 아니라 선행 연구 사례로 제시된 값이다. [PDF p.2, §1]
@@ -117,7 +117,7 @@ Figure 1. instruction 관련 시각 선택과 행동 일관성의 동기, 구조
 | 가설 2 | Stage 1 뒤에도 남은 시각 token의 층별 유용성은 다르므로, LLM 내부에서 instruction을 다시 사용해 계산할 token을 고르면 추가 절감이 가능하다. |
 | 설계 2 | **LFP-Routing:** instruction-conditioned FiLM router와 shifted-cosine retention schedule로 visual token의 layer computation을 top-k 선택한다. |
 | 가설 3 | 강한 압축 뒤에는 action token끼리 서로 보지 못하는 순수 causal mask가 청크 일관성을 해칠 수 있다. |
-| 설계 3 | **CAtten:** vision-language는 causal 구조를 유지하고, action block은 bidirectional하게 열어 $K D$ action placeholder를 한 번에 예측한다. |
+| 설계 3 | **CAtten:** vision-language는 causal 구조를 유지하고, action block은 bidirectional하게 열어 $`K D`$ action placeholder를 한 번에 예측한다. |
 
 VAS-SMA-PMC 대응은 설계를 이해하기 위한 생물학적 비유다. VAS는 task-relevant visual focus, SMA는 intention-guided filtering, PMC는 visuomotor planning에 대응한다. 그러나 뇌 영역의 활성이나 신경과학 데이터로 모델을 검증한 것은 아니므로 “인지적으로 증명된 구조”가 아니라 **인지 연구에서 영감을 받은 engineering inductive bias**로 읽어야 한다. [PDF p.2-3, §1; PDF p.26-28, §E.1]
 
@@ -129,13 +129,13 @@ VAS-SMA-PMC 대응은 설계를 이해하기 위한 생물학적 비유다. VAS�
 
 | 주장 | 직접 근거 | 산술/범위 판정 |
 |---|---|---|
-| LIBERO 평균 SR 97.4%로 표의 최고 평균 | Table 1, Table 7 | Table 1의 네 값 평균은 $(98.6+98.8+96.6+95.4)/4=97.35\%$, 1자리 반올림 97.4%. [리뷰어 재계산] |
-| real-world main tasks 평균 70.0% | Table 2 | 세 복합 task의 최종 성공 횟수 $8+7+6=21$회/30회로 70.0%. 중간 subtask 전체 평균이 아님. [리뷰어 재계산] |
-| OpenVLA 대비 inference latency 2.8배 개선 | Table 3 | $0.254/0.091=2.791$. 동일 장비/설정이라고 서술하지만 warm-up, 반복 수, precision은 PDF 미기재. |
-| OpenVLA 대비 training cost 2.5배 절감 | Table 3 | $11.7/4.7=2.489$. 단위는 `h/10k steps`; 총 학습 시간이나 GPU-hour와 구별해야 한다. |
-| OpenVLA 대비 FLOPs 3.12배 절감 | Table 3 | $8.48/2.72=3.118$. FLOPs 감소가 동일 비율 latency 감소를 보장하지는 않는다. |
-| OpenVLA 대비 throughput 22.54배 | Table 3 | $87.9/3.9=22.538$. 이 값은 action-Hz 성격이다. OpenVLA는 $1/0.254\approx3.9$, chunk 모델은 $8/0.091\approx87.9$이므로 policy refresh Hz와 동일하지 않다. |
-| OpenVLA-OFT보다 inference time 31% 감소 | Fig.4, Table 3 | $(0.132-0.091)/0.132=31.1\%$. OpenVLA 대비 2.8배와 비교 대상을 혼동하면 안 된다. |
+| LIBERO 평균 SR 97.4%로 표의 최고 평균 | Table 1, Table 7 | Table 1의 네 값 평균은 $`(98.6+98.8+96.6+95.4)/4=97.35\%`$, 1자리 반올림 97.4%. [리뷰어 재계산] |
+| real-world main tasks 평균 70.0% | Table 2 | 세 복합 task의 최종 성공 횟수 $`8+7+6=21`$회/30회로 70.0%. 중간 subtask 전체 평균이 아님. [리뷰어 재계산] |
+| OpenVLA 대비 inference latency 2.8배 개선 | Table 3 | $`0.254/0.091=2.791`$. 동일 장비/설정이라고 서술하지만 warm-up, 반복 수, precision은 PDF 미기재. |
+| OpenVLA 대비 training cost 2.5배 절감 | Table 3 | $`11.7/4.7=2.489`$. 단위는 `h/10k steps`; 총 학습 시간이나 GPU-hour와 구별해야 한다. |
+| OpenVLA 대비 FLOPs 3.12배 절감 | Table 3 | $`8.48/2.72=3.118`$. FLOPs 감소가 동일 비율 latency 감소를 보장하지는 않는다. |
+| OpenVLA 대비 throughput 22.54배 | Table 3 | $`87.9/3.9=22.538`$. 이 값은 action-Hz 성격이다. OpenVLA는 $`1/0.254\approx3.9`$, chunk 모델은 $`8/0.091\approx87.9`$이므로 policy refresh Hz와 동일하지 않다. |
+| OpenVLA-OFT보다 inference time 31% 감소 | Fig.4, Table 3 | $`(0.132-0.091)/0.132=31.1\%`$. OpenVLA 대비 2.8배와 비교 대상을 혼동하면 안 된다. |
 | EFA+LFP의 8배 vision sparsification이 성능을 유지/개선 | Tables 4-6, 9 | Spatial ablation에서는 4×-2× 배치가 98.6%. 다른 suite별 sparsity ablation과 OOD 장면은 미제시. |
 | 세 모듈이 상호보완적 | Table 4 | full 98.6, Stage 2 제거 92.0, Stage 3 제거 92.0, instruction-guided pruning 제거 96.2. 단일 suite(Spatial)에서의 ablation이다. |
 | instruction-relevant region을 본다 | Fig.7 | 64 aggregation token 중 17개의 heatmap을 시각화. 정성 증거이며 선택 기준·정량 localization metric은 미기재. |
@@ -150,43 +150,43 @@ VAS-SMA-PMC 대응은 설계를 이해하기 위한 생물학적 비유다. VAS�
 
 ### 4.1 먼저 구분해야 할 네 종류의 길이
 
-- **vision token 수 $M$:** 한 번의 정책 호출에 LLM으로 들어가는 시각 token 수. 원본 patch 수, Stage 1 뒤 aggregation token 수, LFP가 특정 층에서 실제 계산하는 수가 서로 다르다.
-- **text token 수 $T$:** tokenizer가 만든 prompt/instruction token 수. “평균 10.48 words”와 token 수 $T$는 같지 않다.
-- **action step 수 $K$:** 한 policy call이 예측하는 미래 환경 행동의 개수. LIBERO $K=8$, ALOHA $K=25$.
-- **action dimension $D$:** 한 환경 step의 연속 제어 벡터 차원. PDF 예시는 $D=7$; 공개 코드는 LIBERO $D=7$, ALOHA $D=14$다.
+- **vision token 수 $`M`$:** 한 번의 정책 호출에 LLM으로 들어가는 시각 token 수. 원본 patch 수, Stage 1 뒤 aggregation token 수, LFP가 특정 층에서 실제 계산하는 수가 서로 다르다.
+- **text token 수 $`T`$:** tokenizer가 만든 prompt/instruction token 수. “평균 10.48 words”와 token 수 $`T`$는 같지 않다.
+- **action step 수 $`K`$:** 한 policy call이 예측하는 미래 환경 행동의 개수. LIBERO $`K=8`$, ALOHA $`K=25`$.
+- **action dimension $`D`$:** 한 환경 step의 연속 제어 벡터 차원. PDF 예시는 $`D=7`$; 공개 코드는 LIBERO $`D=7`$, ALOHA $`D=14`$다.
 
-따라서 $K\times D$는 **환경 step 수가 아니라 action-coordinate placeholder 수**다. LIBERO는 $8\times7=56$개, ALOHA는 $25\times14=350$개다. 공개 구현은 여기에 stop token 1개를 더한다.
+따라서 $`K\times D`$는 **환경 step 수가 아니라 action-coordinate placeholder 수**다. LIBERO는 $`8\times7=56`$개, ALOHA는 $`25\times14=350`$개다. 공개 구현은 여기에 stop token 1개를 더한다.
 
 ### 4.2 기호와 shape
 
 | 기호 | 의미 | 엄밀한 shape/단위 |
 |---|---|---|
-| $B$ | batch size | scalar count |
-| $I^{(i)}$ | $i$번째 vision encoder가 받는 관측 | 보통 $B\times3\times H\times W$; 다중 카메라일 때 image별 처리 |
-| $N$ | vision encoder branch 수 | CogVLA는 2: SigLIP, DINOv2 |
-| $P$ | encoder당 원본 patch token 수 | 공개 OpenVLA 경로는 image당 256; PDF 본문에는 숫자 미기재 |
-| $Q$ | encoder당 aggregation token 수 | PDF/실행 스크립트는 64 |
-| $d_v^{(i)}$ | $i$번째 vision hidden width | branch마다 다를 수 있음; PDF 미기재 |
-| $d$ | LLM hidden width | OpenVLA 7B 계열 공개 코드 주석은 4096; PDF 본문 미기재 |
-| $t_r$ | routing용 instruction summary | 개념상 $B\times d$; 공개 구현은 prompt language embedding을 token 축 평균 |
-| $v_{\mathrm{agg}}^{(i)}$ | branch $i$의 aggregation representation | 엄밀히 $B\times Q\times d_v^{(i)}$ 또는 projection 뒤 $B\times Q\times d$; 논문은 단수 “token”처럼 표기 |
-| $\alpha_i$ | branch $i$의 routing weight | $B\times1\times1$, $\sum_i\alpha_i=1$ |
-| $Z_l$ | LLM layer $l$의 visual hidden states | $B\times M\times d$ |
-| $t_l$ | layer $l$의 text hidden states | $B\times T\times d$ |
-| $A_l$ | layer $l$의 action-placeholder hidden states | 구현상 $B\times(KD)\times d$; 환경 action은 $B\times K\times D$ |
-| $R_l^j$ | visual token $j$의 router score | 논문은 scalar; 구현은 2-class softmax의 “keep” 확률 |
-| $\beta_l$ | layer $l$의 retention ratio | 무차원 $[0,1]$; percentile 표기에는 원문 모순이 있음 |
-| $\gamma,\beta$ | FiLM scale/shift | 마지막 hidden 축과 동일, token 축으로 broadcast |
-| $\mathbf M$ | additive attention mask | 허용 0, 차단 $-\infty$ |
-| $\mathbf a_k$ | 환경 step $k$의 action | $D$-차원 연속 벡터; LIBERO는 translation 3 + rotation 3 + gripper 1 |
+| $`B`$ | batch size | scalar count |
+| $`I^{(i)}`$ | $`i`$번째 vision encoder가 받는 관측 | 보통 $`B\times3\times H\times W`$; 다중 카메라일 때 image별 처리 |
+| $`N`$ | vision encoder branch 수 | CogVLA는 2: SigLIP, DINOv2 |
+| $`P`$ | encoder당 원본 patch token 수 | 공개 OpenVLA 경로는 image당 256; PDF 본문에는 숫자 미기재 |
+| $`Q`$ | encoder당 aggregation token 수 | PDF/실행 스크립트는 64 |
+| $`d_v^{(i)}`$ | $`i`$번째 vision hidden width | branch마다 다를 수 있음; PDF 미기재 |
+| $`d`$ | LLM hidden width | OpenVLA 7B 계열 공개 코드 주석은 4096; PDF 본문 미기재 |
+| $`t_r`$ | routing용 instruction summary | 개념상 $`B\times d`$; 공개 구현은 prompt language embedding을 token 축 평균 |
+| $`v_{\mathrm{agg}}^{(i)}`$ | branch $`i`$의 aggregation representation | 엄밀히 $`B\times Q\times d_v^{(i)}`$ 또는 projection 뒤 $`B\times Q\times d`$; 논문은 단수 “token”처럼 표기 |
+| $`\alpha_i`$ | branch $`i`$의 routing weight | $`B\times1\times1`$, $`\sum_i\alpha_i=1`$ |
+| $`Z_l`$ | LLM layer $`l`$의 visual hidden states | $`B\times M\times d`$ |
+| $`t_l`$ | layer $`l`$의 text hidden states | $`B\times T\times d`$ |
+| $`A_l`$ | layer $`l`$의 action-placeholder hidden states | 구현상 $`B\times(KD)\times d`$; 환경 action은 $`B\times K\times D`$ |
+| $`R_l^j`$ | visual token $`j`$의 router score | 논문은 scalar; 구현은 2-class softmax의 “keep” 확률 |
+| $`\beta_l`$ | layer $`l`$의 retention ratio | 무차원 $`[0,1]`$; percentile 표기에는 원문 모순이 있음 |
+| $`\gamma,\beta`$ | FiLM scale/shift | 마지막 hidden 축과 동일, token 축으로 broadcast |
+| $`\mathbf M`$ | additive attention mask | 허용 0, 차단 $`-\infty`$ |
+| $`\mathbf a_k`$ | 환경 step $`k`$의 action | $`D`$-차원 연속 벡터; LIBERO는 translation 3 + rotation 3 + gripper 1 |
 
 ### 4.3 필요한 연산 개념
 
-**FiLM.** 조건 벡터 $c$에서 scale $\gamma(c)$와 shift $\beta(c)$를 만들고 feature $x$를 $(1+\gamma)\odot x+\beta$로 바꾼다. $1+$를 쓰면 초기 $\gamma\approx0,\beta\approx0$일 때 원래 pretrained feature를 거의 보존한다.
+**FiLM.** 조건 벡터 $`c`$에서 scale $`\gamma(c)`$와 shift $`\beta(c)`$를 만들고 feature $`x`$를 $`(1+\gamma)\odot x+\beta`$로 바꾼다. $`1+`$를 쓰면 초기 $`\gamma\approx0,\beta\approx0`$일 때 원래 pretrained feature를 거의 보존한다.
 
 **aggregation token.** patch를 평균내는 고정 pooling이 아니라, 학습 가능한 query token이 self-attention을 통해 patch에서 정보를 모은다. 최종 patch를 버리고 query만 남기면 bottleneck이 된다.
 
-**top-k routing.** router가 token별 점수를 내면 높은 점수 $k$개에만 attention/FFN 계산을 적용하고 나머지는 residual 경로로 건너뛴다. hard top-k index 자체에는 일반적인 미분이 흐르지 않지만, 선택된 token의 score가 계산값을 곱하면 선택된 router score에는 gradient가 갈 수 있다.
+**top-k routing.** router가 token별 점수를 내면 높은 점수 $`k`$개에만 attention/FFN 계산을 적용하고 나머지는 residual 경로로 건너뛴다. hard top-k index 자체에는 일반적인 미분이 흐르지 않지만, 선택된 token의 score가 계산값을 곱하면 선택된 router score에는 gradient가 갈 수 있다.
 
 **causal vs. bidirectional mask.** causal은 query 위치가 미래 key를 못 본다. bidirectional은 같은 block 안 모든 token이 서로 본다. CogVLA는 V-L prefix는 causal로 두고 action block만 bidirectional로 연다.
 
@@ -202,7 +202,7 @@ VAS-SMA-PMC 대응은 설계를 이해하기 위한 생물학적 비유다. VAS�
 
 ### 1 Introduction [PDF p.2-3]
 
-첫 문단은 RT-2, Octo, OpenVLA, $\pi_0$, $\pi_{0.5}$를 통해 pretrained VLM을 robot control로 확장하는 흐름을 잡는다. 두 번째 문단은 문제를 memory/FLOPs/training time으로 구체화하고, 단일 stage 효율화가 세 modality 사이 의미 연결을 보존하지 못한다고 주장한다.
+첫 문단은 RT-2, Octo, OpenVLA, $`\pi_0`$, $`\pi_{0.5}`$를 통해 pretrained VLM을 robot control로 확장하는 흐름을 잡는다. 두 번째 문단은 문제를 memory/FLOPs/training time으로 구체화하고, 단일 stage 효율화가 세 modality 사이 의미 연결을 보존하지 못한다고 주장한다.
 
 세 번째 문단의 VAS-SMA-PMC 비유는 다음 기능적 분해를 제공한다.
 
@@ -224,17 +224,16 @@ VAS-SMA-PMC 대응은 설계를 이해하기 위한 생물학적 비유다. VAS�
 
 원문 Eq. (1). action chunk의 정의. [PDF p.3, §2.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=3)
 
-$$
-\mathbf A=[\mathbf a_0,\mathbf a_1,\ldots,\mathbf a_{K-1}]\in\mathbb R^{K\times D}.
-\tag{1}
-$$
+```math
+\mathbf A=[\mathbf a_0,\mathbf a_1,\ldots,\mathbf a_{K-1}]\in\mathbb R^{K\times D}. \qquad\text{(1)}
+```
 
-- **각 항:** $\mathbf a_i\in\mathbb R^D$는 미래 $i$번째 환경 step의 atomic action이다. $K$는 chunk horizon, $D$는 step당 actuator coordinate 수다.
-- **연산 순서:** $D$차원 벡터 $K$개를 시간축으로 stack한다. 결과의 첫 축은 time, 둘째 축은 action coordinate다.
+- **각 항:** $`\mathbf a_i\in\mathbb R^D`$는 미래 $`i`$번째 환경 step의 atomic action이다. $`K`$는 chunk horizon, $`D`$는 step당 actuator coordinate 수다.
+- **연산 순서:** $`D`$차원 벡터 $`K`$개를 시간축으로 stack한다. 결과의 첫 축은 time, 둘째 축은 action coordinate다.
 - **왜 필요한가:** 한 번의 정책 호출이 하나의 action이 아니라 짧은 trajectory를 내도록 문제를 정의한다.
-- **작은 예:** $K=2,D=3$이고 $\mathbf a_0=(0.1,0,1)$, $\mathbf a_1=(0.2,-0.1,0)$이면 $\mathbf A$는 $2\times3$ 행렬이다. LIBERO에서는 $K=8,D=7$이라 56 scalar를 낸다.
-- **gradient/추론:** 학습 때 ground-truth $\mathbf A$와 예측 $\hat{\mathbf A}$의 L1 loss가 모든 $KD$ 성분에서 action head와 upstream LLM으로 역전파된다. 추론 때 $K$개를 모두 실행할지 일부만 실행할지는 별도의 control 정책이다.
-- **edge case:** $K=1$이면 chunking 이점은 사라지지만 action-coordinate parallelization은 남을 수 있다. 큰 $K$는 policy 호출당 처리량을 늘리지만 open-loop horizon도 늘린다.
+- **작은 예:** $`K=2,D=3`$이고 $`\mathbf a_0=(0.1,0,1)`$, $`\mathbf a_1=(0.2,-0.1,0)`$이면 $`\mathbf A`$는 $`2\times3`$ 행렬이다. LIBERO에서는 $`K=8,D=7`$이라 56 scalar를 낸다.
+- **gradient/추론:** 학습 때 ground-truth $`\mathbf A`$와 예측 $`\hat{\mathbf A}`$의 L1 loss가 모든 $`KD`$ 성분에서 action head와 upstream LLM으로 역전파된다. 추론 때 $`K`$개를 모두 실행할지 일부만 실행할지는 별도의 control 정책이다.
+- **edge case:** $`K=1`$이면 chunking 이점은 사라지지만 action-coordinate parallelization은 남을 수 있다. 큰 $`K`$는 policy 호출당 처리량을 늘리지만 open-loop horizon도 늘린다.
 
 ##### Eq. (2): autoregressive baseline
 
@@ -242,18 +241,16 @@ $$
 
 원문 Eq. (2). autoregressive action prediction. [PDF p.3, §2.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=3)
 
-$$
-\mathbf a_i=[a_i^{(1)},a_i^{(2)},\ldots,a_i^{(D)}]^\top,\qquad
-a_i^{(k)}=f_{\mathrm{AR}}\!\left([X,\{\mathbf a_\tau\}_{\tau<i},a_i^{(1:k-1)}]\right).
-\tag{2}
-$$
+```math
+\begin{aligned} \mathbf a_i&=[a_i^{(1)},a_i^{(2)},\ldots,a_i^{(D)}]^\top,\\ a_i^{(k)}&=f_{\mathrm{AR}}\!\left([X,\{\mathbf a_\tau\}_{\tau\lt i},a_i^{(1:k-1)}]\right). \end{aligned} \qquad\text{(2)}
+```
 
-- **첫 줄:** 하나의 action vector도 $D$개 scalar/token으로 분해한다.
-- **둘째 줄:** 좌변 $a_i^{(k)}$를 예측할 때 관측·instruction context $X$, 과거 환경 step의 모든 action, 현재 step에서 이미 생성한 coordinate를 조건으로 쓴다.
-- **계산 역할:** strict AR이면 새 token마다 다음 logits가 필요하므로 논문 서술상 $K D$번의 serial forward가 필요하다. KV cache를 쓰더라도 dependency chain 길이는 $KD$다.
-- **작은 예:** $K=2,D=3$이면 $a_0^{(1)}\to a_0^{(2)}\to a_0^{(3)}\to a_1^{(1)}\to a_1^{(2)}\to a_1^{(3)}$의 6단계다.
+- **첫 줄:** 하나의 action vector도 $`D`$개 scalar/token으로 분해한다.
+- **둘째 줄:** 좌변 $`a_i^{(k)}`$를 예측할 때 관측·instruction context $`X`$, 과거 환경 step의 모든 action, 현재 step에서 이미 생성한 coordinate를 조건으로 쓴다.
+- **계산 역할:** strict AR이면 새 token마다 다음 logits가 필요하므로 논문 서술상 $`K D`$번의 serial forward가 필요하다. KV cache를 쓰더라도 dependency chain 길이는 $`KD`$다.
+- **작은 예:** $`K=2,D=3`$이면 $`a_0^{(1)}\to a_0^{(2)}\to a_0^{(3)}\to a_1^{(1)}\to a_1^{(2)}\to a_1^{(3)}`$의 6단계다.
 - **가정:** action coordinate가 token 순서를 가져도 된다고 본다. 회전·이동·gripper의 인위적 순서가 물리적 동시성과 같지는 않다.
-- **edge case:** teacher forcing 학습은 병렬화할 수 있어도 실제 생성은 sequential하다. 따라서 “$KD$ forward pass”는 생성 관점이며 training FLOPs 설명과 동일시하면 안 된다.
+- **edge case:** teacher forcing 학습은 병렬화할 수 있어도 실제 생성은 sequential하다. 따라서 “$`KD`$ forward pass”는 생성 관점이며 training FLOPs 설명과 동일시하면 안 된다.
 
 ##### Eq. (3): parallel placeholder sequence
 
@@ -261,16 +258,14 @@ $$
 
 원문 Eq. (3). 병렬 예측의 placeholder sequence. [PDF p.4, §2.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\tilde X=[X,\mathbf 0_0,\mathbf 0_1,\ldots,\mathbf 0_{K-1}]
-\in\mathbb R^{M+T+K\times D}.
-\tag{3}
-$$
+```math
+\tilde X=[X,\mathbf 0_0,\mathbf 0_1,\ldots,\mathbf 0_{K-1}] \in\mathbb R^{M+T+K\times D}. \qquad\text{(3)}
+```
 
-- **원문 의미:** $M$개 vision 위치, $T$개 text 위치 뒤에 $K D$개의 action 위치를 붙인다. $\mathbf0_i\in\mathbb R^D$는 $i$번째 action step을 위한 빈 위치 묶음이다.
-- **shape 주의:** $X$는 실제로 token sequence이고 각 token은 hidden width $d$를 갖는다. 그러므로 엄밀한 embedding tensor는 $B\times(M+T+KD)\times d$다. 원문의 $\mathbb R^{M+T+K\times D}$는 sequence length만 쓴 축약 표기다.
-- **구현 확인:** 공개 코드는 `ACTION_DIM * NUM_ACTIONS_CHUNK`개의 placeholder token id를 붙이고, embedding을 0으로 만든다. stop token 1개도 추가하므로 실제 길이는 $M+T+KD+1$이다. [공개 코드 확인: `modeling_prismatic.py`의 `_prepare_input_for_action_prediction`](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/extern/hf/modeling_prismatic.py#L818-L839)
-- **작은 예:** $M=64,T=20,K=2,D=3$이면 논문 sequence length는 90, 코드식 stop 포함 길이는 91이다.
+- **원문 의미:** $`M`$개 vision 위치, $`T`$개 text 위치 뒤에 $`K D`$개의 action 위치를 붙인다. $`\mathbf0_i\in\mathbb R^D`$는 $`i`$번째 action step을 위한 빈 위치 묶음이다.
+- **shape 주의:** $`X`$는 실제로 token sequence이고 각 token은 hidden width $`d`$를 갖는다. 그러므로 엄밀한 embedding tensor는 $`B\times(M+T+KD)\times d`$다. 원문의 $`\mathbb R^{M+T+K\times D}`$는 sequence length만 쓴 축약 표기다.
+- **구현 확인:** 공개 코드는 `ACTION_DIM * NUM_ACTIONS_CHUNK`개의 placeholder token id를 붙이고, embedding을 0으로 만든다. stop token 1개도 추가하므로 실제 길이는 $`M+T+KD+1`$이다. [공개 코드 확인: `modeling_prismatic.py`의 `_prepare_input_for_action_prediction`](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/extern/hf/modeling_prismatic.py#L818-L839)
+- **작은 예:** $`M=64,T=20,K=2,D=3`$이면 논문 sequence length는 90, 코드식 stop 포함 길이는 91이다.
 - **edge case:** padding이 있으면 action block은 각 sample의 실제 끝 직전에 위치해야 한다. 공개 CAtten 구현은 padding 수를 세어 bottom-right block 위치를 보정한다.
 
 ##### Eq. (4): 단일 병렬 호출
@@ -279,12 +274,11 @@ $$
 
 원문 Eq. (4). 단일 병렬 action 호출. [PDF p.4, §2.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\mathbf A=f_{\mathrm{parallel}}(\tilde X).
-\tag{4}
-$$
+```math
+\mathbf A=f_{\mathrm{parallel}}(\tilde X). \qquad\text{(4)}
+```
 
-- **연산:** 한 번의 LLM pass가 모든 action placeholder의 hidden state를 만들고, action head가 이를 $K\times D$ 연속값으로 변환한다.
+- **연산:** 한 번의 LLM pass가 모든 action placeholder의 hidden state를 만들고, action head가 이를 $`K\times D`$ 연속값으로 변환한다.
 - **필수 조건:** action token끼리 causal 차단되어 있으면 뒤 action이 앞 action만 보고 앞 action은 뒤 action을 못 본다. CAtten은 action-action mask를 bidirectional로 열어 상호 일관성을 학습하게 한다.
 - **gradient:** 모든 미래 action의 loss가 한 computation graph에서 공유 vision/language context와 action-action attention으로 흐른다.
 - **작은 예:** 위의 6개 AR 단계 대신 6개 placeholder hidden state를 한 번에 계산한다.
@@ -306,15 +300,12 @@ Fig.2는 전체 데이터 흐름을 가장 잘 보여 준다. 두 encoder에 ima
 
 원문 Eq. (5). branch별 instruction-conditioned encoding. [PDF p.4, §2.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\mathbf v_{\mathrm{agg}}^{(i)}=
-\mathrm{Encoder\!\text{-}\!FiLM}_i
-(I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)},t_r),\qquad i=1,\ldots,N.
-\tag{5}
-$$
+```math
+\mathbf v_{\mathrm{agg}}^{(i)}= \mathrm{Encoder\!\text{-}\!FiLM}_i (I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)},t_r),\qquad i=1,\ldots,N. \qquad\text{(5)}
+```
 
-- **입력:** image patch $I^{(i)}$, 학습 가능한 aggregation query $\mathbf v_{\mathrm{agg}}^{(i)}$, instruction summary $t_r$.
-- **출력:** 원문은 단수 token처럼 쓰지만 실제로는 branch당 $Q=64$개의 token 집합이다.
+- **입력:** image patch $`I^{(i)}`$, 학습 가능한 aggregation query $`\mathbf v_{\mathrm{agg}}^{(i)}`$, instruction summary $`t_r`$.
+- **출력:** 원문은 단수 token처럼 쓰지만 실제로는 branch당 $`Q=64`$개의 token 집합이다.
 - **연산:** 각 ViT block에서 patch와 query가 함께 self-attention하고, instruction에서 생성된 FiLM scale/shift가 hidden channel을 조절한다.
 - **필요성:** query가 모든 patch를 보되 instruction에 따라 어떤 channel을 증폭/억제할지 달라진다.
 - **예:** “red cup” instruction이면 색/용기 관련 channel의 effective gain이 커질 수 있다. 이것은 해석 예시이며 실제 channel semantics를 논문이 측정한 것은 아니다.
@@ -326,15 +317,14 @@ $$
 
 원문 Eq. (6). aggregation token의 branch fusion. [PDF p.4, §2.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\mathbf v_{\mathrm{agg}}=\sum_{i=1}^{M}\alpha_i\mathbf v_{\mathrm{agg}}^{(i)}.
-\tag{6}
-$$
+```math
+\mathbf v_{\mathrm{agg}}=\sum_{i=1}^{M}\alpha_i\mathbf v_{\mathrm{agg}}^{(i)}. \qquad\text{(6)}
+```
 
-- **원문 불일치:** 바로 앞에서 encoder 수를 $N$이라 했고 Eq. (7)의 $\alpha$도 길이 $N$이다. 합의 상한 $M$은 vision token 수와도 충돌하므로, 문맥상 $\sum_{i=1}^{N}$가 자연스럽다. 원문을 조용히 고치지 않고 이 오탈자 가능성을 명시한다.
-- **shape:** projection 후 두 branch가 모두 $B\times Q\times d$여야 elementwise weighted sum이 가능하다. $\alpha_i$는 $B\times1\times1$로 broadcast된다.
-- **작은 예:** SigLIP/DINO token 한 성분이 각각 2와 5이고 $\alpha=(0.7,0.3)$이면 fused 성분은 $0.7\cdot2+0.3\cdot5=2.9$다.
-- **edge case:** 한 branch가 유용하지 않아 $\alpha_i\approx0$이면 그 branch로 가는 gradient가 작아질 수 있다. soft routing이므로 완전한 compute skip은 아니며 두 encoder 계산은 이미 수행됐다.
+- **원문 불일치:** 바로 앞에서 encoder 수를 $`N`$이라 했고 Eq. (7)의 $`\alpha`$도 길이 $`N`$이다. 합의 상한 $`M`$은 vision token 수와도 충돌하므로, 문맥상 $`\sum_{i=1}^{N}`$가 자연스럽다. 원문을 조용히 고치지 않고 이 오탈자 가능성을 명시한다.
+- **shape:** projection 후 두 branch가 모두 $`B\times Q\times d`$여야 elementwise weighted sum이 가능하다. $`\alpha_i`$는 $`B\times1\times1`$로 broadcast된다.
+- **작은 예:** SigLIP/DINO token 한 성분이 각각 2와 5이고 $`\alpha=(0.7,0.3)`$이면 fused 성분은 $`0.7\cdot2+0.3\cdot5=2.9`$다.
+- **edge case:** 한 branch가 유용하지 않아 $`\alpha_i\approx0`$이면 그 branch로 가는 gradient가 작아질 수 있다. soft routing이므로 완전한 compute skip은 아니며 두 encoder 계산은 이미 수행됐다.
 
 ##### Eq. (7): instruction-conditioned routing weight
 
@@ -342,15 +332,13 @@ $$
 
 원문 Eq. (7). instruction-conditioned routing weight. [PDF p.4, §2.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\boldsymbol\alpha=[\alpha_1,\ldots,\alpha_N]^\top
-=\mathrm{Softmax}(\mathrm{MLP}_{\mathrm{route}}(t_r)).
-\tag{7}
-$$
+```math
+\boldsymbol\alpha=[\alpha_1,\ldots,\alpha_N]^\top =\mathrm{Softmax}(\mathrm{MLP}_{\mathrm{route}}(t_r)). \qquad\text{(7)}
+```
 
-- **연산 순서:** instruction summary $t_r$ → MLP logits $B\times N$ → encoder 축 softmax → 합이 1인 mixture weight.
+- **연산 순서:** instruction summary $`t_r`$ → MLP logits $`B\times N`$ → encoder 축 softmax → 합이 1인 mixture weight.
 - **왜 softmax인가:** scale이 임의로 커지지 않는 convex combination을 만들고 branch 사이 상대 선호를 학습한다.
-- **작은 예:** logits $(1.2,0.2)$면 $\alpha\approx(0.731,0.269)$다.
+- **작은 예:** logits $`(1.2,0.2)`$면 $`\alpha\approx(0.731,0.269)`$다.
 - **gradient:** softmax와 MLP는 미분 가능하므로 downstream action loss가 gate를 학습한다.
 - **edge case:** 두 logits가 같으면 0.5/0.5. 매우 큰 logit 차이는 사실상 한 branch만 통과시키지만 encoder FLOPs 자체는 줄이지 않는다.
 
@@ -360,14 +348,13 @@ $$
 
 원문 Eq. (8). LFP-Routing과 CAtten의 layer transition. [PDF p.4, §2.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-Z_{l+1}=\mathrm{CAtten}(\mathrm{LFP\!\text{-}\!Routing}(Z_l,t_l)).
-\tag{8}
-$$
+```math
+Z_{l+1}=\mathrm{CAtten}(\mathrm{LFP\!\text{-}\!Routing}(Z_l,t_l)). \qquad\text{(8)}
+```
 
-- **논리:** Stage 1의 compact visual state $Z_0=\mathbf v_{\mathrm{agg}}$가 LLM에 들어가고, layer마다 LFP가 계산 token을 고른 뒤 CAtten mask 아래 transformer 연산을 한다.
-- **shape:** $Z_l$의 저장 shape는 $B\times M\times d$다. 공개 코드는 선택하지 않은 token을 sequence에서 영구 삭제하지 않고 unchanged state로 scatter-back하므로 다음 layer의 후보 수 자체는 유지된다.
-- **작은 예:** $M=64$, retention 0.5면 해당 layer attention은 32 visual token과 모든 text/action token을 처리하고, 나머지 32 visual state는 residual 그대로 남는다.
+- **논리:** Stage 1의 compact visual state $`Z_0=\mathbf v_{\mathrm{agg}}`$가 LLM에 들어가고, layer마다 LFP가 계산 token을 고른 뒤 CAtten mask 아래 transformer 연산을 한다.
+- **shape:** $`Z_l`$의 저장 shape는 $`B\times M\times d`$다. 공개 코드는 선택하지 않은 token을 sequence에서 영구 삭제하지 않고 unchanged state로 scatter-back하므로 다음 layer의 후보 수 자체는 유지된다.
+- **작은 예:** $`M=64`$, retention 0.5면 해당 layer attention은 32 visual token과 모든 text/action token을 처리하고, 나머지 32 visual state는 residual 그대로 남는다.
 - **표기 한계:** 원문은 CAtten이 LFP 출력 전체에 적용되는 것처럼 쓰지만, 구현은 Llama attention forward를 전역 교체하고 LFP target layer에서 선택 sequence를 만들어 호출한다.
 
 ##### Eq. (9): 최종 action chunk
@@ -376,17 +363,15 @@ $$
 
 원문 Eq. (9). 최종 action chunk 예측. [PDF p.4, §2.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4)
 
-$$
-\mathbf A_t=f_{\mathrm{parallel}}(\tilde X)
-=f_{\mathrm{parallel}}([Z_0,t_0,\mathbf0_0,\mathbf0_1,\ldots,\mathbf0_{K-1}]).
-\tag{9}
-$$
+```math
+\mathbf A_t=f_{\mathrm{parallel}}(\tilde X) =f_{\mathrm{parallel}}([Z_0,t_0,\mathbf0_0,\mathbf0_1,\ldots,\mathbf0_{K-1}]). \qquad\text{(9)}
+```
 
-- **입력:** 현재 정책 갱신 시점 $t$의 compact vision, instruction, $K$개 action-step placeholder 묶음.
-- **출력:** 환경 action $K\times D$.
+- **입력:** 현재 정책 갱신 시점 $`t`$의 compact vision, instruction, $`K`$개 action-step placeholder 묶음.
+- **출력:** 환경 action $`K\times D`$.
 - **작은 예:** LIBERO는 현재 두 image와 instruction에서 8개의 7-DoF action을 예측한다.
-- **주의:** 우변에는 $Z_0$가 쓰였지만 실제 action hidden state는 32개 LLM layer를 통과한 최종 hidden에서 읽는다. $Z_0$는 입력 visual token이라는 의미다.
-- **edge case:** scene이 청크 중 급변해도 이미 낸 $K$개 action은 바뀌지 않는다. 중간에 재관측해 재계획할지는 evaluator의 `num_open_loop_steps`가 결정한다.
+- **주의:** 우변에는 $`Z_0`$가 쓰였지만 실제 action hidden state는 32개 LLM layer를 통과한 최종 hidden에서 읽는다. $`Z_0`$는 입력 visual token이라는 의미다.
+- **edge case:** scene이 청크 중 급변해도 이미 낸 $`K`$개 action은 바뀌지 않는다. 중간에 재관측해 재계획할지는 evaluator의 `num_open_loop_steps`가 결정한다.
 
 <a id="sec-231"></a>
 
@@ -402,33 +387,26 @@ Figure 3. (a) EFA-Routing, (b) LFP-Routing, (c) CAtten과 기존 VLA의 attentio
 
 원문 Eq. (10). Encoder-FiLM과 aggregation 갱신의 원문 두 줄. [PDF p.5, §2.3.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=5)
 
-$$
-f_{\mathrm{FA}}(I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)},t_r)
-=\left(1+\gamma_i(t_r)\right)\odot
-\mathrm{SelfAtt}(I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)})
-+\beta_i(t_r).
-\tag{10a}
-$$
+```math
+\begin{aligned} &f_{\mathrm{FA}}(I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)},t_r)\\ &\quad=\left(1+\gamma_i(t_r)\right)\odot \mathrm{SelfAtt}(I^{(i)},\mathbf v_{\mathrm{agg}}^{(i)}) +\beta_i(t_r). \end{aligned} \qquad\text{(10a)}
+```
 
-- **concatenation 해석:** `SelfAtt(I,v)`는 patch와 aggregation token을 함께 넣은 self-attention의 축약이다. output은 $B\times(P+Q)\times d_v^{(i)}$.
-- **FiLM:** $\gamma_i,\beta_i\in\mathbb R^{B\times d_v^{(i)}}$를 token 축으로 broadcast한다. 따라서 patch 위치별 다른 scalar가 아니라 모든 위치에 공유되는 channel-wise 조건이다.
-- **작은 수치 예:** 한 channel의 attention output이 2, $\gamma=-0.25$, $\beta=0.1$이면 $0.75\cdot2+0.1=1.6$.
+- **concatenation 해석:** `SelfAtt(I,v)`는 patch와 aggregation token을 함께 넣은 self-attention의 축약이다. output은 $`B\times(P+Q)\times d_v^{(i)}`$.
+- **FiLM:** $`\gamma_i,\beta_i\in\mathbb R^{B\times d_v^{(i)}}`$를 token 축으로 broadcast한다. 따라서 patch 위치별 다른 scalar가 아니라 모든 위치에 공유되는 channel-wise 조건이다.
+- **작은 수치 예:** 한 channel의 attention output이 2, $`\gamma=-0.25`$, $`\beta=0.1`$이면 $`0.75\cdot2+0.1=1.6`$.
 - **필요성:** pretrained attention 구조를 유지하면서 instruction에 따라 channel gain과 bias만 바꿔 낮은 추가 비용으로 top-down conditioning한다.
-- **gradient:** scale/shift projection과 self-attention 경로 모두 action loss를 받는다. $1+\gamma$ 때문에 초기 identity 근처에서 안정적으로 시작할 수 있다.
-- **edge case:** $\gamma=-1$이면 원 feature가 사라지고 shift만 남는다. 큰 $|\gamma|$는 feature 폭발 위험이 있지만 clamp/regularizer는 PDF에 없다.
+- **gradient:** scale/shift projection과 self-attention 경로 모두 action loss를 받는다. $`1+\gamma`$ 때문에 초기 identity 근처에서 안정적으로 시작할 수 있다.
+- **edge case:** $`\gamma=-1`$이면 원 feature가 사라지고 shift만 남는다. 큰 $`|\gamma|`$는 feature 폭발 위험이 있지만 clamp/regularizer는 PDF에 없다.
 
 ##### Eq. (10), 둘째 줄: aggregation token 갱신
 
-$$
-\mathbf v_{\mathrm{agg}}^{(i)}
-=\mathrm{Aggregate}(\mathrm{FFN}(f_{\mathrm{FA}}(\cdot)))
-+\mathbf v_{\mathrm{agg}}^{(i)}.
-\tag{10b}
-$$
+```math
+\mathbf v_{\mathrm{agg}}^{(i)} =\mathrm{Aggregate}(\mathrm{FFN}(f_{\mathrm{FA}}(\cdot))) +\mathbf v_{\mathrm{agg}}^{(i)}. \qquad\text{(10b)}
+```
 
 - **연산:** FiLM-conditioned token을 FFN에 통과시키고 그중 aggregation 위치만 취해 기존 query에 residual add하는 것으로 읽힌다.
 - **공개 코드 대조:** 구현은 `[patch, aggregation]`을 ViT block attention에 넣고 attention residual 뒤 **전체 token**에 FiLM을 적용한 다음 FFN residual을 수행한다. 마지막에 patch 위치를 잘라 aggregation 위치만 반환한다. 따라서 Eq. (10b)의 `Aggregate`는 별도 pooling 연산이라기보다 output slicing에 가깝다. [공개 코드 확인: `vit_wrapper_reg.py`](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/vit_wrapper_reg.py#L42-L83)
-- **작은 예:** $P=256,Q=64$이면 block 내부에서는 320 token이 상호작용하고, encoder 끝에서는 64 query만 남아 4× token reduction이 된다.
+- **작은 예:** $`P=256,Q=64`$이면 block 내부에서는 320 token이 상호작용하고, encoder 끝에서는 64 query만 남아 4× token reduction이 된다.
 - **edge case:** query 수가 너무 작으면 여러 객체/관계를 한 token에 혼합해 정보 병목이 생긴다. Fig.7은 64개 query가 서로 다른 영역을 보는 예를 보이지만 coverage 보장은 아니다.
 
 ##### Eq. (11): 두 encoder의 scalar gate
@@ -437,15 +415,14 @@ $$
 
 원문 Eq. (11). 두 encoder의 scalar routing gate. [PDF p.6, §2.3.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-\alpha=\mathrm{Sigmoid}\!\left(W_2(\sigma(W_1t_r+b_1))+b_2\right).
-\tag{11}
-$$
+```math
+\alpha=\mathrm{Sigmoid}\!\left(W_2(\sigma(W_1t_r+b_1))+b_2\right). \qquad\text{(11)}
+```
 
-- **연산 순서:** instruction $t_r$ → affine $W_1t_r+b_1$ → GeLU $\sigma$ → affine → sigmoid.
-- **shape:** 두 branch 전용 scalar gate라면 최종 output은 $B\times1$. 중간 hidden width는 PDF 미기재.
-- **작은 예:** 최종 logit 1.386이면 $\alpha=0.8$.
-- **왜 sigmoid인가:** $N=2$일 때 한 scalar로 SigLIP 비중 $\alpha$, DINOv2 비중 $1-\alpha$를 만들 수 있다.
+- **연산 순서:** instruction $`t_r`$ → affine $`W_1t_r+b_1`$ → GeLU $`\sigma`$ → affine → sigmoid.
+- **shape:** 두 branch 전용 scalar gate라면 최종 output은 $`B\times1`$. 중간 hidden width는 PDF 미기재.
+- **작은 예:** 최종 logit 1.386이면 $`\alpha=0.8`$.
+- **왜 sigmoid인가:** $`N=2`$일 때 한 scalar로 SigLIP 비중 $`\alpha`$, DINOv2 비중 $`1-\alpha`$를 만들 수 있다.
 - **gradient/edge:** sigmoid가 0/1 부근에서 포화하면 gate gradient가 작아진다. Eq. (7)의 2-way softmax와 기능적으로 동등하지만 parameterization은 다르다.
 
 ##### Eq. (12): SigLIP-DINOv2 dual aggregation
@@ -454,18 +431,15 @@ $$
 
 원문 Eq. (12). SigLIP-DINOv2의 dual aggregation. [PDF p.6, §2.3.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-\mathbf v_{\mathrm{agg}}
-=\alpha\mathbf v_{\mathrm{agg}}^{\mathrm{SigLIP}}
-+(1-\alpha)\mathbf v_{\mathrm{agg}}^{\mathrm{DINOv2}}.
-\tag{12}
-$$
+```math
+\mathbf v_{\mathrm{agg}} =\alpha\mathbf v_{\mathrm{agg}}^{\mathrm{SigLIP}} +(1-\alpha)\mathbf v_{\mathrm{agg}}^{\mathrm{DINOv2}}. \qquad\text{(12)}
+```
 
-- **전제:** 두 branch의 $Q$개 위치가 대응하고 LLM width $d$로 projection되어야 한다.
-- **작은 예:** $\alpha=0.8$, 두 branch token 성분이 1과 4면 fused 값은 $1.6$.
+- **전제:** 두 branch의 $`Q`$개 위치가 대응하고 LLM width $`d`$로 projection되어야 한다.
+- **작은 예:** $`\alpha=0.8`$, 두 branch token 성분이 1과 4면 fused 값은 $`1.6`$.
 - **해석:** SigLIP의 language-aligned semantics와 DINOv2의 dense visual structure를 instruction별 비율로 섞는다.
 - **중요한 효율 구분:** 이 gate는 두 encoder 중 하나의 실행을 생략하지 않는다. Stage 1 효율의 주원인은 branch 선택이 아니라 256 patch를 64 aggregation token으로 줄여 LLM 입력을 축소하는 데 있다.
-- **공개 구현:** `MoEAggregator`는 instruction mean embedding으로 $B\times2$ softmax를 만들고 각 branch의 모든 $Q$ token에 sample-wise scalar를 곱해 합한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/router.py#L21-L60)
+- **공개 구현:** `MoEAggregator`는 instruction mean embedding으로 $`B\times2`$ softmax를 만들고 각 branch의 모든 $`Q`$ token에 sample-wise scalar를 곱해 합한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/router.py#L21-L60)
 
 <a id="sec-232"></a>
 
@@ -479,29 +453,25 @@ EFA는 patch를 query에 모으지만, 64개 query 전부가 모든 LLM layer에
 
 원문 Eq. (13). LLM-FiLM/prune 및 transformer 갱신의 원문 두 줄. [PDF p.6, §2.3.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-f_{\mathrm{FP}}(Z_l,t_l)
-=\mathrm{Prune}\!\left((1+\gamma_{\mathrm{LLM}}(t_l))\odot Z_l
-+\beta_{\mathrm{LLM}}(t_l)\right).
-\tag{13a}
-$$
+```math
+f_{\mathrm{FP}}(Z_l,t_l) =\mathrm{Prune}\!\left((1+\gamma_{\mathrm{LLM}}(t_l))\odot Z_l +\beta_{\mathrm{LLM}}(t_l)\right). \qquad\text{(13a)}
+```
 
 - **원문 조판:** PDF에는 `Prune((1+γ)⊙Z_l)+β)`로 읽힐 수 있는 닫는 괄호 불일치가 있다. 문장 설명은 scale과 shift 모두 instruction-conditioned modulation이라고 하므로 위처럼 shift 뒤 prune으로 해석하는 것이 자연스럽다.
-- **shape:** $Z_l\in\mathbb R^{B\times M\times d}$, $\gamma,\beta\in\mathbb R^{B\times d}$이며 visual token 축으로 broadcast된다.
-- **작은 예:** 두 visual token의 한 channel이 $(1,3)$, $\gamma=0.5$, $\beta=-0.5$면 modulated 값은 $(1,4)$. router가 둘째를 더 relevant하다고 판단할 수 있다.
-- **공개 코드의 실제 역할:** FiLM-modulated visual state는 router logits 계산에만 쓰고, 선택된 token의 transformer 입력은 원래 `hidden_states`다. 즉 FiLM이 $Z_l$ 자체를 영구 변환하는 것이 아니라 **선택 점수의 조건화** 역할을 한다. text summary는 BOS 뒤 visual block 다음부터 action/stop 전까지의 hidden을 평균한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L161-L199)
+- **shape:** $`Z_l\in\mathbb R^{B\times M\times d}`$, $`\gamma,\beta\in\mathbb R^{B\times d}`$이며 visual token 축으로 broadcast된다.
+- **작은 예:** 두 visual token의 한 channel이 $`(1,3)`$, $`\gamma=0.5`$, $`\beta=-0.5`$면 modulated 값은 $`(1,4)`$. router가 둘째를 더 relevant하다고 판단할 수 있다.
+- **공개 코드의 실제 역할:** FiLM-modulated visual state는 router logits 계산에만 쓰고, 선택된 token의 transformer 입력은 원래 `hidden_states`다. 즉 FiLM이 $`Z_l`$ 자체를 영구 변환하는 것이 아니라 **선택 점수의 조건화** 역할을 한다. text summary는 BOS 뒤 visual block 다음부터 action/stop 전까지의 hidden을 평균한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L161-L199)
 - **gradient:** 선택된 token의 router keep probability는 뒤 Eq. (15)의 weighting을 통해 gradient를 받는다. hard top-k 경계 자체는 불연속이라 threshold를 간신히 넘나드는 token은 수치 변화에 민감할 수 있다.
 
 ##### Eq. (13), 둘째 줄: transformer layer 갱신
 
-$$
-Z_{l+1}=\mathrm{FFN}(\mathrm{SelfAtt}(f_{\mathrm{FP}}(\cdot)))+Z_l.
-\tag{13b}
-$$
+```math
+Z_{l+1}=\mathrm{FFN}(\mathrm{SelfAtt}(f_{\mathrm{FP}}(\cdot)))+Z_l. \qquad\text{(13b)}
+```
 
 - **원문 의미:** 살아남은 token에 attention+FFN을 수행하고 residual로 원래 state를 더한다.
 - **구현상 더 정확한 순서:** pre-norm → 선택 token끼리 self-attention → residual → post-attention norm → FFN output에 router score 곱 → residual → 원 sequence 위치에 scatter. 선택되지 않은 visual token은 해당 layer에서 unchanged다.
-- **작은 예:** $M=64$에서 32개만 선택하면 해당 layer의 attention sequence에서 32개 visual token만 Q/K/V를 만들지만 text/action token은 강제 유지된다.
+- **작은 예:** $`M=64`$에서 32개만 선택하면 해당 layer의 attention sequence에서 32개 visual token만 Q/K/V를 만들지만 text/action token은 강제 유지된다.
 - **edge case:** 선택되지 않은 token도 다음 layer router 후보로 다시 나타날 수 있다. 따라서 “한번 버리면 끝”인 pruning과 다르다.
 
 ##### Eq. (14): token relevance score
@@ -510,15 +480,14 @@ $$
 
 원문 Eq. (14). token relevance score. [PDF p.6, §2.3.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-R_l^j=\mathrm{MLP}(Z_l^j).
-\tag{14}
-$$
+```math
+R_l^j=\mathrm{MLP}(Z_l^j). \qquad\text{(14)}
+```
 
-- **입출력:** visual token $Z_l^j\in\mathbb R^d$에서 scalar relevance를 만든다는 축약식이다.
-- **공개 구현:** linear layer가 2-class logits $B\times S\times2$를 내고 softmax의 class 1 확률을 keep score로 쓴다. LFP-FiLM을 켜면 router 입력 앞에서 visual state만 instruction-conditioned scale/shift한다.
-- **작은 예:** logits $(0.2,1.2)$면 keep score는 $e^{1.2}/(e^{0.2}+e^{1.2})\approx0.731$.
-- **forced tokens:** 공개 코드는 BOS와 visual block 뒤의 모든 text/action/stop token score에 $+\infty$를 더해 top-k에 반드시 포함한다. 실제 경쟁은 visual token 사이에서만 일어난다.
+- **입출력:** visual token $`Z_l^j\in\mathbb R^d`$에서 scalar relevance를 만든다는 축약식이다.
+- **공개 구현:** linear layer가 2-class logits $`B\times S\times2`$를 내고 softmax의 class 1 확률을 keep score로 쓴다. LFP-FiLM을 켜면 router 입력 앞에서 visual state만 instruction-conditioned scale/shift한다.
+- **작은 예:** logits $`(0.2,1.2)`$면 keep score는 $`e^{1.2}/(e^{0.2}+e^{1.2})\approx0.731`$.
+- **forced tokens:** 공개 코드는 BOS와 visual block 뒤의 모든 text/action/stop token score에 $`+\infty`$를 더해 top-k에 반드시 포함한다. 실제 경쟁은 visual token 사이에서만 일어난다.
 - **한계:** 별도 router supervision이나 auxiliary classification loss는 공개 코드에서 주석 처리되어 있다. action loss만으로 간접 학습된다.
 
 ##### Eq. (15): keep/skip update
@@ -527,21 +496,16 @@ $$
 
 원문 Eq. (15). keep/skip conditional update. [PDF p.6, §2.3.2] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-Z_{l+1}^j=
-\begin{cases}
-R_l^j\, f_{\mathrm{SF}}([Z_l^j,t_l])+Z_l^j,&R_l^j>P_l^\beta,\\
-Z_l^j,&\text{otherwise.}
-\end{cases}
-\tag{15}
-$$
+```math
+Z_{l+1}^j= \begin{cases} R_l^j\, f_{\mathrm{SF}}([Z_l^j,t_l])+Z_l^j,&R_l^j\gt P_l^\beta,\\ Z_l^j,&\text{otherwise.} \end{cases} \qquad\text{(15)}
+```
 
-- **첫 branch:** relevant token이면 self-attention/FFN 계산 $f_{\mathrm{SF}}$을 하고 router score로 gate한 뒤 residual을 더한다.
+- **첫 branch:** relevant token이면 self-attention/FFN 계산 $`f_{\mathrm{SF}}`$을 하고 router score로 gate한 뒤 residual을 더한다.
 - **둘째 branch:** skip token은 identity path로 통과한다. 이것이 computation sparsity의 근거다.
-- **percentile 모순:** 원문은 $\beta$를 retention ratio라 부르면서 $P_l^\beta$를 “$\beta$-th percentile”이라 하고 $R>P_l^\beta$를 유지한다. 일반 percentile 정의면 유지 비율은 $1-\beta$다. 공개 구현은 `topk(int(num_visual_tokens * router_factor))`로 **$\beta$를 직접 keep fraction**으로 사용한다. 따라서 식의 percentile 문장은 threshold를 $(1-\beta)$ percentile로 쓰거나 부등호/정의를 바꿔야 일관된다.
-- **작은 예:** 점수 $(0.1,0.4,0.8,0.9)$에서 keep ratio $\beta=0.5$면 구현은 top-2인 $(0.8,0.9)$를 고른다. 그러나 문자 그대로 50th percentile 초과도 우연히 같은 결과다. $\beta=0.75$에서는 구현은 3개를 유지하지만 75th percentile 초과는 1개만 유지해 차이가 드러난다.
-- **구현 차이:** Eq. (15)는 $R$이 attention+FFN 전체를 곱하는 듯 보이나 공개 코드는 **FFN branch에만** keep probability를 곱하고 attention branch에는 곱하지 않는다. hard selection은 attention과 FFN 모두의 계산 여부를 결정한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L249-L376)
-- **position/mask:** 선택된 index를 원순서로 정렬하고 attention mask의 해당 row/column만 gather한다. position id는 원 index를 gather하지 않고 $0,\ldots,k-1$로 다시 부여한다.
+- **percentile 모순:** 원문은 $`\beta`$를 retention ratio라 부르면서 $`P_l^\beta`$를 “$`\beta`$-th percentile”이라 하고 $`R\gt P_l^\beta`$를 유지한다. 일반 percentile 정의면 유지 비율은 $`1-\beta`$다. 공개 구현은 `topk(int(num_visual_tokens * router_factor))`로 **$`\beta`$를 직접 keep fraction**으로 사용한다. 따라서 식의 percentile 문장은 threshold를 $`(1-\beta)`$ percentile로 쓰거나 부등호/정의를 바꿔야 일관된다.
+- **작은 예:** 점수 $`(0.1,0.4,0.8,0.9)`$에서 keep ratio $`\beta=0.5`$면 구현은 top-2인 $`(0.8,0.9)`$를 고른다. 그러나 문자 그대로 50th percentile 초과도 우연히 같은 결과다. $`\beta=0.75`$에서는 구현은 3개를 유지하지만 75th percentile 초과는 1개만 유지해 차이가 드러난다.
+- **구현 차이:** Eq. (15)는 $`R`$이 attention+FFN 전체를 곱하는 듯 보이나 공개 코드는 **FFN branch에만** keep probability를 곱하고 attention branch에는 곱하지 않는다. hard selection은 attention과 FFN 모두의 계산 여부를 결정한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L249-L376)
+- **position/mask:** 선택된 index를 원순서로 정렬하고 attention mask의 해당 row/column만 gather한다. position id는 원 index를 gather하지 않고 $`0,\ldots,k-1`$로 다시 부여한다.
 - **edge case:** 경계 점수가 동률이면 top-k tie-breaking에 따라 token set이 달라질 수 있다. 공식 저장소도 BF16 rounding, GPU, CUDA/kernel 차이가 threshold 근처 선택을 바꿔 성능 분산을 키울 수 있다고 후속 공개 메모에서 인정한다.
 
 <a id="sec-233"></a>
@@ -556,14 +520,13 @@ CAtten의 요점은 세 종류 token을 완전히 같은 attention 규칙으로 
 
 원문 Eq. (16). vision-language-action sequence. [PDF p.6, §2.3.3] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-\tilde X=[Z_l,t_l,A_l]\in\mathbb R^{M+T+K\times D}.
-\tag{16}
-$$
+```math
+\tilde X=[Z_l,t_l,A_l]\in\mathbb R^{M+T+K\times D}. \qquad\text{(16)}
+```
 
-- **원문 의미:** layer $l$의 visual, text, action token을 연결한다.
-- **shape 교정 해설:** $A_l=[a_0^l,\ldots,a_{K-1}^l]$라고 쓰지만 LLM 안에서 각 action coordinate가 별도 token이므로 구현상 $A_l\in\mathbb R^{B\times KD\times d}$다. 전체 hidden은 $B\times(M+T+KD)\times d$. 원문의 $\mathbb R^{M+T+K\times D}$는 hidden 축을 생략해 차원 의미가 섞인 표기다.
-- **작은 예:** $M=64,T=20,K=8,D=7$이면 action block 56, 총 140 token(코드의 stop 포함 141)이다.
+- **원문 의미:** layer $`l`$의 visual, text, action token을 연결한다.
+- **shape 교정 해설:** $`A_l=[a_0^l,\ldots,a_{K-1}^l]`$라고 쓰지만 LLM 안에서 각 action coordinate가 별도 token이므로 구현상 $`A_l\in\mathbb R^{B\times KD\times d}`$다. 전체 hidden은 $`B\times(M+T+KD)\times d`$. 원문의 $`\mathbb R^{M+T+K\times D}`$는 hidden 축을 생략해 차원 의미가 섞인 표기다.
+- **작은 예:** $`M=64,T=20,K=8,D=7`$이면 action block 56, 총 140 token(코드의 stop 포함 141)이다.
 - **edge:** text padding은 실제 mask에서 제외되어야 하며 action block의 시작점도 sample별 padding 수에 맞춰야 한다.
 
 ##### Eq. (17): causal vision-language attention
@@ -572,18 +535,13 @@ $$
 
 원문 Eq. (17). causal vision-language attention. [PDF p.6, §2.3.3] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6)
 
-$$
-\mathrm{Attn}_{VL}([Z_l,t_l])=
-\mathrm{Softmax}\!\left(
-\frac{[Z_l,t_l][Z_l,t_l]^\top}{\sqrt d}
-+\mathbf M^{VL}_{\mathrm{causal}}
-\right)[Z_l,t_l].
-\tag{17}
-$$
+```math
+\begin{aligned} &\mathrm{Attn}_{VL}([Z_l,t_l])\\ &\quad= \mathrm{Softmax}\!\left( \frac{[Z_l,t_l][Z_l,t_l]^\top}{\sqrt d} +\mathbf M^{VL}_{\mathrm{causal}} \right)[Z_l,t_l]. \end{aligned} \qquad\text{(17)}
+```
 
-- **한 줄씩:** token matrix와 전치를 곱해 pairwise similarity → $\sqrt d$로 scale → 허용 0/차단 $-\infty$ mask 추가 → row-wise softmax → value와 가중합.
-- **원문 단순화:** 실제 transformer는 $Q=XW_Q,K=XW_K,V=XW_V$와 multi-head를 쓰지만 식은 projection을 생략하고 $Q=K=V=X$로 적었다.
-- **mask:** lower triangular이면 위치 $q$는 $k\le q$만 본다. vision이 text 앞에 놓인다면 visual token은 뒤 instruction token을 직접 보지 못한다. 그러나 EFA에서 vision이 이미 instruction FiLM을 받았다는 것이 저자의 보완 논리다.
+- **한 줄씩:** token matrix와 전치를 곱해 pairwise similarity → $`\sqrt d`$로 scale → 허용 0/차단 $`-\infty`$ mask 추가 → row-wise softmax → value와 가중합.
+- **원문 단순화:** 실제 transformer는 $`Q=XW_Q,K=XW_K,V=XW_V`$와 multi-head를 쓰지만 식은 projection을 생략하고 $`Q=K=V=X`$로 적었다.
+- **mask:** lower triangular이면 위치 $`q`$는 $`k\le q`$만 본다. vision이 text 앞에 놓인다면 visual token은 뒤 instruction token을 직접 보지 못한다. 그러나 EFA에서 vision이 이미 instruction FiLM을 받았다는 것이 저자의 보완 논리다.
 - **작은 예:** VL 길이 3이면 허용 행렬은 `[[0,-∞,-∞],[0,0,-∞],[0,0,0]]`.
 - **gradient:** text/action loss는 causal 경로로 앞선 vision과 text value, EFA-conditioned vision 표현에 흐른다.
 - **edge:** vision token 내부 순서에도 causal 제약이 걸린다. 모든 patch/query끼리 bidirectional하게 보는 일반 VLM projector 이후 attention과 다를 수 있으나, vision encoder 자체에서는 이미 bidirectional aggregation이 끝났다.
@@ -594,18 +552,14 @@ $$
 
 원문 Eq. (18). bidirectional action attention. [PDF p.7, §2.3.3] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=7)
 
-$$
-\mathrm{Attn}_{\mathrm{act}}(A_l)=
-\mathrm{Softmax}\!\left(
-\frac{A_lA_l^\top}{\sqrt d}+\mathbf M^{\mathrm{act}}_{\mathrm{bi}}
-\right)A_l.
-\tag{18}
-$$
+```math
+\mathrm{Attn}_{\mathrm{act}}(A_l)= \mathrm{Softmax}\!\left( \frac{A_lA_l^\top}{\sqrt d}+\mathbf M^{\mathrm{act}}_{\mathrm{bi}} \right)A_l. \qquad\text{(18)}
+```
 
-- **mask 의미:** action-action block에서 모든 pair를 허용하므로 $\mathbf M^{\mathrm{act}}_{\mathrm{bi}}$는 유효 위치에 0인 행렬이다.
+- **mask 의미:** action-action block에서 모든 pair를 허용하므로 $`\mathbf M^{\mathrm{act}}_{\mathrm{bi}}`$는 유효 위치에 0인 행렬이다.
 - **효과:** 앞 action coordinate도 뒤 action coordinate/미래 step placeholder를 볼 수 있어 청크 전체의 상호 일관성을 한 pass에서 조정한다.
-- **작은 예:** $K=2,D=1$이면 두 action token이 서로를 본다. causal이면 첫 token은 둘째를 못 본다.
-- **공개 구현:** stop token까지 action block에 포함해 $KD+1$개의 bottom-right mask 값을 0으로 바꾼다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L85-L115)
+- **작은 예:** $`K=2,D=1`$이면 두 action token이 서로를 본다. causal이면 첫 token은 둘째를 못 본다.
+- **공개 구현:** stop token까지 action block에 포함해 $`KD+1`$개의 bottom-right mask 값을 0으로 바꾼다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L85-L115)
 - **edge:** bidirectional placeholder는 ground-truth action을 입력으로 주는 것이 아니다. 공개 L1 경로는 action embedding을 0으로 만들므로 label leakage가 아니다.
 
 ##### Eq. (19): unified attention
@@ -614,17 +568,13 @@ $$
 
 원문 Eq. (19). CAtten의 unified attention. [PDF p.7, §2.3.3] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=7)
 
-$$
-\mathrm{CAtten}(\tilde X)=
-\mathrm{Softmax}\!\left(
-\frac{\tilde X\tilde X^\top}{\sqrt d}+\mathbf M_{\mathrm{hybrid}}
-\right)\tilde X.
-\tag{19}
-$$
+```math
+\mathrm{CAtten}(\tilde X)= \mathrm{Softmax}\!\left( \frac{\tilde X\tilde X^\top}{\sqrt d}+\mathbf M_{\mathrm{hybrid}} \right)\tilde X. \qquad\text{(19)}
+```
 
 - **역할:** Eq. (17)과 (18)을 하나의 attention call/mask로 구현한다.
-- **작은 예:** VL 3 token, action 2 token이면 $5\times5$ mask 하나로 prefix causal + action full을 나타낸다.
-- **계산량:** dense implementation이면 허용 edge 수가 줄어도 $S\times S$ kernel 자체는 dense일 수 있다. CogVLA의 실제 FLOPs 절감은 Stage 1/2 token 수 감소가 주축이고, CAtten의 action bidirectionality는 serial decode 제거가 latency 이점의 주축이다.
+- **작은 예:** VL 3 token, action 2 token이면 $`5\times5`$ mask 하나로 prefix causal + action full을 나타낸다.
+- **계산량:** dense implementation이면 허용 edge 수가 줄어도 $`S\times S`$ kernel 자체는 dense일 수 있다. CogVLA의 실제 FLOPs 절감은 Stage 1/2 token 수 감소가 주축이고, CAtten의 action bidirectionality는 serial decode 제거가 latency 이점의 주축이다.
 - **주의:** 이 식만으로 CUDA kernel, FlashAttention 사용 여부, memory traffic은 정해지지 않는다.
 
 ##### Eq. (20): hybrid mask
@@ -635,30 +585,18 @@ $$
 
 PDF 원문은 다음 3×3 block 모양으로 인쇄한다.
 
-$$
-\mathbf M_{\mathrm{hybrid}}=
-\begin{bmatrix}
-\mathbf M^{VL}_{\mathrm{causal}}&-\infty&-\infty\\
-0&0&-\infty\\
-0&0&\mathbf M^{\mathrm{act}}_{\mathrm{bi}}
-\end{bmatrix}.
-\tag{20}
-$$
+```math
+\mathbf M_{\mathrm{hybrid}}= \begin{bmatrix} \mathbf M^{VL}_{\mathrm{causal}}&-\infty&-\infty\\ 0&0&-\infty\\ 0&0&\mathbf M^{\mathrm{act}}_{\mathrm{bi}} \end{bmatrix}. \qquad\text{(20)}
+```
 
-- **원문 표기의 문제:** $\mathbf M^{VL}_{\mathrm{causal}}$가 이미 $(M+T)\times(M+T)$라고 정의됐는데 3×3의 첫 block에 놓이면 나머지 vision/language block과 차원이 겹친다. 식의 block 크기가 명시되지 않아 그대로는 shape-consistent하지 않다.
+- **원문 표기의 문제:** $`\mathbf M^{VL}_{\mathrm{causal}}`$가 이미 $`(M+T)\times(M+T)`$라고 정의됐는데 3×3의 첫 block에 놓이면 나머지 vision/language block과 차원이 겹친다. 식의 block 크기가 명시되지 않아 그대로는 shape-consistent하지 않다.
 - **문장과 공개 코드에 맞는 2-block 해설용 식:** 아래는 원문 번호가 아닌 해설이다.
 
-$$
-\left[\mathbf M_{\mathrm{hybrid}}\right]_{\text{해설}}
-=
-\begin{bmatrix}
-\mathbf M^{VL}_{\mathrm{causal}} & -\infty_{(M+T)\times KD}\\
-0_{KD\times(M+T)} & \mathbf M^{\mathrm{act}}_{\mathrm{bi}}
-\end{bmatrix}.
-\qquad\text{[해설용 수식]}
-$$
+```math
+\left[\mathbf M_{\mathrm{hybrid}}\right]_{\text{해설}} = \begin{bmatrix} \mathbf M^{VL}_{\mathrm{causal}} & -\infty_{(M+T)\times KD}\\ 0_{KD\times(M+T)} & \mathbf M^{\mathrm{act}}_{\mathrm{bi}} \end{bmatrix}. \qquad\text{[해설용 수식]}
+```
 
-- **행=질의, 열=key 해석:** VL query는 action key를 못 본다($-\infty$). action query는 모든 이전 VL key를 본다(0). action query끼리도 모두 본다($M_{bi}=0$).
+- **행=질의, 열=key 해석:** VL query는 action key를 못 본다($`-\infty`$). action query는 모든 이전 VL key를 본다(0). action query끼리도 모두 본다($`M_{bi}=0`$).
 - **작은 예:** VL 2, action 2면 허용 mask는 `[[0,-∞,-∞,-∞],[0,0,-∞,-∞],[0,0,0,0],[0,0,0,0]]`.
 - **gradient 방향:** action loss는 VL representation으로 흐르지만 action 정보가 역으로 같은 layer의 VL token representation을 오염시키지는 않는다.
 - **구현 한계:** 공개 코드는 causal mask bottom-right만 0으로 덮어쓰는 방식이다. SDPA custom mask를 쓰며 `is_causal=False`; FlashAttention 2 경로는 LFP 코드에서 지원하지 않는다고 assert한다.
@@ -676,7 +614,7 @@ $$
 
 ### 4 Related Work [PDF p.10]
 
-VLA 역사와 효율화 문헌을 두 축으로 정리한다. CLIPort/PerAct는 language-conditioned manipulation, RT 계열은 action tokenization과 scaling, Octo는 multi-robot dataset, OpenVLA는 open VLA backbone, $\pi$ 계열은 heterogeneous co-training으로 위치시킨다. 효율화는 LLM-centric(MoD, dynamic depth, MoE, lightweight backbone)와 vision-centric(token selection, crop, compressor)으로 나누고, CogVLA의 차별점은 **instruction을 두 compression stage와 action mask까지 관통시키는 joint design**이라고 주장한다. 관련 연구의 개별 성능을 재평가하는 절은 아니다.
+VLA 역사와 효율화 문헌을 두 축으로 정리한다. CLIPort/PerAct는 language-conditioned manipulation, RT 계열은 action tokenization과 scaling, Octo는 multi-robot dataset, OpenVLA는 open VLA backbone, $`\pi`$ 계열은 heterogeneous co-training으로 위치시킨다. 효율화는 LLM-centric(MoD, dynamic depth, MoE, lightweight backbone)와 vision-centric(token selection, crop, compressor)으로 나누고, CogVLA의 차별점은 **instruction을 두 compression stage와 action mask까지 관통시키는 joint design**이라고 주장한다. 관련 연구의 개별 성능을 재평가하는 절은 아니다.
 
 ### 5 Conclusion [PDF p.10]
 
@@ -700,7 +638,7 @@ VLA 역사와 효율화 문헌을 두 축으로 정리한다. CLIPort/PerAct는 
 
 #### A.1 Model Details와 Eq. (21)
 
-EFA는 각 encoder에 64 aggregation token을 사용해 원래 256 token 대비 25%를 남긴다. $\gamma_i,\beta_i$는 text embedding의 linear transform, 두 encoder routing weight는 2-layer MLP로 만든다.
+EFA는 각 encoder에 64 aggregation token을 사용해 원래 256 token 대비 25%를 남긴다. $`\gamma_i,\beta_i`$는 text embedding의 linear transform, 두 encoder routing weight는 2-layer MLP로 만든다.
 
 LFP의 layer별 retention schedule은 다음과 같다.
 
@@ -708,27 +646,26 @@ LFP의 layer별 retention schedule은 다음과 같다.
 
 원문 Eq. (21). LFP의 shifted-cosine retention schedule. [PDF p.22, Appendix A.1] · [원문 PDF](https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=22)
 
-$$
-\beta_l=\frac12\cos\frac{\pi l}{L}+\eta,\qquad l=1,2,\ldots,L.
-\tag{21}
-$$
+```math
+\beta_l=\frac12\cos\frac{\pi l}{L}+\eta,\qquad l=1,2,\ldots,L. \qquad\text{(21)}
+```
 
-- **항:** $L=32$는 LLM layer 수, $l$은 layer index, $\eta=0.5$는 곡선을 위아래로 이동시키는 shift다.
+- **항:** $`L=32`$는 LLM layer 수, $`l`$은 layer index, $`\eta=0.5`$는 곡선을 위아래로 이동시키는 shift다.
 - **연산:** 얕은 층에서는 cosine이 1에 가까워 token을 많이 유지하고, 깊은 층으로 갈수록 0을 거쳐 -1로 가므로 retention을 줄인다.
-- **PDF clamp:** $[0.05,0.85]$. 예를 들어 $l=1$ raw 값은 약 0.9976이라 0.85, $l=16$은 0.5, $l=32$는 0이라 0.05가 된다.
+- **PDF clamp:** $`[0.05,0.85]`$. 예를 들어 $`l=1`$ raw 값은 약 0.9976이라 0.85, $`l=16`$은 0.5, $`l=32`$는 0이라 0.05가 된다.
 - **왜 필요한가:** 초반 layer는 low-level/cross-modal grounding을 충분히 처리하고, 후반에는 task-relevant state에 계산을 집중한다.
 - **gradient:** schedule 자체는 hyperparameter라 학습되지 않는다. router score와 선택된 branch의 parameters만 학습된다.
-- **edge:** 낮은 $\beta_l$에서 중요한 token 하나를 놓치면 후반 reasoning이 크게 흔들릴 수 있다. fixed schedule은 instruction 난이도에 적응하지 않는다.
-- **공개 코드 차이:** 현재 스크립트는 `shiftedcos_decay_0.85_0.15`라 최솟값 0.15를 쓰고, 0-based $l=0\ldots31$ 및 분모 $L-1=31$을 사용한다. ratio가 0.85 이하인 layer 8-31만 LFP layer로 바꾸며 앞 8개 층은 full compute다. 전체 32층의 effective retention 단순 평균은 약 0.5375다. 이는 PDF의 clamp $[0.05,0.85]$와 정확히 같지 않다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L392-L439)
+- **edge:** 낮은 $`\beta_l`$에서 중요한 token 하나를 놓치면 후반 reasoning이 크게 흔들릴 수 있다. fixed schedule은 instruction 난이도에 적응하지 않는다.
+- **공개 코드 차이:** 현재 스크립트는 `shiftedcos_decay_0.85_0.15`라 최솟값 0.15를 쓰고, 0-based $`l=0\ldots31`$ 및 분모 $`L-1=31`$을 사용한다. ratio가 0.85 이하인 layer 8-31만 LFP layer로 바꾸며 앞 8개 층은 full compute다. 전체 32층의 effective retention 단순 평균은 약 0.5375다. 이는 PDF의 clamp $`[0.05,0.85]`$와 정확히 같지 않다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/prismatic/models/modeling_llama.py#L392-L439)
 
 LFP FiLM의 scale/shift는 PDF상 hidden 2048의 2-layer MLP다. 공개 코드는 LLM hidden 4096 → 2048 → 4096의 GeLU MLP 두 개를 만든다.
 
 #### A.2 Training Details
 
-- **LIBERO PDF 설정:** OpenVLA backbone, $K=8$, LoRA rank 32, $\alpha=64$, 60K steps, global batch 64, initial LR $5\times10^{-4}$, 10K마다 평가 후 best checkpoint 보고.
-- **real-world PDF 설정:** $K=25$, LoRA rank 32, $\alpha=64$, batch 32, 80K steps, initial LR $5\times10^{-4}$, 50K 뒤 $5\times10^{-5}$, 60K부터 10K 간격 평가, best checkpoint 보고.
+- **LIBERO PDF 설정:** OpenVLA backbone, $`K=8`$, LoRA rank 32, $`\alpha=64`$, 60K steps, global batch 64, initial LR $`5\times10^{-4}`$, 10K마다 평가 후 best checkpoint 보고.
+- **real-world PDF 설정:** $`K=25`$, LoRA rank 32, $`\alpha=64`$, batch 32, 80K steps, initial LR $`5\times10^{-4}`$, 50K 뒤 $`5\times10^{-5}`$, 60K부터 10K 간격 평가, best checkpoint 보고.
 - **논문 미기재:** optimizer, weight decay, gradient clipping, exact data augmentation parameters, precision, per-GPU batch, seed list, loss normalization 세부는 PDF에서 완전하지 않다.
-- **현재 코드와 차이:** 공개 LIBERO shell은 4 GPU×per-device batch 16=64, 80,005 steps, 2 image를 사용한다. 코드 본문은 AdamW, BF16, 2K linear warm-up 뒤 80K cosine decay를 사용한다. PDF 60K/LoRA $\alpha=64$와 달리 dataclass default $\alpha=16$이고 shell은 `lora_alpha`를 넘기지 않는다. 현재 코드를 2025 PDF의 exact recipe로 간주하면 안 된다.
+- **현재 코드와 차이:** 공개 LIBERO shell은 4 GPU×per-device batch 16=64, 80,005 steps, 2 image를 사용한다. 코드 본문은 AdamW, BF16, 2K linear warm-up 뒤 80K cosine decay를 사용한다. PDF 60K/LoRA $`\alpha=64`$와 달리 dataclass default $`\alpha=16`$이고 shell은 `lora_alpha`를 넘기지 않는다. 현재 코드를 2025 PDF의 exact recipe로 간주하면 안 된다.
 
 <a id="sec-app-b"></a>
 
@@ -758,7 +695,7 @@ object size/color와 spatial layout을 바꾼 moderate augmentation을 썼지만
 
 #### C.2 Extended Real-World Results
 
-Task 4/5에서 CogVLA는 각 표시 column 8/10, 7/10, 8/10이며 Table 8은 76.7%를 적는다. 성공 정의대로 Task 4의 두 subtask를 모두 완료해야 한다면 task-level final은 7/10, Task 5는 8/10이므로 두 task 평균은 75.0%다. 76.7%는 세 표시 column의 단순 평균 $(8+7+8)/30$이다. Table 2의 70%가 복합 task별 final success를 평균한 방식과 집계 정의가 다르다.
+Task 4/5에서 CogVLA는 각 표시 column 8/10, 7/10, 8/10이며 Table 8은 76.7%를 적는다. 성공 정의대로 Task 4의 두 subtask를 모두 완료해야 한다면 task-level final은 7/10, Task 5는 8/10이므로 두 task 평균은 75.0%다. 76.7%는 세 표시 column의 단순 평균 $`(8+7+8)/30`$이다. Table 2의 70%가 복합 task별 final success를 평균한 방식과 집계 정의가 다르다.
 
 #### C.3 Extended Ablation
 
@@ -794,28 +731,28 @@ assistive robotics, household automation, industrial assembly의 계산 접근�
 
 ## 6. 한 샘플의 end-to-end forward pass
 
-여기서는 공개 LIBERO 설정을 따라 $B=1$, front image+optional wrist image의 2개 camera, instruction “검은 그릇을 집어 접시 위에 놓아라”, $K=8$, $D=7$인 샘플을 추적한다. 명시되지 않은 image resolution/hidden width는 계산 예시를 위해 임의로 채우지 않는다. OpenVLA 계열 코드에서 확인되는 $d=4096$, image당 원 patch 256은 **공개 코드 기준**으로만 쓴다.
+여기서는 공개 LIBERO 설정을 따라 $`B=1`$, front image+optional wrist image의 2개 camera, instruction “검은 그릇을 집어 접시 위에 놓아라”, $`K=8`$, $`D=7`$인 샘플을 추적한다. 명시되지 않은 image resolution/hidden width는 계산 예시를 위해 임의로 채우지 않는다. OpenVLA 계열 코드에서 확인되는 $`d=4096`$, image당 원 patch 256은 **공개 코드 기준**으로만 쓴다.
 
 ### 6.1 입력과 instruction summary
 
 1. 두 camera image가 processor를 거쳐 SigLIP용 3채널과 DINOv2용 3채널 입력으로 준비된다. image당 두 encoder를 모두 사용한다.
-2. prompt/instruction은 tokenizer와 LLM embedding을 거쳐 $E_t\in\mathbb R^{1\times T\times4096}$가 된다.
-3. EFA용 $t_r$는 공개 구현에서 token 평균 $\bar e_t=T^{-1}\sum_qE_{t,q}\in\mathbb R^{1\times4096}$이다. raw instruction word만이 아니라 prompt template token까지 포함될 수 있다.
+2. prompt/instruction은 tokenizer와 LLM embedding을 거쳐 $`E_t\in\mathbb R^{1\times T\times4096}`$가 된다.
+3. EFA용 $`t_r`$는 공개 구현에서 token 평균 $`\bar e_t=T^{-1}\sum_qE_{t,q}\in\mathbb R^{1\times4096}`$이다. raw instruction word만이 아니라 prompt template token까지 포함될 수 있다.
 
 ### 6.2 Stage 1: EFA-Routing
 
-4. image 1의 SigLIP branch는 256 patch 뒤에 64 learnable aggregation token을 붙인다. sequence는 대략 $1\times320\times d_v^{S}$.
-5. 각 ViT block에서 self-attention residual을 수행하고, $\bar e_t$에서 만든 $\gamma^S,\beta^S$를 320개 token 모두에 channel-wise broadcast한 뒤 FFN residual을 수행한다.
+4. image 1의 SigLIP branch는 256 patch 뒤에 64 learnable aggregation token을 붙인다. sequence는 대략 $`1\times320\times d_v^{S}`$.
+5. 각 ViT block에서 self-attention residual을 수행하고, $`\bar e_t`$에서 만든 $`\gamma^S,\beta^S`$를 320개 token 모두에 channel-wise broadcast한 뒤 FFN residual을 수행한다.
 6. encoder 마지막에는 앞 256 patch를 버리고 64 aggregation token만 취한다. DINOv2 branch에도 같은 과정이 독립 width로 진행된다.
-7. 두 branch의 64 token을 각각 projector로 $1\times64\times4096$에 맞춘다.
-8. $\bar e_t$에서 gate logits 2개를 만들고 softmax해 $\alpha_S,\alpha_D$를 얻는다. 대응되는 64개 위치를 $\alpha_SV_S+(1-\alpha_S)V_D$로 합쳐 image 1의 64 token을 만든다.
-9. image 2에도 4-8을 적용한다. 결과를 image 축으로 concatenate하면 visual token은 $M=2\times64=128$개다. 여기까지 원 patch $2\times256=512$개 대비 4× 감소다. 공개 설정은 proprio projector의 1 token도 붙여 LLM 앞 visual/proprio prefix가 129개가 된다.
+7. 두 branch의 64 token을 각각 projector로 $`1\times64\times4096`$에 맞춘다.
+8. $`\bar e_t`$에서 gate logits 2개를 만들고 softmax해 $`\alpha_S,\alpha_D`$를 얻는다. 대응되는 64개 위치를 $`\alpha_SV_S+(1-\alpha_S)V_D`$로 합쳐 image 1의 64 token을 만든다.
+9. image 2에도 4-8을 적용한다. 결과를 image 축으로 concatenate하면 visual token은 $`M=2\times64=128`$개다. 여기까지 원 patch $`2\times256=512`$개 대비 4× 감소다. 공개 설정은 proprio projector의 1 token도 붙여 LLM 앞 visual/proprio prefix가 129개가 된다.
 
 여기서 “dual aggregation”은 두 encoder 출력을 **token 수 128로 붙이는 것**이 아니라, 같은 aggregation slot끼리 soft mixture하여 64개로 유지하는 단계다. camera가 둘이면 그 결과가 camera별로 64개씩 이어진다.
 
 ### 6.3 placeholder와 CAtten 입력
 
-10. instruction prompt 뒤에 $KD=56$개 action placeholder token과 stop token 1개를 붙인다. action 위치 embedding은 0으로 만든다.
+10. instruction prompt 뒤에 $`KD=56`$개 action placeholder token과 stop token 1개를 붙인다. action 위치 embedding은 0으로 만든다.
 11. LLM 입력 순서는 개념상 `[BOS, 128 visual, 1 proprio, T text, 56 action, 1 stop]`이다. padding이 있다면 실제 mask가 padding을 차단한다.
 12. 기본 causal mask에서 마지막 57×57 action+stop block만 0으로 열어 CAtten mask를 만든다. 그 결과:
     - VL token은 미래 action을 못 본다.
@@ -825,17 +762,17 @@ assistive robotics, household automation, industrial assembly의 계산 접근�
 ### 6.4 Stage 2와 Stage 3의 layer별 상호작용
 
 13. LFP target이 아닌 얕은 layer는 128 visual token을 모두 계산한다. PDF schedule과 현재 코드 schedule의 exact layer는 다르므로 재현 시 config를 기록해야 한다.
-14. LFP target layer에서는 현재 text hidden을 평균해 $t_l$을 만들고, visual hidden에 FiLM을 적용한 뒤 2-class keep score를 낸다.
-15. BOS, text, action, stop은 강제 유지한다. visual 128개 중 $\lfloor128\beta_l\rfloor$개 top-k만 뽑아 해당 layer의 attention+FFN을 계산한다.
+14. LFP target layer에서는 현재 text hidden을 평균해 $`t_l`$을 만들고, visual hidden에 FiLM을 적용한 뒤 2-class keep score를 낸다.
+15. BOS, text, action, stop은 강제 유지한다. visual 128개 중 $`\lfloor128\beta_l\rfloor`$개 top-k만 뽑아 해당 layer의 attention+FFN을 계산한다.
 16. 선택 sequence에 CAtten mask의 row/column subset을 적용한다. 즉 LFP가 계산 node 수를 줄이고, CAtten이 남은 node 사이 허용 dependency를 정한다. 두 모듈의 역할은 겹치지 않는다.
 17. 계산한 hidden을 원 위치에 scatter하고 skip visual token은 이전 state를 유지한다. 다음 layer router는 128개 visual 후보를 다시 평가할 수 있다.
 
 ### 6.5 action head와 출력
 
-18. 마지막 LLM layer에서 action 위치 hidden은 $H_A\in\mathbb R^{1\times56\times4096}$다.
-19. 공개 L1 head는 이를 $1\times8\times(7\cdot4096)$로 reshape한다. 즉 각 환경 step에 대응하는 7개 placeholder hidden을 concatenate한다.
-20. 2개의 residual MLP block을 가진 head가 step마다 7차원 normalized action을 내어 $\hat A\in\mathbb R^{1\times8\times7}$을 만든다.
-21. LIBERO의 q01-q99 bounds 통계로 $[-1,1]$ 값을 실제 action scale로 되돌린다. ALOHA는 absolute joint angle을 보존하기 위해 min-max bounds 방식을 사용한다.
+18. 마지막 LLM layer에서 action 위치 hidden은 $`H_A\in\mathbb R^{1\times56\times4096}`$다.
+19. 공개 L1 head는 이를 $`1\times8\times(7\cdot4096)`$로 reshape한다. 즉 각 환경 step에 대응하는 7개 placeholder hidden을 concatenate한다.
+20. 2개의 residual MLP block을 가진 head가 step마다 7차원 normalized action을 내어 $`\hat A\in\mathbb R^{1\times8\times7}`$을 만든다.
+21. LIBERO의 q01-q99 bounds 통계로 $`[-1,1]`$ 값을 실제 action scale로 되돌린다. ALOHA는 absolute joint angle을 보존하기 위해 min-max bounds 방식을 사용한다.
 
 이 forward에서 세 module의 상호작용을 한 문장으로 요약하면: **EFA는 LLM에 들어갈 정보의 표현과 token 수를 바꾸고, LFP는 각 LLM layer에서 실제 계산할 visual token을 선택하며, CAtten은 선택된 multimodal sequence 안의 정보 흐름과 병렬 action decoding을 정의한다.**
 
@@ -850,25 +787,22 @@ assistive robotics, household automation, industrial assembly의 계산 접근�
 | 항목 | LIBERO | ALOHA real world |
 |---|---:|---:|
 | backbone | OpenVLA 7B | OpenVLA 7B |
-| chunk $K$ | 8 | 25 |
-| action $D$ | PDF 예시는 7; 공개 코드 7 | PDF 미기재; 공개 코드 14 |
-| LoRA | rank 32, $\alpha=64$ | rank 32, $\alpha=64$ |
+| chunk $`K`$ | 8 | 25 |
+| action $`D`$ | PDF 예시는 7; 공개 코드 7 | PDF 미기재; 공개 코드 14 |
+| LoRA | rank 32, $`\alpha=64`$ | rank 32, $`\alpha=64`$ |
 | steps | 60K | 80K |
 | global batch | 64 | 32 |
-| LR | initial $5\times10^{-4}$ | $5\times10^{-4}$, 50K 뒤 $5\times10^{-5}$ |
+| LR | initial $`5\times10^{-4}`$ | $`5\times10^{-4}`$, 50K 뒤 $`5\times10^{-5}`$ |
 | checkpoint selection | 10K 간격, best | 60K부터 10K 간격, best |
 | demos | suite당 10 task×50 demos | Task 1-5: 45/45/30/30/45 |
 
 ### 7.2 공개 코드로 보충되는 학습 graph
 
-공개 training entry point는 continuous action용 `use_l1_regression=True`, diffusion off, proprio on을 사용한다. RLDS dataset은 현재 관측에서 미래 $K-1$개까지 action window를 모으고, image augmentation을 켠다.
+공개 training entry point는 continuous action용 `use_l1_regression=True`, diffusion off, proprio on을 사용한다. RLDS dataset은 현재 관측에서 미래 $`K-1`$개까지 action window를 모으고, image augmentation을 켠다.
 
-$$
-\mathcal L_{\mathrm{L1}}
-=\frac{1}{BKD}\sum_{b=1}^{B}\sum_{k=0}^{K-1}\sum_{j=1}^{D}
-\left|A_{bkj}-\hat A_{bkj}\right|.
-\qquad\text{[해설용 수식]}
-$$
+```math
+\mathcal L_{\mathrm{L1}} =\frac{1}{BKD}\sum_{b=1}^{B}\sum_{k=0}^{K-1}\sum_{j=1}^{D} \left|A_{bkj}-\hat A_{bkj}\right|. \qquad\text{[해설용 수식]}
+```
 
 이 식은 논문에 번호로 제시되지 않았고 공개 코드의 `torch.nn.L1Loss()`를 풀어 쓴 것이다. ground-truth action과 predicted continuous action의 모든 성분 평균 절대오차다. action head → action hidden → LLM/CAtten/LFP selected paths → vision projector/router/EFA로 gradient가 흐른다.
 
@@ -886,14 +820,14 @@ $$
 | LFP token router + LFP FiLM MLP | trainable | name에 `router`가 포함된 LFP component를 명시적으로 unfreeze. |
 | CAtten mask | non-parametric | mask pattern 자체는 학습 parameter가 아님. 같은 LLM/LoRA attention weight를 다른 허용 edge에 사용. |
 | proprio projector | trainable | 별도 initialized module. |
-| L1 regression action head | trainable | $7d\to d\to D$ MLPResNet, 두 residual block. |
+| L1 regression action head | trainable | $`7d\to d\to D`$ MLPResNet, 두 residual block. |
 
 이 상태는 [현재 공개 `finetune.py`](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/vla-scripts/finetune.py#L957-L1094)를 코드 읽기로 정리한 것이다. PDF는 “LoRA rank/alpha” 외에 위 frozen/trainable 목록을 완전하게 적지 않는다.
 
 ### 7.4 gradient 경로의 중요한 세부
 
 1. **EFA query/FiLM:** patch를 버리기 전에 action loss가 query-attention을 통해 필요한 patch feature를 모으도록 학습한다.
-2. **aggregation gate:** softmax mixture이므로 두 branch에 모두 gradient가 가지만 작은 $\alpha$ branch는 gradient가 약해진다.
+2. **aggregation gate:** softmax mixture이므로 두 branch에 모두 gradient가 가지만 작은 $`\alpha`$ branch는 gradient가 약해진다.
 3. **LFP hard top-k:** index 선택은 불연속이다. 공개 코드에는 router auxiliary loss가 없고, 선택된 token의 keep probability가 FFN output을 곱하는 경로로 router를 학습한다.
 4. **skip token:** 해당 layer의 attention/FFN gradient는 없지만 identity state가 다음 layer로 전달되어 나중에 다시 선택될 수 있다.
 5. **CAtten:** mask는 미분 대상이 아니며, action loss는 허용된 attention edge를 통해 앞선 VL state와 모든 action state에 흐른다.
@@ -948,19 +882,19 @@ function COGVLA_POLICY(observation, instruction, proprio):
 
 ### 8.2 policy refresh와 action throughput은 다르다
 
-Table 3의 CogVLA 0.091 s와 87.9 Hz는 $8/0.091=87.9$로 정확히 연결된다. 따라서 87.9 Hz는 **한 초에 산출한 action step 수**이고, 새 관측을 받아 정책을 다시 호출하는 최대 rate는 $1/0.091\approx11.0$ policy calls/s다. 공개 LIBERO evaluator는 8개 action을 queue에 넣어 모두 open-loop 실행한 뒤 다시 관측/호출한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/experiments/robot/libero/run_libero_eval.py#L297-L345)
+Table 3의 CogVLA 0.091 s와 87.9 Hz는 $`8/0.091=87.9`$로 정확히 연결된다. 따라서 87.9 Hz는 **한 초에 산출한 action step 수**이고, 새 관측을 받아 정책을 다시 호출하는 최대 rate는 $`1/0.091\approx11.0`$ policy calls/s다. 공개 LIBERO evaluator는 8개 action을 queue에 넣어 모두 open-loop 실행한 뒤 다시 관측/호출한다. [공개 코드 확인](https://github.com/iLearn-Lab/NeurIPS25-CogVLA/blob/9dc707f53ee6b19b19e06dfbddbf8e4b0aa351e5/experiments/robot/libero/run_libero_eval.py#L297-L345)
 
 이를 구분하면 다음과 같다.
 
 | 개념 | CogVLA LIBERO 공개 수치/설정 | 의미 |
 |---|---:|---|
-| chunk inference latency | 0.091 s | 한 관측에서 $K=8$ action을 만드는 model call 시간 |
-| action production throughput | 87.9 action/s | $8/0.091$; 환경 실행 rate와 반드시 같지 않음 |
+| chunk inference latency | 0.091 s | 한 관측에서 $`K=8`$ action을 만드는 model call 시간 |
+| action production throughput | 87.9 action/s | $`8/0.091`$; 환경 실행 rate와 반드시 같지 않음 |
 | policy refresh ceiling | 약 11.0 call/s | preprocessing/통신/환경 step 제외한 역수 |
 | open-loop horizon | 8 env steps | evaluator default가 full chunk를 실행한 뒤 requery |
 | actuator control frequency | 논문 미기재 | simulator/robot step duration이 필요 |
 
-ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 생성해도 25 step 동안 관측 feedback 없이 실행하면 disturbance 대응성이 낮아진다. action chunk의 일부만 실행하고 재계획하면 closed-loop성은 올라가지만 model call이 증가해 throughput 이점이 줄어든다. 논문은 이 trade-off curve를 보고하지 않는다.
+ALOHA의 $`K=25`$에서도 같은 구분이 더 중요하다. 25 action을 병렬 생성해도 25 step 동안 관측 feedback 없이 실행하면 disturbance 대응성이 낮아진다. action chunk의 일부만 실행하고 재계획하면 closed-loop성은 올라가지만 model call이 증가해 throughput 이점이 줄어든다. 논문은 이 trade-off curve를 보고하지 않는다.
 
 ### 8.3 무엇이 측정됐고 무엇이 측정되지 않았나
 
@@ -984,7 +918,7 @@ ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 
 | precision | PDF 미기재 | 공개 코드는 BF16이나 논문 측정과 동일한지 미확정 |
 | batch | training global 64/32 | inference batch, timing 반복 횟수 |
 | input | LIBERO instruction 평균 10.48 words, multi-camera는 공개 코드에서 2/3 images | timing 시 text token 수, image resolution의 PDF 명시 |
-| output | LIBERO $K=8$, real $K=25$ | action execution period, chunk overlap/ensemble 여부 |
+| output | LIBERO $`K=8`$, real $`K=25`$ | action execution period, chunk overlap/ensemble 여부 |
 | metric | SR, rank, latency, action-Hz, FLOPs, h/10k steps | latency percentile, energy, peak memory, confidence interval |
 
 ### 9.2 Table 1: LIBERO simulation 성능 [PDF p.7]
@@ -994,9 +928,9 @@ ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 
 | Diffusion Policy | 78.3 | 92.5 | 68.3 | 50.5 | 72.4 |
 | Octo fine-tuned | 78.9 | 85.7 | 84.6 | 51.1 | 75.1 |
 | OpenVLA | 84.7 | 88.4 | 79.2 | 53.7 | 76.5 |
-| $\pi_0$ fine-tuned | 96.8 | 98.8 | 95.8 | 85.2 | 94.2 |
-| $\pi_0$-Fast | 96.4 | 96.8 | 88.6 | 60.2 | 85.5 |
-| $\pi_{0.5}$-KI | 98.0 | 97.8 | 95.6 | 85.8 | **96.0** |
+| $`\pi_0`$ fine-tuned | 96.8 | 98.8 | 95.8 | 85.2 | 94.2 |
+| $`\pi_0`$-Fast | 96.4 | 96.8 | 88.6 | 60.2 | 85.5 |
+| $`\pi_{0.5}`$-KI | 98.0 | 97.8 | 95.6 | 85.8 | **96.0** |
 | OpenVLA-OFT | 97.6 | 98.4 | 97.9 | 94.5 | 97.1 |
 | SpatialVLA | 88.2 | 89.9 | 78.6 | 55.5 | 78.1 |
 | PD-VLA† | 95.5 | 96.7 | 94.9 | 91.7 | 94.7 |
@@ -1007,10 +941,10 @@ ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 
 
 `†`는 저자 재현 결과다. 500 trial/suite라고 했으므로 10 task에 균등하면 task당 50회와 맞지만, suite별 성공 수 raw log는 제공하지 않는다.
 
-- CogVLA 평균: $389.4/4=97.35\%\to97.4\%$. [리뷰어 재계산]
-- OpenVLA 대비: $97.4-76.5=20.9$ percentage point. 이 차이는 architecture뿐 아니라 action-chunk continuous head/training recipe 차이를 포함할 수 있다.
-- OpenVLA-OFT 대비: $+0.3$ pp로 작다. seed variation을 고려하면 통계적 우월성을 판단할 raw paired trials가 필요하다.
-- **표 오류 의심:** $\pi_{0.5}$-KI의 네 suite 단순 평균은 $(98.0+97.8+95.6+85.8)/4=94.3\%$이지 96.0%가 아니다. 평균 산법이 별도라면 논문이 설명하지 않는다.
+- CogVLA 평균: $`389.4/4=97.35\%\to97.4\%`$. [리뷰어 재계산]
+- OpenVLA 대비: $`97.4-76.5=20.9`$ percentage point. 이 차이는 architecture뿐 아니라 action-chunk continuous head/training recipe 차이를 포함할 수 있다.
+- OpenVLA-OFT 대비: $`+0.3`$ pp로 작다. seed variation을 고려하면 통계적 우월성을 판단할 raw paired trials가 필요하다.
+- **표 오류 의심:** $`\pi_{0.5}`$-KI의 네 suite 단순 평균은 $`(98.0+97.8+95.6+85.8)/4=94.3\%`$이지 96.0%가 아니다. 평균 산법이 별도라면 논문이 설명하지 않는다.
 
 ### 9.3 Table 2: ALOHA main real-world 성능 [PDF p.7]
 
@@ -1025,7 +959,7 @@ ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 
 | OpenVLA-OFT† | 8, 7 | 8, 6, 5 | 7, 7, 5 | 56.7 |
 | **CogVLA** | **9, 8** | **8, 7, 7** | **9, 8, 6** | **70.0** |
 
-`*`는 원 논문 보고, `†`는 CogVLA 저자 재현이다. CogVLA의 70%는 모든 intermediate cell의 평균이 아니라 각 composite task의 final completion인 8/10, 7/10, 6/10을 합친 $21/30$이다. sample 수가 task당 10으로 작고 confidence interval/error bar가 없다. 동일한 physical reset, operator intervention, failure taxonomy도 미기재다.
+`*`는 원 논문 보고, `†`는 CogVLA 저자 재현이다. CogVLA의 70%는 모든 intermediate cell의 평균이 아니라 각 composite task의 final completion인 8/10, 7/10, 6/10을 합친 $`21/30`$이다. sample 수가 task당 10으로 작고 confidence interval/error bar가 없다. 동일한 physical reset, operator intervention, failure taxonomy도 미기재다.
 
 ### 9.4 Table 3: efficiency [PDF p.8]
 
@@ -1040,20 +974,20 @@ ALOHA의 $K=25$에서도 같은 구분이 더 중요하다. 25 action을 병렬 
 
 재계산:
 
-- OpenVLA 대비 latency speedup $0.254/0.091=2.79\times$.
-- OpenVLA 대비 action throughput $87.9/3.9=22.54\times$. AR 1-action call과 8-action chunk를 action/s로 비교한 수치다.
-- OpenVLA 대비 FLOPs 절감 배율 $8.48/2.72=3.12\times$, 절대 감소율 67.9%.
-- OpenVLA 대비 training wall-time 배율 $11.7/4.7=2.49\times$.
-- PDF 60K step를 단순 외삽하면 CogVLA $4.7\times6=28.2$ wall-clock hour, OpenVLA $70.2$ hour. 4 GPU가 전시간 사용됐다고 가정한 파생 GPU-hour는 각각 112.8, 280.8이다. 이는 표가 직접 보고한 총시간이 아니며 통신/평가 overhead 일정 가정이 필요하다.
+- OpenVLA 대비 latency speedup $`0.254/0.091=2.79\times`$.
+- OpenVLA 대비 action throughput $`87.9/3.9=22.54\times`$. AR 1-action call과 8-action chunk를 action/s로 비교한 수치다.
+- OpenVLA 대비 FLOPs 절감 배율 $`8.48/2.72=3.12\times`$, 절대 감소율 67.9%.
+- OpenVLA 대비 training wall-time 배율 $`11.7/4.7=2.49\times`$.
+- PDF 60K step를 단순 외삽하면 CogVLA $`4.7\times6=28.2`$ wall-clock hour, OpenVLA $`70.2`$ hour. 4 GPU가 전시간 사용됐다고 가정한 파생 GPU-hour는 각각 112.8, 280.8이다. 이는 표가 직접 보고한 총시간이 아니며 통신/평가 overhead 일정 가정이 필요하다.
 - OpenVLA-OFT 대비 latency 감소율 31.1%, throughput 배율 1.45×, FLOPs 배율 3.11×, training time 배율 2.66×.
-- Stage 1을 빼면 full 대비 latency가 $0.162/0.091=1.78\times$ 느려지고 FLOPs가 97.8% 늘어난다. Stage 2를 빼면 1.29× 느리고 FLOPs가 29.4% 늘어난다. 두 절감 효과는 단순 가산적이지 않다.
+- Stage 1을 빼면 full 대비 latency가 $`0.162/0.091=1.78\times`$ 느려지고 FLOPs가 97.8% 늘어난다. Stage 2를 빼면 1.29× 느리고 FLOPs가 29.4% 늘어난다. 두 절감 효과는 단순 가산적이지 않다.
 
 가장 큰 해석 한계는 측정 boundary다. throughput 열은 chunk 모델에서 `K / latency`이고 OpenVLA에서 `1 / latency`이므로 batch throughput이나 policy refresh throughput이 아니다. FLOPs가 3.12× 줄었는데 latency는 2.79×인 것은 router/top-k/gather/scatter, memory movement, kernel launch 같은 비-FLOP overhead가 남는다는 정상적인 결과다.
 
 ### 9.5 Figure 1-4 [PDF p.1, p.4-5, p.8]
 
 - **Fig.1:** 기존 vision compression의 distractor 보존, CogVLA의 instruction-relevant selection, CAtten의 action coherence, 효율/성능 요약을 한 장에 묶는다. 선택 사례+개념도+bar chart이므로 causal evidence는 Tables 3-6에서 찾아야 한다.
-- **Fig.2:** EFA 두 branch, aggregation router, LFP, CAtten, action chunk, 다음 관측의 feedback loop를 연결한다. action 예시 $\Delta T=[0.3,-0.5,-0.1]$, $\Delta R=[5^\circ,12^\circ,-9^\circ]$, gripper=1을 보여 주지만 dataset-wide 단위 convention은 아니다.
+- **Fig.2:** EFA 두 branch, aggregation router, LFP, CAtten, action chunk, 다음 관측의 feedback loop를 연결한다. action 예시 $`\Delta T=[0.3,-0.5,-0.1]`$, $`\Delta R=[5^\circ,12^\circ,-9^\circ]`$, gripper=1을 보여 주지만 dataset-wide 단위 convention은 아니다.
 - **Fig.3(a):** patch+aggregation self-attention 뒤 FiLM/FFN과 query 유지. **Fig.3(b):** dual-aggregation token 중 layer computation 선택. **Fig.3(c):** OpenVLA causal, OpenVLA-OFT action chunk, CoT-VLA discrete parallel, CogVLA continuous parallel+LFP를 mask 그림으로 비교한다.
 - **Fig.4:** LIBERO/ALOHA의 선택된 성공·실패 sequence와 Table 3 수치를 시각화한다. “31% inference time 감소”는 OpenVLA-OFT 기준, “3.1× FLOPs/2.7× training”도 OpenVLA-OFT에 대한 값이다.
 
@@ -1188,7 +1122,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 2. **single-suite ablation:** 모든 component/sparsity ablation이 Spatial SR 중심이다. Object/Goal/Long과 real robot의 module별 효과가 없다.
 3. **best-checkpoint selection:** 10K 간격 best checkpoint를 보고하지만 어떤 validation 기준으로 골랐는지, test와 분리됐는지 불명확하다.
 4. **작은 real-world N:** task별 10 trial이라 한 번 성공/실패가 10 pp다. confidence interval과 evaluator blinding이 없다.
-5. **Table 불일치:** $\pi_{0.5}$-KI 평균, Table 7의 표준편차 범위 문장, Table 8의 평균 정의, Appendix C.3의 Table cross-reference가 맞지 않는다.
+5. **Table 불일치:** $`\pi_{0.5}`$-KI 평균, Table 7의 표준편차 범위 문장, Table 8의 평균 정의, Appendix C.3의 Table cross-reference가 맞지 않는다.
 6. **latency protocol 미완전:** 평균인지 median인지, warm-up/JIT, sync, batch, preprocessing, network, camera/robot loop 포함 여부가 없다.
 
 ### 10.4 공개 이후 재현성 신호
@@ -1218,7 +1152,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 #### 모델
 
 - [ ] encoder당 aggregation query 64, image당 최종 fused token 64인지 tensor assertion을 넣는다.
-- [ ] SigLIP/DINOv2 projector 뒤 shape가 같고 $\alpha$ 합이 1인지 검증한다.
+- [ ] SigLIP/DINOv2 projector 뒤 shape가 같고 $`\alpha`$ 합이 1인지 검증한다.
 - [ ] EFA FiLM이 모든 ViT block/hidden channel에 broadcast되는지 확인한다.
 - [ ] LFP schedule의 index convention, max/min clamp, target layer 8-31 여부를 로그로 남긴다.
 - [ ] BOS/text/action/stop이 강제 keep되고 visual token만 top-k 경쟁하는지 확인한다.
@@ -1258,7 +1192,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 - 두 ViT는 patch+query 320-token attention을 image×encoder 수만큼 수행하므로 Stage 1이 LLM token을 줄여도 vision encoder cost는 남는다.
 - LFP의 dynamic top-k, mask row/column gather, attention, scatter-back은 irregular memory access와 kernel launch를 만든다.
 - CAtten은 custom 4D mask와 action block patching을 필요로 한다. 표준 causal-only optimized kernel에 바로 맞지 않을 수 있다.
-- $K=25,D=14$인 ALOHA는 action+stop block이 351 token이라 CAtten bottom-right 면적이 LIBERO보다 훨씬 크다.
+- $`K=25,D=14`$인 ALOHA는 action+stop block이 351 token이라 CAtten bottom-right 면적이 LIBERO보다 훨씬 크다.
 - unified memory 128GB는 모델 수용에는 유리하지만 LPDDR bandwidth와 power mode에 따라 latency가 크게 달라진다.
 
 ### 11.2 단계별 포팅 gate
@@ -1267,9 +1201,9 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 2. **정적 부분 분리:** SigLIP/DINOv2와 projector/action head를 TensorRT engine 후보로 분리하고, dynamic LFP+CAtten LLM은 우선 PyTorch/SDPA로 유지한다. E2E boundary를 잃지 않도록 stage별 CUDA event와 wall clock을 함께 측정한다.
 3. **CAtten kernel:** prefix-causal/action-bidirectional mask를 지원하는 attention implementation을 만들고 reference SDPA와 output/gradient parity를 검사한다. 단순 causal TensorRT-LLM engine에 mask 의미를 억지로 맞추지 않는다.
 4. **LFP fusion:** router softmax→top-k→gather→attention/FFN→scatter를 가능한 한 fused/custom plugin으로 묶는다. token FLOPs 감소와 별개로 routing overhead가 얼마인지 Nsight Systems로 측정한다.
-5. **정밀도 실험:** vision/LLM matmul은 BF16→FP8/INT8/FP4 후보를 비교하되, router logits·FiLM·top-k threshold는 BF16/FP32 유지 실험을 먼저 한다. threshold margin $|R_{(k)}-R_{(k+1)}|$을 로깅해 quantization이 token set을 바꾸는지 확인한다.
+5. **정밀도 실험:** vision/LLM matmul은 BF16→FP8/INT8/FP4 후보를 비교하되, router logits·FiLM·top-k threshold는 BF16/FP32 유지 실험을 먼저 한다. threshold margin $`|R_{(k)}-R_{(k+1)}|`$을 로깅해 quantization이 token set을 바꾸는지 확인한다.
 6. **KV cache 재검토:** CogVLA L1 path는 한 번의 parallel prefill이 중심이라 AR decode 최적화의 이점이 제한적이다. TensorRT-LLM의 paged KV cache보다 custom prefill/mask와 vision token 경량화가 우선일 수 있다.
-7. **제어 gate:** $H_{exec}\in\{1,2,4,8\}$ action만 실행하고 재계획하는 실험으로 SR, collision, disturbance recovery, policy-call Hz를 함께 본다. fastest action-Hz가 최선의 closed-loop policy는 아니다.
+7. **제어 gate:** $`H_{exec}\in\{1,2,4,8\}`$ action만 실행하고 재계획하는 실험으로 SR, collision, disturbance recovery, policy-call Hz를 함께 본다. fastest action-Hz가 최선의 closed-loop policy는 아니다.
 8. **최종 승인 조건:** 동일 LIBERO initial states에서 SR 열화 ≤사전 기준, p95 camera-to-action latency, peak memory, 평균/최대 power, thermal throttling, 30분 지속 실행을 모두 통과해야 “Thor 이식 성공”이라 부른다.
 
 ### 11.3 공정한 Thor 비교표 설계
@@ -1302,7 +1236,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 
 공개 코드에서는 아니다. 선택된 token만 계산한 뒤 원 sequence에 scatter하고, skip token은 그대로 남는다. 다음 layer router가 다시 고를 수 있다.
 
-### Q4. $\beta_l=0.8$이면 80th percentile 이상만 남기나?
+### Q4. $`\beta_l=0.8`$이면 80th percentile 이상만 남기나?
 
 원문 문장대로면 상위 20%가 남아 retention 0.8과 모순된다. 공개 구현은 top-k 80%를 남긴다. 재현은 코드의 keep fraction 정의를 써야 한다.
 
@@ -1316,7 +1250,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 
 ### Q7. 87.9 Hz로 robot policy를 87.9번/초 갱신하나?
 
-아니다. $K=8$ action을 0.091초에 만들어서 87.9 action/s다. model-only policy call은 최대 약 11회/s이고 공개 evaluator는 8 action을 모두 실행한 후 requery한다.
+아니다. $`K=8`$ action을 0.091초에 만들어서 87.9 action/s다. model-only policy call은 최대 약 11회/s이고 공개 evaluator는 8 action을 모두 실행한 후 requery한다.
 
 ### Q8. FLOPs 3.12× 절감이면 latency도 3.12× 빨라야 하나?
 
@@ -1389,7 +1323,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 | Eq.3 | 4 | §5.2.1 placeholder | 완료, shape 불일치 지적 |
 | Eq.4 | 4 | §5.2.1 parallel call | 완료 |
 | Eq.5 | 4 | §5.2.2 branch EFA | 완료 |
-| Eq.6 | 4 | §5.2.2 branch fusion | 완료, $M/N$ 지적 |
+| Eq.6 | 4 | §5.2.2 branch fusion | 완료, $`M/N`$ 지적 |
 | Eq.7 | 4 | §5.2.2 route softmax | 완료 |
 | Eq.8 | 4 | §5.2.2 layer transition | 완료 |
 | Eq.9 | 4 | §5.2.2 final chunk | 완료 |
@@ -1399,7 +1333,7 @@ Figure 8. LIBERO-Spatial/Object/Goal/Long의 선택된 성공 trajectory. task i
 | Eq.13 | 6 | §5.2.3.2 | 두 줄 분리, 괄호/코드 차이 지적 |
 | Eq.14 | 6 | §5.2.3.2 | 2-class code shape 완료 |
 | Eq.15 | 6 | §5.2.3.2 | percentile 모순·top-k 예 완료 |
-| Eq.16 | 6 | §5.2.3.3 | $KD$ token vs hidden width 완료 |
+| Eq.16 | 6 | §5.2.3.3 | $`KD`$ token vs hidden width 완료 |
 | Eq.17 | 6 | §5.2.3.3 | QKV 생략·mask 예 완료 |
 | Eq.18 | 7 | §5.2.3.3 | action bidirectional 예 완료 |
 | Eq.19 | 7 | §5.2.3.3 | unified 계산/FLOPs 구분 완료 |
