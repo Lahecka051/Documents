@@ -185,7 +185,7 @@ Q_h = XW_h^Q,\qquad K_h = XW_h^K,
 ```
 
 ```math
-A_h = \operatorname{softmax}\left(\frac{Q_hK_h^\top}{\sqrt{d_h}}\right).
+A_h = \mathrm{softmax}\left(\frac{Q_hK_h^\top}{\sqrt{d_h}}\right).
 ```
 
 `A_h`의 shape은 `(N_ViT+1) x (N_ViT+1)`이다. 이 중 논문이 쓰는 값은 CLS가 query이고 patch `j`가 key인 행 원소다.
@@ -567,7 +567,7 @@ budget이 1이면 A를 남긴다. 실제 H는 공개 구현에서 16이고, `top
 **[공개 코드 확인, commit `c5978a...`]** LLaVA-NeXT 구현은 ViT encoder layer 0과 22의 `q_proj`, `k_proj`에 forward hook을 단다. Q/K를 `[B_partitions,H,N_all,d_h]`로 reshape한 뒤 다음 attention을 재계산한다. [공식 구현 lines 46-96](https://github.com/hasanar1f/HiRED/blob/c5978a580c88596699c9067ebed031fe4647e818/transformers/src/transformers/models/llava_next/modeling_llava_next.py#L46-L96)
 
 ```math
-A=\operatorname{softmax}\left(QK^\top d_h^{-1/2}\right).
+A=\mathrm{softmax}\left(QK^\top d_h^{-1/2}\right).
 ```
 
 그 뒤 `[:, :, 0, -N_ViT:]`를 취한다. 즉 query index 0인 CLS 행, 마지막 576 key 위치인 patch 부분이며, head dimension은 합산한다. layer index는 정확히 0과 22, head 수는 16으로 hard-code되어 있다. Figure 3은 `Layer 22-23`을 함께 시각화하지만 Algorithm 1과 공개 코드는 selection에 **layer 22만** 쓴다. 따라서 본문의 "final layer"는 느슨한 서술이며 "물리적으로 가장 마지막 index 23을 쓴다"고 바꾸어 읽으면 안 된다. PDF p.5의 문장도 `(l_final = 22` 뒤 닫는 괄호가 빠진 듯 조판되어 있는데, 원문 표기는 그대로 두고 Eq.(2)와 코드가 지시하는 해석을 채택한다. [공식 구현 lines 535-563](https://github.com/hasanar1f/HiRED/blob/c5978a580c88596699c9067ebed031fe4647e818/transformers/src/transformers/models/llava_next/modeling_llava_next.py#L535-L563)
@@ -583,7 +583,7 @@ A=\operatorname{softmax}\left(QK^\top d_h^{-1/2}\right).
 즉 코드가 실제로 쓰는 content score는 다음에 가깝다. [해설용 수식, 원문 식 아님]
 
 ```math
-\tilde{s}_{p_i}= \sum_{j\in T_{p_i}} \mathbf{1}\left[j\in\operatorname{Top100} \left(\sum_h a_{l_{init},h}^{p_0}\right)\right].
+\tilde{s}_{p_i}= \sum_{j\in T_{p_i}} \mathbf{1}\left[j\in\mathrm{Top100} \left(\sum_h a_{l_{init},h}^{p_0}\right)\right].
 ```
 
 이는 raw attention mass가 아니라 "초기층 top-100 salient 위치 중 이 구역에 몇 개가 있는가"다. 두 방법은 ranking과 분포가 달라질 수 있다. 예를 들어 한 crop에 매우 큰 attention 하나가 있고 다른 crop에 중간 attention 여러 개가 있으면 Eq.(1)과 binary count가 다른 quota를 줄 수 있다. 리뷰는 이를 조용히 동일시하지 않는다.

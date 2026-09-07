@@ -399,7 +399,7 @@ f^{\mathrm{SigLIP}}\in\mathbb R^{N_v\times1024},\qquad f^{\mathrm{DINO}}\in\math
 ```
 
 ```math
-f^{\mathrm{vis}}=\operatorname{Concat}_{\mathrm{channel}} \left(f^{\mathrm{SigLIP}},f^{\mathrm{DINO}}\right) \in\mathbb R^{N_v\times2176}.
+f^{\mathrm{vis}}=\mathrm{Concat}_{\mathrm{channel}} \left(f^{\mathrm{SigLIP}},f^{\mathrm{DINO}}\right) \in\mathbb R^{N_v\times2176}.
 ```
 
 두 feature는 token 축이 아니라 channel 축으로 붙는다. token 위치가 대응한다는 가정이 필요하며, 서로 다른 encoder의 patch ordering/resolution을 같은 $`N_v`$로 맞춰야 한다. projector는 이를 $`N_v\times d`$로 바꾼다.
@@ -499,7 +499,7 @@ x_\tau=\sqrt{\bar\alpha_\tau}x_0+\sqrt{1-\bar\alpha_\tau}\epsilon
 앞 예시에서 모델 예측이 $`\hat\eta=[0.9,-0.4]`$라면
 
 ```math
-\eta-\hat\eta=[0.1,-0.1],\qquad \operatorname{MSE}=\frac{0.1^2+(-0.1)^2}{2}=0.01.
+\eta-\hat\eta=[0.1,-0.1],\qquad \mathrm{MSE}=\frac{0.1^2+(-0.1)^2}{2}=0.01.
 ```
 
 **gradient 경로**: detach가 없다면 $`\mathcal L_{\mathrm{fast}}`$는 final action MLP, blocks 31-32, action/timestep/state encoders, fast RGB/point encoders뿐 아니라 $`z_s`$를 만든 blocks 1-30과 slow visual path에도 흐를 수 있다. 이것이 “fast가 slow 안에 있다”는 학습상의 의미다. 다만 freeze 설정에 따라 실제 update되는 모듈은 달라진다.
@@ -612,7 +612,7 @@ Eq.(3)은 단순 합이지만, 같은 blocks 31-32에 두 gradient가 들어간�
 공개 구현에 대응시키면 concat 이후의 개념적 tensor는
 
 ```math
-x_f=\operatorname{concat} (z_s,e^{3D}_t,e^{2D}_t,e^s_t,e^\tau,e^a_\tau) \in\mathbb R^{B\times L_f\times d},
+x_f=\mathrm{concat} (z_s,e^{3D}_t,e^{2D}_t,e^s_t,e^\tau,e^a_\tau) \in\mathbb R^{B\times L_f\times d},
 ```
 
 ```math
@@ -673,7 +673,7 @@ $`y^{slow}`$는 discrete robot-action token 또는 language-plan token이다. �
 2. $`z_s`$를 blocks 31-32/LM head에 넣어 slow target의 cross-entropy $`\mathcal L_{slow}`$를 계산한다.
 3. action chunk를 정규화하고 $`\tau\sim U\{1,\ldots,T\}`$와 $`\eta\sim\mathcal N(0,I)`$를 뽑아 $`\tilde a_\tau`$를 만든다.
 4. $`z_s`$, 최신 fast multimodal tokens, $`\tilde a_\tau`$, timestep을 blocks 31-32/action head에 넣어 $`\hat\eta`$를 만든다.
-5. $`\mathcal L_{fast}=\operatorname{MSE}(\eta,\hat\eta)`$를 계산한다.
+5. $`\mathcal L_{fast}=\mathrm{MSE}(\eta,\hat\eta)`$를 계산한다.
 6. 두 loss를 합해 한 번 역전파한다.
 
 공개 training strategy에서 실제 합은 diffusion loss에 Hugging Face `output.loss`를 더하는 형태다. [공개 training loss 합산](https://github.com/CHEN-H01/Fast-in-Slow/blob/14f73b3e6ebe5e44464e7958b4d086e7dda21941/training/strategies/base_strategy.py#L298-L313) 논문 Eq.(1)의 합과 코드의 `.mean()` MSE, Eq.(2)의 합과 framework token mean 사이에는 reduction 차이가 있으므로 같은 coefficient 1이더라도 gradient scale은 식만 보고 재현할 수 없다.
