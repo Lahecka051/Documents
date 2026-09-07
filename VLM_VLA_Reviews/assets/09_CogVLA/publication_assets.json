@@ -1,0 +1,1075 @@
+{
+  "schema_version": 1,
+  "paper": "CogVLA: Cognition-Aligned Vision-Language-Action Model via Instruction-Driven Routing & Sparsification",
+  "source": {
+    "filename": "NeurIPS-2025-cogvla-cognition-aligned-vision-language-action-models-via-instruction-driven-routing-sparsification-Paper-Conference.pdf",
+    "sha256": "2923f4ede2a3b01ee1331b07a9a7ed84a2fb9356fb69d8773a3aba464771fdb4",
+    "public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf",
+    "page_count": 30,
+    "page_numbering": "1-based physical PDF pages; matches printed pages",
+    "page_dimensions_points": {
+      "width": 612,
+      "height": 792
+    }
+  },
+  "extraction": {
+    "renderer": "pypdfium2 / PDFium",
+    "renderer_package_version": "5.13.0",
+    "method": "Original PDF rasterization and rectangular crop; no redraw or generative editing",
+    "equation_policy": "Original equation numbers preserved. Equations 10 and 13 contain both original lines in one asset each.",
+    "publication_paths": "Relative to 09_CogVLA_Detailed_Review_KO.md"
+  },
+  "rights": "Original figures and equations remain the copyrighted work of the original authors and/or publisher. Limited excerpts accompany independent educational commentary; no Creative Commons license is asserted.",
+  "visual_qa": {
+    "reviewed_asset_count": 29,
+    "status": "passed",
+    "method": "Every final PNG opened and visually checked for clipping, neighboring prose, labels, legends, and readability. Equation 15, 18, and 19 top boundaries refined and rechecked.",
+    "limitation": "Original raster resolution and small labels remain source limitations; no generative upscaling."
+  },
+  "assets": [
+    {
+      "path": "assets/09_CogVLA/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "page": 1,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=1",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          282.5,
+          508,
+          520.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        847,
+        1524,
+        1562
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 715
+      },
+      "sha256": "7bf5cb9d8c9bb7749f56618b0c2977bd04f81f38591c373c42f5a2403a6aa4bb"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          68,
+          508,
+          232.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        204,
+        1524,
+        698
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 494
+      },
+      "sha256": "962b8dc3b00e8215bf08e98da6929c8903c6e1cb556ee2bd92e8f80d93e66955"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "page": 5,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=5",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          68,
+          508,
+          285
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        204,
+        1524,
+        855
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 651
+      },
+      "sha256": "e1dd11baf8936a44b9aa6b77dd9c3ff93c1c580f028ae2e3a7ac06ba0ed410f8"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "page": 8,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=8",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          208.2,
+          508,
+          473.8
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        624,
+        1524,
+        1422
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 798
+      },
+      "sha256": "d9d2b4996c5e1ff585c753cca26afb19a9c24144fe9636b81d4fd70cc7b030c3"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "page": 26,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=26",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          68,
+          508,
+          358.9
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        204,
+        1524,
+        1077
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 873
+      },
+      "sha256": "14551c6acf5c7e79c55e50db801af3532b94e409f8ac7b0c05bb392adf02ba79"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "page": 27,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=27",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          68,
+          508,
+          252.4
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        204,
+        1524,
+        758
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 554
+      },
+      "sha256": "3287fbe59e95c0fd459c920e7c6334a1e3de138da67d21133be3205af17d1199"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "page": 28,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=28",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          68,
+          508,
+          474.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        204,
+        1524,
+        1424
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 1220
+      },
+      "sha256": "ed0736b82150ccf750a97e35f9b98e957cd3ff684feb62400f6f3687bfdb1bda"
+    },
+    {
+      "path": "assets/09_CogVLA/figures/figure_08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "page": 29,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=29",
+      "crop_bbox": {
+        "coordinates": [
+          104,
+          74.7,
+          508,
+          666.6
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        312,
+        224,
+        1524,
+        2000
+      ],
+      "white_padding_pixels_each_side": 0,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 1776
+      },
+      "sha256": "c7c404df707f6e51d1ba4af82146b060639131eba2a294e2404d73c4089e08bb"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "page": 3,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=3",
+      "crop_bbox": {
+        "coordinates": [
+          233,
+          615,
+          509,
+          630.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        699,
+        1845,
+        1527,
+        1892
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 846,
+        "height": 65
+      },
+      "sha256": "c55e4b811cef3cad5139eec525f150ed8f7403e816f29a004d3dc39fe53bda5d"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "page": 3,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=3",
+      "crop_bbox": {
+        "coordinates": [
+          166,
+          695.5,
+          509,
+          711.7
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        498,
+        2086,
+        1527,
+        2136
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 1047,
+        "height": 68
+      },
+      "sha256": "f0265f687bc10e72a1e406db8ef0c910ea6dc55cb0479236706a17da78a722cc"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_03.png",
+      "kind": "equation",
+      "label": "Eq. (3)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          213,
+          323,
+          509,
+          337.2
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        639,
+        969,
+        1527,
+        1012
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 906,
+        "height": 61
+      },
+      "sha256": "dbeaa3e0419849b67024731c1b7f02e4d09f3b5c9667fa391e0df0361c170268"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_04.png",
+      "kind": "equation",
+      "label": "Eq. (4)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          269,
+          361.5,
+          509,
+          377
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        807,
+        1084,
+        1527,
+        1131
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 738,
+        "height": 65
+      },
+      "sha256": "37b17d9bfcab6d40eb49726b579bfe46fa9293b66db4806bd6e506464d4b6e54"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_05.png",
+      "kind": "equation",
+      "label": "Eq. (5)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          196,
+          507,
+          509,
+          523.2
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        588,
+        1521,
+        1527,
+        1570
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 957,
+        "height": 67
+      },
+      "sha256": "0853d8820d4f8204f53e710d05dc15506ac4149e4891e8e619f406a004d488c1"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_06.png",
+      "kind": "equation",
+      "label": "Eq. (6)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          261,
+          549,
+          509,
+          582.4
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        783,
+        1647,
+        1527,
+        1748
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 762,
+        "height": 119
+      },
+      "sha256": "7b9b5d3750daca3225848a9167f4b0d091d7e00547bb3f2f7728c1e8a3da8404"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_07.png",
+      "kind": "equation",
+      "label": "Eq. (7)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          207,
+          582.6,
+          509,
+          597
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        621,
+        1747,
+        1527,
+        1791
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 924,
+        "height": 62
+      },
+      "sha256": "327e5c4829f73cfc9b617679465e3991f926808a3cecdfd0c386e33c1ea2c322"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_08.png",
+      "kind": "equation",
+      "label": "Eq. (8)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          225,
+          657,
+          509,
+          672
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        675,
+        1971,
+        1527,
+        2016
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 870,
+        "height": 63
+      },
+      "sha256": "14fc9b9597e7f3cb2fd45a0ac9d2717b77ade75c8838dbff0002e0edbee9f950"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_09.png",
+      "kind": "equation",
+      "label": "Eq. (9)",
+      "page": 4,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=4",
+      "crop_bbox": {
+        "coordinates": [
+          191,
+          708,
+          509,
+          725
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        573,
+        2124,
+        1527,
+        2175
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 972,
+        "height": 69
+      },
+      "sha256": "92af93df86c0d5ef72e164b035c10d12b9a70fa9d866ca199362cad204188b52"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_10.png",
+      "kind": "equation",
+      "label": "Eq. (10)",
+      "page": 5,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=5",
+      "crop_bbox": {
+        "coordinates": [
+          172,
+          589,
+          509,
+          624
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        516,
+        1767,
+        1527,
+        1872
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 1029,
+        "height": 123
+      },
+      "sha256": "772c035116cfe02daff095608ca9314de15d881f546f306aca4325cefcc1c7d6"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_11.png",
+      "kind": "equation",
+      "label": "Eq. (11)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          219,
+          101,
+          509,
+          117
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        657,
+        303,
+        1527,
+        351
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 888,
+        "height": 66
+      },
+      "sha256": "f53360e3fb72b7896990626d48503825f6966a8521ce7da204f38c83b1611f1a"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_12.png",
+      "kind": "equation",
+      "label": "Eq. (12)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          226,
+          150,
+          509,
+          168
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        678,
+        450,
+        1527,
+        504
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 867,
+        "height": 72
+      },
+      "sha256": "0b0d31ba0956093000f53db445b3eebd7ca49445810e7c339a9a0669c3a5fc9a"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_13.png",
+      "kind": "equation",
+      "label": "Eq. (13)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          190,
+          343,
+          509,
+          370.7
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        570,
+        1029,
+        1527,
+        1113
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 975,
+        "height": 102
+      },
+      "sha256": "bd42e5663103dad3591c6c12174bcedaf92fc35be9bd3605ab411d908f6652b4"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_14.png",
+      "kind": "equation",
+      "label": "Eq. (14)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          269,
+          445.9,
+          509,
+          460.1
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        807,
+        1337,
+        1527,
+        1381
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 738,
+        "height": 62
+      },
+      "sha256": "2a07ab0a16ca1c0aa04c60367067d1dec2678602ef7330b941123095d68df6ab"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_15.png",
+      "kind": "equation",
+      "label": "Eq. (15)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          202,
+          488,
+          509,
+          520
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        606,
+        1464,
+        1527,
+        1560
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 939,
+        "height": 114
+      },
+      "sha256": "3ad4ad341676d1806c052edcc770f5023b3d3aab3e50d6252448e7ae1fecc5ab"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_16.png",
+      "kind": "equation",
+      "label": "Eq. (16)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          236,
+          631,
+          509,
+          648
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        708,
+        1893,
+        1527,
+        1944
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 837,
+        "height": 69
+      },
+      "sha256": "c18a23b8c2e55257eacaea622467fb5f0550287169d0053d5667d28099dcfc38"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_17.png",
+      "kind": "equation",
+      "label": "Eq. (17)",
+      "page": 6,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=6",
+      "crop_bbox": {
+        "coordinates": [
+          179,
+          688.5,
+          509,
+          709.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        537,
+        2065,
+        1527,
+        2129
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 1008,
+        "height": 82
+      },
+      "sha256": "f82436ac76158c13fd0474ae481aa38539cda500effb1713c7d7e8f971a10244"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_18.png",
+      "kind": "equation",
+      "label": "Eq. (18)",
+      "page": 7,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=7",
+      "crop_bbox": {
+        "coordinates": [
+          213,
+          441,
+          509,
+          460.5
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        639,
+        1323,
+        1527,
+        1382
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 906,
+        "height": 77
+      },
+      "sha256": "ef22e1c8e8ee487bf6a58764c64ad1a636f7c25374c0ec69a0ff25483c625de7"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_19.png",
+      "kind": "equation",
+      "label": "Eq. (19)",
+      "page": 7,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=7",
+      "crop_bbox": {
+        "coordinates": [
+          211,
+          513.3,
+          509,
+          532.3
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        633,
+        1539,
+        1527,
+        1597
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 912,
+        "height": 76
+      },
+      "sha256": "d9345d8d7b20c8f1c059efa46d83b7634934f6e4a657ffdee1413d8f071f29a5"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_20.png",
+      "kind": "equation",
+      "label": "Eq. (20)",
+      "page": 7,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=7",
+      "crop_bbox": {
+        "coordinates": [
+          230,
+          532.5,
+          509,
+          574
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        690,
+        1597,
+        1527,
+        1722
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 855,
+        "height": 143
+      },
+      "sha256": "f1ecf899dc2d3ee8cd42b35666efd1ff95b1772d2f391653fc4a2ad76fcafe1c"
+    },
+    {
+      "path": "assets/09_CogVLA/equations/equation_21.png",
+      "kind": "equation",
+      "label": "Eq. (21)",
+      "page": 22,
+      "source_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/c9028f7874df04843e7bf435ee4cd3c3-Paper-Conference.pdf#page=22",
+      "crop_bbox": {
+        "coordinates": [
+          226,
+          508,
+          509,
+          537
+        ],
+        "unit": "PDF point (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ]
+      },
+      "render_dpi": 216,
+      "rendered_page_pixel_bbox": [
+        678,
+        1524,
+        1527,
+        1611
+      ],
+      "white_padding_pixels_each_side": 9,
+      "pixel_dimensions": {
+        "width": 867,
+        "height": 105
+      },
+      "sha256": "ec372de3b8f381b5790e6e0b99c19f37f9ced101ff2b8ca9e9c59cc2106054a4"
+    }
+  ]
+}

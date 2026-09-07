@@ -1,0 +1,735 @@
+{
+  "schema_version": 1,
+  "source_pdf": {
+    "filename": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+    "sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+    "pages": 35
+  },
+  "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+  "markdown_file": "07_Fast_in_Slow_Detailed_Review_KO.md",
+  "page_numbering": "1-based physical PDF page equals printed page; appendix included in the same 35-page PDF",
+  "renderer": "Poppler pdftoppm, direct PDF-region render at 216 DPI; equation PNGs hide PDF viewer annotation borders and receive 12-pixel white padding. Printed content is not redrawn.",
+  "rights": "Figures and typeset equations belong to the original authors and/or publisher. Included as excerpts for independent technical explanation. No CC-BY or other redistribution license is asserted.",
+  "coverage": {
+    "figure_labels": "Figure 1 through Figure 12",
+    "numbered_equations": [
+      "Eq. (1)",
+      "Eq. (2)",
+      "Eq. (3)"
+    ],
+    "unnumbered_equations": 4,
+    "appendix_equations": "No additional numbered method equations in Appendix A-E."
+  },
+  "assets": [
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "title": "Overview and simulation success/speed",
+      "page": 2,
+      "crop_bbox": [
+        105,
+        69,
+        507,
+        204
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1206,
+        405
+      ],
+      "sha256": "A96B832A7E1D9DF884F106B67E6A6C0F4CF0060F11ABB666F6CAFEFFA624F850",
+      "file_size_bytes": 229434,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "title": "Framework and dual-system data flow",
+      "page": 4,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        244
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        525
+      ],
+      "sha256": "986561361801083E2265BD814BE7085E53D691E977DDB20A89DC31B1A0909404",
+      "file_size_bytes": 250310,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "title": "Blocks, modalities, and frequency ablation",
+      "page": 8,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        159
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        270
+      ],
+      "sha256": "C046720BE0A34BF853F617247990BE22ABD3A0F0E08D8751C3361BEAB5EBDCAD",
+      "file_size_bytes": 42059,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "title": "Real-world manipulation sequences",
+      "page": 9,
+      "crop_bbox": [
+        104,
+        176,
+        508,
+        286
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        330
+      ],
+      "sha256": "4BA0A86EBEEFBBC3DD6510E0F3B793A4DF9AC41086BC09065E21962837E87500",
+      "file_size_bytes": 340897,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "title": "Generalization conditions",
+      "page": 10,
+      "crop_bbox": [
+        104,
+        198,
+        508,
+        249
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        153
+      ],
+      "sha256": "AFAF3956E54ECBF7F402ABB779FDFFAFB24A9B0F7C121637BDC2FE8B782C29D8",
+      "file_size_bytes": 166291,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "title": "Robot assets and cameras",
+      "page": 28,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        225
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        468
+      ],
+      "sha256": "65C205D5A9DB98334C8C4985D7DBCDE041355E633EB3E6E70F7268ADA5DA6258",
+      "file_size_bytes": 591664,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "title": "Action chunk size and input variants",
+      "page": 29,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        181
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        336
+      ],
+      "sha256": "BF9B65A7B1874BAF4D6551873CB6C4338B0491A82D5A91437BC8AE10006987E8",
+      "file_size_bytes": 66014,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "title": "RLBench task sequences, group 1",
+      "page": 32,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        582
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        1539
+      ],
+      "sha256": "F0F34D49AA9E2EF17FA53EAC773EB484F01392C70172688ADB73DC8CCD2B83E3",
+      "file_size_bytes": 1376735,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_09.png",
+      "kind": "figure",
+      "label": "Figure 9",
+      "title": "RLBench task sequences, group 2",
+      "page": 33,
+      "crop_bbox": [
+        104,
+        69,
+        508,
+        584
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        1545
+      ],
+      "sha256": "A0B2FC79E00461B9FF4BAA21EF0F1044B54BC70C7646D068850C050A4D594870",
+      "file_size_bytes": 1467881,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_10.png",
+      "kind": "figure",
+      "label": "Figure 10",
+      "title": "Task sequences; internal banner AlphaBot, original caption Agilex",
+      "page": 34,
+      "crop_bbox": [
+        104,
+        70,
+        508,
+        322
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        756
+      ],
+      "sha256": "C29A09785F77E9ABBB153A6E2689C600CE96E609043CB1A48BDF830C0C910066",
+      "file_size_bytes": 727253,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_11.png",
+      "kind": "figure",
+      "label": "Figure 11",
+      "title": "Task sequences; internal banner Agilex, original caption AlphaBot",
+      "page": 34,
+      "crop_bbox": [
+        104,
+        368,
+        508,
+        622
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        762
+      ],
+      "sha256": "6BCE0E6B905084016E3C7F7A1FAFFA12356D6889733C5470CC4BD2925DC4F883",
+      "file_size_bytes": 777020,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/figures/figure_12.png",
+      "kind": "figure",
+      "label": "Figure 12",
+      "title": "Failure cases",
+      "page": 35,
+      "crop_bbox": [
+        104,
+        260,
+        508,
+        520
+      ],
+      "padding_px": 0,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1212,
+        780
+      ],
+      "sha256": "02A22AB59CDB0A3E3C93D910ADD4057DC3C8392865E9A9C188CFCBF4D7A2FA16",
+      "file_size_bytes": 647509,
+      "pdf_viewer_annotations": "default",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_unnumbered_imitation.png",
+      "kind": "equation",
+      "label": "Unnumbered imitation-learning objective",
+      "page": 4,
+      "crop_bbox": [
+        200,
+        513,
+        412,
+        536
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        660,
+        93
+      ],
+      "sha256": "BD49022A84FD8EDE2BCFBFC2D5A008F81EB57EF09984A9F2994597B5285CB716",
+      "file_size_bytes": 9871,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_unnumbered_visual_features.png",
+      "kind": "equation",
+      "label": "Unnumbered visual feature dimensions",
+      "page": 5,
+      "crop_bbox": [
+        106,
+        72,
+        508,
+        119
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1230,
+        165
+      ],
+      "excerpt_note": "Original inline mathematical expression retained with immediately surrounding printed sentence(s); no typeset reconstruction.",
+      "sha256": "2DC5C4CF0925AF28C1A5ADD88CB90CC841B6D680BA61615DC6B1A1B9C2932837",
+      "file_size_bytes": 56284,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inline expression is excerpted with adjacent printed context to preserve glyphs."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_unnumbered_point_cloud.png",
+      "kind": "equation",
+      "label": "Unnumbered point-cloud definition",
+      "page": 5,
+      "crop_bbox": [
+        106,
+        121,
+        508,
+        158
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1230,
+        135
+      ],
+      "excerpt_note": "Original inline mathematical expression retained with immediately surrounding printed sentence(s); no typeset reconstruction.",
+      "sha256": "3214D1F4A12A5A8FCF4712FD2960526A1E9C5AB2779D92794F39CE2D71D8092B",
+      "file_size_bytes": 46508,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inline expression is excerpted with adjacent printed context to preserve glyphs."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_unnumbered_noising.png",
+      "kind": "equation",
+      "label": "Unnumbered diffusion forward noising",
+      "page": 6,
+      "crop_bbox": [
+        106,
+        341,
+        508,
+        364
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        1230,
+        93
+      ],
+      "excerpt_note": "Original inline mathematical expression retained with immediately surrounding printed sentence(s); no typeset reconstruction.",
+      "sha256": "43E93110DFD290B8CADD3AEBD5DEC8051326CE1DC16AA0E106500FE949CDCF6F",
+      "file_size_bytes": 30604,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inline expression is excerpted with adjacent printed context to preserve glyphs."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "page": 6,
+      "crop_bbox": [
+        186,
+        386,
+        508,
+        411
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        990,
+        99
+      ],
+      "sha256": "376636E89131AFB5E0E187218CF80DC780B2C45D923265757D0A8ECB6635DA97",
+      "file_size_bytes": 11016,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "page": 6,
+      "crop_bbox": [
+        221,
+        512,
+        508,
+        550
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        885,
+        138
+      ],
+      "sha256": "0350E6D2307E8FE81A8C247E7B3ABAB575D57A691EF4ED9C8FC6C109DA0E91F2",
+      "file_size_bytes": 11503,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    },
+    {
+      "path": "assets/07_Fast_in_Slow/equations/equation_03.png",
+      "kind": "equation",
+      "label": "Eq. (3)",
+      "page": 6,
+      "crop_bbox": [
+        251,
+        594,
+        508,
+        610
+      ],
+      "padding_px": 12,
+      "source_pdf": "NeurIPS-2025-fast-in-slow-a-dual-system-vla-model-unifying-fast-manipulation-within-slow-reasoning-Paper-Conference.pdf",
+      "source_pdf_sha256": "5F963A134CFE9A1C8A4C2AAFC15C3F5E4D9FA24CC406CDA8231219E47E6F8FC4",
+      "source_id": "conference_combined_pdf",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/8cf3760422b9d4505589a97c8f9569e7-Paper-Conference.pdf",
+      "crop_units": "PDF points (1/72 inch)",
+      "crop_coordinate_system": "top-left origin; [left, top, right, bottom]",
+      "dpi": 216,
+      "pixel_size": [
+        795,
+        72
+      ],
+      "sha256": "0B7BDA55BCE866146D8070B3EB0103D03A34C519474D0FD2CA214E21B987F92A",
+      "file_size_bytes": 5317,
+      "pdf_viewer_annotations": "hidden",
+      "visual_review": {
+        "status": "passed",
+        "checks": [
+          "crop boundaries",
+          "all labels and mathematical symbols legible",
+          "no clipped glyphs or unrelated paragraph fragments"
+        ],
+        "note": "Inspected final PNG individually at its original resolution."
+      }
+    }
+  ],
+  "validation": {
+    "status": "passed",
+    "figure_count": 12,
+    "equation_image_count": 7,
+    "total_png_bytes": 6854170,
+    "numbered_equations_complete": true,
+    "all_relative_paths_resolve": true,
+    "all_final_pngs_visually_inspected": true,
+    "original_pdf_sha256_unchanged": true,
+    "original_review_preservation": "All original prose, tables, and explanations retained. Repaired two existing math escaping defects: missing backslash before operatorname and a form-feed in place of backslash-f in frac."
+  }
+}

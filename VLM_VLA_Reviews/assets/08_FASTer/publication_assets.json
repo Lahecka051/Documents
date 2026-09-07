@@ -1,0 +1,939 @@
+{
+  "schema_version": 1,
+  "source_pdf": {
+    "filename": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+    "sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+    "pages": 23
+  },
+  "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+  "markdown": "08_FASTer_Detailed_Review_KO.md",
+  "coordinate_system": "PDF points; 72 points/inch; origin top-left; x increases right, y increases down",
+  "rendering": "Deterministic PDFium page rendering, rectangular pixel crop, white outer padding; no redrawing or content alteration",
+  "rights": "Original figures and equations belong to their authors and respective rights holders. Extracts accompany independent educational commentary; no CC-BY or other redistribution license is asserted.",
+  "assets": [
+    {
+      "path": "assets/08_FASTer/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 1,
+      "pdf_page_1_based": 1,
+      "section": "Overview",
+      "crop_box": [
+        104,
+        237,
+        509,
+        465
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        312,
+        711,
+        1527,
+        1395
+      ],
+      "pixel_size": {
+        "width": 1239,
+        "height": 708
+      },
+      "render_dpi": 216,
+      "white_padding_pixels": 12,
+      "asset_sha256": "dd4a77432247110eb9f0ba9724f3aa4092573a8ade33e3d23e39eaa3658495d1"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 4,
+      "pdf_page_1_based": 4,
+      "section": "3.1",
+      "crop_box": [
+        104,
+        80,
+        509,
+        225
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        346,
+        266,
+        1697,
+        750
+      ],
+      "pixel_size": {
+        "width": 1375,
+        "height": 508
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "97df735d5511b63980d012f3f58576936ea5705cd1b60bb37a85bdd683acb91f"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 6,
+      "pdf_page_1_based": 6,
+      "section": "3.2",
+      "crop_box": [
+        104,
+        80,
+        509,
+        202
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        346,
+        266,
+        1697,
+        674
+      ],
+      "pixel_size": {
+        "width": 1375,
+        "height": 432
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "79a942c5b8a62c04e5276339c9266c382ba8cfc0e8f0ef78539f866a947a37d0"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 7,
+      "pdf_page_1_based": 7,
+      "section": "4.3",
+      "crop_box": [
+        104,
+        259,
+        508,
+        373
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        312,
+        777,
+        1524,
+        1119
+      ],
+      "pixel_size": {
+        "width": 1236,
+        "height": 366
+      },
+      "render_dpi": 216,
+      "white_padding_pixels": 12,
+      "asset_sha256": "1f8f6eb748aed410421ab970a2d763cf5f237429d79d92f5f920819da3469861"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 8,
+      "pdf_page_1_based": 8,
+      "section": "4.2",
+      "crop_box": [
+        106,
+        80,
+        301,
+        201
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        353,
+        266,
+        1004,
+        670
+      ],
+      "pixel_size": {
+        "width": 675,
+        "height": 428
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "3f69243b584887352c81641597ed3cdc259d826505fbdda740cf0af92930d5c7"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 8,
+      "pdf_page_1_based": 8,
+      "section": "4.2",
+      "crop_box": [
+        307,
+        80,
+        520,
+        201
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        1023,
+        266,
+        1734,
+        670
+      ],
+      "pixel_size": {
+        "width": 735,
+        "height": 428
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "3c5654718f41d3f59316d70d3c0d0d717b4be61d4bff5429bd609abb229fec78"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 9,
+      "pdf_page_1_based": 9,
+      "section": "4.3",
+      "crop_box": [
+        104,
+        78,
+        302,
+        161
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        346,
+        260,
+        1007,
+        537
+      ],
+      "pixel_size": {
+        "width": 685,
+        "height": 301
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "ec521285e9059dec4640cb9c0ede5019282c7715e885b1421d0265a1c118b544"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 9,
+      "pdf_page_1_based": 9,
+      "section": "4.2",
+      "crop_box": [
+        309,
+        80,
+        508,
+        161
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        1030,
+        266,
+        1694,
+        537
+      ],
+      "pixel_size": {
+        "width": 688,
+        "height": 295
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "76d65e39e2ccc8f10235ef066359d9018d96d63a86d6533cee737add0f2c1e03"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_09.png",
+      "kind": "figure",
+      "label": "Figure 9",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 10,
+      "pdf_page_1_based": 10,
+      "section": "4.3",
+      "crop_box": [
+        128,
+        82,
+        508,
+        185
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        426,
+        273,
+        1694,
+        617
+      ],
+      "pixel_size": {
+        "width": 1292,
+        "height": 368
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "bfb5a396b0d1c1089c8df11c994fc030df9f5a2649206d4491c5cf7384b2af9c"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_10.png",
+      "kind": "figure",
+      "label": "Figure 10",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 10,
+      "pdf_page_1_based": 10,
+      "section": "4.3",
+      "crop_box": [
+        105,
+        218,
+        302,
+        291
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        350,
+        726,
+        1007,
+        970
+      ],
+      "pixel_size": {
+        "width": 681,
+        "height": 268
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "5deb50b75f28c894accd5357ed4e2b703746ee36cd84bd1c7289299d2b87de69"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_11.png",
+      "kind": "figure",
+      "label": "Figure 11",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 16,
+      "pdf_page_1_based": 16,
+      "section": "A.1",
+      "crop_box": [
+        104,
+        128,
+        508,
+        273
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        312,
+        384,
+        1524,
+        819
+      ],
+      "pixel_size": {
+        "width": 1236,
+        "height": 459
+      },
+      "render_dpi": 216,
+      "white_padding_pixels": 12,
+      "asset_sha256": "20ccefe35f5f4a4b13d2624557890b56e0a38c84fb44f9998f579dafcd8f526d"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_12.png",
+      "kind": "figure",
+      "label": "Figure 12",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 20,
+      "pdf_page_1_based": 20,
+      "section": "A.3",
+      "crop_box": [
+        111,
+        77,
+        301,
+        193
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        370,
+        256,
+        1004,
+        644
+      ],
+      "pixel_size": {
+        "width": 658,
+        "height": 412
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "5d6d5381f6d1aee5b827373edf8e084898b7e4fde9d99a350b9ad72b1c8deab5"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_13.png",
+      "kind": "figure",
+      "label": "Figure 13",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 21,
+      "pdf_page_1_based": 21,
+      "section": "A.5",
+      "crop_box": [
+        103,
+        80,
+        509,
+        253
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        343,
+        266,
+        1697,
+        844
+      ],
+      "pixel_size": {
+        "width": 1378,
+        "height": 602
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "1b99604e60260fbd5166368276b988e191923f8b3ba801e46c4567efee3474e7"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_14.png",
+      "kind": "figure",
+      "label": "Figure 14",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 22,
+      "pdf_page_1_based": 22,
+      "section": "A.5",
+      "crop_box": [
+        105,
+        160,
+        509,
+        622
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        437,
+        666,
+        2121,
+        2592
+      ],
+      "pixel_size": {
+        "width": 1708,
+        "height": 1950
+      },
+      "render_dpi": 300,
+      "white_padding_pixels": 12,
+      "asset_sha256": "49ca355220db1ad11505e9084c175a724a57a59f68049f3b291632d52da37762"
+    },
+    {
+      "path": "assets/08_FASTer/figures/figure_15.png",
+      "kind": "figure",
+      "label": "Figure 15",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 23,
+      "pdf_page_1_based": 23,
+      "section": "4.4 / Appendix",
+      "crop_box": [
+        101,
+        250,
+        511,
+        540
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        303,
+        750,
+        1533,
+        1620
+      ],
+      "pixel_size": {
+        "width": 1254,
+        "height": 894
+      },
+      "render_dpi": 216,
+      "white_padding_pixels": 12,
+      "asset_sha256": "b9912483a5b064a3089970d88fb96be4b965b240096e91e27beb682b6fb60629"
+    },
+    {
+      "path": "assets/08_FASTer/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.1",
+      "crop_box": [
+        130,
+        480,
+        508,
+        504
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        433,
+        1600,
+        1694,
+        1680
+      ],
+      "pixel_size": {
+        "width": 1285,
+        "height": 104
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "ec49de12755c32b48f7edc446771a7178e0dfabf88eef83b0d8275d138770ee8"
+    },
+    {
+      "path": "assets/08_FASTer/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 6,
+      "pdf_page_1_based": 6,
+      "section": "3.2",
+      "crop_box": [
+        224,
+        347,
+        508,
+        368.6
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        746,
+        1156,
+        1694,
+        1229
+      ],
+      "pixel_size": {
+        "width": 972,
+        "height": 97
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "8518e8e78c22026a4e37ec3a9cc4e69aad7abf32beea45de076a6383029576e3"
+    },
+    {
+      "path": "assets/08_FASTer/equations/equation_03.png",
+      "kind": "equation",
+      "label": "Eq. (3)",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 6,
+      "pdf_page_1_based": 6,
+      "section": "3.2",
+      "crop_box": [
+        205,
+        477,
+        508,
+        498.6
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        683,
+        1590,
+        1694,
+        1663
+      ],
+      "pixel_size": {
+        "width": 1035,
+        "height": 97
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "e5794e52a242adbb6d9bd25acdf0972427000491c4a7bda359bf53e1cb945fe5"
+    },
+    {
+      "path": "assets/08_FASTer/equations/equation_04.png",
+      "kind": "equation",
+      "label": "Eq. (4)",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 8,
+      "pdf_page_1_based": 8,
+      "section": "4.2",
+      "crop_box": [
+        181,
+        370.5,
+        508,
+        393.5
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        603,
+        1235,
+        1694,
+        1312
+      ],
+      "pixel_size": {
+        "width": 1115,
+        "height": 101
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "7b01b998a1bbbb8060311ba9362658d217c31945d21aa99b6d8fe037a8afdd20"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_patch_shape.png",
+      "kind": "equation",
+      "label": "Unnumbered: patch tensor shape",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 4,
+      "pdf_page_1_based": 4,
+      "section": "3.1",
+      "crop_box": [
+        194,
+        719.7,
+        294,
+        735
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        646,
+        2399,
+        980,
+        2450
+      ],
+      "pixel_size": {
+        "width": 358,
+        "height": 75
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "dfd1834f043ca03015b0f5269c3c038d577c38497f642a9af4537779e50244eb"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_latent_shape.png",
+      "kind": "equation",
+      "label": "Unnumbered: latent tensor shape",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.1",
+      "crop_box": [
+        128.5,
+        286.2,
+        192,
+        298
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        428,
+        954,
+        640,
+        994
+      ],
+      "pixel_size": {
+        "width": 236,
+        "height": 64
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "866ecc59c73423316dbeaba1dff917dc76a9db2eca995cb2cb83024ad45cefcc"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_rvq_residual.png",
+      "kind": "equation",
+      "label": "Unnumbered: RVQ residual recurrence",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.1",
+      "crop_box": [
+        106,
+        309.4,
+        234.5,
+        320.3
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        353,
+        1031,
+        782,
+        1068
+      ],
+      "pixel_size": {
+        "width": 453,
+        "height": 61
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "fc357042391bfddf35c0b5e99d020f220c7472391c0a1abb0b6e3027c15955fe"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_rvq_sum.png",
+      "kind": "equation",
+      "label": "Unnumbered: sum of RVQ vectors",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.1",
+      "crop_box": [
+        184.5,
+        320,
+        271,
+        333.8
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        615,
+        1066,
+        904,
+        1113
+      ],
+      "pixel_size": {
+        "width": 313,
+        "height": 71
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "83ecbf26fd8795fa01edcadd6638caa519150ff57fb5d4767be596c68ef21bf1"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_nearest_code.png",
+      "kind": "equation",
+      "label": "Unnumbered: nearest-code index",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.1",
+      "crop_box": [
+        132.5,
+        343.8,
+        248,
+        355.2
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        441,
+        1146,
+        827,
+        1184
+      ],
+      "pixel_size": {
+        "width": 410,
+        "height": 62
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "a03df3d729558a3a7959ebc2d4c9c944c0f44d239c8aee6b40adfa69d79888b2"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_spacing_train.png",
+      "kind": "equation",
+      "label": "Unnumbered: training position spacing",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.2",
+      "crop_box": [
+        196,
+        667.7,
+        277,
+        678
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        653,
+        2225,
+        924,
+        2260
+      ],
+      "pixel_size": {
+        "width": 295,
+        "height": 59
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "9a6b0423bfe70164d0955fcaee2f9fba9e3bb8ea963e2fcd415a552682b24df5"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_spacing_inference.png",
+      "kind": "equation",
+      "label": "Unnumbered: inference position spacing",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 5,
+      "pdf_page_1_based": 5,
+      "section": "3.2",
+      "crop_box": [
+        106,
+        690.1,
+        172,
+        699.9
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        353,
+        2300,
+        574,
+        2333
+      ],
+      "pixel_size": {
+        "width": 245,
+        "height": 57
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "cd3cfe939ff5c5db0896a74a394a3e954b3cb1e4f0fe437fa1f467b0569a1953"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_block_partition.png",
+      "kind": "equation",
+      "label": "Unnumbered: BAR block partition",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 6,
+      "pdf_page_1_based": 6,
+      "section": "3.2",
+      "crop_box": [
+        106,
+        457.8,
+        362,
+        467.3
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        353,
+        1526,
+        1207,
+        1558
+      ],
+      "pixel_size": {
+        "width": 878,
+        "height": 56
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "a1046e9818b979caf77f666efc5a9032ca8ffcf4ac01f5055fa4809e9acafc3b"
+    },
+    {
+      "path": "assets/08_FASTer/equations/unnumbered_total_tokens.png",
+      "kind": "equation",
+      "label": "Unnumbered: total action-code count",
+      "source_pdf": "487_FASTer_Toward_Powerful_and ICLR 2026.pdf",
+      "source_pdf_sha256": "C15FEA59339B00893CE6A9C87E4388CCAEB8C01BA4C25DAA400B710D204B4176",
+      "original_public_url": "https://openreview.net/pdf?id=k6nTUFoqeT",
+      "page": 6,
+      "pdf_page_1_based": 6,
+      "section": "3.2",
+      "crop_box": [
+        159,
+        379,
+        253,
+        390.1
+      ],
+      "crop_box_unit": "PDF points (1/72 inch)",
+      "crop_box_format": "[x0, top, x1, bottom], top-left origin",
+      "render_pixel_crop_box": [
+        530,
+        1263,
+        844,
+        1301
+      ],
+      "pixel_size": {
+        "width": 338,
+        "height": 62
+      },
+      "render_dpi": 240,
+      "white_padding_pixels": 12,
+      "asset_sha256": "aa4e87627c61236a3f7dc497fc6c1f271fb32eadfc7cbf64e9d3e3b5278878f4"
+    }
+  ],
+  "quality_assurance": {
+    "date": "2026-09-07",
+    "visual_review": "All 28 PNG files individually opened and inspected; corrected inline-equation crop boundaries re-opened after regeneration.",
+    "checks_passed": [
+      "28 unique Markdown images match manifest and PNG inventory",
+      "15 figures and 13 equation crops",
+      "All PNG sizes and SHA-256 match manifest",
+      "Source PDF SHA-256 unchanged",
+      "All original lines preserved in order after five documented line corrections",
+      "Editable display equations preserved after documented notation fixes",
+      "UTF-8 strict decode and no replacement characters",
+      "Display/inline math and code fences balanced",
+      "Images outside math blocks",
+      "All table rows have consistent column counts",
+      "15 table-of-contents anchors resolve",
+      "All local links resolve and no absolute local paths"
+    ],
+    "original_markdown_bytes": 99746,
+    "final_markdown_bytes": 113308,
+    "original_lines_replaced": 5,
+    "figure_count": 15,
+    "equation_count": 13,
+    "numbered_equations": 4,
+    "unnumbered_equations": 9,
+    "display_math_blocks": 20,
+    "tables_checked": 16,
+    "limits": "No Git commit/push or live GitHub rendering performed. Original raster label resolution remains limited; no scientific experiments rerun."
+  }
+}

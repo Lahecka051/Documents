@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "paper": "Feather the Throttle: Revisiting Visual Token Pruning for Vision-Language Model Acceleration",
+  "markdown": "03_FEATHER_Detailed_Review_KO.md",
+  "sources": {
+    "main": {
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "page_count": 10,
+      "page_numbering": "1-based within this PDF; supplementary numbering restarts at 1"
+    },
+    "supplement": {
+      "source_pdf": "official_supplemental.pdf",
+      "sha256": "4cd2adbb19ac4f502412be0e669127f9dd19b3b7d8439d015ad23caf4f14e538",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/supplemental/Endo_Feather_the_Throttle_ICCV_2025_supplemental.pdf",
+      "page_count": 5,
+      "page_numbering": "1-based within this PDF; supplementary numbering restarts at 1"
+    }
+  },
+  "rendering": {
+    "engine": "PyMuPDF",
+    "version": "1.28.2",
+    "method": "original PDF page.get_pixmap with rectangular clip; no redrawing"
+  },
+  "rights": "Figures and printed equations are attributed to the original authors and publisher. Excerpts support independent technical commentary. No CC-BY or other redistribution license is asserted.",
+  "coverage": {
+    "figures": 9,
+    "numbered_equations": [
+      "(1)",
+      "(2)"
+    ],
+    "unnumbered_equation_images": 7,
+    "supplementary_equations": "No additional displayed/numbered equations in the 5-page official supplement."
+  },
+  "assets": [
+    {
+      "path": "assets/03_FEATHER/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 1,
+      "crop_bbox": [
+        315,
+        230,
+        557,
+        530
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 726,
+        "height": 900
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "f5df2c45ae835534080fb77ff13776070f6ed98eb988e1a1cba736a7b8c7552c"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 4,
+      "crop_bbox": [
+        55,
+        71,
+        558,
+        207
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1509,
+        "height": 408
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "935295c8d7045750e9ae03954002e6426e567e6a8dc2cd8cc1814d5d388a3716"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 5,
+      "crop_bbox": [
+        55,
+        71,
+        558,
+        258
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1509,
+        "height": 561
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "6c79741544111530dac13822a81f8f0af1f1e12a4d09465ed59393310f20dcc0"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 5,
+      "crop_bbox": [
+        317,
+        353,
+        556,
+        521
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 717,
+        "height": 504
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "a89d436210010f3a5ce8ccb6f6ff8061e87222cd4ff3c4308fe81f592ec16245"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 8,
+      "crop_bbox": [
+        55,
+        72,
+        556,
+        208
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1503,
+        "height": 408
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "35cec745843824f6c0936139a412d9e451b7df67f5051ee208ba9b0e730b16b4"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_a1.png",
+      "kind": "figure",
+      "label": "Figure A1",
+      "source_id": "supplement",
+      "source_pdf": "official_supplemental.pdf",
+      "source_pdf_sha256": "4cd2adbb19ac4f502412be0e669127f9dd19b3b7d8439d015ad23caf4f14e538",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/supplemental/Endo_Feather_the_Throttle_ICCV_2025_supplemental.pdf",
+      "pdf_page": 1,
+      "crop_bbox": [
+        315,
+        175,
+        558,
+        254
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 729,
+        "height": 237
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "5c7318927fa088fb887f5fe0ed138df31df87cc63d3ed6ac35981042407c50d6"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_a2.png",
+      "kind": "figure",
+      "label": "Figure A2",
+      "source_id": "supplement",
+      "source_pdf": "official_supplemental.pdf",
+      "source_pdf_sha256": "4cd2adbb19ac4f502412be0e669127f9dd19b3b7d8439d015ad23caf4f14e538",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/supplemental/Endo_Feather_the_Throttle_ICCV_2025_supplemental.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        59,
+        128,
+        553,
+        613
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1482,
+        "height": 1455
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "cdde4eea74c1b6cf8bb629da15aea00e18d1a9c27361800f687edc6a8b4c0c7f"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_a3.png",
+      "kind": "figure",
+      "label": "Figure A3",
+      "source_id": "supplement",
+      "source_pdf": "official_supplemental.pdf",
+      "source_pdf_sha256": "4cd2adbb19ac4f502412be0e669127f9dd19b3b7d8439d015ad23caf4f14e538",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/supplemental/Endo_Feather_the_Throttle_ICCV_2025_supplemental.pdf",
+      "pdf_page": 4,
+      "crop_bbox": [
+        59,
+        120,
+        553,
+        613
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1482,
+        "height": 1479
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "323d21ff95858b3489917bcf0d24d428d48d588390e51a4b748272a87d65a3e8"
+    },
+    {
+      "path": "assets/03_FEATHER/figures/figure_a4.png",
+      "kind": "figure",
+      "label": "Figure A4",
+      "source_id": "supplement",
+      "source_pdf": "official_supplemental.pdf",
+      "source_pdf_sha256": "4cd2adbb19ac4f502412be0e669127f9dd19b3b7d8439d015ad23caf4f14e538",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/supplemental/Endo_Feather_the_Throttle_ICCV_2025_supplemental.pdf",
+      "pdf_page": 5,
+      "crop_bbox": [
+        59,
+        154,
+        554,
+        577
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 1485,
+        "height": 1269
+      },
+      "white_padding_pixels_each_edge": 0,
+      "dpi": 216,
+      "sha256": "2425a32957c953d28fd2f4483aebeb44861146c93222af465a400cff01049c98"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        337,
+        304,
+        557,
+        330
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 750,
+        "height": 103
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "b8b3b68b42a0b3a54500111d61533323d152e322ff513efd6a2fbb42f458b947"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 6,
+      "crop_bbox": [
+        322,
+        299,
+        557,
+        339
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 800,
+        "height": 150
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "86f8d0d2a684a956f8e2c51d7921b083cf77be059878509148004df8c282a39e"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_vision.png",
+      "kind": "equation",
+      "label": "Unnumbered: vision encoding",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        112,
+        642.2,
+        232,
+        654.5
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 417,
+        "height": 58
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "4d2d4fd454b31c335092ce2e4e1cf335216cbe8d1c102745cb5da53780e2e9a1"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_projector.png",
+      "kind": "equation",
+      "label": "Unnumbered: adapter projection",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        82,
+        690.2,
+        192,
+        702.3
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 383,
+        "height": 57
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "a4e3d56a54911e84b138635b95e2be5765f0bf9014178da2451b89285697c155"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_prompt.png",
+      "kind": "equation",
+      "label": "Unnumbered: prompt embedding",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        400,
+        72,
+        507,
+        85.5
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 373,
+        "height": 61
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "325d9601aeddee5c46ceb85ff4213ae989bf569d65390c6069ba164fbf788b00"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_lm.png",
+      "kind": "equation",
+      "label": "Unnumbered: language-model output",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        316,
+        97,
+        415,
+        109.5
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 347,
+        "height": 58
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "bc4bc7812e2f20bf0a43cf87de8f0c7e39a49d096d40fd6edb869b43552acea4"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_flops.png",
+      "kind": "equation",
+      "label": "Unnumbered: single-layer cost C",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        355,
+        249.2,
+        471,
+        260.5
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 403,
+        "height": 55
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "eeafe25e824115a1a6bf00da710fa3ed7e978fdb6e56016f322f2c1eaf8ca164"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_retention.png",
+      "kind": "equation",
+      "label": "Unnumbered: retained token count",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 3,
+      "crop_bbox": [
+        316,
+        282.1,
+        397,
+        293
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 287,
+        "height": 53
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "732b1d201f38867218e831f4b355b3fd1ed4041ebd8a141206fc593fc47e6dcd"
+    },
+    {
+      "path": "assets/03_FEATHER/equations/unnumbered_stage2.png",
+      "kind": "equation",
+      "label": "Unnumbered: second-stage retained fraction",
+      "source_id": "main",
+      "source_pdf": "Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "source_pdf_sha256": "3ee6118df80d3d4dbb57499f9d70a75537238b5599f83b6b62e2aeac13d9d9f1",
+      "original_public_url": "https://openaccess.thecvf.com/content/ICCV2025/papers/Endo_Feather_the_Throttle_Revisiting_Visual_Token_Pruning_for_Vision-Language_Model_ICCV_2025_paper.pdf",
+      "pdf_page": 8,
+      "crop_bbox": [
+        181,
+        293,
+        227,
+        305.5
+      ],
+      "coordinate_unit": "PDF point (1/72 inch)",
+      "coordinate_origin": "top-left; x increases right, y increases down",
+      "crop_bbox_order": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "pixel_size": {
+        "width": 170,
+        "height": 59
+      },
+      "white_padding_pixels_each_edge": 8,
+      "dpi": 240,
+      "sha256": "0595f61961567b3efec51b0d975d97b3a20f8dc11a2a9d19e41871fb19eab3fe"
+    }
+  ]
+}

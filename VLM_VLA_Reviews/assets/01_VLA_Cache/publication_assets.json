@@ -1,0 +1,999 @@
+{
+  "schema_version": 1,
+  "title": "VLA-Cache publication excerpts",
+  "source_pdf_filename": "NeurIPS-2025-vla-cache-efficient-vision-language-action-manipulation-via-adaptive-token-caching-Paper-Conference.pdf",
+  "source_pdf_sha256": "068ae82f8a2daea8ec0121c7797848091e64a6ae8c304c67d6524fc1dbe1e7f5",
+  "source_pdf_bytes": 6110568,
+  "source_pdf_page_count": 26,
+  "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+  "markdown_document": "01_VLA_Cache_Detailed_Review_KO.md",
+  "path_base": "Directory containing the Markdown document",
+  "source_attribution": "Siyu Xu, Yunke Wang, Chenghao Xia, Dihao Zhu, Tao Huang, Chang Xu. NeurIPS 2025.",
+  "rights_note": "Original-paper excerpts for educational review and criticism; rights remain with the original rights holders. No separate CC-BY grant is asserted.",
+  "extraction_method": "Poppler pdftoppm crop; no redrawing, compositing, or modification of equation notation.",
+  "assets": [
+    {
+      "kind": "figure",
+      "original_label": "Figure 1",
+      "pdf_page_1based": 2,
+      "source_section": "1",
+      "description": "이전 관찰의 static visual token KV를 다음 step에 재사용하는 개념",
+      "path": "assets/01_VLA_Cache/figures/figure_01.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          276,
+          190,
+          507,
+          364
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 693,
+        "height": 522
+      },
+      "sha256": "dab1b023c04258aa7d152d4ee16155217e04eac19c0b51af8bc878e42e304fdf"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 2",
+      "pdf_page_1based": 4,
+      "source_section": "3.2-3.4",
+      "description": "dynamic token selection과 layer-adaptive token caching의 전체 구조",
+      "path": "assets/01_VLA_Cache/figures/figure_02.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          108,
+          72,
+          507,
+          241
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1197,
+        "height": 507
+      },
+      "sha256": "7837afb2721f00a60bd64e9b97f59e23b189274a8e120710e7287d1a622cfd7d"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 3",
+      "pdf_page_1based": 7,
+      "source_section": "5.2",
+      "description": "LIBERO의 네 task suite, SIMPLER 조작 과제, 실기기 과제",
+      "path": "assets/01_VLA_Cache/figures/figure_03.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          124,
+          68,
+          488,
+          224
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1092,
+        "height": 468
+      },
+      "sha256": "7965f4880866b9e62f873ec0480249cf4df87728df39aa79526bd619de6f5ed4"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 4",
+      "pdf_page_1based": 9,
+      "source_section": "5.3",
+      "description": "attention과 static/task-relevant token 선택의 정성 시각화",
+      "note": "Original caption retained because it contains the color legend.",
+      "path": "assets/01_VLA_Cache/figures/figure_04.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          106,
+          58,
+          507,
+          333
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1203,
+        "height": 825
+      },
+      "sha256": "82e72b1eebd485af96bb313da3331071dd52cafd09fbb1972ccbd18b18c46c45"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 5",
+      "pdf_page_1based": 22,
+      "source_section": "Appendix E.2",
+      "description": "네 LIBERO 조작 과제의 연속 관찰과 token overlay",
+      "path": "assets/01_VLA_Cache/figures/figure_05.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          105,
+          259,
+          507,
+          640
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1206,
+        "height": 1143
+      },
+      "sha256": "15f6ee9e3b477c92ee4e7037c16942caabd90201e321f1cd8ed62b1983d023b3"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 6",
+      "pdf_page_1based": 24,
+      "source_section": "Appendix E.4",
+      "description": "Kinova Jaco 실기기와 Sony AX53 카메라 구성",
+      "path": "assets/01_VLA_Cache/figures/figure_06.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          144,
+          144,
+          468,
+          294
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 972,
+        "height": 450
+      },
+      "sha256": "037f86ef807d9a72288a637d66e20514223f2dcb1a9671b3da312577458fcc57"
+    },
+    {
+      "kind": "figure",
+      "original_label": "Figure 7",
+      "pdf_page_1based": 26,
+      "source_section": "Appendix E.4",
+      "description": "네 실기기 과제에서 baseline과 VLA-Cache rollout 비교",
+      "path": "assets/01_VLA_Cache/figures/figure_07.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          105,
+          219,
+          507,
+          555
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1206,
+        "height": 1008
+      },
+      "sha256": "e39138ed3a991cb19cc4dac70d0438a83fb98362ab695dccf5e4c082e6c87cab"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (1)",
+      "pdf_page_1based": 3,
+      "source_section": "3.1",
+      "description": "원문 번호 수식 (1); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_01.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          215,
+          449,
+          509,
+          467
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 882,
+        "height": 54
+      },
+      "sha256": "9dbe165a40b5295d72149630e8243c3f465e371a1435947c5ccd511097eb851a"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (2)",
+      "pdf_page_1based": 3,
+      "source_section": "3.1",
+      "description": "원문 번호 수식 (2); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_02.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          217,
+          469,
+          509,
+          503
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 876,
+        "height": 102
+      },
+      "sha256": "e633df214524f38f600dba82ecfa11d64fbad69bb544b46efc2aaf12cce69415"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (3)",
+      "pdf_page_1based": 3,
+      "source_section": "3.1",
+      "description": "원문 번호 수식 (3); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_03.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          184,
+          524,
+          509,
+          543
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 975,
+        "height": 57
+      },
+      "sha256": "f4d92055170c5c57d32483aea01fe1521405c55be69f3e6de03dcb64e90caaab"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (4)",
+      "pdf_page_1based": 4,
+      "source_section": "3.2",
+      "description": "원문 번호 수식 (4); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_04.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          221,
+          422,
+          509,
+          459
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 864,
+        "height": 111
+      },
+      "sha256": "65ecb650d52418cf7aeca87c1c436728968a6062daafcf0a08d70e83657be173"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (5)",
+      "pdf_page_1based": 4,
+      "source_section": "3.2",
+      "description": "원문 번호 수식 (5); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_05.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          201,
+          487,
+          509,
+          512
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 924,
+        "height": 75
+      },
+      "sha256": "0fc8df1d0cd28ae41ee85d1ccedda38617e4e39ce200dd4521a7683dfc1e3773"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (6)",
+      "pdf_page_1based": 5,
+      "source_section": "3.3",
+      "description": "원문 번호 수식 (6); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_06.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          223,
+          383,
+          509,
+          402
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 858,
+        "height": 57
+      },
+      "sha256": "829aa4addd5408c00df8e4ed78df1fbdd3899e6014a478a528ea798a3e05f8a8"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (7)",
+      "pdf_page_1based": 5,
+      "source_section": "3.3",
+      "description": "원문 번호 수식 (7); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_07.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          207,
+          471,
+          509,
+          492
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 906,
+        "height": 63
+      },
+      "sha256": "21d9784e87981f5518fe52ca46f77dba160f0b6c5b4f09598bcfe591d172dc48"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (8)",
+      "pdf_page_1based": 5,
+      "source_section": "3.3",
+      "description": "원문 번호 수식 (8); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_08.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          239,
+          533,
+          509,
+          551
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 810,
+        "height": 54
+      },
+      "sha256": "7c9ec1e479fa6d45f44d37d9df18bbd91525253d0ae1973b2deeb2115eba91be"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (9)",
+      "pdf_page_1based": 6,
+      "source_section": "3.4",
+      "description": "원문 번호 수식 (9); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_09.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          248,
+          158,
+          509,
+          196
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 783,
+        "height": 114
+      },
+      "sha256": "e878adb2e59a5124aa8cf4888c8f50fcfca480064e18c401abf639f151968216"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (10)",
+      "pdf_page_1based": 6,
+      "source_section": "4.1",
+      "description": "원문 번호 수식 (10); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_10.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          154,
+          436,
+          509,
+          468
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1065,
+        "height": 96
+      },
+      "sha256": "c05d75d9e17ade5e1d721cf71ba136d1812913862696d9417545cf2a26687819"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (11)",
+      "pdf_page_1based": 6,
+      "source_section": "4.2",
+      "description": "원문 번호 수식 (11); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_11.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          227,
+          674,
+          509,
+          693
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 846,
+        "height": 57
+      },
+      "sha256": "5a152186cb15ca791e4db8ac946a745abab74b5f0b3fddc3e6c9abdab486e00a"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (12)",
+      "pdf_page_1based": 6,
+      "source_section": "4.2",
+      "description": "원문 번호 수식 (12); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_12.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          210,
+          708,
+          509,
+          728
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 897,
+        "height": 60
+      },
+      "sha256": "ca404a947929e4eff67d8e7883ab7423b5a64986392f52bc6354493fca237823"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (13)",
+      "pdf_page_1based": 7,
+      "source_section": "4.2",
+      "description": "원문 번호 수식 (13); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_13.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          150,
+          277,
+          509,
+          303
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1077,
+        "height": 78
+      },
+      "sha256": "92ff09e183e275613b53bf66efb62910f1d63dcff0ec9fa9cc72afe3cbfad720"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (14)",
+      "pdf_page_1based": 20,
+      "source_section": "Appendix C",
+      "description": "원문 번호 수식 (14); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_14.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          225,
+          307,
+          509,
+          329
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 852,
+        "height": 66
+      },
+      "sha256": "e9d247913612e569d3698f6fcddfe80c2d4758716b3a2eafbe2617434347dc9e"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (15)",
+      "pdf_page_1based": 20,
+      "source_section": "Appendix C",
+      "description": "원문 번호 수식 (15); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_15.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          251,
+          371,
+          509,
+          388
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 774,
+        "height": 51
+      },
+      "sha256": "1df6b0287896249691069577c5d750ebf7c163da5a1c2de0fd34634bc32aed2f"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (16)",
+      "pdf_page_1based": 20,
+      "source_section": "Appendix C",
+      "description": "원문 번호 수식 (16); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_16.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          259,
+          421,
+          509,
+          442
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 750,
+        "height": 63
+      },
+      "sha256": "551d31d06b21957a3634142cc6158161b91e0398e0fb9fb5634805995a28d7e1"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (17)",
+      "pdf_page_1based": 20,
+      "source_section": "Appendix C",
+      "description": "원문 번호 수식 (17); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_17.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          252,
+          462,
+          509,
+          501
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 771,
+        "height": 117
+      },
+      "sha256": "331c4e335b9738e61433eb8bfd68d3026cd41bcf0628cba79617bd4d8a7955e9"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Eq. (18)",
+      "pdf_page_1based": 20,
+      "source_section": "Appendix C",
+      "description": "원문 번호 수식 (18); 인쇄 수식 번호 포함",
+      "path": "assets/01_VLA_Cache/equations/equation_18.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          236,
+          549,
+          509,
+          589
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 819,
+        "height": 120
+      },
+      "sha256": "476eef99ce0bd4afde1c3099795f1ad8f3978c468c7e4913dff1c6504ef5600b"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Unnumbered: head-mean attention A_avg and layer-mean task relevance S",
+      "pdf_page_1based": 5,
+      "source_section": "3.3",
+      "description": "head 축 attention 평균과 선택된 layer의 task-relevance 평균",
+      "note": "Two inline definitions share a tightly typeset paragraph; their full explanatory paragraph is retained without clipping or compositing.",
+      "path": "assets/01_VLA_Cache/equations/equation_unnumbered_attention_means.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          106,
+          401,
+          508,
+          470
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1206,
+        "height": 207
+      },
+      "sha256": "826db74f533836442f3af83c09e35dc69b4572f6c52e1bfbb6b67663ac124cdd"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Unnumbered: entropy ratio R^l",
+      "pdf_page_1based": 6,
+      "source_section": "3.4",
+      "description": "상대 entropy 감소율의 두 줄에 걸친 문장형 정의",
+      "note": "The original inline definition wraps across two lines; minimal adjoining source prose is intentionally retained.",
+      "path": "assets/01_VLA_Cache/equations/equation_unnumbered_entropy_ratio.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          104,
+          71,
+          508,
+          119
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 1212,
+        "height": 144
+      },
+      "sha256": "eb0aae5ea0a999aeeeb39a9f437d5bf95a2bb7e4bd0dcf208421cb8e47b1cbcc"
+    },
+    {
+      "kind": "equation",
+      "original_label": "Unnumbered: reused token count L_r",
+      "pdf_page_1based": 6,
+      "source_section": "4.2",
+      "description": "원문의 재사용 token 수 정의; 집합 기호 문제는 기존 해설 참고",
+      "path": "assets/01_VLA_Cache/equations/equation_unnumbered_reused_count.png",
+      "original_public_url": "https://proceedings.neurips.cc/paper_files/paper/2025/file/f062da1973ac9ac61fc6d44dd7fa309f-Paper-Conference.pdf",
+      "crop_box": {
+        "coordinates": [
+          318,
+          693,
+          384,
+          708
+        ],
+        "unit": "pt (1/72 inch)",
+        "origin": "top-left",
+        "order": [
+          "x0",
+          "y0",
+          "x1",
+          "y1"
+        ],
+        "pdf_page_size": [
+          612,
+          792
+        ]
+      },
+      "render_dpi": 216,
+      "pixel_dimensions": {
+        "width": 198,
+        "height": 45
+      },
+      "sha256": "9af749071b6084953f1576d6982bc85931c8a664c2810d5a38dd6ec917b6d951"
+    }
+  ]
+}

@@ -1,0 +1,574 @@
+{
+  "source_pdf": {
+    "filename": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+    "sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+    "pages": 27
+  },
+  "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf",
+  "page_numbering": "1-based PDF page equals printed page",
+  "copyright": "Original authors/rightsholders; independent explanatory excerpts. No CC-BY license asserted.",
+  "assets": [
+    {
+      "path": "assets/06_X_VLA/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "title": "전체 방법과 성능 개요",
+      "pdf_page": 1,
+      "crop_bbox": [
+        106,
+        462.5,
+        505,
+        671.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1197,
+        626
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "title": "네 가지 heterogeneity 처리법",
+      "pdf_page": 4,
+      "crop_bbox": [
+        108,
+        74.5,
+        503.5,
+        176.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1186,
+        306
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "title": "heterogeneous pretraining 데이터 구성",
+      "pdf_page": 4,
+      "crop_bbox": [
+        108,
+        200.5,
+        361.5,
+        307
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        760,
+        319
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "title": "heterogeneity 처리법별 학습 곡선",
+      "pdf_page": 4,
+      "crop_bbox": [
+        367.5,
+        196.5,
+        505,
+        304
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        413,
+        322
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "title": "X-VLA architecture",
+      "pdf_page": 5,
+      "crop_bbox": [
+        286,
+        408,
+        505,
+        620.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        657,
+        638
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "title": "model, prompt length, data source 및 data size scaling",
+      "pdf_page": 8,
+      "crop_bbox": [
+        106.5,
+        80,
+        505,
+        171.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1195,
+        274
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "title": "adaptation 평가 환경",
+      "pdf_page": 8,
+      "crop_bbox": [
+        106,
+        205,
+        505,
+        257
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1197,
+        156
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "title": "세 real-world robot의 성능",
+      "pdf_page": 9,
+      "crop_bbox": [
+        106,
+        313.5,
+        505,
+        408.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1197,
+        286
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_09.png",
+      "kind": "figure",
+      "label": "Figure 9",
+      "title": "soft prompt t-SNE",
+      "pdf_page": 10,
+      "crop_bbox": [
+        107,
+        80,
+        253,
+        166
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        438,
+        258
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_10.png",
+      "kind": "figure",
+      "label": "Figure 10",
+      "title": "prompt별 PEFT 학습 곡선",
+      "pdf_page": 10,
+      "crop_bbox": [
+        256.5,
+        79.5,
+        370,
+        170.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        340,
+        274
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_11.png",
+      "kind": "figure",
+      "label": "Figure 11",
+      "title": "Soft-Fold 데이터 수집",
+      "pdf_page": 22,
+      "crop_bbox": [
+        114,
+        86.5,
+        499,
+        304.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1155,
+        654
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_12.png",
+      "kind": "figure",
+      "label": "Figure 12",
+      "title": "cloth-folding 실행 과정",
+      "pdf_page": 23,
+      "crop_bbox": [
+        106,
+        79,
+        506,
+        172.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1200,
+        281
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_13.png",
+      "kind": "figure",
+      "label": "Figure 13",
+      "title": "WidowX generalization task",
+      "pdf_page": 25,
+      "crop_bbox": [
+        106,
+        560.5,
+        501.5,
+        633
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1186,
+        217
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/figures/figure_14.png",
+      "kind": "figure",
+      "label": "Figure 14",
+      "title": "real-world hardware와 camera 배치",
+      "pdf_page": 26,
+      "crop_bbox": [
+        106,
+        148,
+        505,
+        304.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1197,
+        470
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Unnumbered: dataset과 trajectory 정의",
+      "title": "dataset과 trajectory 정의",
+      "pdf_page": 3,
+      "crop_bbox": [
+        257.3333333333333,
+        388.3333333333333,
+        404.6666666666667,
+        403
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        466,
+        68
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf",
+      "source_render_crop_bbox_pixels": [
+        772,
+        1165,
+        1214,
+        1209
+      ],
+      "source_render_dpi": 216,
+      "padding_pixels": {
+        "left": 12,
+        "top": 12,
+        "right": 12,
+        "bottom": 12
+      },
+      "processing": "Direct PDF crop render; 12-pixel white exterior padding only. No source glyph editing."
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Unnumbered: action chunk 정의",
+      "title": "action chunk 정의",
+      "pdf_page": 3,
+      "crop_bbox": [
+        106.66666666666667,
+        435,
+        222.66666666666666,
+        447
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        372,
+        60
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf",
+      "source_render_crop_bbox_pixels": [
+        320,
+        1305,
+        668,
+        1341
+      ],
+      "source_render_dpi": 216,
+      "padding_pixels": {
+        "left": 12,
+        "top": 12,
+        "right": 12,
+        "bottom": 12
+      },
+      "processing": "Direct PDF crop render; 12-pixel white exterior padding only. No source glyph editing."
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_03.png",
+      "kind": "equation",
+      "label": "Unnumbered: behavior-cloning loss",
+      "title": "behavior-cloning loss",
+      "pdf_page": 3,
+      "crop_bbox": [
+        155.33333333333334,
+        446.6666666666667,
+        321.3333333333333,
+        459.3333333333333
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        522,
+        62
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf",
+      "source_render_crop_bbox_pixels": [
+        466,
+        1340,
+        964,
+        1378
+      ],
+      "source_render_dpi": 216,
+      "padding_pixels": {
+        "left": 12,
+        "top": 12,
+        "right": 12,
+        "bottom": 12
+      },
+      "processing": "Direct PDF crop render; 12-pixel white exterior padding only. No source glyph editing."
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_04.png",
+      "kind": "equation",
+      "label": "Unnumbered: Gaussian initial action",
+      "title": "Gaussian initial action",
+      "pdf_page": 3,
+      "crop_bbox": [
+        202.66666666666666,
+        496.3333333333333,
+        261.3333333333333,
+        508
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        200,
+        59
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf",
+      "source_render_crop_bbox_pixels": [
+        608,
+        1489,
+        784,
+        1524
+      ],
+      "source_render_dpi": 216,
+      "padding_pixels": {
+        "left": 12,
+        "top": 12,
+        "right": 12,
+        "bottom": 12
+      },
+      "processing": "Direct PDF crop render; 12-pixel white exterior padding only. No source glyph editing."
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_05.png",
+      "kind": "equation",
+      "label": "Unnumbered: 두 줄에 걸친 Euler update와 flow time",
+      "title": "두 줄에 걸친 Euler update와 flow time",
+      "pdf_page": 3,
+      "crop_bbox": [
+        106,
+        506.5,
+        506,
+        531
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1200,
+        73
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_06.png",
+      "kind": "equation",
+      "label": "Unnumbered: flow-matching behavior-cloning loss",
+      "title": "flow-matching behavior-cloning loss",
+      "pdf_page": 3,
+      "crop_bbox": [
+        179.5,
+        563,
+        431.5,
+        595
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        756,
+        96
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_07.png",
+      "kind": "equation",
+      "label": "Unnumbered: OT linear interpolation path",
+      "title": "OT linear interpolation path",
+      "pdf_page": 3,
+      "crop_bbox": [
+        133.5,
+        603.5,
+        231.5,
+        619
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        294,
+        47
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_08.png",
+      "kind": "equation",
+      "label": "Unnumbered: heterogeneous dataset mixture",
+      "title": "heterogeneous dataset mixture",
+      "pdf_page": 3,
+      "crop_bbox": [
+        203,
+        643.5,
+        274,
+        657
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        213,
+        41
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    },
+    {
+      "path": "assets/06_X_VLA/equations/equation_09.png",
+      "kind": "equation",
+      "label": "Unnumbered: soft prompt library와 hardware-to-prompt mapping",
+      "title": "soft prompt library와 hardware-to-prompt mapping",
+      "pdf_page": 4,
+      "crop_bbox": [
+        106,
+        708.5,
+        506,
+        733.5
+      ],
+      "crop_unit": "PDF points (1/72 inch), top-left origin, [x0,y0,x1,y1]",
+      "pixel_size": [
+        1200,
+        74
+      ],
+      "dpi": 216,
+      "source_pdf": "17755_X_VLA_Soft_Prompted_Tran ICLR 2026.pdf",
+      "source_pdf_sha256": "E5843AA4BF8804DE0C1F50F06E1379B7E1634CD774A931091249C17E0FEDA39A",
+      "original_public_url": "https://openreview.net/pdf/d44409f253fba9242cb42be37ae0150dd3e01ddb.pdf"
+    }
+  ]
+}

@@ -1,0 +1,335 @@
+{
+  "description": "Original-paper excerpts for independent scholarly explanation. Rights remain with original authors/publisher; no CC-BY license inferred.",
+  "assets": [
+    {
+      "path": "assets/04_FastV/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 2,
+      "crop_box": [
+        151,
+        116,
+        463,
+        269
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        936,
+        459
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 5,
+      "crop_box": [
+        154,
+        116,
+        468,
+        211
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        942,
+        285
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 7,
+      "crop_box": [
+        132,
+        116,
+        480,
+        258
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        1044,
+        426
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 8,
+      "crop_box": [
+        132,
+        116,
+        483,
+        267
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        1053,
+        453
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 9,
+      "crop_box": [
+        135,
+        115,
+        483,
+        307
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        1044,
+        576
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 13,
+      "crop_box": [
+        237,
+        435,
+        379,
+        540
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        426,
+        315
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "source_id": "supplement",
+      "source_pdf": "10478-supp.pdf",
+      "source_sha256": "58692cc0b0d016a0ee17ae9acd6938b1f83be534b31ee01520edb92239b01076",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478-supp.pdf",
+      "pdf_page_1_based": 1,
+      "crop_box": [
+        183,
+        114,
+        433,
+        605
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        750,
+        1473
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/figures/figure_08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "source_id": "supplement",
+      "source_pdf": "10478-supp.pdf",
+      "source_sha256": "58692cc0b0d016a0ee17ae9acd6938b1f83be534b31ee01520edb92239b01076",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478-supp.pdf",
+      "pdf_page_1_based": 3,
+      "crop_box": [
+        197,
+        258,
+        416,
+        409
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        657,
+        453
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 5,
+      "crop_box": [
+        236,
+        483,
+        483,
+        518
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        741,
+        105
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 6,
+      "crop_box": [
+        208,
+        403,
+        484,
+        427
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        828,
+        72
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_03.png",
+      "kind": "equation",
+      "label": "Eq. (3)",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 6,
+      "crop_box": [
+        267,
+        470,
+        484,
+        503
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        651,
+        99
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_04.png",
+      "kind": "equation",
+      "label": "Eq. (4)",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 6,
+      "crop_box": [
+        260,
+        570,
+        484,
+        607
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        672,
+        111
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_05.png",
+      "kind": "equation",
+      "label": "Eq. (5)",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 9,
+      "crop_box": [
+        147,
+        634,
+        484,
+        674
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        1011,
+        120
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_cost_unnumbered.png",
+      "kind": "equation",
+      "label": "Unnumbered layer cost, section 4.2",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 9,
+      "crop_box": [
+        353,
+        572,
+        443.5,
+        584.5
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        271,
+        38
+      ],
+      "dpi": 216
+    },
+    {
+      "path": "assets/04_FastV/equations/equation_length_unnumbered.png",
+      "kind": "equation",
+      "label": "Unnumbered retained length, section 4.2",
+      "source_id": "main",
+      "source_pdf": "FastV ECCV 2024.pdf",
+      "source_sha256": "ec315d529c51ba2053795b46dab9b71459268d10ac78156d3714f5f6656dfb58",
+      "original_public_url": "https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/10478.pdf",
+      "pdf_page_1_based": 9,
+      "crop_box": [
+        362,
+        584.5,
+        435,
+        597
+      ],
+      "crop_box_unit": "PDF points (1/72 inch), origin top-left, [left,top,right,bottom]",
+      "pixel_size": [
+        219,
+        37
+      ],
+      "dpi": 216
+    }
+  ]
+}

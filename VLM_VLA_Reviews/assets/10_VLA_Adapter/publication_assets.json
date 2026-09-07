@@ -1,0 +1,858 @@
+{
+  "schema_version": 1,
+  "paper_title": "VLA-Adapter: An Effective Paradigm for Tiny-Scale Vision-Language-Action Model",
+  "review": "10_VLA_Adapter_Detailed_Review_KO.md",
+  "path_base": "review Markdown directory",
+  "extraction": "Original PDF region rendering only; no redraw or formula correction. Original captions are replaced by Korean explanatory captions in the review.",
+  "rights": "Rights remain with the original authors and publishers. Selected excerpts accompany educational research commentary; no new license is asserted.",
+  "assets": [
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_01.png",
+      "kind": "figure",
+      "original_label": "Figure 1",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 1,
+      "bbox": [
+        320.1,
+        288.0,
+        558.9,
+        377.1
+      ],
+      "requested_bbox_pt": [
+        320,
+        288,
+        559,
+        377
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        1067,
+        960,
+        796,
+        297
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        796,
+        297
+      ],
+      "png_sha256": "0d16e8c7b3ec540f2e0f13c7c9b8dfe68a5ebb8ca4c4cfb8e0e21198a0582972"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_02.png",
+      "kind": "figure",
+      "original_label": "Figure 2",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 2,
+      "bbox": [
+        318.9,
+        260.1,
+        558.9,
+        399.0
+      ],
+      "requested_bbox_pt": [
+        319,
+        260,
+        559,
+        399
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        1063,
+        867,
+        800,
+        463
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        800,
+        463
+      ],
+      "png_sha256": "bfb75ebe5026c01106bf1f24f59220e68d720af6707ad9ce579a42cc2135bb4e"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_03.png",
+      "kind": "figure",
+      "original_label": "Figure 3",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 3,
+      "bbox": [
+        54.0,
+        51.9,
+        558.0,
+        240.9
+      ],
+      "requested_bbox_pt": [
+        54,
+        52,
+        558,
+        241
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        180,
+        173,
+        1680,
+        630
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1680,
+        630
+      ],
+      "png_sha256": "0ec035e55419fe8bc3b2f481c8438e41a6d0ccf115fda3d0036506152334cbda"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_04.png",
+      "kind": "figure",
+      "original_label": "Figure 4",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 3,
+      "bbox": [
+        320.1,
+        296.1,
+        558.9,
+        384.9
+      ],
+      "requested_bbox_pt": [
+        320,
+        296,
+        559,
+        385
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        1067,
+        987,
+        796,
+        296
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        796,
+        296
+      ],
+      "png_sha256": "cc8a3289cf43eec3a5fd94dc9d972417ded8cd7f67af45382bbeb351a5291dd2"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_05.png",
+      "kind": "figure",
+      "original_label": "Figure 5",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 4,
+      "bbox": [
+        59.1,
+        51.0,
+        555.0,
+        225.0
+      ],
+      "requested_bbox_pt": [
+        59,
+        51,
+        555,
+        225
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        197,
+        170,
+        1653,
+        580
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1653,
+        580
+      ],
+      "png_sha256": "96b8fe0c9c9481a5ace9a1ccf39bf6517d93b355e837340baaebf9437f0316b6"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_06.png",
+      "kind": "figure",
+      "original_label": "Figure 6",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 7,
+      "bbox": [
+        54.0,
+        51.0,
+        294.0,
+        218.1
+      ],
+      "requested_bbox_pt": [
+        54,
+        51,
+        294,
+        218
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        180,
+        170,
+        800,
+        557
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        800,
+        557
+      ],
+      "png_sha256": "af0396a40a27377167b22948ecc5a82f703f4d8bcb2bf44c720fd55b4a9e01d1"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_07.png",
+      "kind": "figure",
+      "original_label": "Figure 7",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 7,
+      "bbox": [
+        57.0,
+        351.9,
+        288.9,
+        444.0
+      ],
+      "requested_bbox_pt": [
+        57,
+        352,
+        289,
+        444
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        190,
+        1173,
+        773,
+        307
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        773,
+        307
+      ],
+      "png_sha256": "d7dbed38884883eb96a27c616b77d4afa3949d92276f4e86d8ff18445c17f356"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_08.png",
+      "kind": "figure",
+      "original_label": "Figure 8",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 7,
+      "bbox": [
+        318.9,
+        51.0,
+        558.9,
+        144.0
+      ],
+      "requested_bbox_pt": [
+        319,
+        51,
+        559,
+        144
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        1063,
+        170,
+        800,
+        310
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        800,
+        310
+      ],
+      "png_sha256": "a2c8c3141382b4025c17410e603070400639f18cc04d9f291b107a82c1f82f33"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_A1.png",
+      "kind": "figure",
+      "original_label": "Figure A1",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 18,
+      "bbox": [
+        108.0,
+        207.0,
+        504.9,
+        408.9
+      ],
+      "requested_bbox_pt": [
+        108,
+        207,
+        505,
+        409
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        360,
+        690,
+        1323,
+        673
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1323,
+        673
+      ],
+      "png_sha256": "0dceed1d5a1cb4b820021977f3a28aae2b547f8caff4c9d7c651c94078553359"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_B1.png",
+      "kind": "figure",
+      "original_label": "Figure B1",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 19,
+      "bbox": [
+        213.9,
+        80.1,
+        396.9,
+        312.0
+      ],
+      "requested_bbox_pt": [
+        214,
+        80,
+        397,
+        312
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        713,
+        267,
+        610,
+        773
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        610,
+        773
+      ],
+      "png_sha256": "13421e59a27694b7b2223a3b091155ace93e988f2a608b5b51a5026640d2383b"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_E1.png",
+      "kind": "figure",
+      "original_label": "Figure E1",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 21,
+      "bbox": [
+        108.0,
+        336.0,
+        506.1,
+        420.9
+      ],
+      "requested_bbox_pt": [
+        108,
+        336,
+        506,
+        421
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        360,
+        1120,
+        1327,
+        283
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1327,
+        283
+      ],
+      "png_sha256": "df9ec007240e99b1f43a2be6fd33f6b31fc5eaee1dabca8b66ad850f58aa7f2f"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_G1.png",
+      "kind": "figure",
+      "original_label": "Figure G1",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 23,
+      "bbox": [
+        107.1,
+        140.1,
+        506.1,
+        647.1
+      ],
+      "requested_bbox_pt": [
+        107,
+        140,
+        506,
+        647
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        357,
+        467,
+        1330,
+        1690
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1330,
+        1690
+      ],
+      "png_sha256": "d1948815ac52bc3f736ae610f629853d0580e9008189226991eec1636c34f27a"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_G2.png",
+      "kind": "figure",
+      "original_label": "Figure G2",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 24,
+      "bbox": [
+        107.1,
+        102.9,
+        504.9,
+        444.9
+      ],
+      "requested_bbox_pt": [
+        107,
+        103,
+        505,
+        445
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        357,
+        343,
+        1326,
+        1140
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1326,
+        1140
+      ],
+      "png_sha256": "88facebdf88a661a938d293407ebe97d4611f6084f87ef4170ea83e4412ca28d"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/figures/figure_H1.png",
+      "kind": "figure",
+      "original_label": "Figure H1",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 25,
+      "bbox": [
+        107.1,
+        332.1,
+        504.9,
+        522.0
+      ],
+      "requested_bbox_pt": [
+        107,
+        332,
+        505,
+        522
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "Poppler pdftoppm; direct source-page region render",
+      "raster_crop_box_px": [
+        357,
+        1107,
+        1326,
+        633
+      ],
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1326,
+        633
+      ],
+      "png_sha256": "b3eb015c0a03694a508adaf513e21191a67cb43481bb6770170b46782560bfa1"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_aaai_01_l1.png",
+      "kind": "equation",
+      "original_label": "Eq. (1)",
+      "source_edition": "AAAI-26 final, 9 PDF pages",
+      "source_pdf_filename": "07654-AAAI26.WangY-IR.pdf",
+      "source_pdf_sha256": "4a579929dbd521f62708262a2ab072703d30faf5161bd2f56a32ab900d03810d",
+      "source_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38931/42893",
+      "pdf_page_1_based": 4,
+      "bbox": [
+        340,
+        442,
+        560,
+        493
+      ],
+      "requested_bbox_pt": [
+        340,
+        442,
+        560,
+        493
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        733,
+        170
+      ],
+      "png_sha256": "faa6a6010738a3204fac9a56e634d4157a3d2116cc77dd2d78d3ea3f29e85911"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_01_bridge.png",
+      "kind": "equation",
+      "original_label": "Eq. (1)",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 5,
+      "bbox": [
+        132,
+        708,
+        510,
+        737
+      ],
+      "requested_bbox_pt": [
+        132,
+        708,
+        510,
+        737
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1260,
+        96
+      ],
+      "png_sha256": "3465f7efa88ff58c8a7d87d229c169530edb9e0c8360c0988d356334f601dd99"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_02_l1.png",
+      "kind": "equation",
+      "original_label": "Eq. (2)",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 6,
+      "bbox": [
+        148,
+        221,
+        510,
+        256
+      ],
+      "requested_bbox_pt": [
+        148,
+        221,
+        510,
+        256
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1206,
+        116
+      ],
+      "png_sha256": "f7e237dc559aa12e92b83337c6a6c1bff67ec04d6455c727b64c09b72c9749ec"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_B1_modulation.png",
+      "kind": "equation",
+      "original_label": "Eq. (B-1)",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 18,
+      "bbox": [
+        103,
+        705,
+        527,
+        737
+      ],
+      "requested_bbox_pt": [
+        103,
+        705,
+        527,
+        737
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1413,
+        106
+      ],
+      "png_sha256": "49ee414d20e18e352ee9f41d4edaa30d0891d05aa019f6100a1be19ecce57ddf"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_B2_diffusion.png",
+      "kind": "equation",
+      "original_label": "Eq. (B-2)",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 19,
+      "bbox": [
+        107,
+        560,
+        510,
+        595
+      ],
+      "requested_bbox_pt": [
+        107,
+        560,
+        510,
+        595
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1343,
+        116
+      ],
+      "png_sha256": "170c7632f550d0073a683f08b3d3017c43e650904399c888517aecc6bb4cd0e0"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_inline_condition.png",
+      "kind": "equation",
+      "original_label": "Appendix B.1 unnumbered modulation condition",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 18,
+      "bbox": [
+        160,
+        656.5,
+        270,
+        669.5
+      ],
+      "requested_bbox_pt": [
+        160,
+        656.5,
+        270,
+        669.5
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        366,
+        43
+      ],
+      "png_sha256": "481f1df46a068dcb074964571794879085e1e8f5c58b83e400b04dc9fee937a2"
+    },
+    {
+      "path": "assets/10_VLA_Adapter/equations/eq_arxiv_inline_noise.png",
+      "kind": "equation",
+      "original_label": "Appendix B.2 unnumbered noisy action and cumulative product",
+      "source_edition": "arXiv:2509.09372v2, 28 PDF pages",
+      "source_pdf_filename": "arxiv_2509.09372.pdf",
+      "source_pdf_sha256": "1d8e99058dcda68865735fd14ef09b5e3d61137f51192945c857fd1701487153",
+      "source_url": "https://arxiv.org/pdf/2509.09372v2",
+      "pdf_page_1_based": 19,
+      "bbox": [
+        106,
+        499,
+        506,
+        547
+      ],
+      "requested_bbox_pt": [
+        106,
+        499,
+        506,
+        547
+      ],
+      "bbox_units": "PDF points (1/72 inch)",
+      "bbox_origin": "top-left; [x0, top, x1, bottom]",
+      "source_page_size_pt": [
+        612,
+        792
+      ],
+      "render_dpi": 240,
+      "renderer": "pdfplumber / PDFium; direct source-page region render",
+      "raster_crop_box_px": null,
+      "color_quantization": "none (RGB PNG)",
+      "pixel_size": [
+        1333,
+        160
+      ],
+      "png_sha256": "a432d2f54053290041a569741ff79177d7d2435c31dae532fc361a6f05d97b0a",
+      "note": "Inline equations are excerpted with their four-line source paragraph to preserve radicals, subscripts, and context."
+    }
+  ]
+}

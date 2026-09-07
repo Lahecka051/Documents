@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "paper": "HiRED",
+  "review_markdown": "02_HiRED_Detailed_Review_KO.md",
+  "source_pdf": {
+    "filename": "HiRED-AAAI 2025.pdf",
+    "sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+    "page_count": 9
+  },
+  "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+  "publication_page_url": "https://ojs.aaai.org/index.php/AAAI/article/view/32171",
+  "page_numbering": "pdf_page is 1-based; printed_page = pdf_page + 1772",
+  "coordinate_system": {
+    "unit": "PDF point (1/72 inch)",
+    "origin": "top-left",
+    "bbox_order": [
+      "x0",
+      "y0",
+      "x1",
+      "y1"
+    ],
+    "axes": "x increases right; y increases down",
+    "source_page_size": [
+      612,
+      792
+    ],
+    "pixel_crop_bbox": "Outward-rounded full-page render pixels at 240 DPI"
+  },
+  "rendering": {
+    "engine": "PDFium via pypdfium2",
+    "dpi": 240,
+    "method": "Render source PDF in memory and crop the specified rectangle; no retypesetting, redrawing, or full-page publication images",
+    "color": "RGB"
+  },
+  "rights": {
+    "attribution": "Original authors and respective rights holders; source PDF states Copyright 2025 Association for the Advancement of Artificial Intelligence. All rights reserved.",
+    "use_context": "Excerpts accompanying independent Korean educational analysis",
+    "additional_image_license": null
+  },
+  "coverage": {
+    "figures": [
+      "Figure 1",
+      "Figure 2",
+      "Figure 3",
+      "Figure 4",
+      "Figure 5",
+      "Figure 6"
+    ],
+    "numbered_equations": [
+      "Eq. (1)",
+      "Eq. (2)"
+    ],
+    "unnumbered_equation_excerpts": 2,
+    "figure_images": 6,
+    "equation_images": 4,
+    "supplementary_pdf_used": false
+  },
+  "assets": [
+    {
+      "path": "assets/02_HiRED/figures/figure_01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 1,
+      "printed_page": 1773,
+      "crop_bbox": [
+        315,
+        213,
+        559,
+        356
+      ],
+      "pixel_crop_bbox": [
+        1050,
+        710,
+        1864,
+        1187
+      ],
+      "pixel_size": [
+        814,
+        477
+      ],
+      "dpi": 240,
+      "sha256": "719981506fd2b21328e45ec4fae0ebad1ed26b1d775d496e23c9640e2e67a7de",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/figures/figure_02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 3,
+      "printed_page": 1775,
+      "crop_bbox": [
+        315,
+        52,
+        559,
+        182
+      ],
+      "pixel_crop_bbox": [
+        1050,
+        173,
+        1864,
+        607
+      ],
+      "pixel_size": [
+        814,
+        434
+      ],
+      "dpi": 240,
+      "sha256": "3dd4eeb955124ed0e0cf27246c0deea84addcefd014633e2b0242a1c3f6efcc9",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/figures/figure_03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 4,
+      "printed_page": 1776,
+      "crop_bbox": [
+        52,
+        51,
+        296,
+        116
+      ],
+      "pixel_crop_bbox": [
+        173,
+        170,
+        987,
+        387
+      ],
+      "pixel_size": [
+        814,
+        217
+      ],
+      "dpi": 240,
+      "sha256": "681e9ea48d2252df3c8e06219029a91cd9de4abfaf3008cc31c16db029183173",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/figures/figure_04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 4,
+      "printed_page": 1776,
+      "crop_bbox": [
+        52,
+        188,
+        296,
+        352
+      ],
+      "pixel_crop_bbox": [
+        173,
+        626,
+        987,
+        1174
+      ],
+      "pixel_size": [
+        814,
+        548
+      ],
+      "dpi": 240,
+      "sha256": "758f1b28f3a96dff36766c1bf50a1f45a87c2daa6080464699d26f8f88603faf",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/figures/figure_05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 6,
+      "printed_page": 1778,
+      "crop_bbox": [
+        315,
+        50,
+        560,
+        192
+      ],
+      "pixel_crop_bbox": [
+        1050,
+        166,
+        1867,
+        640
+      ],
+      "pixel_size": [
+        817,
+        474
+      ],
+      "dpi": 240,
+      "sha256": "29a60ce8e02a36ca64eb33762646155691333865db5077130a097f85fecc6fe0",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/figures/figure_06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 7,
+      "printed_page": 1779,
+      "crop_bbox": [
+        52,
+        50,
+        299,
+        164
+      ],
+      "pixel_crop_bbox": [
+        173,
+        166,
+        997,
+        547
+      ],
+      "pixel_size": [
+        824,
+        381
+      ],
+      "dpi": 240,
+      "sha256": "a91876341e8248cd4746d7c5be28ef40697daafaadbb0de5b7cd2185f93b8c1b",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/equations/equation_01.png",
+      "kind": "equation",
+      "label": "Eq. (1)",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 5,
+      "printed_page": 1777,
+      "crop_bbox": [
+        54,
+        470,
+        300,
+        497
+      ],
+      "pixel_crop_bbox": [
+        180,
+        1566,
+        1000,
+        1657
+      ],
+      "pixel_size": [
+        820,
+        91
+      ],
+      "dpi": 240,
+      "sha256": "489c475b675626756a19a051e71856ed8ba3d726c9457fe73977ef8f9374b7af",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/equations/equation_02.png",
+      "kind": "equation",
+      "label": "Eq. (2)",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 5,
+      "printed_page": 1777,
+      "crop_bbox": [
+        54,
+        686,
+        300,
+        711
+      ],
+      "pixel_crop_bbox": [
+        180,
+        2286,
+        1000,
+        2370
+      ],
+      "pixel_size": [
+        820,
+        84
+      ],
+      "dpi": 240,
+      "sha256": "e61fab30648f0d90bcc96a796fa7a954e9203b8b657deb5ccfe35bf09b99a7fb",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    },
+    {
+      "path": "assets/02_HiRED/equations/budget_full_sub.png",
+      "kind": "equation",
+      "label": "Unnumbered budget equations, Algorithm 1 lines 2-3",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 4,
+      "printed_page": 1776,
+      "crop_bbox": [
+        318,
+        116.7,
+        432,
+        138
+      ],
+      "pixel_crop_bbox": [
+        1060,
+        389,
+        1440,
+        460
+      ],
+      "pixel_size": [
+        380,
+        71
+      ],
+      "dpi": 240,
+      "sha256": "42b040e03336cc06571c0b743b1120cf11f6a1ef85bde77bbf4a5614a766b178",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Rechecked after independent QA: moved the top source-PDF crop boundary from y=116 to y=116.7 points (3 rendered pixels). The previous line's descender fragment is excluded; both equations, subscripts, floor symbols, punctuation, and line numbers remain intact. No pixels were erased or repainted."
+    },
+    {
+      "path": "assets/02_HiRED/equations/budget_partition.png",
+      "kind": "equation",
+      "label": "Unnumbered partition budget, Algorithm 1 lines 7-9",
+      "source_pdf": "HiRED-AAAI 2025.pdf",
+      "pdf_page": 4,
+      "printed_page": 1776,
+      "crop_bbox": [
+        318,
+        200,
+        559,
+        246
+      ],
+      "pixel_crop_bbox": [
+        1060,
+        666,
+        1864,
+        820
+      ],
+      "pixel_size": [
+        804,
+        154
+      ],
+      "dpi": 240,
+      "sha256": "cdb7ddb7b6fbaf2e84dcb945bf7f2e927845cf9b939e2a6dd86d22c4c513b0d0",
+      "source_sha256": "220553c67eddbfda3aa7a45185fd3ddbb9dfca861e99e31a436145e73ac85121",
+      "original_public_url": "https://ojs.aaai.org/index.php/AAAI/article/download/32171/34326",
+      "visual_qa": "Inspected the actual PNG: labels, legends, axes, symbols, and source numbering are visible; no adjacent prose fragments or clipping."
+    }
+  ]
+}
