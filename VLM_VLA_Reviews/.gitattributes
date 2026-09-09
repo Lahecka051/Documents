@@ -1,0 +1,6 @@
+# Preserve original paper/image bytes on Windows and disable textual diffs.
+*.pdf binary
+*.png binary
+
+# Two trailing spaces are intentional Markdown hard line breaks.
+*.md whitespace=-blank-at-eol

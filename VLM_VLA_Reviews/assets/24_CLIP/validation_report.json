@@ -1,0 +1,530 @@
+{
+  "date": "2026-09-09",
+  "document": "24_CLIP_Detailed_Review_KO.md",
+  "document_sha256": "d25b24a4dcb0bf1d546a435bd13c4059f77a1fbe8fa4fb48a521ee1be66a636c",
+  "document_bytes": 114968,
+  "line_count": 1199,
+  "source_scope": {
+    "arxiv_version": "2103.00020v1",
+    "arxiv_pages": 48,
+    "supplementary_pages": 25,
+    "figures": 22,
+    "tables": 20,
+    "numbered_equations": 0,
+    "pseudocode_figures": 1,
+    "formula_correspondence_ids": [
+      "U1",
+      "U2",
+      "U3",
+      "U4",
+      "U5"
+    ],
+    "reviewer_derivation_range": "D1-D19"
+  },
+  "assets": {
+    "png_count": 28,
+    "figure_images": 22,
+    "equation_code_excerpts": 3,
+    "table_images": 3,
+    "manifest_entries": 28
+  },
+  "math": {
+    "documents": 1,
+    "inline": 144,
+    "display": 32,
+    "errors": 0,
+    "stray": 0
+  },
+  "wide_math": [],
+  "parser_errors": [],
+  "structural_errors": [],
+  "numerical_validation": {
+    "U": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        -1,
+        0
+      ]
+    ],
+    "V": [
+      [
+        0.8,
+        0.6
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        -0.8,
+        0.6
+      ]
+    ],
+    "S": [
+      [
+        0.8,
+        0,
+        -0.8
+      ],
+      [
+        0.6,
+        1,
+        0.6
+      ],
+      [
+        -0.8,
+        0,
+        0.8
+      ]
+    ],
+    "Z": [
+      [
+        1.6,
+        0,
+        -1.6
+      ],
+      [
+        1.2,
+        2,
+        1.2
+      ],
+      [
+        -1.6,
+        0,
+        1.6
+      ]
+    ],
+    "row_probabilities": [
+      [
+        0.8047261748682356,
+        0.16247141264505494,
+        0.03280241248670942
+      ],
+      [
+        0.2366560913555668,
+        0.5266878172888664,
+        0.2366560913555668
+      ],
+      [
+        0.03280241248670942,
+        0.16247141264505494,
+        0.8047261748682356
+      ]
+    ],
+    "column_probabilities": [
+      [
+        0.5844254418464191,
+        0.10650697891920073,
+        0.023822469070690536
+      ],
+      [
+        0.39175208908289044,
+        0.7869860421615984,
+        0.39175208908289044
+      ],
+      [
+        0.023822469070690536,
+        0.10650697891920073,
+        0.5844254418464191
+      ]
+    ],
+    "loss_image": 0.358551237590617,
+    "loss_text": 0.43793229878475143,
+    "loss_symmetric": 0.3982417681876842,
+    "dL_dZ": [
+      [
+        -0.10180806388089088,
+        0.044829731927375945,
+        0.00943748025956666
+      ],
+      [
+        0.10473469673974288,
+        -0.11438769009158922,
+        0.10473469673974288
+      ],
+      [
+        0.00943748025956666,
+        0.044829731927375945,
+        -0.10180806388089088
+      ]
+    ],
+    "dL_dU": [
+      [
+        -0.1779928706247321,
+        -0.021185236490837162
+      ],
+      [
+        1.7999205024438964e-18,
+        0.022587891992204456
+      ],
+      [
+        0.17799287062473207,
+        -0.021185236490837166
+      ]
+    ],
+    "dL_dV": [
+      [
+        -0.22249108828091507,
+        0.20946939347948576
+      ],
+      [
+        0,
+        -0.22877538018317845
+      ],
+      [
+        0.22249108828091507,
+        0.20946939347948576
+      ]
+    ],
+    "dL_dA": [
+      [
+        0,
+        -0.021185236490837162
+      ],
+      [
+        1.7999205024438964e-18,
+        0
+      ],
+      [
+        0,
+        -0.021185236490837166
+      ]
+    ],
+    "dL_dB": [
+      [
+        -0.18064210065128258,
+        0.24085613420171012
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0.18064210065128258,
+        0.24085613420171012
+      ]
+    ],
+    "dL_dt": -0.3333978492572597,
+    "max_finite_difference_error": 5.551115303117833e-11,
+    "large_batch": {
+      "pairs": 1073741824,
+      "negatives": 1073709056,
+      "fp16_logit_GiB": 2,
+      "fp32_logit_GiB": 4,
+      "nominal_updates": 390625,
+      "image_presentations": 12800000000
+    },
+    "arithmetic": {
+      "imagenet_linear_minus_zero": 9.200000000000003,
+      "gtsrb_clip_minus_enet": 14.700000000000003,
+      "aYahoo_error_reduction": 0.9420289855072463,
+      "clip_L336_linear_27_mean": 85.05555555555557
+    }
+  },
+  "browser_qa": {
+    "date": "2026-09-09",
+    "browser": "Isolated headless Google Chrome 152.0.7977.77",
+    "html": "work/preview/review.html",
+    "checks": {
+      "title": "CLIP 상세 리뷰 로컬 검수",
+      "images": [
+        {
+          "file": "fig01_overview.png",
+          "loaded": true,
+          "width": 1634,
+          "height": 621
+        },
+        {
+          "file": "fig02_objective_efficiency.png",
+          "loaded": true,
+          "width": 797,
+          "height": 554
+        },
+        {
+          "file": "fig03_pseudocode.png",
+          "loaded": true,
+          "width": 797,
+          "height": 737
+        },
+        {
+          "file": "eq_u01_projection_normalization.png",
+          "loaded": true,
+          "width": 797,
+          "height": 204
+        },
+        {
+          "file": "eq_u02_scaled_logits.png",
+          "loaded": true,
+          "width": 797,
+          "height": 71
+        },
+        {
+          "file": "eq_u03_symmetric_loss.png",
+          "loaded": true,
+          "width": 797,
+          "height": 167
+        },
+        {
+          "file": "table18_training.png",
+          "loaded": true,
+          "width": 774,
+          "height": 454
+        },
+        {
+          "file": "table19_resnets.png",
+          "loaded": true,
+          "width": 1604,
+          "height": 304
+        },
+        {
+          "file": "table20_vits.png",
+          "loaded": true,
+          "width": 1624,
+          "height": 268
+        },
+        {
+          "file": "fig04_prompt_ensemble.png",
+          "loaded": true,
+          "width": 797,
+          "height": 801
+        },
+        {
+          "file": "fig05_zero_shot_vs_rn50.png",
+          "loaded": true,
+          "width": 797,
+          "height": 917
+        },
+        {
+          "file": "fig06_few_shot.png",
+          "loaded": true,
+          "width": 797,
+          "height": 791
+        },
+        {
+          "file": "fig07_data_efficiency.png",
+          "loaded": true,
+          "width": 797,
+          "height": 707
+        },
+        {
+          "file": "fig08_zero_vs_linear.png",
+          "loaded": true,
+          "width": 797,
+          "height": 721
+        },
+        {
+          "file": "fig09_scaling.png",
+          "loaded": true,
+          "width": 797,
+          "height": 551
+        },
+        {
+          "file": "fig22_zero_shot_scaling.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 1324
+        },
+        {
+          "file": "fig10_linear_transfer.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 1067
+        },
+        {
+          "file": "fig11_per_task_gains.png",
+          "loaded": true,
+          "width": 797,
+          "height": 911
+        },
+        {
+          "file": "fig12_task_shift.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 1057
+        },
+        {
+          "file": "fig20_transfer_all_tasks.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 2111
+        },
+        {
+          "file": "fig13_natural_shift.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 661
+        },
+        {
+          "file": "fig14_adaptation.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 837
+        },
+        {
+          "file": "fig15_fewshot_robustness.png",
+          "loaded": true,
+          "width": 797,
+          "height": 801
+        },
+        {
+          "file": "fig16_human_difficulty.png",
+          "loaded": true,
+          "width": 797,
+          "height": 777
+        },
+        {
+          "file": "fig17_overlap.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 617
+        },
+        {
+          "file": "fig18_class_design.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 794
+        },
+        {
+          "file": "fig19_rendered_sst2.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 704
+        },
+        {
+          "file": "fig21_prediction_examples.png",
+          "loaded": true,
+          "width": 1637,
+          "height": 2031
+        }
+      ],
+      "displayMath": 32,
+      "inlineMath": 144,
+      "mathErrors": 0,
+      "mathOverflow": [],
+      "documentOverflow": false,
+      "headings": [
+        "목차",
+        "1. 출처·버전·읽은 범위",
+        "2. 핵심 결론과 주장–근거 지도",
+        "3. Motivation: 왜 고정된 label supervision을 벗어나는가",
+        "3.1 원문 §1: supervision의 형식이 transfer 범위를 제한한다",
+        "3.2 Caption prediction은 왜 비효율적일 수 있는가",
+        "3.3 원문 §8과 연결되는 신규성의 정확한 위치",
+        "4. 기호·텐서 shape 사전",
+        "5. 원문 §2: 데이터, 목적함수 선택, architecture",
+        "5.1 §2.1–2.2: WIT 400M의 구성과 가정",
+        "5.2 §2.3: Figure 2가 실제로 비교한 것",
+        "5.3 §2.4: 이미지 encoder — Modified ResNet",
+        "5.4 §2.4: 이미지 encoder — ViT",
+        "5.5 §2.4: text encoder와 EOS 선택",
+        "6. Figure 3의 모든 행과 핵심 수식",
+        "6.1 알고리즘 원문과 축 규칙",
+        "6.2 U1: encoder, projection, 행별 L2 normalization",
+        "6.3 U2: scaled cosine logits와 temperature",
+        "6.4 U3: 배치의 positive/negative와 symmetric cross entropy",
+        "6.5 수치 안정성과 극단적 경우",
+        "7. Backward: 어느 parameter가 어떤 signal을 받는가",
+        "7.1 D7: logits에 대한 gradient",
+        "7.2 D8: 양쪽 embedding과 scale",
+        "7.3 D9: L2 normalization을 통과하는 gradient",
+        "7.4 D10: projection과 encoder로의 전달",
+        "7.5 해설용 N=3, d=2 예제: forward 전체",
+        "7.6 같은 예제의 backward와 실제 검산",
+        "8. 원문 §2.5와 Appendix F: 학습·forward·추론 경계",
+        "8.1 학습 recipe",
+        "8.2 실제 batch를 따라가는 forward",
+        "8.3 Compute·메모리의 규모 검산",
+        "8.4 학습되는 parameter와 freeze 경계",
+        "9. 원문 §3.1: zero-shot classifier, prompt ensembling, few-shot",
+        "9.1 §3.1.1: '보지 않은 것'의 의미",
+        "9.2 §3.1.2, U4: text encoder가 classifier를 생성한다",
+        "9.3 §3.1.4, U5: prompt engineering과 embedding ensemble",
+        "9.4 §3.1.3/3.1.5: 무엇을 얼마나 잘하는가",
+        "9.5 Model scaling과 data scaling을 구분하기",
+        "10. 원문 §3.2: representation learning과 linear probe",
+        "10.1 왜 fine-tuning 대신 linear probe인가",
+        "10.2 Figure 10–12가 보여주는 평가 범위 효과",
+        "10.3 Table 10/11의 27개 task를 같은 행에서 읽기",
+        "11. 원문 §3.3: 자연 분포 이동에서의 robustness",
+        "11.1 Relative와 effective robustness",
+        "11.2 ImageNet에 맞추면 ID가 좋아져도 OOD가 따라오지 않는다",
+        "12. 원문 §4–9: 사람 비교·데이터 중복·한계·사회적 영향",
+        "12.1 §4: 사람의 few-shot learning과 같다고 볼 수 있는가",
+        "12.2 §5와 Appendix C: 중복 검출 절차·통계·한계",
+        "12.3 §6: 저자가 인정한 한계",
+        "12.4 §7.1: label design이 model behavior의 일부다",
+        "12.5 §7.2–7.3, §8–9",
+        "13. Appendix A–F: 평가 프로토콜과 task별 세부 결과",
+        "13.1 Appendix A.1–A.2: dataset과 model inventory",
+        "13.2 Appendix A.3–A.4: feature 위치와 regularization 선택",
+        "13.3 Appendix B: qualitative zero-shot 예측",
+        "13.4 Appendix D: YFCC와 WIT source ablation",
+        "13.5 Appendix E.1: image/text retrieval",
+        "13.6 Appendix E.2: OCR을 어떤 의미로 수행하는가",
+        "13.7 Appendix E.3: video action recognition",
+        "13.8 Appendix E.4–E.5: 위치와 robustness",
+        "13.9 Appendix F와 공식 supplementary의 대응",
+        "14. 공식 코드 대조와 재현성",
+        "14.1 고정 commit에서 확인한 구현",
+        "14.2 재구현을 위한 단일 batch 코드",
+        "14.3 재현 가능성의 수준",
+        "15. VLM/VLA·OpenVLA·Jetson Thor와 연결하기",
+        "15.1 원문이 검증한 것과 후속 용도를 구분",
+        "15.2 텍스트 cache가 실제로 절약하는 것",
+        "15.3 Thor/TensorRT 평가를 위한 후속 실험안",
+        "16. 자주 생기는 오해와 학습 순서",
+        "17. Coverage checklist와 검증 기록",
+        "17.1 본문·부록 section 대응",
+        "17.2 원문 Figure 전체 대응",
+        "17.3 Table·수식·알고리즘 전체 대응",
+        "17.4 PMLR supplementary A–I 대응과 버전 차이",
+        "17.5 검증 결과와 한계"
+      ],
+      "totalHeight": 62590
+    },
+    "page_errors": [],
+    "screenshots": [
+      "01_overview.png",
+      "02_projection.png",
+      "03_symmetric_loss.png",
+      "04_backward.png",
+      "05_numeric.png",
+      "06_zero_shot.png",
+      "07_prompt.png",
+      "08_transfer.png",
+      "09_appendix.png",
+      "10_verification.png"
+    ],
+    "visual_inspection": "pass: 10 representative browser screenshots inspected for Korean text, math, original figures, tables and source captions; final verification wording updated after inspection.",
+    "live_github_render": false,
+    "status": "pass"
+  },
+  "github_validation": {
+    "recommended_syntax_audit": true,
+    "live_github_render_api": false,
+    "published_github_browser": false
+  },
+  "execution_scope": {
+    "official_code": "static read at d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+    "gpu_training": false,
+    "checkpoint_inference": false,
+    "robot_execution": false
+  },
+  "asset_visual_qa": {
+    "status": "pass",
+    "date": "2026-09-09",
+    "inspected": "All 28 excerpts in contact sheets; corrected Figure 22 title and Table 18 left edge additionally inspected at full size.",
+    "source_pages": "48 original PDF pages rendered and visually inspected in page contact sheets; core formulas and figures inspected in detailed renders.",
+    "corrections": [
+      "Table 18 left edge expanded from x=193pt to x=182pt",
+      "Figure 22 upper edge expanded from y=280pt to y=268pt"
+    ]
+  }
+}

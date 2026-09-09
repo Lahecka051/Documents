@@ -1,0 +1,289 @@
+{
+  "bytes": 117461,
+  "lines": 1145,
+  "inline_math": 254,
+  "display_math": 33,
+  "math_parser_errors": [],
+  "stray_dollars": [],
+  "structural": {
+    "utf8_roundtrip": true,
+    "replacement_characters": false,
+    "fences": 72,
+    "display_math_multiline": 0,
+    "unprotected_inline": 0,
+    "forbidden_math_commands": false,
+    "missing_images": [],
+    "internal_links": []
+  },
+  "assets": [
+    {
+      "file": "fig01_basis_degrees.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig02_tokenizer.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig03_beast_f.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig04_benchmarks.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig05_toy_continuity.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig06_aloha_sim.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig07_learning_curve.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig08_unified_backbone.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig09_real_results.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig10_beast_d.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig11_flow.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "fig12_real_keyframes.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table01_calvin.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table02_libero.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table03_inference.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table04_ablation.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table05_sim_hparams.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table06_real_f_hparams.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table07_real_d_hparams.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "table08_compute.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "eq01_spline.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "eq02_03_recursion.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "eq04_fitting.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "eq_ridge_unnumbered.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    },
+    {
+      "file": "eq_boundary_unnumbered.png",
+      "exists": true,
+      "sha256_ok": true,
+      "referenced": true
+    }
+  ],
+  "figure_count": 12,
+  "table_count": 8,
+  "equation_crops": 5,
+  "numbered_paper_equations": 4,
+  "scope": "Paper reading and static code review; independent CPU math only. No policy/GPU/robot experiments.",
+  "browser": {
+    "title": "BEAST 상세 논문 리뷰: B-spline으로 행동 시퀀스를 압축하고 예측하기",
+    "image_count": 25,
+    "literal_bold_delimiters": false,
+    "images": [
+      {
+        "src": "assets/15_BEAST/eq01_spline.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/eq02_03_recursion.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig01_basis_degrees.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/eq04_fitting.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/eq_ridge_unnumbered.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig02_tokenizer.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/eq_boundary_unnumbered.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig03_beast_f.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig10_beast_d.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig04_benchmarks.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig05_toy_continuity.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table01_calvin.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table02_libero.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig06_aloha_sim.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table03_inference.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig07_learning_curve.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig08_unified_backbone.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig09_real_results.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table04_ablation.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig11_flow.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table05_sim_hparams.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table06_real_f_hparams.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table07_real_d_hparams.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/fig12_real_keyframes.png",
+        "loaded": true
+      },
+      {
+        "src": "assets/15_BEAST/table08_compute.png",
+        "loaded": true
+      }
+    ],
+    "headings": 84,
+    "math_nodes": 287,
+    "body_scroll_width": 1280,
+    "viewport_width": 1280,
+    "wide_math": []
+  },
+  "passed": true,
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

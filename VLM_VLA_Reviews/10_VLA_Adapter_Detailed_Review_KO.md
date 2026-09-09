@@ -1,5 +1,7 @@
 # VLA-Adapter 상세 해설: 작은 VLM에서 VL 표현을 행동으로 옮기는 법
 
+> 저장소 원문: [주 PDF](papers/10_VLA_Adapter.pdf) · [2509.09372v2](papers/10_VLA_Adapter_arXiv_v2_With_Appendix.pdf) · [전체 목록](README.md)
+
 > 대상 논문: Yihao Wang et al., **“VLA-Adapter: An Effective Paradigm for Tiny-Scale Vision-Language-Action Model”**, AAAI-26.
 >
 > 이 문서는 초록 요약이나 짧은 서평이 아니다. 첨부된 AAAI 출판본 9쪽과 출판본이 공식 Appendix로 지시한 arXiv v2 28쪽을 함께 읽고, 문제 설정, 계산 경로, 수식, 실험, 부록, 공식 코드의 실제 텐서 흐름과 재현 한계를 학습용으로 풀어 쓴 독립적인 해설서다.

@@ -1,0 +1,211 @@
+{
+  "checked_at": "2026-09-09T06:19:24.224Z",
+  "markdown_sha256": "25bad13e6a9a1b4405976e711367ab1ad0fc188d29afaa421326469ed59e0546",
+  "characters": 77571,
+  "lines": 1237,
+  "math": {
+    "documents": 1,
+    "inline": 128,
+    "display": 34,
+    "errors": 0,
+    "stray": 0
+  },
+  "math_details": [
+    {
+      "name": "16_RTC_Detailed_Review_KO.md",
+      "inline": 128,
+      "display": 34,
+      "stray": [],
+      "errors": [],
+      "wide": []
+    }
+  ],
+  "image_count": 19,
+  "imageErrors": [],
+  "manifest_asset_count": 19,
+  "manifestErrors": [],
+  "anchor_count": 12,
+  "anchorErrors": [],
+  "syntaxErrors": [],
+  "source_pdf_pages_read": 25,
+  "source_figures": 8,
+  "numbered_equations": 5,
+  "algorithm_panels": 2,
+  "source_tables": 4,
+  "code_execution": "Static source review only; no policy/simulator/GPU/robot execution",
+  "limitations": [
+    "No GitHub remote rendering check",
+    "No private real robot data/runtime verification",
+    "Graph readings are approximate; no raw plot data reproduction"
+  ],
+  "browser": {
+    "title": "RTC 상세 한국어 논문 리뷰",
+    "images": [
+      {
+        "src": "assets/16_RTC/fig01.png",
+        "loaded": true,
+        "width": 1323,
+        "height": 603
+      },
+      {
+        "src": "assets/16_RTC/fig02.png",
+        "loaded": true,
+        "width": 653,
+        "height": 394
+      },
+      {
+        "src": "assets/16_RTC/eq01.png",
+        "loaded": true,
+        "width": 917,
+        "height": 94
+      },
+      {
+        "src": "assets/16_RTC/eq03.png",
+        "loaded": true,
+        "width": 1124,
+        "height": 54
+      },
+      {
+        "src": "assets/16_RTC/eq04.png",
+        "loaded": true,
+        "width": 1050,
+        "height": 106
+      },
+      {
+        "src": "assets/16_RTC/eq02.png",
+        "loaded": true,
+        "width": 1240,
+        "height": 110
+      },
+      {
+        "src": "assets/16_RTC/fig03.png",
+        "loaded": true,
+        "width": 1217,
+        "height": 474
+      },
+      {
+        "src": "assets/16_RTC/eq05.png",
+        "loaded": true,
+        "width": 1310,
+        "height": 143
+      },
+      {
+        "src": "assets/16_RTC/fig04.png",
+        "loaded": true,
+        "width": 430,
+        "height": 350
+      },
+      {
+        "src": "assets/16_RTC/algorithm01a.png",
+        "loaded": true,
+        "width": 1326,
+        "height": 534
+      },
+      {
+        "src": "assets/16_RTC/algorithm01b.png",
+        "loaded": true,
+        "width": 1326,
+        "height": 990
+      },
+      {
+        "src": "assets/16_RTC/fig05.png",
+        "loaded": true,
+        "width": 1323,
+        "height": 667
+      },
+      {
+        "src": "assets/16_RTC/fig06.png",
+        "loaded": true,
+        "width": 1293,
+        "height": 687
+      },
+      {
+        "src": "assets/16_RTC/fig07.png",
+        "loaded": true,
+        "width": 1236,
+        "height": 880
+      },
+      {
+        "src": "assets/16_RTC/table01.png",
+        "loaded": true,
+        "width": 714,
+        "height": 286
+      },
+      {
+        "src": "assets/16_RTC/table02.png",
+        "loaded": true,
+        "width": 786,
+        "height": 290
+      },
+      {
+        "src": "assets/16_RTC/table03.png",
+        "loaded": true,
+        "width": 930,
+        "height": 250
+      },
+      {
+        "src": "assets/16_RTC/fig08.png",
+        "loaded": true,
+        "width": 1300,
+        "height": 543
+      },
+      {
+        "src": "assets/16_RTC/table04.png",
+        "loaded": true,
+        "width": 1106,
+        "height": 266
+      }
+    ],
+    "bodyOverflow": false,
+    "mathErrors": 0,
+    "katexCount": 162,
+    "pageErrors": [],
+    "imageDimensionErrors": [],
+    "screenshots": [
+      "render-1.png",
+      "render-2.png",
+      "render-3.png",
+      "render-4.png",
+      "render-5.png",
+      "render-6.png",
+      "render-7.png",
+      "render-8.png"
+    ]
+  },
+  "numeric_checks": {
+    "scope": "CPU-only algebra and extracted pure prefix-weight function; no model, simulator, or robot execution",
+    "mask_configurations_checked": 12000,
+    "mask_max_absolute_error": 3.3306690738754696e-16,
+    "vjp_toy_analytic": [
+      0.6,
+      0.3
+    ],
+    "vjp_toy_finite_difference": [
+      0.6000000000172534,
+      0.29999999996699334
+    ],
+    "vjp_toy_update": [
+      0.52,
+      0.060000000000000026
+    ],
+    "five_step_guidance": [
+      5,
+      4.25,
+      2.166666666666667,
+      2.166666666666667,
+      4.250000000000002
+    ],
+    "latency_overhead_percent": 27.63157894736843,
+    "full_bid_over_rtc": 2.2989690721649483,
+    "denoising_ratio": 2.5,
+    "episode_count": 480,
+    "passed": true
+  },
+  "visual_review": {
+    "source_figure_equation_algorithm_table_crops": 19,
+    "local_browser_screens_reviewed": 8,
+    "reviewed": true
+  },
+  "passed": true,
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

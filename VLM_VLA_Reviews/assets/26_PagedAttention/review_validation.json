@@ -1,0 +1,369 @@
+{
+  "title": "PagedAttention detailed Korean review validation",
+  "validated_date": "2026-09-09",
+  "markdown_bytes": 125405,
+  "markdown_sha256": "938bf90edef0db98ce3795d195b7035e5e6a1fe0911c157768864522e5a59b80",
+  "pdf_pages_read_and_visually_inspected": 16,
+  "source_numbered_equations": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "source_figures": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "source_tables": [
+    1
+  ],
+  "source_appendix": "none in pinned PDF",
+  "source_numbered_algorithms": "none; review contains three explicitly labeled explanatory pseudocode reconstructions",
+  "math_validation": {
+    "markdown": "26_PagedAttention_Detailed_Review_KO.md",
+    "checked_at": "2026-09-09",
+    "math": {
+      "docs": [
+        {
+          "name": "26_PagedAttention_Detailed_Review_KO.md",
+          "inline": 102,
+          "display": 31,
+          "stray": [],
+          "errors": [],
+          "wide": []
+        }
+      ],
+      "summary": {
+        "documents": 1,
+        "inline": 102,
+        "display": 31,
+        "errors": 0,
+        "stray": 0
+      }
+    },
+    "syntaxErrors": [],
+    "structure": {
+      "utf8_replacement_characters": false,
+      "fence_lines": 68,
+      "explicit_anchors": 19,
+      "anchor_links": 54,
+      "badAnchors": [],
+      "duplicateIds": []
+    },
+    "images": {
+      "references": 24,
+      "unique": 24,
+      "missingImages": []
+    },
+    "github_render_api": "not used; local GFM preprocessing and KaTeX/MathJax parser validation only",
+    "browser_render": "pending",
+    "gpu_experiments": "not run"
+  },
+  "browser_validation": {
+    "title": "PagedAttention 상세 리뷰: KV cache의 주소 배치가 LLM 서빙 처리량을 바꾸는 과정",
+    "images": [
+      {
+        "src": "assets/26_PagedAttention/fig01_memory_batch.png",
+        "loaded": true,
+        "width": 820,
+        "height": 767
+      },
+      {
+        "src": "assets/26_PagedAttention/eq01_autoregression.png",
+        "loaded": true,
+        "width": 760,
+        "height": 84
+      },
+      {
+        "src": "assets/26_PagedAttention/eq02_qkv_projection.png",
+        "loaded": true,
+        "width": 670,
+        "height": 80
+      },
+      {
+        "src": "assets/26_PagedAttention/eq03_attention.png",
+        "loaded": true,
+        "width": 707,
+        "height": 143
+      },
+      {
+        "src": "assets/26_PagedAttention/fig03_fragmentation.png",
+        "loaded": true,
+        "width": 1700,
+        "height": 370
+      },
+      {
+        "src": "assets/26_PagedAttention/fig02_memory_waste.png",
+        "loaded": true,
+        "width": 820,
+        "height": 580
+      },
+      {
+        "src": "assets/26_PagedAttention/fig05_paged_attention.png",
+        "loaded": true,
+        "width": 820,
+        "height": 450
+      },
+      {
+        "src": "assets/26_PagedAttention/eq04_block_attention_as_printed.png",
+        "loaded": true,
+        "width": 740,
+        "height": 126
+      },
+      {
+        "src": "assets/26_PagedAttention/fig04_system.png",
+        "loaded": true,
+        "width": 820,
+        "height": 466
+      },
+      {
+        "src": "assets/26_PagedAttention/fig06_block_table.png",
+        "loaded": true,
+        "width": 820,
+        "height": 476
+      },
+      {
+        "src": "assets/26_PagedAttention/fig07_two_requests.png",
+        "loaded": true,
+        "width": 820,
+        "height": 450
+      },
+      {
+        "src": "assets/26_PagedAttention/fig08_parallel_sampling.png",
+        "loaded": true,
+        "width": 820,
+        "height": 413
+      },
+      {
+        "src": "assets/26_PagedAttention/fig09_beam_search.png",
+        "loaded": true,
+        "width": 820,
+        "height": 336
+      },
+      {
+        "src": "assets/26_PagedAttention/fig10_shared_prefix.png",
+        "loaded": true,
+        "width": 820,
+        "height": 377
+      },
+      {
+        "src": "assets/26_PagedAttention/table01_configurations.png",
+        "loaded": true,
+        "width": 713,
+        "height": 320
+      },
+      {
+        "src": "assets/26_PagedAttention/fig11_length_distributions.png",
+        "loaded": true,
+        "width": 820,
+        "height": 453
+      },
+      {
+        "src": "assets/26_PagedAttention/fig12_basic_sampling.png",
+        "loaded": true,
+        "width": 1700,
+        "height": 720
+      },
+      {
+        "src": "assets/26_PagedAttention/fig13_batch_sizes.png",
+        "loaded": true,
+        "width": 820,
+        "height": 467
+      },
+      {
+        "src": "assets/26_PagedAttention/fig14_sampling_beams.png",
+        "loaded": true,
+        "width": 1700,
+        "height": 750
+      },
+      {
+        "src": "assets/26_PagedAttention/fig15_sharing_savings.png",
+        "loaded": true,
+        "width": 820,
+        "height": 367
+      },
+      {
+        "src": "assets/26_PagedAttention/fig16_translation.png",
+        "loaded": true,
+        "width": 820,
+        "height": 570
+      },
+      {
+        "src": "assets/26_PagedAttention/fig17_chatbot.png",
+        "loaded": true,
+        "width": 820,
+        "height": 346
+      },
+      {
+        "src": "assets/26_PagedAttention/fig18_kernel_block_ablation.png",
+        "loaded": true,
+        "width": 820,
+        "height": 456
+      },
+      {
+        "src": "assets/26_PagedAttention/fig19_swap_recompute.png",
+        "loaded": true,
+        "width": 820,
+        "height": 490
+      }
+    ],
+    "mathDisplays": 31,
+    "mathInlines": 102,
+    "mathOverflow": [],
+    "documentOverflow": false,
+    "rawMathDelimiter": false,
+    "rawBoldDelimiters": [],
+    "katexErrors": 0,
+    "page_errors": []
+  },
+  "asset_and_numerical_checks": {
+    "asset_count": 24,
+    "asset_errors": [],
+    "numerical_examples": {
+      "attention_scores": [
+        0.0,
+        0.6931471805599453,
+        1.3862943611198906
+      ],
+      "attention_weights": [
+        0.14285714285714285,
+        0.2857142857142857,
+        0.5714285714285714
+      ],
+      "attention_output": [
+        1.857142857142857,
+        1.1428571428571428
+      ],
+      "printed_eq4_zero_logits_weight_sum": 2,
+      "beam_before_refs": {
+        "0": 4,
+        "1": 3,
+        "3": 3,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "2": 1,
+        "4": 1,
+        "8": 1
+      },
+      "beam_after_refs": {
+        "0": 4,
+        "1": 4,
+        "3": 4,
+        "6": 2,
+        "9": 1,
+        "10": 1,
+        "7": 2,
+        "11": 1,
+        "12": 1
+      },
+      "kv_bytes_per_token": 819200,
+      "kv_2048_bytes": 1677721600,
+      "table_13b_slots_if_12GiB": 15728.64,
+      "fig11_input_ratio": 8.353702744691871,
+      "fig11_output_ratio": 5.782549187339606,
+      "fig13_sharegpt_vs_oracle": 2.233480176211454,
+      "fig13_sharegpt_vs_max": 4.345714285714286,
+      "fig13_alpaca_vs_oracle": 1.8204810996563574,
+      "fig15_55_16_percent_capacity_ratio": 2.230151650312221
+    },
+    "scope": "CPU arithmetic and file integrity checks, not a GPU model test"
+  },
+  "official_code_source_freeze": {
+    "commit": "e2fb71ec9f2c3168ba8614408fa807a5f65707c5",
+    "tag": "v0.2.0",
+    "files": [
+      {
+        "path": "vllm/core/block_manager.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/core/block_manager.py",
+        "sha256": "2c34dabf2b9f4e4e48a718e7c962bf0d318db0ba9e61a1666e3ad0e6da5beae3"
+      },
+      {
+        "path": "vllm/core/scheduler.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/core/scheduler.py",
+        "sha256": "cb39837a4527161495fd7ffabba8acfc4947a5fe6165f7e74b8fb674e12cb8d8"
+      },
+      {
+        "path": "vllm/model_executor/layers/attention.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/model_executor/layers/attention.py",
+        "sha256": "04fee8b19deb86d11a1efd0fe1d71b49e9b7488ff01b7618ea163e7b49806260"
+      },
+      {
+        "path": "vllm/worker/cache_engine.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/worker/cache_engine.py",
+        "sha256": "ca7e189a4b6cec810c859d841fc29b59cf8ce0b3a1210fbde0f8eeafab03a018"
+      },
+      {
+        "path": "vllm/worker/worker.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/worker/worker.py",
+        "sha256": "eb79b2943a3f79a6b962e0278c0c3e69d1087a000af7ec535824eefdddf155d8"
+      },
+      {
+        "path": "csrc/attention/attention_kernels.cu",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/csrc/attention/attention_kernels.cu",
+        "sha256": "6e4a62046696c7adc433713a70cbcb9f38cf96d2166edc34f0fdabf863d66b49"
+      },
+      {
+        "path": "csrc/cache_kernels.cu",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/csrc/cache_kernels.cu",
+        "sha256": "16b6d19b36f8d780e5fb180fee2d27290d2ae0d4e2ffdd67710453e8ab6df9be"
+      },
+      {
+        "path": "vllm/model_executor/layers/sampler.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/model_executor/layers/sampler.py",
+        "sha256": "3833fd28b37f3bf8ea40d3ed84e7055482bcef21ac9a29932e0440a6bab63075"
+      },
+      {
+        "path": "vllm/engine/llm_engine.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/vllm/engine/llm_engine.py",
+        "sha256": "bc997f833a82e8361955b31f1e10eb5fb3db5cb8c8944f58bafea73f2bddb524"
+      },
+      {
+        "path": "benchmarks/benchmark_serving.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/benchmarks/benchmark_serving.py",
+        "sha256": "a43afe928191caebb769a47fef20fc5d60321127bf7303a8f3289f78dc167af1"
+      },
+      {
+        "path": "tests/kernels/test_attention.py",
+        "url": "https://raw.githubusercontent.com/vllm-project/vllm/e2fb71ec9f2c3168ba8614408fa807a5f65707c5/tests/kernels/test_attention.py",
+        "sha256": "f687f25329d168f8b05476f05a479139dbeb8c5e40522acf4d4f3c620d8c7259"
+      }
+    ]
+  },
+  "visual_qa": {
+    "source_pages": "all 16 Poppler renders inspected",
+    "source_crops": "all 24 checked, 3 adjusted then checked again",
+    "review_screens": [
+      "top",
+      "eq4",
+      "example",
+      "mapping",
+      "evaluation",
+      "ablation"
+    ],
+    "status": "passed"
+  },
+  "limitations": [
+    "GitHub live renderer/API not used; local GFM and math parser/render checks only",
+    "No GPU execution, model accuracy test, serving benchmark, training, or robot execution",
+    "Historical v0.2.0 code snapshot is not proven to be exact paper experiment commit"
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

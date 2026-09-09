@@ -1,0 +1,640 @@
+{
+  "review": "11_SigLIP2_Detailed_Review_KO.md",
+  "sources": {
+    "siglip2": {
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09"
+    },
+    "siglip1": {
+      "source_url": "https://arxiv.org/pdf/2303.15343v2",
+      "version": "2303.15343v2",
+      "pdf_sha256": "17c6bc4a907337a61b3d6ccbcef583e716511f8f17198967a0864800b7729333",
+      "physical_page_count": 14,
+      "downloaded_on": "2026-09-09"
+    },
+    "silc": {
+      "source_url": "https://arxiv.org/pdf/2310.13355v1",
+      "version": "2310.13355v1",
+      "pdf_sha256": "93006e62d1f5b587cbd902e11aabea96c7069efdc9e4e431e6d7b500c5fab29d",
+      "physical_page_count": 13,
+      "downloaded_on": "2026-09-09"
+    }
+  },
+  "rights": "Original figures and equations remain the property of their authors and rights holders. Cropped for attributed scholarly explanation; no new license is granted.",
+  "assets": [
+    {
+      "file": "figure_01.png",
+      "label": "Figure 1",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 2,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        304,
+        83,
+        535,
+        280
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        801,
+        683
+      ],
+      "image_sha256": "24b7c129dac66de1c698033637f342b36e3cebfbd1ee5e13e07e81ae1c8db2a6",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "figure_02.png",
+      "label": "Figure 2",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 6,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        62,
+        84,
+        536,
+        278
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1645,
+        674
+      ],
+      "image_sha256": "b83a58073acab8bd1005b581a8ff754d8e9fa10be3205aa5e13482ac95d97a4f",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "figure_03.png",
+      "label": "Figure 3",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 7,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        62,
+        84,
+        536,
+        370
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1645,
+        993
+      ],
+      "image_sha256": "0b945815be9e2616fbe0c8d8705962a50159d1712206ea54286be805255e7157",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "figure_04.png",
+      "label": "Figure 4",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 8,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        62,
+        84,
+        536,
+        584
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1645,
+        1736
+      ],
+      "image_sha256": "bae1fe960cafc68c6f7ab2bc60fdf6ac33cf7923bc2b6d268b467e9ffd03e81b",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "figure_05.png",
+      "label": "Figure 5",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 12,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        62,
+        84,
+        299,
+        210
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        822,
+        437
+      ],
+      "image_sha256": "9fd4939bcf17d03a5710d0d75455c3a16bb9291ec9693779aba07a84c08fdc09",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "figure_06.png",
+      "label": "Figure 6",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 12,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        307,
+        84,
+        516,
+        196
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        725,
+        389
+      ],
+      "image_sha256": "c004e373756f1152d73b3fa0a619120d332deb1e43a261e12529307890909b83",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_01.png",
+      "label": "Table 1",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 5,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        61,
+        75,
+        534,
+        551
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1642,
+        1652
+      ],
+      "image_sha256": "b61dc8eb21dfd462e6cd4b36f0c17682dd5dff5688debb8e901bc4face4b4998",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_02.png",
+      "label": "Table 2",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 9,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        111,
+        83,
+        479,
+        196
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1277,
+        392
+      ],
+      "image_sha256": "d2a1512a33909b5b43efd978a30339c516ba6e8216c6b902bf1f6d34f85c8143",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_03.png",
+      "label": "Table 3",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 10,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        127,
+        83,
+        465,
+        153
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1173,
+        243
+      ],
+      "image_sha256": "0fefb8c566be38c1192be32343491632151145558c3824c1e2b770688df2473e",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_04.png",
+      "label": "Table 4",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 10,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        304,
+        221,
+        535,
+        294
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        801,
+        253
+      ],
+      "image_sha256": "a09449d2fa11579286d8ab97a49f048754659b82d971391004e09fdc92c21d4a",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_05.png",
+      "label": "Table 5",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 11,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        99,
+        77,
+        492,
+        317
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1364,
+        833
+      ],
+      "image_sha256": "2d0b2c623d0dbddbd27da0f30a5d64a9c7f464daa1ad3f3fb89dd4aa14387915",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_06.png",
+      "label": "Table 6",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 17,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        112,
+        200,
+        482,
+        626
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1284,
+        1479
+      ],
+      "image_sha256": "1597dd65ba5f5065b3965de0bf306d9bf962c732be1b361c1432069f7138ee9e",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_07.png",
+      "label": "Table 7",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 18,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        61,
+        252,
+        535,
+        551
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1645,
+        1038
+      ],
+      "image_sha256": "9b11552c210e6f25f14a7daa5673aa95af64796123d1503eccc745d160813df9",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_08.png",
+      "label": "Table 8",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 19,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        61,
+        253,
+        535,
+        563
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        1645,
+        1076
+      ],
+      "image_sha256": "74dabc439d640e80f32014ee568cf8c8d9953a0e13ccfb9e35c47eaf16ba0449",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "table_09.png",
+      "label": "Table 9",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 20,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        182,
+        232,
+        409,
+        525
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        788,
+        1017
+      ],
+      "image_sha256": "f3310776325444b8c193d42ef1e016eae3acd22c72ad842043cfe3eb5297fcb3",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inline_naflex_distortion.png",
+      "label": "Core unnumbered inline: distortion bounds",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 4,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        304,
+        394,
+        536,
+        421
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        805,
+        93
+      ],
+      "image_sha256": "41469b5b11f053d99790301ea461c6724e6fc1aa375f63dbb8e5dc12d654bdb0",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inline_naflex_lengths.png",
+      "label": "Core unnumbered inline: sequence-length set",
+      "source_id": "siglip2",
+      "source_url": "https://arxiv.org/pdf/2502.14786v1",
+      "version": "2502.14786v1",
+      "pdf_sha256": "b840240c075aad94d46f739712c594cb6848d0bf0e5b516da5d8da7586ad6bb9",
+      "physical_page_count": 20,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 5,
+      "page_size_pt": [
+        595.2760009765625,
+        841.8900146484375
+      ],
+      "clip_bbox": [
+        62,
+        633,
+        295,
+        662
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        808,
+        101
+      ],
+      "image_sha256": "f51a9c2834cfd643e61897d1ca09a0575199e218a09cf99ef518bc306f49a7f8",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inherited_sigmoid_loss.png",
+      "label": "SigLIP 1 section 3.2 unnumbered sigmoid equation",
+      "source_id": "siglip1",
+      "source_url": "https://arxiv.org/pdf/2303.15343v2",
+      "version": "2303.15343v2",
+      "pdf_sha256": "17c6bc4a907337a61b3d6ccbcef583e716511f8f17198967a0864800b7729333",
+      "physical_page_count": 14,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 3,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox": [
+        92,
+        526,
+        247,
+        574
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        537,
+        166
+      ],
+      "image_sha256": "36251ad0163e596ff6f5e2c6d4467316d8ec5fcf7e4a2966c97e2ef793824558",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inherited_sigmoid_algorithm.png",
+      "label": "SigLIP 1 Algorithm 1",
+      "source_id": "siglip1",
+      "source_url": "https://arxiv.org/pdf/2303.15343v2",
+      "version": "2303.15343v2",
+      "pdf_sha256": "17c6bc4a907337a61b3d6ccbcef583e716511f8f17198967a0864800b7729333",
+      "physical_page_count": 14,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 2,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox": [
+        300,
+        70,
+        547,
+        187
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        857,
+        405
+      ],
+      "image_sha256": "282f3739c8f87aeddd1244c3284a97fc188fd7ca501c1f8ebd0d2dec6cc2fac7",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inherited_silc_ema.png",
+      "label": "SILC Eq. (2)",
+      "source_id": "silc",
+      "source_url": "https://arxiv.org/pdf/2310.13355v1",
+      "version": "2310.13355v1",
+      "pdf_sha256": "93006e62d1f5b587cbd902e11aabea96c7069efdc9e4e431e6d7b500c5fab29d",
+      "physical_page_count": 13,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 5,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox": [
+        251,
+        290,
+        506,
+        309
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        884,
+        65
+      ],
+      "image_sha256": "2eb9254aef16cdc005915879b57bf4dd90f87de3c69744f57be8643b31087829",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    },
+    {
+      "file": "inherited_silc_ce.png",
+      "label": "SILC Eq. (3)",
+      "source_id": "silc",
+      "source_url": "https://arxiv.org/pdf/2310.13355v1",
+      "version": "2310.13355v1",
+      "pdf_sha256": "93006e62d1f5b587cbd902e11aabea96c7069efdc9e4e431e6d7b500c5fab29d",
+      "physical_page_count": 13,
+      "downloaded_on": "2026-09-09",
+      "physical_pdf_page": 5,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox": [
+        230,
+        526,
+        506,
+        548
+      ],
+      "clip_coordinate_system": "PDF points, top-left origin, [left,top,right,bottom]",
+      "dpi": 250,
+      "pixel_dimensions": [
+        957,
+        75
+      ],
+      "image_sha256": "a9a356aa6d4de252686447202337b8178bf13ef46fc5749932f89096afb396a9",
+      "visual_check": "passed: crop completeness, source labels, legibility and no unrelated equation overlap inspected at 250 DPI source and contact/full views"
+    }
+  ],
+  "visual_review_date": "2026-09-09",
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

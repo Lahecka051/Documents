@@ -1,0 +1,501 @@
+{
+  "paper_title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success",
+  "arxiv_id": "2502.19645",
+  "version": "v2",
+  "version_date": "2025-04-28",
+  "access_date": "2026-09-09",
+  "source_url": "https://arxiv.org/pdf/2502.19645v2",
+  "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+  "source_pdf_bytes": 26994977,
+  "physical_page_count": 24,
+  "coordinate_system": "PDF points, top-left origin, x right, y down; bbox [left,top,right,bottom]",
+  "renderer": "pypdfium2/PDFium",
+  "dpi": 216,
+  "rights": "Original figures and equations belong to the paper authors and respective rights holders. Excerpts accompany independent scholarly explanation and criticism; no new license is asserted.",
+  "code_snapshots": {
+    "openvla-oft": "e4287e94541f459edc4feabc4e181f537cd569a8",
+    "transformers-openvla-oft": "bc339d9ad707454c0c115970db43c260067c61ab"
+  },
+  "assets": [
+    {
+      "file": "fig01_architecture.png",
+      "label": "Figure 1",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 2,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        73,
+        54,
+        537,
+        323
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1392,
+        807
+      ],
+      "sha256": "02c1a7e59fc6cd183e3f828f1678fef802bb69377623b839a10afa2516867a48"
+    },
+    {
+      "file": "fig02_design_decisions.png",
+      "label": "Figure 2",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 3,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        47,
+        52,
+        565,
+        136
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1554,
+        252
+      ],
+      "sha256": "669d8186f1e489541614e3fedbaf6f546ea3807c5530b008f86cea75a5895f4b"
+    },
+    {
+      "file": "fig03_libero.png",
+      "label": "Figure 3",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 5,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        54,
+        301,
+        226
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        759,
+        516
+      ],
+      "sha256": "8a565470049da2ef9bc70c141e7a33293c5aefaff05e9bb4f9066219ba7b57c9"
+    },
+    {
+      "file": "fig04_aloha_scores.png",
+      "label": "Figure 4",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 8,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        72,
+        52,
+        538,
+        230
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1398,
+        534
+      ],
+      "sha256": "3c67e1ad2aa7efd24b7c774b94ed67d8bffa40a7d18c84e56d6b7328260b8a04"
+    },
+    {
+      "file": "fig05_language.png",
+      "label": "Figure 5",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 9,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        53,
+        300,
+        141
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        756,
+        264
+      ],
+      "sha256": "907ec45589c46e4fd429dda41d86d19c117859c87b6aa58d95f513fd5f7f64ad"
+    },
+    {
+      "file": "fig06_failure_recovery.png",
+      "label": "Figure 6",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 9,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        205,
+        300,
+        471
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        756,
+        798
+      ],
+      "sha256": "3d31984b6df9bf92b4d3501f374db13df446e9186ee73887faeb8ae62f6cdfdf"
+    },
+    {
+      "file": "fig07_rollouts.png",
+      "label": "Figure 7",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 9,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        314,
+        52,
+        562,
+        305
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        744,
+        759
+      ],
+      "sha256": "96bcf0ba7a8226f7dc90af45639c9575c67b594504785c0c7fd0da491fb4ef93"
+    },
+    {
+      "file": "fig08_film.png",
+      "label": "Figure 8",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 15,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        53,
+        564,
+        318
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1548,
+        795
+      ],
+      "sha256": "374ca6503f154e9a2513e90412ef56d4ace5638e79fbe6388836a98c1a2337f3"
+    },
+    {
+      "file": "fig09_shorts_initial.png",
+      "label": "Figure 9",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 19,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        312,
+        564,
+        470
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1548,
+        474
+      ],
+      "sha256": "daea3e0561c1c0e39177ca60d0b90f8fc1f7f25dc2ce31247b41c836e725be90"
+    },
+    {
+      "file": "fig10_shirt_initial.png",
+      "label": "Figure 10",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 19,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        540,
+        564,
+        698
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1548,
+        474
+      ],
+      "sha256": "4b2b2fd1f30b5121f85502f5aeb414d12743b7b4ac4e80b2a1d7f42d80dc7592"
+    },
+    {
+      "file": "fig11_scoop_initial.png",
+      "label": "Figure 11",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 20,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        99,
+        161,
+        514,
+        576
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1245,
+        1245
+      ],
+      "sha256": "8a472df07cb7d45d7258c17eeb7bb09365642e297580c8e8308e7da0fbf788a5"
+    },
+    {
+      "file": "fig12_pot_id_initial.png",
+      "label": "Figure 12",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 21,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        99,
+        161,
+        514,
+        576
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1245,
+        1245
+      ],
+      "sha256": "e838d7caefb6227b1f8553cb8dae6588ec5ed6f3d3d24cc3aec95db38c8aaab9"
+    },
+    {
+      "file": "fig13_pot_ood_initial.png",
+      "label": "Figure 13",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 22,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        99,
+        156,
+        514,
+        572
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1245,
+        1248
+      ],
+      "sha256": "04f7bb13e4fcfafb4e35c207c8206ff78b11a277f38f2924bf090b4826c22cc4"
+    },
+    {
+      "file": "eq_film_unnumbered.png",
+      "label": "Unnumbered FiLM equation",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 4,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        350,
+        594,
+        521,
+        612
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        513,
+        54
+      ],
+      "sha256": "b07dd132c25049858c915b5c37be1419c98f7fe523f611dbb2f18efe140ea634"
+    },
+    {
+      "file": "table01_libero.png",
+      "label": "Table I",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 6,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        98,
+        148,
+        512,
+        431
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1242,
+        849
+      ],
+      "sha256": "f97ef0b16dc021a9b9156095e00650c470cec44f92a8bdc2b36fd93e62d90cfc"
+    },
+    {
+      "file": "table02_libero_efficiency.png",
+      "label": "Table II",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 6,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        557,
+        307,
+        649
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        777,
+        276
+      ],
+      "sha256": "ae9ebb7cb8a38a5e53c481a78c0c1824441c68785873ffc1f23051b9754b4dae"
+    },
+    {
+      "file": "table03_aloha_efficiency.png",
+      "label": "Table III",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 10,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        48,
+        140,
+        308,
+        234
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        780,
+        282
+      ],
+      "sha256": "7346367c7875520104a662a9efbf588d3a8a280427806fdabaebd24ba4b89eed"
+    },
+    {
+      "file": "table14_joint_policy.png",
+      "label": "Table XIV",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 23,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        107,
+        558,
+        506,
+        616
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1197,
+        174
+      ],
+      "sha256": "a42fca88f280b43993ee61cf9c79e80c39de3c9120287f3a2240144948247cf4"
+    },
+    {
+      "file": "table15_pretraining.png",
+      "label": "Table XV",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 23,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        164,
+        670,
+        448,
+        720
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        852,
+        150
+      ],
+      "sha256": "7551b4368a9c10479fa3d59e439752c66c8739688328f58ca8de8a6bf1e1e372"
+    },
+    {
+      "file": "table16_bridge.png",
+      "label": "Table XVI",
+      "source_url": "https://arxiv.org/pdf/2502.19645v2",
+      "version": "v2",
+      "source_pdf_sha256": "b860aa1206b6cfb0ce8be177f961379dd6a133d52cc74ac346636e0f4952a596",
+      "physical_pdf_page": 24,
+      "page_size_pt": [
+        612.0,
+        792.0
+      ],
+      "clip_bbox_pt": [
+        125,
+        360,
+        487,
+        451
+      ],
+      "dpi": 216,
+      "pixel_size": [
+        1086,
+        273
+      ],
+      "sha256": "fcfac40da3955f9ae7d90bd9ff3acd50eb048543ad434c12c36ce2508ac075db"
+    }
+  ]
+}

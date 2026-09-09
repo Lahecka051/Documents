@@ -1,0 +1,132 @@
+{
+  "math": {
+    "docs": [
+      {
+        "name": "12_MetaCLIP2_Detailed_Review_KO.md",
+        "inline": 63,
+        "display": 24,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 63,
+      "display": 24,
+      "errors": 0,
+      "stray": 0
+    }
+  },
+  "structure_and_arithmetic": {
+    "bytes": 112390,
+    "lines": 1152,
+    "fences": 48,
+    "images": 11,
+    "explicit_anchors": 14,
+    "errors": [],
+    "arithmetic": {
+      "internal_IN_pp": 0.8999999999999915,
+      "external_MetaCLIP_IN_pp": 0.7999999999999972,
+      "fixed_seen_IN_pp": -0.9000000000000057,
+      "L14_IN_pp": -0.7000000000000028,
+      "curation_step4_to_5_IN_pp": 3.6000000000000014,
+      "GeoDE_WW13_to29_pp": -0.8999999999999915,
+      "MLLM_MaXM_MUL_WW13_to29_pp": -2.6000000000000014,
+      "teacher_distilled_L14_IN_vs_English_pp": -0.29999999999999716,
+      "OR_acceptance": 0.65,
+      "tail_p_example": 0.15,
+      "inverse_t": 3,
+      "recovered_strict_tail_p": 0.05,
+      "row_loss": 0.2775007034180582,
+      "column_loss": 0.3199716317214627,
+      "symmetric_loss": 0.29873616756976046,
+      "PMI_rare_ln": 13.815510557964274,
+      "PMI_common_ln": 2.302585092994046,
+      "Score_rare": 20.818858322470234,
+      "Score_common": 164.10052027162243,
+      "batch_config": 75264,
+      "paper_batch": 75366,
+      "batch_diff_pct": 0.13533954303001355,
+      "nominal_WW_seen_B": 29.439999999999998,
+      "english_WW_seen_B": 12.9536,
+      "embedding_params": 923268096,
+      "embedding_fp16_GiB": 1.7197208404541016,
+      "top10_non10_weighted_T2I": 51.47777777777778,
+      "top10_non10_weighted_I2T": 64.2611111111111
+    },
+    "gpu_executed": false,
+    "remote_github_render_verified": false
+  },
+  "local_browser": {
+    "title": "Meta CLIP 2 상세 해설: 전 세계 웹의 개념 분포를 선별하고 영어·비영어를 함께 학습하는 scaling recipe",
+    "images": [
+      {
+        "src": "assets/12_MetaCLIP2/fig01_scaling.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/fig02_recipe.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/algo01_threshold_helpers.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/algo01_matching_sampling.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/table01_main.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/table02_curation.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/fig03_geolocalization.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/fig04_alignment_uniformity.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/eq_pmi.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/eq_bigram_score.png",
+        "ok": true
+      },
+      {
+        "src": "assets/12_MetaCLIP2/table05_mllm_final.png",
+        "ok": true
+      }
+    ],
+    "math": 87,
+    "tables": 28,
+    "documentWidth": 1360,
+    "viewportWidth": 1360,
+    "mathOverflow": [],
+    "pageErrors": []
+  },
+  "review": {
+    "title": "Meta CLIP 2: A Worldwide Scaling Recipe",
+    "date": "2026-09-09",
+    "markdown_sha256": "649ff2eff24bcbe3f52c44a6db208c4401b24d19ff8209bcb8e2b15f17541417",
+    "source_commit": "f47f7841f6a91cc5676729a3d125519393d87d1e",
+    "visual_QA": "11 original PDF crops individually viewed; local Chrome previews for forward/loss/PMI/MLLM inspected.",
+    "numbered_equations_in_target_paper": 0,
+    "original_figures": 4,
+    "original_display_equation_crops": 2,
+    "algorithm_crops": 2,
+    "table_crops": 3,
+    "gpu_experiments_run": false,
+    "github_published": false,
+    "verification_scope": "PDF reading/rendering, source-code static inspection, arithmetic, Markdown structure, KaTeX/MathJax parsing and isolated headless Chrome preview."
+  },
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

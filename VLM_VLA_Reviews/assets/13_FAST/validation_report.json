@@ -1,0 +1,293 @@
+{
+  "status": "PASS",
+  "date": "2026-09-09",
+  "paper": "FAST: Efficient Action Tokenization for Vision-Language-Action Models",
+  "markdown_sha256": "dbacd9234a30a40e8401a899b49655e85c70b5ee58b3af6d21b398e139e15243",
+  "markdown_utf8_bytes": 99217,
+  "lines": 1200,
+  "source_pdf": {
+    "source_url": "https://arxiv.org/pdf/2501.09747v1",
+    "version": "v1",
+    "source_pdf_sha256": "3739b31f5fecdde371509ff5bb13619979734e894a255a9b264253f4cc53934a",
+    "physical_page_count": 19
+  },
+  "coverage": {
+    "numbered_figures": 15,
+    "unnumbered_figures": 2,
+    "equation_excerpt_pngs": 4,
+    "algorithm_pngs": 1,
+    "table_pngs": 4,
+    "total_pngs": 26,
+    "paper_numbered_equations": 0,
+    "paper_algorithms": 1,
+    "paper_appendices": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "read_physical_pages": "1-19"
+  },
+  "structural_checks": {
+    "errors": [],
+    "all_image_paths_exist": true,
+    "all_manifest_sha_and_dimensions_match": true,
+    "explicit_anchors": 16,
+    "internal_anchor_links": 15,
+    "fence_count": 76,
+    "single_physical_line_math_blocks": 38
+  },
+  "math_parsers": {
+    "engines": [
+      "KaTeX",
+      "MathJax SVG"
+    ],
+    "report": {
+      "docs": [
+        {
+          "name": "13_FAST_Detailed_Review_KO.md",
+          "inline": 10,
+          "display": 38,
+          "stray": [],
+          "errors": [],
+          "wide": []
+        }
+      ],
+      "summary": {
+        "documents": 1,
+        "inline": 10,
+        "display": 38,
+        "errors": 0,
+        "stray": 0
+      }
+    }
+  },
+  "local_browser": {
+    "engine": "Installed Chrome via Playwright headless",
+    "method": "Local marked HTML with server-rendered KaTeX and local fonts/assets",
+    "report": {
+      "title": "FAST 상세 리뷰 로컬 검증",
+      "bodyHeight": 59381,
+      "documentWidth": 1400,
+      "viewport": 1400,
+      "mathCount": 38,
+      "mathOverflow": [],
+      "brokenImages": [],
+      "images": 26,
+      "errors": 0
+    },
+    "visual_review": "Representative title, notation, normalization/DCT, algorithm, numeric example, rate-distortion and coverage screenshots; all 26 original excerpts inspected at contact-sheet scale, corrected crops additionally inspected individually."
+  },
+  "cpu_numeric_verification": {
+    "scope": "CPU-only mathematical DCT implementation plus published tokenizer.json BPE; full UniversalActionProcessor and VLA not executed",
+    "numpy": "2.5.1",
+    "raw": [
+      [
+        20.0,
+        0.8
+      ],
+      [
+        22.0,
+        0.8
+      ],
+      [
+        24.0,
+        0.8
+      ],
+      [
+        26.0,
+        0.8
+      ]
+    ],
+    "normalized": [
+      [
+        0.0,
+        0.3999999999999999
+      ],
+      [
+        0.19999999999999996,
+        0.3999999999999999
+      ],
+      [
+        0.3999999999999999,
+        0.3999999999999999
+      ],
+      [
+        0.6000000000000001,
+        0.3999999999999999
+      ]
+    ],
+    "dct_basis": [
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ],
+      [
+        0.6532814824381883,
+        0.27059805007309856,
+        -0.2705980500730985,
+        -0.6532814824381883
+      ],
+      [
+        0.5000000000000001,
+        -0.5,
+        -0.5000000000000001,
+        0.4999999999999999
+      ],
+      [
+        0.27059805007309856,
+        -0.6532814824381884,
+        0.6532814824381882,
+        -0.2705980500730986
+      ]
+    ],
+    "dct_coefficients": [
+      [
+        0.6,
+        0.7999999999999998
+      ],
+      [
+        -0.4460884994775327,
+        5.802305146913052e-17
+      ],
+      [
+        -1.1102230246251575e-17,
+        -4.440892098500625e-17
+      ],
+      [
+        -0.03170253355622165,
+        -1.0641727054466988e-16
+      ]
+    ],
+    "quantized_coefficients": [
+      [
+        6,
+        8
+      ],
+      [
+        -4,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "serialized": [
+      6,
+      8,
+      -4,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "unicode_codepoints": [
+      360,
+      362,
+      350,
+      354,
+      354,
+      354,
+      354,
+      354
+    ],
+    "published_fast_plus_token_ids": [
+      294,
+      1239,
+      258,
+      256
+    ],
+    "published_fast_plus_token_strings": [
+      "Å¨",
+      "ÅªÅŀ",
+      "Å¢Å¢Å¢Å¢",
+      "Å¢"
+    ],
+    "bpe_inverse_exact": true,
+    "reconstructed_normalized": [
+      [
+        0.03868740702472466,
+        0.4
+      ],
+      [
+        0.19176077997076055,
+        0.4
+      ],
+      [
+        0.4082392200292394,
+        0.4
+      ],
+      [
+        0.5613125929752754,
+        0.4
+      ]
+    ],
+    "reconstructed_raw": [
+      [
+        20.386874070247245,
+        0.7999999999999998
+      ],
+      [
+        21.917607799707604,
+        0.7999999999999998
+      ],
+      [
+        24.082392200292393,
+        0.7999999999999998
+      ],
+      [
+        25.613125929752755,
+        0.7999999999999998
+      ]
+    ],
+    "mse_normalized": 0.00039115005224673455,
+    "max_abs_normalized_error": 0.03868740702472473,
+    "per_dimension_mse": [
+      0.0007823001044934691,
+      1.232595164407831e-32
+    ],
+    "quantization_mse_bound": 0.0025,
+    "mixture_weight_sum": 100.0,
+    "droid_task_rows": 17,
+    "droid_trials_sum": 44,
+    "droid_epoch_estimate": 2.9257142857142857,
+    "libero_epoch_if_batch256": 37.925925925925924,
+    "droid_gpu_hours": 768,
+    "tableI_ratios": [
+      1.75,
+      3.6206896551724137,
+      5.0,
+      13.20754716981132
+    ]
+  },
+  "source_code_revisions": {
+    "huggingface_fast": "ec4d7aa71691cac0b8bed6942be45684db2110f4",
+    "openpi": "215abfb217dbac7d5f1273282331b9b1866c0479"
+  },
+  "source_snapshot_sha256": {
+    "processing_action_tokenizer.py": "6f021ca1f4c1b194ab6fa399d80baf3d642eadb17efb8f73301e4ac401522c20",
+    "processor_config.json": "f40cfbb1020858fe1d48c0f946b0c1315a90d6e84aa82710036f24f4c167706a",
+    "tokenizer.json": "6507dd709287fd018882120c0071787f1f62bad9f180f1e8c5235bda1b71fa78",
+    "src_openpi_models_tokenizer.py": "965be8b3c393a6811875bbc32da9e01a5d01cc2f87802de801cf7293e049748c",
+    "src_openpi_models_pi0_fast.py": "627332a555046f2744ef144c45f8bd3361a9820cf68854a4528d0fdbba7e9aa3",
+    "src_openpi_transforms.py": "a1b94e9e72849a18834778f229c6bb389a495eb7fbe0aa800edea728b9424ff4",
+    "src_openpi_training_config.py": "c34231f888dba5dc981d808765b3d98775ab845b04313bf53fcecd567c520b0d"
+  },
+  "limitations": [
+    "No live GitHub production-page render or publication",
+    "No complete UniversalActionProcessor class execution; DCT computed analytically and published BPE tokenizer.json executed on CPU",
+    "No VLA GPU inference/training or robot execution",
+    "No private generalist data or raw trial-log replication",
+    "Approximate chart heights are labeled as visual estimates in the review"
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

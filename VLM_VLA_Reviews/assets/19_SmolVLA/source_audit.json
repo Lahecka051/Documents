@@ -1,0 +1,129 @@
+{
+  "arxiv": "2506.01844v1",
+  "pdf_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c",
+  "code_commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+  "code_audit_type": "static inspection; no model loading, training, GPU inference, or robot control",
+  "code_files": [
+    {
+      "path": "docs/source/smolvla.mdx",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/docs/source/smolvla.mdx",
+      "sha256": "03d0ebdf6f33bb519c4e45df4d819cb031484e671645fe775c466acaee0e5f9e",
+      "lines": 119
+    },
+    {
+      "path": "pyproject.toml",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/pyproject.toml",
+      "sha256": "d67a60c007eeb4401b29818d99a6ad94aa28c1f10beabdcf77c4da5d97f8e326",
+      "lines": 647
+    },
+    {
+      "path": "src/lerobot/async_inference/__init__.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/__init__.py",
+      "sha256": "0c535c81ff24d7e5258227d0b9126672897b2fd10f4df97387b15b95d6d3bf81",
+      "lines": 30
+    },
+    {
+      "path": "src/lerobot/async_inference/configs.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/configs.py",
+      "sha256": "9b3514b3c09727dc1336d9586e68bd2c276c401ed34bffb69f9e7f67f0f7f342",
+      "lines": 203
+    },
+    {
+      "path": "src/lerobot/async_inference/constants.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/constants.py",
+      "sha256": "6ff4bac2a25eff10bc3e0b97d07c07a515ad70530336fdbacd4fe9a0364b0ee9",
+      "lines": 29
+    },
+    {
+      "path": "src/lerobot/async_inference/helpers.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/helpers.py",
+      "sha256": "1457c5bb556b4f10225a9c94ac95553bd53c7b51665f1c918e15bb2acb0ac24e",
+      "lines": 298
+    },
+    {
+      "path": "src/lerobot/async_inference/policy_server.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/policy_server.py",
+      "sha256": "88ee490394adab0d229e9e2407bec900e89cf72302237c7f128da2c07de37fe7",
+      "lines": 439
+    },
+    {
+      "path": "src/lerobot/async_inference/robot_client.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/async_inference/robot_client.py",
+      "sha256": "804f850e87d444b49f5b182d794ef1e9af2f059e0e95369f633fe8d15d5db5fb",
+      "lines": 530
+    },
+    {
+      "path": "src/lerobot/policies/common/flow_matching.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/common/flow_matching.py",
+      "sha256": "ce1cff1aab02f971dacfc6f78779c6c6813a404165d2c16bf66c3ad2174049eb",
+      "lines": 136
+    },
+    {
+      "path": "src/lerobot/policies/common/vla_utils.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/common/vla_utils.py",
+      "sha256": "88efbc82314a0ffd826f4693ff42fc580a5385424370b271351e2674cf0e33cb",
+      "lines": 242
+    },
+    {
+      "path": "src/lerobot/policies/rtc/modeling_rtc.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/rtc/modeling_rtc.py",
+      "sha256": "6d8b1ffef42c42c5315660e8d59068617e57e3054336f7f9baf379667f6671b2",
+      "lines": 303
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/__init__.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/__init__.py",
+      "sha256": "0fcc03a2c5f20c656f26b34986a130e1a32899819e0cd68e4b4a5bd58781d0a4",
+      "lines": 19
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/configuration_smolvla.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/configuration_smolvla.py",
+      "sha256": "2fb637cb428fa2fdf1d114646dcffaf4728216bfe5b7039d5d0cac4857ffc4e0",
+      "lines": 159
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/modeling_smolvla.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/modeling_smolvla.py",
+      "sha256": "37b1d56f37510732a087cf5c32c05cd15d6234201a3f002f108ec4c53438cc7d",
+      "lines": 810
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/processor_smolvla.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/processor_smolvla.py",
+      "sha256": "b28e31c7b97c564edc6ad1aabe451fb59931b406ff7a6ed1fdff9d1af365d7ec",
+      "lines": 82
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/README.md",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/README.md",
+      "sha256": "9aa0666e77cd7de3612c06c2f74a226e114921a1bc5bf367ecb36a0c32f37e98",
+      "lines": 1
+    },
+    {
+      "path": "src/lerobot/policies/smolvla/smolvlm_with_expert.py",
+      "commit": "2774d9bddcbbda50e697e162e89e7eaada8d7105",
+      "url": "https://github.com/huggingface/lerobot/blob/2774d9bddcbbda50e697e162e89e7eaada8d7105/src/lerobot/policies/smolvla/smolvlm_with_expert.py",
+      "sha256": "996d3b0c713c0ed42b383aa2cf89b2e6f9868e337747c480a64adaecdc1073cf",
+      "lines": 560
+    }
+  ],
+  "base_model_revision": "c83c3163b8ca9b7e67c509fffd9121e66cb96205",
+  "vlm_revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467"
+}

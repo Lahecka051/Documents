@@ -1,0 +1,255 @@
+{
+  "title": "Meta CLIP 2: A Worldwide Scaling Recipe",
+  "retrieved_on": "2026-09-09",
+  "rights": "Original figures, formulae and tables remain with their original rights holders. Critical educational excerpts; no new license is granted. arXiv PDF metadata identifies CC BY-NC-SA 4.0.",
+  "sources": [
+    {
+      "url": "https://arxiv.org/pdf/2507.22062v3",
+      "version": "arXiv 2507.22062v3, 2025-08-01",
+      "id": "arxiv_v3",
+      "pages": 16,
+      "sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667"
+    },
+    {
+      "url": "https://papers.neurips.cc/paper_files/paper/2025/file/449fb670956a93b3d4d95167f72093e1-Paper-Conference.pdf",
+      "version": "NeurIPS 2025 proceedings, retrieved 2026-09-09",
+      "id": "neurips_2025",
+      "pages": 28,
+      "sha256": "39ce469729c95de66fdbc259c177419ffd402d3612a8c70e0602bb3b46cf16d2"
+    }
+  ],
+  "assets": [
+    {
+      "file": "fig01_scaling.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 2,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        70,
+        65,
+        543,
+        237
+      ],
+      "dpi": 240,
+      "pixel_width": 1577,
+      "pixel_height": 573,
+      "sha256": "179ca46f5305b89a18cb913ee1899e3f1dcd24e96031df3e953a81c2978e25a3"
+    },
+    {
+      "file": "fig02_recipe.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 4,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        77,
+        441,
+        545,
+        615
+      ],
+      "dpi": 240,
+      "pixel_width": 1560,
+      "pixel_height": 580,
+      "sha256": "4d39d08f01cee2f0a859cb4ecfe7b9aec30ea792e4af3f784db7fd1c555e7eda"
+    },
+    {
+      "file": "fig03_geolocalization.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 9,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        70,
+        544,
+        540,
+        664
+      ],
+      "dpi": 240,
+      "pixel_width": 1567,
+      "pixel_height": 400,
+      "sha256": "ee2adcf0b226262353ddec33bda4605c2ca5f8f565aca5df4745232f5634d64b"
+    },
+    {
+      "file": "fig04_alignment_uniformity.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 10,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        116,
+        176,
+        493,
+        434
+      ],
+      "dpi": 240,
+      "pixel_width": 1256,
+      "pixel_height": 860,
+      "sha256": "847f3222069cfc72a8f19a90c3a603fbd31921db7b6dab16d45a03e8afa0abce"
+    },
+    {
+      "file": "algo01_threshold_helpers.png",
+      "kind": "algorithm-equation",
+      "label": "Algorithm 1 threshold helper equations",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 6,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        68,
+        395,
+        382,
+        480
+      ],
+      "dpi": 240,
+      "pixel_width": 1046,
+      "pixel_height": 283,
+      "sha256": "f68988a72452c0b9ee3ec14603d384d48c7726a6bdc1f1c9acdc324e3c2d05e6"
+    },
+    {
+      "file": "algo01_matching_sampling.png",
+      "kind": "algorithm",
+      "label": "Algorithm 1 three stages",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 6,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        68,
+        485,
+        367,
+        705
+      ],
+      "dpi": 240,
+      "pixel_width": 996,
+      "pixel_height": 733,
+      "sha256": "87efd98d73e7b9096001001b6010b6cbb49af20fd14d0027a6cd806d11e16c59"
+    },
+    {
+      "file": "eq_pmi.png",
+      "kind": "equation",
+      "label": "Appendix A.2 unnumbered PMI",
+      "source_id": "neurips_2025",
+      "source_url": "https://papers.neurips.cc/paper_files/paper/2025/file/449fb670956a93b3d4d95167f72093e1-Paper-Conference.pdf",
+      "source_version": "NeurIPS 2025 proceedings, retrieved 2026-09-09",
+      "source_pdf_sha256": "39ce469729c95de66fdbc259c177419ffd402d3612a8c70e0602bb3b46cf16d2",
+      "physical_pdf_page": 16,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        190,
+        447,
+        421,
+        478
+      ],
+      "dpi": 240,
+      "pixel_width": 770,
+      "pixel_height": 103,
+      "sha256": "809e77a719a246c239349156628ec8e6d8fca490526356b1be424b02814727de"
+    },
+    {
+      "file": "eq_bigram_score.png",
+      "kind": "equation",
+      "label": "Appendix A.2 unnumbered bigram score",
+      "source_id": "neurips_2025",
+      "source_url": "https://papers.neurips.cc/paper_files/paper/2025/file/449fb670956a93b3d4d95167f72093e1-Paper-Conference.pdf",
+      "source_version": "NeurIPS 2025 proceedings, retrieved 2026-09-09",
+      "source_pdf_sha256": "39ce469729c95de66fdbc259c177419ffd402d3612a8c70e0602bb3b46cf16d2",
+      "physical_pdf_page": 16,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        169,
+        509,
+        443,
+        528
+      ],
+      "dpi": 240,
+      "pixel_width": 914,
+      "pixel_height": 63,
+      "sha256": "24b6220e7a06a50ad3b6f2b633253e115b3c95bc3e280dd24014444253c2ea7d"
+    },
+    {
+      "file": "table01_main.png",
+      "kind": "table",
+      "label": "Table 1",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 8,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        72,
+        242,
+        539,
+        357
+      ],
+      "dpi": 240,
+      "pixel_width": 1557,
+      "pixel_height": 383,
+      "sha256": "0de66297791dc0cfa9fc1ee73a2b44c6dff80a1b22e686df077f12c7f8a2f703"
+    },
+    {
+      "file": "table02_curation.png",
+      "kind": "table",
+      "label": "Table 2",
+      "source_id": "arxiv_v3",
+      "source_url": "https://arxiv.org/pdf/2507.22062v3",
+      "source_version": "arXiv 2507.22062v3, 2025-08-01",
+      "source_pdf_sha256": "2df42d8254eeb268136f5a6c0e5eec6dd6ff0e274c6c46891f2300e4091f3667",
+      "physical_pdf_page": 8,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        91,
+        529,
+        519,
+        601
+      ],
+      "dpi": 240,
+      "pixel_width": 1427,
+      "pixel_height": 240,
+      "sha256": "926cb17c2afc90b9dbdc3aa8edf905712e03a5bb41427c0a29f4b7db93fe10f2"
+    },
+    {
+      "file": "table05_mllm_final.png",
+      "kind": "table",
+      "label": "NeurIPS Table 5",
+      "source_id": "neurips_2025",
+      "source_url": "https://papers.neurips.cc/paper_files/paper/2025/file/449fb670956a93b3d4d95167f72093e1-Paper-Conference.pdf",
+      "source_version": "NeurIPS 2025 proceedings, retrieved 2026-09-09",
+      "source_pdf_sha256": "39ce469729c95de66fdbc259c177419ffd402d3612a8c70e0602bb3b46cf16d2",
+      "physical_pdf_page": 9,
+      "coordinate_system": "PDF points; origin top-left; [x0, top, x1, bottom]",
+      "clip_bbox": [
+        105,
+        546,
+        507,
+        632
+      ],
+      "dpi": 240,
+      "pixel_width": 1340,
+      "pixel_height": 287,
+      "sha256": "053ae7b1b787b268a952d116121a243f351c7a7978b08522c941e2ba67d2a5a7"
+    }
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

@@ -1,5 +1,7 @@
 # CogVLA 상세 학습용 해설서
 
+> 저장소 원문: [주 PDF](papers/09_CogVLA.pdf) · [전체 목록](README.md)
+
 <a id="scope"></a>
 
 ## 0. 문서 범위와 판독 원칙

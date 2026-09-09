@@ -1,5 +1,7 @@
 # Fast-in-Slow 상세 해설: 느린 추론 안에 빠른 제어를 넣은 이중 시스템 VLA
 
+> 저장소 원문: [주 PDF](papers/07_Fast_in_Slow.pdf) · [전체 목록](README.md)
+
 <a id="reading-record"></a>
 
 ## 0. 문서 성격과 판독 기록

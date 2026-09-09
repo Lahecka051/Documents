@@ -1,0 +1,391 @@
+{
+  "table_mean_checks": [
+    {
+      "table": "T2_LIBERO",
+      "row": 1,
+      "computed_mean": 72.4,
+      "printed_mean": 72.4,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 2,
+      "computed_mean": 75.075,
+      "printed_mean": 75.1,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 3,
+      "computed_mean": 76.5,
+      "printed_mean": 76.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 4,
+      "computed_mean": 71.75,
+      "printed_mean": 71.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 5,
+      "computed_mean": 86.0,
+      "printed_mean": 86,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 6,
+      "computed_mean": 82.75,
+      "printed_mean": 82.75,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 7,
+      "computed_mean": 87.25,
+      "printed_mean": 87.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_LIBERO",
+      "row": 8,
+      "computed_mean": 88.75,
+      "printed_mean": 88.75,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 1,
+      "computed_mean": 10.45,
+      "printed_mean": 10.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 2,
+      "computed_mean": 31.575,
+      "printed_mean": 31.6,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 3,
+      "computed_mean": 50.5,
+      "printed_mean": 50.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 4,
+      "computed_mean": 47.925,
+      "printed_mean": 47.9,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 5,
+      "computed_mean": 56.947500000000005,
+      "printed_mean": 56.95,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 6,
+      "computed_mean": 57.325,
+      "printed_mean": 57.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T2_METAWORLD",
+      "row": 7,
+      "computed_mean": 68.24000000000001,
+      "printed_mean": 68.24,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T3",
+      "row": 1,
+      "computed_mean": 48.333333333333336,
+      "printed_mean": 48.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T3",
+      "row": 2,
+      "computed_mean": 61.666666666666664,
+      "printed_mean": 61.7,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T3",
+      "row": 3,
+      "computed_mean": 78.33333333333333,
+      "printed_mean": 78.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T5",
+      "row": 1,
+      "computed_mean": 40.0,
+      "printed_mean": 40,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T5",
+      "row": 2,
+      "computed_mean": 51.666666666666664,
+      "printed_mean": 51.7,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T5",
+      "row": 3,
+      "computed_mean": 78.33333333333333,
+      "printed_mean": 78.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T6",
+      "row": 1,
+      "computed_mean": 79.0,
+      "printed_mean": 79,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T6",
+      "row": 2,
+      "computed_mean": 74.5,
+      "printed_mean": 74.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T6",
+      "row": 3,
+      "computed_mean": 85.5,
+      "printed_mean": 85.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T7",
+      "row": 1,
+      "computed_mean": 67.5,
+      "printed_mean": 67.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T7",
+      "row": 2,
+      "computed_mean": 74.5,
+      "printed_mean": 74.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 1,
+      "computed_mean": 75.0,
+      "printed_mean": 75,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 2,
+      "computed_mean": 78.5,
+      "printed_mean": 78.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 3,
+      "computed_mean": 79.5,
+      "printed_mean": 79.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 4,
+      "computed_mean": 80.25,
+      "printed_mean": 80.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 5,
+      "computed_mean": 75.5,
+      "printed_mean": 75.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T8",
+      "row": 6,
+      "computed_mean": 75.75,
+      "printed_mean": 75.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T9",
+      "row": 1,
+      "computed_mean": 82.25,
+      "printed_mean": 82.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T9",
+      "row": 2,
+      "computed_mean": 77.5,
+      "printed_mean": 77.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T9",
+      "row": 3,
+      "computed_mean": 80.25,
+      "printed_mean": 80.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T9",
+      "row": 4,
+      "computed_mean": 73.75,
+      "printed_mean": 73.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T10",
+      "row": 1,
+      "computed_mean": 80.25,
+      "printed_mean": 80.25,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T10",
+      "row": 2,
+      "computed_mean": 75.25,
+      "printed_mean": 75.25,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T11",
+      "row": 1,
+      "computed_mean": 80.25,
+      "printed_mean": 80.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T11",
+      "row": 2,
+      "computed_mean": 73.25,
+      "printed_mean": 73.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T11",
+      "row": 3,
+      "computed_mean": 53.25,
+      "printed_mean": 53.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T11",
+      "row": 4,
+      "computed_mean": 74.75,
+      "printed_mean": 74.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T12",
+      "row": 1,
+      "computed_mean": 50.0,
+      "printed_mean": 50,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T12",
+      "row": 2,
+      "computed_mean": 84.0,
+      "printed_mean": 84,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T12",
+      "row": 3,
+      "computed_mean": 78.5,
+      "printed_mean": 78.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T12",
+      "row": 4,
+      "computed_mean": 80.25,
+      "printed_mean": 80.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T12",
+      "row": 5,
+      "computed_mean": 74.5,
+      "printed_mean": 74.5,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T13",
+      "row": 1,
+      "computed_mean": 80.25,
+      "printed_mean": 80.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T13",
+      "row": 2,
+      "computed_mean": 82.75,
+      "printed_mean": 82.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T13",
+      "row": 3,
+      "computed_mean": 70.75,
+      "printed_mean": 70.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "T13",
+      "row": 4,
+      "computed_mean": 51.75,
+      "printed_mean": 51.8,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "F5a",
+      "row": 1,
+      "computed_mean": 78.33333333333333,
+      "printed_mean": 78.3,
+      "within_0_1pp_rounding": true
+    },
+    {
+      "table": "F5a",
+      "row": 2,
+      "computed_mean": 73.33333333333333,
+      "printed_mean": 73.3,
+      "within_0_1pp_rounding": true
+    }
+  ],
+  "time_reduction_percent": 29.45454545454546,
+  "completion_speed_ratio": 1.4175257731958764,
+  "fixed_time_count_ratio": 2.111111111111111,
+  "dataset_ids": 532,
+  "unique_dataset_ids": 532,
+  "dataset_counts_by_page": {
+    "20": 72,
+    "21": 150,
+    "22": 132,
+    "23": 150,
+    "24": 28
+  },
+  "example_mse": 0.14500000000000002,
+  "two_view_prefix_tokens": 177,
+  "prefix_cache_bf16_bytes": 3624960,
+  "checkpoint_weight_bytes": 906639456
+}

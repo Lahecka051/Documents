@@ -1,0 +1,264 @@
+{
+  "paper_title": "Training-Time Action Conditioning for Efficient Real-Time Chunking",
+  "arxiv_id": "2512.05964",
+  "version": "v2",
+  "version_date": "2025-12-09",
+  "source_url": "https://arxiv.org/pdf/2512.05964v2",
+  "downloaded_at": "2026-09-09T05:54:58.658558+00:00",
+  "pdf_sha256": "02963d5ae4e060e2be3cc8299f5e63046cdeafcb72127242c79fcb3331fa0108",
+  "physical_pages": 6,
+  "copyright": "Kevin Black, Allen Z. Ren, Michael Equi, Sergey Levine / respective rightsholders. PDF metadata and arXiv license link identify CC BY 4.0. Crops retain original content.",
+  "coordinate_system": "PDF points, origin top-left, x increases right, y increases down, bbox [x0,top,x1,bottom]",
+  "render_engine": "Poppler pdftoppm 240 dpi; PIL crops without rescaling or content editing",
+  "assets": [
+    {
+      "file": "fig01_overlap.png",
+      "label": "Figure 1",
+      "physical_pdf_page": 2,
+      "clip_bbox_pt": [
+        49,
+        54,
+        302,
+        116
+      ],
+      "clip_bbox_render_px": [
+        163,
+        180,
+        1007,
+        387
+      ],
+      "dpi": 240,
+      "width_px": 844,
+      "height_px": 207,
+      "sha256": "f30a00541fe4688fb0059a84fbb622a97049984286eaaa9fb4ef5e6052d31ec6",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "fig02_conditioning.png",
+      "label": "Figure 2",
+      "physical_pdf_page": 2,
+      "clip_bbox_pt": [
+        320,
+        56,
+        556,
+        279
+      ],
+      "clip_bbox_render_px": [
+        1067,
+        187,
+        1853,
+        930
+      ],
+      "dpi": 240,
+      "width_px": 786,
+      "height_px": 743,
+      "sha256": "a06b46f263f780de968e02a836679cdbb516f98254773147de440c858544fbb2",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "fig03_simulation.png",
+      "label": "Figure 3",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        69,
+        141,
+        278,
+        307
+      ],
+      "clip_bbox_render_px": [
+        230,
+        470,
+        927,
+        1023
+      ],
+      "dpi": 240,
+      "width_px": 697,
+      "height_px": 553,
+      "sha256": "b1d667e2ad8ed263a8c98e49c358f6a03e2f1620c0ce12a949b7c5056780b58b",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "fig04_tasks.png",
+      "label": "Figure 4",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        311,
+        88,
+        565,
+        181
+      ],
+      "clip_bbox_render_px": [
+        1037,
+        293,
+        1883,
+        603
+      ],
+      "dpi": 240,
+      "width_px": 846,
+      "height_px": 310,
+      "sha256": "774cc6c12e9128207fd46e16c65dba2e53d083780a6d88a6ccf35da6b5885253",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "fig05_real_results.png",
+      "label": "Figure 5",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        312,
+        418,
+        558,
+        614
+      ],
+      "clip_bbox_render_px": [
+        1040,
+        1393,
+        1860,
+        2047
+      ],
+      "dpi": 240,
+      "width_px": 820,
+      "height_px": 654,
+      "sha256": "81d6a248407c03dbdcecbf0194dd8640f634ec2adce59eee0b5c50dac93ac428",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "eq01_interpolation.png",
+      "label": "Eq. (1)",
+      "physical_pdf_page": 2,
+      "clip_bbox_pt": [
+        60,
+        402,
+        303,
+        419
+      ],
+      "clip_bbox_render_px": [
+        200,
+        1340,
+        1010,
+        1397
+      ],
+      "dpi": 240,
+      "width_px": 810,
+      "height_px": 57,
+      "sha256": "20a54c141c4c48397fc0d7d4948afe2d150211f3c72773b187c8d64c609d31af",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "eq02_original_loss.png",
+      "label": "Eq. (2), original sign retained",
+      "physical_pdf_page": 2,
+      "clip_bbox_pt": [
+        57,
+        418,
+        303,
+        435
+      ],
+      "clip_bbox_render_px": [
+        190,
+        1393,
+        1010,
+        1450
+      ],
+      "dpi": 240,
+      "width_px": 820,
+      "height_px": 57,
+      "sha256": "3473dd04d419e70c6f3ef6984701ce0a64c782d47a76a86ed6a2dba9454d0f91",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "eq_unnumbered_conditional.png",
+      "label": "Unnumbered conditional distribution, original indexing retained",
+      "physical_pdf_page": 2,
+      "clip_bbox_pt": [
+        181,
+        664,
+        270,
+        677
+      ],
+      "clip_bbox_render_px": [
+        603,
+        2213,
+        900,
+        2257
+      ],
+      "dpi": 240,
+      "width_px": 297,
+      "height_px": 44,
+      "sha256": "81d2297a020d541c07d243ec1b13ac34d519913ca18f9808be7a43648adfe3f6",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "alg01_train.png",
+      "label": "Algorithm 1: training",
+      "physical_pdf_page": 6,
+      "clip_bbox_pt": [
+        48,
+        211,
+        565,
+        441
+      ],
+      "clip_bbox_render_px": [
+        160,
+        703,
+        1883,
+        1470
+      ],
+      "dpi": 240,
+      "width_px": 1723,
+      "height_px": 767,
+      "sha256": "412a05f1ff42604775db671bc9be249d14b329155d5b32ed08d27397bc3f67d3",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    },
+    {
+      "file": "alg01_sample.png",
+      "label": "Algorithm 1: sampling",
+      "physical_pdf_page": 6,
+      "clip_bbox_pt": [
+        48,
+        451,
+        565,
+        620
+      ],
+      "clip_bbox_render_px": [
+        160,
+        1503,
+        1883,
+        2067
+      ],
+      "dpi": 240,
+      "width_px": 1723,
+      "height_px": 564,
+      "sha256": "567fc19a88ed6c86bd18937d509dba82594876e9dffdc9957f0ce1e30156d980",
+      "visual_qa": "passed: manually inspected original crop at native/resized display; glyphs, legends and bounds preserved"
+    }
+  ],
+  "supporting_sources": [
+    {
+      "label": "pi0.6 model card",
+      "url": "https://website.pi-asset.com/pi06star/PI06_model_card.pdf",
+      "physical_pages": 4,
+      "sha256": "39b67dafdd0e96576f7cb68bd6208bb92965f4b1c1bcf31c17f6121866a43ce5"
+    },
+    {
+      "label": "arXiv v2 TeX source",
+      "url": "https://arxiv.org/src/2512.05964v2",
+      "sha256": "c7556d1fab9f61cd9becdb9adfd3c083d352714e97c08040b6a47ee1d9a456d2"
+    },
+    {
+      "label": "real-time-chunking-kinetix",
+      "url": "https://github.com/Physical-Intelligence/real-time-chunking-kinetix",
+      "commit": "9296f31d62d5bfeb5779dcb2f9bcf71ca37f448b",
+      "checked_at": "2026-09-09T05:54:59.125500+00:00",
+      "scope": "Read-only source audit; no model training or inference run"
+    },
+    {
+      "label": "openpi",
+      "url": "https://github.com/Physical-Intelligence/openpi",
+      "commit": "215abfb217dbac7d5f1273282331b9b1866c0479",
+      "checked_at": "2026-09-09T05:54:59.125500+00:00",
+      "scope": "Read-only source audit; no model training or inference run"
+    }
+  ],
+  "manual_visual_qa_completed_at": "2026-09-09T06:19:34.829761+00:00",
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

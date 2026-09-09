@@ -1,0 +1,458 @@
+{
+  "paper_title": "Teaching Tiny VLA Models Where to Look and How to Move",
+  "arxiv_id": "2607.04171",
+  "version": "v3",
+  "version_date": "2026-07-29",
+  "retrieved_date": "2026-09-09",
+  "source_url": "https://arxiv.org/pdf/2607.04171v3",
+  "bibliography_url": "https://arxiv.org/abs/2607.04171v3",
+  "source_pdf_sha256": "4fffed6c86f4e93fbe5ed7dbd8ed819809d978f548cc93c9ff66243ad9b9fd16",
+  "source_pdf_bytes": 3547000,
+  "physical_page_count": 19,
+  "coordinate_system": "PDF page top-left origin; [x0, top, x1, bottom] in points; page size 612 x 792 pt",
+  "renderer": "Poppler pdftoppm, 240 DPI; lossless PNG crop with Pillow",
+  "rights": "Original figures and equations remain subject to the rights of their original authors/rightsholders. No new license is asserted.",
+  "assets": [
+    {
+      "file": "fig01_csd.png",
+      "source_label": "Figure 1",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        54,
+        50,
+        558,
+        280
+      ],
+      "pixel_bbox_on_render": [
+        180,
+        167,
+        1860,
+        933
+      ],
+      "dpi": 240,
+      "width_px": 1680,
+      "height_px": 766,
+      "image_sha256": "4b5a833c3bf03a41c93a33a9815131c61cf22f6e4acc27b283735f12cdb4c2d7"
+    },
+    {
+      "file": "fig02_pipeline.png",
+      "source_label": "Figure 2",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        54,
+        58,
+        558,
+        338
+      ],
+      "pixel_bbox_on_render": [
+        180,
+        193,
+        1860,
+        1127
+      ],
+      "dpi": 240,
+      "width_px": 1680,
+      "height_px": 934,
+      "image_sha256": "1b9833b78ae0773b99c00f7dcbc62272740318bcd272d66084c1a63448149f5c"
+    },
+    {
+      "file": "fig03_workstation.png",
+      "source_label": "Figure 3",
+      "physical_pdf_page": 17,
+      "clip_bbox_pt": [
+        63,
+        59,
+        284,
+        444
+      ],
+      "pixel_bbox_on_render": [
+        210,
+        197,
+        947,
+        1480
+      ],
+      "dpi": 240,
+      "width_px": 737,
+      "height_px": 1283,
+      "image_sha256": "4a88e66318b8aecf7ba330d5fe6d7d0c41246236557dfe5b46eff4884c4ba3c5"
+    },
+    {
+      "file": "fig04_mobile_aloha.png",
+      "source_label": "Figure 4",
+      "physical_pdf_page": 18,
+      "clip_bbox_pt": [
+        68,
+        57,
+        544,
+        292
+      ],
+      "pixel_bbox_on_render": [
+        227,
+        190,
+        1813,
+        973
+      ],
+      "dpi": 240,
+      "width_px": 1586,
+      "height_px": 783,
+      "image_sha256": "fab6c9f44529eac2d9931763ef29a97c6ba27674a744a63872d316dd07e5eeda"
+    },
+    {
+      "file": "fig05_xlerobot.png",
+      "source_label": "Figure 5",
+      "physical_pdf_page": 19,
+      "clip_bbox_pt": [
+        55,
+        60,
+        291,
+        179
+      ],
+      "pixel_bbox_on_render": [
+        183,
+        200,
+        970,
+        597
+      ],
+      "dpi": 240,
+      "width_px": 787,
+      "height_px": 397,
+      "image_sha256": "2a351e00d1e0746171a9c6dec21ef7afdd55c7be5214e10840096d6c99612f31"
+    },
+    {
+      "file": "fig06_openarm.png",
+      "source_label": "Figure 6",
+      "physical_pdf_page": 19,
+      "clip_bbox_pt": [
+        55,
+        318,
+        291,
+        438
+      ],
+      "pixel_bbox_on_render": [
+        183,
+        1060,
+        970,
+        1460
+      ],
+      "dpi": 240,
+      "width_px": 787,
+      "height_px": 400,
+      "image_sha256": "7dde1ca0f8ebb49761069fac3b0ff047fb2f86d93a84470c8321c2f4116f2ae9"
+    },
+    {
+      "file": "fig07_piper.png",
+      "source_label": "Figure 7",
+      "physical_pdf_page": 19,
+      "clip_bbox_pt": [
+        69,
+        491,
+        278,
+        611
+      ],
+      "pixel_bbox_on_render": [
+        230,
+        1637,
+        927,
+        2037
+      ],
+      "dpi": 240,
+      "width_px": 697,
+      "height_px": 400,
+      "image_sha256": "8a32e10d88ebdf02b853a09cba700b5e9878ca32c875b8b21e715fde3f1249de"
+    },
+    {
+      "file": "eq01_quantization.png",
+      "source_label": "U02 grid quantization",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        320,
+        168,
+        558,
+        201
+      ],
+      "pixel_bbox_on_render": [
+        1067,
+        560,
+        1860,
+        670
+      ],
+      "dpi": 240,
+      "width_px": 793,
+      "height_px": 110,
+      "image_sha256": "652b45e1bb309525577b4a7feebcff12077a7fb5b46ee11b941c2d073a78f71b"
+    },
+    {
+      "file": "eq02_vocabulary.png",
+      "source_label": "U03 spatial vocabulary",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        318,
+        232,
+        551,
+        299
+      ],
+      "pixel_bbox_on_render": [
+        1060,
+        773,
+        1837,
+        997
+      ],
+      "dpi": 240,
+      "width_px": 777,
+      "height_px": 224,
+      "image_sha256": "cbbdf0e5382e5c4dcf9f24735a686c6e3e12fdad24b828e743461a4abc4da5b8"
+    },
+    {
+      "file": "eq03_csd.png",
+      "source_label": "U04 CSD objective",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        348,
+        422,
+        529,
+        455
+      ],
+      "pixel_bbox_on_render": [
+        1160,
+        1407,
+        1763,
+        1517
+      ],
+      "dpi": 240,
+      "width_px": 603,
+      "height_px": 110,
+      "image_sha256": "2d78e46399e6ba1a5c5f0e19539a03654d61043828f9e7c21ac609242f8efa1d"
+    },
+    {
+      "file": "eq04_reparameterization.png",
+      "source_label": "U08 reparameterization",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        326,
+        423,
+        548,
+        440
+      ],
+      "pixel_bbox_on_render": [
+        1087,
+        1410,
+        1827,
+        1467
+      ],
+      "dpi": 240,
+      "width_px": 740,
+      "height_px": 57,
+      "image_sha256": "17a5d8ebf393de893557033d4843fc46a2bd90b3b249c9d6f47fc4e23227696d"
+    },
+    {
+      "file": "eq05_prior.png",
+      "source_label": "U09 prior",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        399,
+        467,
+        479,
+        486
+      ],
+      "pixel_bbox_on_render": [
+        1330,
+        1557,
+        1597,
+        1620
+      ],
+      "dpi": 240,
+      "width_px": 267,
+      "height_px": 63,
+      "image_sha256": "cf717726219ec0938c6a221d104ee5600b44655f08e61212b63e2743e27ef27e"
+    },
+    {
+      "file": "eq06_interpolation.png",
+      "source_label": "U10 interpolation",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        384,
+        644,
+        490,
+        666
+      ],
+      "pixel_bbox_on_render": [
+        1280,
+        2147,
+        1633,
+        2220
+      ],
+      "dpi": 240,
+      "width_px": 353,
+      "height_px": 73,
+      "image_sha256": "1a2acf3056eee068922b5c471264ddcedd3eb2dcd49aa87c3b0b6f40be02d06d"
+    },
+    {
+      "file": "eq07_vector_field.png",
+      "source_label": "U11 target vector field",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        407,
+        690,
+        471,
+        706
+      ],
+      "pixel_bbox_on_render": [
+        1357,
+        2300,
+        1570,
+        2353
+      ],
+      "dpi": 240,
+      "width_px": 213,
+      "height_px": 53,
+      "image_sha256": "a7424a495da970936049c8c17bedfdbe36ad01c83e8c5048c1a35247f7e86409"
+    },
+    {
+      "file": "eq08_losses.png",
+      "source_label": "U12-U14 FM KL total objectives",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        53,
+        450,
+        295,
+        550
+      ],
+      "pixel_bbox_on_render": [
+        177,
+        1500,
+        983,
+        1833
+      ],
+      "dpi": 240,
+      "width_px": 806,
+      "height_px": 333,
+      "image_sha256": "4036ab2393c8899cd9ecf61f8c60233ef06e2239fcae1ae2ae6788cf73e9997a"
+    },
+    {
+      "file": "eq09_sampling.png",
+      "source_label": "U15 imbalance sampling",
+      "physical_pdf_page": 10,
+      "clip_bbox_pt": [
+        369,
+        413,
+        504,
+        483
+      ],
+      "pixel_bbox_on_render": [
+        1230,
+        1377,
+        1680,
+        1610
+      ],
+      "dpi": 240,
+      "width_px": 450,
+      "height_px": 233,
+      "image_sha256": "b4d54b1a1f97eab9e2d804d17c8d8a09b730fd2b4e4b8e128f8434d63312eee3"
+    },
+    {
+      "file": "eq10_micro_accuracy.png",
+      "source_label": "U17 micro accuracy",
+      "physical_pdf_page": 14,
+      "clip_bbox_pt": [
+        109,
+        198,
+        240,
+        235
+      ],
+      "pixel_bbox_on_render": [
+        363,
+        660,
+        800,
+        783
+      ],
+      "dpi": 240,
+      "width_px": 437,
+      "height_px": 123,
+      "image_sha256": "f28676259ed2ddde1fc1eeec1305dbbc5d15665d277726737c9d8a804cfcab2b"
+    },
+    {
+      "file": "eq11_macro_accuracy.png",
+      "source_label": "U18 macro accuracy",
+      "physical_pdf_page": 14,
+      "clip_bbox_pt": [
+        77,
+        308,
+        268,
+        346
+      ],
+      "pixel_bbox_on_render": [
+        257,
+        1027,
+        893,
+        1153
+      ],
+      "dpi": 240,
+      "width_px": 636,
+      "height_px": 126,
+      "image_sha256": "179b1ab4713e4295a4bd7ab74608becc9e9c4ae44aea4d65e0b18c7eae6e8686"
+    },
+    {
+      "file": "table01_libero.png",
+      "source_label": "Table 1",
+      "physical_pdf_page": 6,
+      "clip_bbox_pt": [
+        55,
+        94,
+        559,
+        295
+      ],
+      "pixel_bbox_on_render": [
+        183,
+        313,
+        1863,
+        983
+      ],
+      "dpi": 240,
+      "width_px": 1680,
+      "height_px": 670,
+      "image_sha256": "6a23973a56099a79810c1de7454acd16151fc1b4fcf6e7293402c8b449b65f69"
+    },
+    {
+      "file": "table02_ablation.png",
+      "source_label": "Table 2",
+      "physical_pdf_page": 6,
+      "clip_bbox_pt": [
+        97,
+        336,
+        515,
+        421
+      ],
+      "pixel_bbox_on_render": [
+        323,
+        1120,
+        1717,
+        1403
+      ],
+      "dpi": 240,
+      "width_px": 1394,
+      "height_px": 283,
+      "image_sha256": "7942d08a98f413066678768331ea6fc5791751758789b876e338cf550cfd4d30"
+    },
+    {
+      "file": "table03_real_world.png",
+      "source_label": "Table 3",
+      "physical_pdf_page": 7,
+      "clip_bbox_pt": [
+        130,
+        84,
+        481,
+        143
+      ],
+      "pixel_bbox_on_render": [
+        433,
+        280,
+        1603,
+        477
+      ],
+      "dpi": 240,
+      "width_px": 1170,
+      "height_px": 197,
+      "image_sha256": "1c1f123e712a424bfd04513cf13e1954918d2441bdd3620005a7717674c00f30"
+    }
+  ]
+}

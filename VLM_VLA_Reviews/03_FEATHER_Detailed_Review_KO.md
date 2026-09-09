@@ -1,5 +1,7 @@
 # FEATHER 상세 해설: 시각 토큰 프루닝에서 "무엇을 남기는가"가 왜 중요한가
 
+> 저장소 원문: [주 PDF](papers/03_FEATHER.pdf) · [ICCV 2025 supplementary](papers/03_FEATHER_Supplement.pdf) · [전체 목록](README.md)
+
 > 대상 논문: Mark Endo, Xiaohan Wang, Serena Yeung-Levy, **Feather the Throttle: Revisiting Visual Token Pruning for Vision-Language Model Acceleration**, ICCV 2025.
 >
 > 이 문서는 초록 요약이나 짧은 서평이 아니다. 첨부된 본문 PDF 10쪽과 CVF가 별도로 공개한 공식 보충자료 5쪽을 절·수식·그림·표 단위로 대응시키고, 모델의 입력부터 출력까지 계산 흐름을 학습용으로 풀어 쓴다. GPU 학습·추론은 실행하지 않았으며, 모든 성능 수치는 저자가 보고한 값이다.

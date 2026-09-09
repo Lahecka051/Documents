@@ -1,0 +1,128 @@
+{
+  "document_sha256": "d97a976e857c2020a26a64aa8a9158d86fe2e2be236acf42f27a03dabe75e10d",
+  "bytes": 104113,
+  "lines": 1110,
+  "unicode_characters": 69502,
+  "structure": {
+    "fences": 60,
+    "math_blocks": 29,
+    "anchors": 19,
+    "images": 10,
+    "manifest_images": 10,
+    "errors": []
+  },
+  "numeric_checks": {
+    "scope": "CPU NumPy algebra and finite-difference checks only; no JAX model or GPU execution",
+    "interpolation": [
+      [
+        [
+          1.0,
+          2.0
+        ],
+        [
+          3.0,
+          4.0
+        ],
+        [
+          1.25,
+          1.5
+        ],
+        [
+          1.75,
+          2.0
+        ]
+      ]
+    ],
+    "masked_loss": 5.0,
+    "scalar_mse": 2.5,
+    "gradient_max_abs_error": 7.57156559672012e-11,
+    "shared_prefix_parameter_gradient": 4.000000000503601,
+    "last_prefix_drift_example": 0.6000000000000001,
+    "wrong_batched_delay_shape": [
+      1,
+      4
+    ],
+    "correct_batched_delay_shape": [
+      4,
+      4
+    ],
+    "exponential_delay_probabilities": [
+      0.6364086465588308,
+      0.23412165725273662,
+      0.0861285444362687,
+      0.03168492079612427,
+      0.011656230956039607
+    ],
+    "expected_delay": 0.5480584323378053,
+    "expected_supervised_H8": 7.451941567662194,
+    "supervision_probabilities": [
+      0.6364086465588308,
+      0.8705303038115674,
+      0.9566588482478361,
+      0.9883437690439604,
+      1.0
+    ],
+    "wilson_example_95": [
+      0.7307897455748039,
+      0.7682741197840034
+    ],
+    "latency_reduction": 0.2,
+    "latency_ratio": 1.25,
+    "sample_presentations": 4096000,
+    "default_generated_steps_per_level": 1015808
+  },
+  "model_execution": false,
+  "gpu_execution": false,
+  "robot_execution": false,
+  "github_render_verified": false,
+  "math_parser": {
+    "docs": [
+      {
+        "name": "17_Training_Time_Action_Conditioning_Detailed_Review_KO.md",
+        "inline": 75,
+        "display": 29,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 75,
+      "display": 29,
+      "errors": 0,
+      "stray": 0
+    }
+  },
+  "local_browser": {
+    "engine": "Headless local Chrome via Playwright, isolated temporary browser",
+    "title": "Training-Time Action Conditioning 상세 리뷰: 이미 실행할 행동을 학습 때부터 조건으로 주기",
+    "images": 10,
+    "brokenImages": [],
+    "katexCount": 104,
+    "mathErrors": 0,
+    "pageWidth": 1450,
+    "viewportWidth": 1450,
+    "tableCount": 27,
+    "mathOverflow": []
+  },
+  "manual_visual_qa": {
+    "pdf_pages": [
+      2,
+      3,
+      6
+    ],
+    "publication_crops": 10,
+    "local_preview_screens": [
+      "top",
+      "equations",
+      "masked_loss",
+      "algorithm",
+      "results",
+      "coverage"
+    ],
+    "result": "passed"
+  },
+  "validation_timestamp": "2026-09-09T06:19:34.836275+00:00",
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

@@ -1,0 +1,181 @@
+{
+  "checked_date": "2026-09-09",
+  "document": "21_FlashVLA_Detailed_Review_KO.md",
+  "utf8": true,
+  "bytes": 102170,
+  "lines": 995,
+  "sha256": "8c3691bca7f78e6e9ae8e8f3960ab148600f0d1365e72ba3b632affaab61b99f",
+  "source_pdf_sha256": "74d35658a10c7a57fdf06a59e4bc021bb8de1bb4ea9b882f38f45e94b3abfa66",
+  "math": {
+    "docs": [
+      {
+        "name": "21_FlashVLA_Detailed_Review_KO.md",
+        "inline": 34,
+        "display": 19,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 34,
+      "display": 19,
+      "errors": 0,
+      "stray": 0
+    }
+  },
+  "anchors": 17,
+  "images": [
+    {
+      "link": "assets/21_FlashVLA/figure_01.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        620
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/equation_01.png",
+      "valid": true,
+      "pixels": [
+        1283,
+        90
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/equation_02.png",
+      "valid": true,
+      "pixels": [
+        1076,
+        157
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_02.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        270
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/algorithm_01.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        630
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/equation_buffer_config.png",
+      "valid": true,
+      "pixels": [
+        1140,
+        197
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/equation_03.png",
+      "valid": true,
+      "pixels": [
+        1120,
+        130
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_03.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        910
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_04.png",
+      "valid": true,
+      "pixels": [
+        560,
+        300
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_05.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        470
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_06.png",
+      "valid": true,
+      "pixels": [
+        1220,
+        420
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_07.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        413
+      ]
+    },
+    {
+      "link": "assets/21_FlashVLA/figure_08.png",
+      "valid": true,
+      "pixels": [
+        1343,
+        406
+      ]
+    }
+  ],
+  "calculations": {
+    "action_stage_speedup": 19.877551020408163,
+    "unoptimized_policy_speedup": 3.521857923497268,
+    "libero_time_per_step_speedup": 2.434389140271493,
+    "episode_speedup": 2.4,
+    "table2_baseline_to_flash": [
+      1.7153558052434457,
+      1.5054347826086958,
+      1.8226600985221675,
+      1.6531365313653135
+    ],
+    "faster_to_flash_ttfa": 1.673854447439353,
+    "faster_to_flash_ttr": 1.5923295454545452,
+    "robotwin_ideal_bound": 1.2061068702290076,
+    "a4000_overrun_vs_two_ticks_ms": 0.6333333333333258,
+    "training_N4_C10": {
+      "allocated": 160,
+      "valid": 100
+    },
+    "beta_example": [
+      0.05095,
+      0.4006,
+      0.7002999999999999,
+      0.85015
+    ]
+  },
+  "issues": [],
+  "static_checks_passed": true,
+  "gpu_execution": false,
+  "robot_execution": false,
+  "github_server_render_verified": false,
+  "local_browser_qa": {
+    "renderer": "Marked + KaTeX; local headless Chromium-compatible browser",
+    "viewport_width": 1440,
+    "document_horizontal_overflow": false,
+    "block_math_horizontal_overflow": false,
+    "image_load_count": 13,
+    "runtime_errors": [],
+    "representative_screenshots_visually_reviewed": 7,
+    "original_crop_images_visually_reviewed": 13,
+    "github_server_render_verified": false
+  },
+  "model_card_read": {
+    "model": "z-lab/flashvla-pi05-libero",
+    "status": "Public read returned authentication error; contents and revision unverified"
+  }
+}

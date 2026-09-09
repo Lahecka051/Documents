@@ -1,0 +1,590 @@
+{
+  "paper_title": "SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics",
+  "source_url": "https://arxiv.org/pdf/2506.01844v1",
+  "bibliography_url": "https://arxiv.org/abs/2506.01844",
+  "arxiv_version": "2506.01844v1",
+  "access_date": "2026-09-09",
+  "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c",
+  "physical_pages": 24,
+  "coordinate_system": "PDF points; origin at top left; [x0, top, x1, bottom]; 72 points per inch",
+  "rights": "Original figures/equations belong to the authors and their respective rights holders. No additional reuse license is asserted.",
+  "renderer": "pypdfium2; full-page 240 dpi raster followed by unmodified rectangular clipping",
+  "assets": [
+    {
+      "file": "fig01_architecture.png",
+      "label": "Figure 1",
+      "physical_page": 1,
+      "clip_bbox_pt": [
+        83,
+        435,
+        530,
+        692
+      ],
+      "clip_bbox_pixels": [
+        276,
+        1450,
+        1767,
+        2307
+      ],
+      "dpi": 240,
+      "width_px": 1491,
+      "height_px": 857,
+      "sha256": "c809bee0150260b486ce5fc72486895087bc53d6b7902ad0e89a566a9558753f",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "fig02_async_timeline.png",
+      "label": "Figure 2",
+      "physical_page": 6,
+      "clip_bbox_pt": [
+        78,
+        52,
+        528,
+        285
+      ],
+      "clip_bbox_pixels": [
+        260,
+        173,
+        1760,
+        950
+      ],
+      "dpi": 240,
+      "width_px": 1500,
+      "height_px": 777,
+      "sha256": "1696f7724182496d179a772415194f73d30a7b54038693338da960049872828d",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "fig03_queue_evolution.png",
+      "label": "Figure 3",
+      "physical_page": 7,
+      "clip_bbox_pt": [
+        53,
+        53,
+        558,
+        202
+      ],
+      "clip_bbox_pixels": [
+        176,
+        176,
+        1860,
+        674
+      ],
+      "dpi": 240,
+      "width_px": 1684,
+      "height_px": 498,
+      "sha256": "48bbe3e13994baefdaf2076c1c61ff8f0532289ee09abbc848e0527320c4b55c",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "fig04_realworld_tasks.png",
+      "label": "Figure 4",
+      "physical_page": 9,
+      "clip_bbox_pt": [
+        54,
+        51,
+        558,
+        269
+      ],
+      "clip_bbox_pixels": [
+        180,
+        170,
+        1860,
+        897
+      ],
+      "dpi": 240,
+      "width_px": 1680,
+      "height_px": 727,
+      "sha256": "ca7e0461f3a184d802a73c9a9ef684d8ad0724a1010e12238c31f3e637182c47",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "fig05_async_results.png",
+      "label": "Figure 5",
+      "physical_page": 12,
+      "clip_bbox_pt": [
+        58,
+        200,
+        562,
+        285
+      ],
+      "clip_bbox_pixels": [
+        193,
+        666,
+        1874,
+        950
+      ],
+      "dpi": 240,
+      "width_px": 1681,
+      "height_px": 284,
+      "sha256": "d1ce6f1b25ec5046ef0cf0697d9edac05be3ea022bed519e7b53832730f51ca4",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table01_community_data.png",
+      "label": "Table 1",
+      "physical_page": 5,
+      "clip_bbox_pt": [
+        353,
+        336,
+        562,
+        439
+      ],
+      "clip_bbox_pixels": [
+        1176,
+        1120,
+        1874,
+        1464
+      ],
+      "dpi": 240,
+      "width_px": 698,
+      "height_px": 344,
+      "sha256": "12f0b000afcd8d98263bcdddb196dde9421c7f73347a3ead09127a6a95b9b11a",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table02_simulation.png",
+      "label": "Table 2",
+      "physical_page": 11,
+      "clip_bbox_pt": [
+        92,
+        51,
+        520,
+        325
+      ],
+      "clip_bbox_pixels": [
+        306,
+        170,
+        1734,
+        1084
+      ],
+      "dpi": 240,
+      "width_px": 1428,
+      "height_px": 914,
+      "sha256": "39b8493c3e063f4d12fa16400d8a244628cd28c411e99f19ccbd81a026511400",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table03_so100.png",
+      "label": "Table 3",
+      "physical_page": 11,
+      "clip_bbox_pt": [
+        66,
+        386,
+        328,
+        486
+      ],
+      "clip_bbox_pixels": [
+        220,
+        1286,
+        1094,
+        1620
+      ],
+      "dpi": 240,
+      "width_px": 874,
+      "height_px": 334,
+      "sha256": "f30c0d82f0eaeb667adc2cf729bff4f121a97c75f5a19b4ea45d629913c34ed8",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table04_so101.png",
+      "label": "Table 4",
+      "physical_page": 11,
+      "clip_bbox_pt": [
+        353,
+        401,
+        546,
+        471
+      ],
+      "clip_bbox_pixels": [
+        1176,
+        1336,
+        1820,
+        1570
+      ],
+      "dpi": 240,
+      "width_px": 644,
+      "height_px": 234,
+      "sha256": "f3aae52be75da6ee755756c8df0d47c7c717b965cee03f908746d1f6f32dcdcf",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table05_pretraining.png",
+      "label": "Table 5",
+      "physical_page": 12,
+      "clip_bbox_pt": [
+        139,
+        51,
+        473,
+        162
+      ],
+      "clip_bbox_pixels": [
+        463,
+        170,
+        1577,
+        540
+      ],
+      "dpi": 240,
+      "width_px": 1114,
+      "height_px": 370,
+      "sha256": "527e984cc5188608b18ad868a936cf070a877fa1702f99cf9c1dcc6eaf8b7a16",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table06_attention.png",
+      "label": "Table 6",
+      "physical_page": 13,
+      "clip_bbox_pt": [
+        72,
+        51,
+        277,
+        136
+      ],
+      "clip_bbox_pixels": [
+        240,
+        170,
+        924,
+        454
+      ],
+      "dpi": 240,
+      "width_px": 684,
+      "height_px": 284,
+      "sha256": "02d05e974bed4469fcd822fc43914d6ce032e67013f0f2a0b4d137b1cd1f90fb",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table07_causal_mask.png",
+      "label": "Table 7",
+      "physical_page": 13,
+      "clip_bbox_pt": [
+        341,
+        57,
+        534,
+        128
+      ],
+      "clip_bbox_pixels": [
+        1136,
+        190,
+        1780,
+        427
+      ],
+      "dpi": 240,
+      "width_px": 644,
+      "height_px": 237,
+      "sha256": "b87b1729154003e97fd990bba0f84c1fb339a988849d211dcf2e080d2eb13235",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table08_depth.png",
+      "label": "Table 8",
+      "physical_page": 13,
+      "clip_bbox_pt": [
+        80,
+        176,
+        266,
+        321
+      ],
+      "clip_bbox_pixels": [
+        266,
+        586,
+        887,
+        1070
+      ],
+      "dpi": 240,
+      "width_px": 621,
+      "height_px": 484,
+      "sha256": "38c14525039822648e1847bb9a04ed03a08e44c1c2d72c47fbcbbdc775d929b5",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table09_width.png",
+      "label": "Table 9",
+      "physical_page": 13,
+      "clip_bbox_pt": [
+        341,
+        194,
+        534,
+        303
+      ],
+      "clip_bbox_pixels": [
+        1136,
+        646,
+        1780,
+        1010
+      ],
+      "dpi": 240,
+      "width_px": 644,
+      "height_px": 364,
+      "sha256": "62e88d596f8b10c9f87411ddc4a1c4d8eda3de1da77634865d322b8f07a2903e",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table10_objective.png",
+      "label": "Table 10",
+      "physical_page": 14,
+      "clip_bbox_pt": [
+        67,
+        57,
+        287,
+        139
+      ],
+      "clip_bbox_pixels": [
+        223,
+        190,
+        957,
+        464
+      ],
+      "dpi": 240,
+      "width_px": 734,
+      "height_px": 274,
+      "sha256": "4e46bf6d1c6c8cf1a2974f41df35d812a1077098edd83a9e233e6aec76154c7a",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table11_state_routing.png",
+      "label": "Table 11",
+      "physical_page": 14,
+      "clip_bbox_pt": [
+        341,
+        51,
+        534,
+        148
+      ],
+      "clip_bbox_pixels": [
+        1136,
+        170,
+        1780,
+        494
+      ],
+      "dpi": 240,
+      "width_px": 644,
+      "height_px": 324,
+      "sha256": "13b09a5b7ce87976bc539308ead97b1ba0d3618d86e1e37d46c063e4c86d0404",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table12_chunk_size.png",
+      "label": "Table 12",
+      "physical_page": 14,
+      "clip_bbox_pt": [
+        90,
+        197,
+        259,
+        322
+      ],
+      "clip_bbox_pixels": [
+        300,
+        656,
+        864,
+        1074
+      ],
+      "dpi": 240,
+      "width_px": 564,
+      "height_px": 418,
+      "sha256": "ea55ca74e71c424e7bae6c1ec888d45361ae2af61bc377400f07ffc3fbdc05c1",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "table13_execution_steps.png",
+      "label": "Table 13",
+      "physical_page": 14,
+      "clip_bbox_pt": [
+        353,
+        205,
+        522,
+        314
+      ],
+      "clip_bbox_pixels": [
+        1176,
+        683,
+        1740,
+        1047
+      ],
+      "dpi": 240,
+      "width_px": 564,
+      "height_px": 364,
+      "sha256": "44ea670c217add21c92494032363668f601cd375fad242ef186bff64d5715b0d",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "math01_flow_loss.png",
+      "label": "Unnumbered flow-matching loss",
+      "physical_page": 4,
+      "clip_bbox_pt": [
+        176,
+        505,
+        437,
+        531
+      ],
+      "clip_bbox_pixels": [
+        586,
+        1683,
+        1457,
+        1770
+      ],
+      "dpi": 240,
+      "width_px": 871,
+      "height_px": 87,
+      "sha256": "70fa6999dff6171534259377c768226f88e848b910d838c1bffaf0ff0189cf58",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "math02_flow_path.png",
+      "label": "Unnumbered interpolation and target velocity",
+      "physical_page": 4,
+      "clip_bbox_pt": [
+        51,
+        534,
+        561,
+        575
+      ],
+      "clip_bbox_pixels": [
+        170,
+        1780,
+        1870,
+        1917
+      ],
+      "dpi": 240,
+      "width_px": 1700,
+      "height_px": 137,
+      "sha256": "7e7a8ff168d95e4b9bf2a2e20f577944c73c1381fb161335ad5c088aca21a464",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "math03_action_chunk.png",
+      "label": "Unnumbered policy and chunk notation",
+      "physical_page": 5,
+      "clip_bbox_pt": [
+        51,
+        623.4,
+        561,
+        636.6
+      ],
+      "clip_bbox_pixels": [
+        170,
+        2078,
+        1870,
+        2122
+      ],
+      "dpi": 240,
+      "width_px": 1700,
+      "height_px": 44,
+      "sha256": "c5e2ce0d4646861bd0f273abe8d57330d41e531f905024eb195e95435587164b",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "math04_latency_threshold.png",
+      "label": "Unnumbered mean latency and queue bound",
+      "physical_page": 7,
+      "clip_bbox_pt": [
+        50,
+        430,
+        561,
+        492
+      ],
+      "clip_bbox_pixels": [
+        166,
+        1433,
+        1870,
+        1640
+      ],
+      "dpi": 240,
+      "width_px": 1704,
+      "height_px": 207,
+      "sha256": "8ef62e9967c632622c32802c359be3f87bc0a140660c0ba4c02e279325c17997",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "math05_update_interval.png",
+      "label": "Unnumbered observation and arrival intervals",
+      "physical_page": 8,
+      "clip_bbox_pt": [
+        51,
+        51,
+        562,
+        90
+      ],
+      "clip_bbox_pixels": [
+        170,
+        170,
+        1874,
+        300
+      ],
+      "dpi": 240,
+      "width_px": 1704,
+      "height_px": 130,
+      "sha256": "a3a287588bafed93c0872e56ca379d4aafce9871b863b90cdaf8db11fb145b44",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    },
+    {
+      "file": "algorithm01_async.png",
+      "label": "Algorithm 1",
+      "physical_page": 6,
+      "clip_bbox_pt": [
+        52,
+        500,
+        560,
+        731
+      ],
+      "clip_bbox_pixels": [
+        173,
+        1666,
+        1867,
+        2437
+      ],
+      "dpi": 240,
+      "width_px": 1694,
+      "height_px": 771,
+      "sha256": "7e7e790acede41cc8bfd9b71ec07aca68d61fe3d717988614f476af49533b848",
+      "source_url": "https://arxiv.org/pdf/2506.01844v1",
+      "source_version": "2506.01844v1",
+      "source_sha256": "cb1bb9a8f824187fcdc32af8c290214487c524f139a3c2def1c6d97adb1fa40c"
+    }
+  ]
+}

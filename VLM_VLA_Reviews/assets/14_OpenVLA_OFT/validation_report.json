@@ -1,0 +1,48 @@
+{
+  "markdown_sha256": "b3177f3b51817e73a181c1c5aefa4e6775a984cc16e344219ff335ecdd5bde38",
+  "utf8_valid": true,
+  "markdown_bytes": 119980,
+  "markdown_lines": 1266,
+  "images": 20,
+  "manifest_assets": 20,
+  "figure_pngs": 13,
+  "equation_pngs": 1,
+  "table_pngs": 6,
+  "original_numbered_equations": 0,
+  "original_numbered_algorithms": 0,
+  "explicit_anchors": 17,
+  "fence_lines": 42,
+  "errors": [],
+  "arithmetic": {
+    "libero_l1_action_throughput": 109.73936899862825,
+    "libero_latency_speedup": 3.286694101508916,
+    "libero_rounded_throughput_speedup": 26.119047619047617,
+    "pd_chunk_latency_increase_pct": 16.85214626391096,
+    "aloha_average_scores": {
+      "ACT": 72.25,
+      "DP": 77.5,
+      "RDT": 78.375,
+      "pi0": 83.85249999999999,
+      "OFT+": 87.8125
+    },
+    "aloha_sync_example": {
+      "cycle_seconds": 1.281,
+      "refresh_hz": 0.7806401249024201,
+      "step_rate": 19.5160031225605
+    },
+    "bridge_means": [
+      65.83333333333333,
+      69.16666666666667
+    ]
+  },
+  "source_inspection": "All 24 PDF pages text-read; core figures/equation/tables visually inspected; both code snapshots read statically.",
+  "not_executed": [
+    "GPU training",
+    "GPU inference",
+    "robot control",
+    "TensorRT/Thor deployment",
+    "GitHub hosted rendering"
+  ],
+  "visual_asset_qa": "20 final crops inspected; Figure 5 and Table III cropping repaired and re-inspected.",
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

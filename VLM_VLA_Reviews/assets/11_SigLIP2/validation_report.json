@@ -1,0 +1,317 @@
+{
+  "date": "2026-09-09",
+  "review_sha256": "ec60403fb65f8cee6d503cd2aa9195c7ee3ccbac09f873b6688459e168ead668",
+  "review_bytes": 117842,
+  "review_lines": 1219,
+  "utf8": true,
+  "fence_count": 56,
+  "display_math_count": 26,
+  "inline_math_count": 62,
+  "image_count": 21,
+  "figure_count": 6,
+  "table_count": 9,
+  "formula_crop_count": 5,
+  "algorithm_crop_count": 1,
+  "anchor_count": 16,
+  "errors": [],
+  "math_parser": {
+    "docs": [
+      {
+        "name": "11_SigLIP2_Detailed_Review_KO.md",
+        "inline": 62,
+        "display": 26,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 62,
+      "display": 26,
+      "errors": 0,
+      "stray": 0
+    }
+  },
+  "numerical_checks": {
+    "sigmoid_B2_loss": 0.6265233750364457,
+    "sigmoid_B2_positive_derivative": -0.13447071068499755,
+    "teacher_prior_bias_B32768": -10.397177190355384,
+    "soft_target_CE": 0.9856054499301495,
+    "teacher_entropy": 0.8018185525433373,
+    "NYU224_RMSE_relative_drop": 14.409722222222218,
+    "NYU384_RMSE_relative_drop": 17.22912966252219,
+    "NAVI224_RMSE_relative_drop": 19.277108433734938,
+    "L256_representation_bias_relative_drop": 79.43661971830986,
+    "L256_disparity_relative_drop": 2.8124999999999956,
+    "ACID_super_batch_f075_decimal": 128000.0,
+    "NaFlex_conditional_seen_examples_billions": 51.0,
+    "NaFlex_480_640_p16_budget256": [
+      224,
+      288
+    ],
+    "NaFlex_512_1024_p16_budget128": [
+      128,
+      256
+    ]
+  },
+  "table6_audit": {
+    "row_count": 35,
+    "column_means": [
+      80.11428571428571,
+      80.94571428571429,
+      82.99428571428571,
+      81.45714285714286,
+      83.24571428571429,
+      87.11428571428571,
+      88.84571428571428
+    ],
+    "comparisons": [
+      {
+        "columns": [
+          1,
+          3
+        ],
+        "wins": 34,
+        "ties": 0,
+        "losses": 1,
+        "mean_delta": 2.879999999999999
+      },
+      {
+        "columns": [
+          2,
+          3
+        ],
+        "wins": 28,
+        "ties": 1,
+        "losses": 6,
+        "mean_delta": 2.0485714285714267
+      },
+      {
+        "columns": [
+          4,
+          5
+        ],
+        "wins": 32,
+        "ties": 0,
+        "losses": 3,
+        "mean_delta": 1.7885714285714274
+      },
+      {
+        "columns": [
+          6,
+          7
+        ],
+        "wins": 33,
+        "ties": 0,
+        "losses": 2,
+        "mean_delta": 1.7314285714285718
+      }
+    ]
+  },
+  "official_code_commit": "0127fb6b337ee2a27bf4e54dea79cff176527356",
+  "code_files": [
+    {
+      "file": "big_vision__configs__proj__image_text__README_siglip2.md",
+      "sha256": "3c1862c16c6c75a97278fe9556482618db1d0419997eaefd4006ec9149994eef"
+    },
+    {
+      "file": "big_vision__configs__proj__image_text__SigLIP2_demo.ipynb",
+      "sha256": "5148b8f9432b15c36368073b561176a5150bcc7f9e09fab8281ac0f112b0d5f6"
+    },
+    {
+      "file": "big_vision__models__proj__image_text__naflex_vit.py",
+      "sha256": "1b36c54db348cfcb9c9f0072461952e96d053b7adf42b9247ba2b391a0a31ad9"
+    },
+    {
+      "file": "big_vision__models__proj__image_text__text_transformer.py",
+      "sha256": "7389026623006969916ff78094e4dbd7a774897751e4e9c1912c2a9e9c0b32ae"
+    },
+    {
+      "file": "big_vision__models__proj__image_text__two_towers.py",
+      "sha256": "c09e10c8b01939707a887f1736bc3bfc667aaa603132f9b559277555382f9bdc"
+    },
+    {
+      "file": "big_vision__models__vit.py",
+      "sha256": "d4fc67ba20bbbacfdc9e33a357e0e8b472ba7ac66949604ce48a59d510380ca9"
+    },
+    {
+      "file": "big_vision__pp__proj__image_text__ops_naflex.py",
+      "sha256": "4d10d58af2f9694912388256370ae48456f2181a1a4b0e7546fcd86863620db8"
+    },
+    {
+      "file": "big_vision__trainers__proj__image_text__siglip.py",
+      "sha256": "eefe0448d9e7643ce620cc68a5ad43f41866cf296254c0eff0b2b5b4c915abdd"
+    },
+    {
+      "file": "demo_extracted.py",
+      "sha256": "2a6007a9f02ee74029ee97cb74d472863b34d412398dbfdee30394017b337942"
+    }
+  ],
+  "auxiliary_sources": [
+    {
+      "name": "siglip1",
+      "pages": 14,
+      "sha256": "17c6bc4a907337a61b3d6ccbcef583e716511f8f17198967a0864800b7729333"
+    },
+    {
+      "name": "silc",
+      "pages": 13,
+      "sha256": "93006e62d1f5b587cbd902e11aabea96c7069efdc9e4e431e6d7b500c5fab29d"
+    },
+    {
+      "name": "tips",
+      "pages": 19,
+      "sha256": "d002592ea2327496bedc1cee595f6886ac6d6989e7c2983516291c62bd080175"
+    },
+    {
+      "name": "acid",
+      "pages": 30,
+      "sha256": "54ec9b536198b4e473846f721905f125b349a6c9d2b9636bcf9f66ec62b1be54"
+    }
+  ],
+  "visual_review": "Passed: all 21 source crops inspected; all 26 display formulas inspected in rendered contact sheets; revised Patchify and positional-grid formulas re-inspected; representative full-document sections inspected.",
+  "execution_limitations": [
+    "No model/checkpoint inference",
+    "No training reproduction",
+    "No GPU/TPU/Thor timing",
+    "No robot execution",
+    "No GitHub server rendering"
+  ],
+  "browser_render": {
+    "images": [
+      {
+        "src": "assets/11_SigLIP2/figure_01.png",
+        "ok": true,
+        "width": 801,
+        "height": 683
+      },
+      {
+        "src": "assets/11_SigLIP2/inherited_sigmoid_loss.png",
+        "ok": true,
+        "width": 537,
+        "height": 166
+      },
+      {
+        "src": "assets/11_SigLIP2/inherited_sigmoid_algorithm.png",
+        "ok": true,
+        "width": 857,
+        "height": 405
+      },
+      {
+        "src": "assets/11_SigLIP2/inherited_silc_ema.png",
+        "ok": true,
+        "width": 884,
+        "height": 65
+      },
+      {
+        "src": "assets/11_SigLIP2/inherited_silc_ce.png",
+        "ok": true,
+        "width": 957,
+        "height": 75
+      },
+      {
+        "src": "assets/11_SigLIP2/inline_naflex_distortion.png",
+        "ok": true,
+        "width": 805,
+        "height": 93
+      },
+      {
+        "src": "assets/11_SigLIP2/inline_naflex_lengths.png",
+        "ok": true,
+        "width": 808,
+        "height": 101
+      },
+      {
+        "src": "assets/11_SigLIP2/table_01.png",
+        "ok": true,
+        "width": 1642,
+        "height": 1652
+      },
+      {
+        "src": "assets/11_SigLIP2/figure_02.png",
+        "ok": true,
+        "width": 1645,
+        "height": 674
+      },
+      {
+        "src": "assets/11_SigLIP2/figure_03.png",
+        "ok": true,
+        "width": 1645,
+        "height": 993
+      },
+      {
+        "src": "assets/11_SigLIP2/table_07.png",
+        "ok": true,
+        "width": 1645,
+        "height": 1038
+      },
+      {
+        "src": "assets/11_SigLIP2/figure_04.png",
+        "ok": true,
+        "width": 1645,
+        "height": 1736
+      },
+      {
+        "src": "assets/11_SigLIP2/table_06.png",
+        "ok": true,
+        "width": 1284,
+        "height": 1479
+      },
+      {
+        "src": "assets/11_SigLIP2/table_02.png",
+        "ok": true,
+        "width": 1277,
+        "height": 392
+      },
+      {
+        "src": "assets/11_SigLIP2/table_03.png",
+        "ok": true,
+        "width": 1173,
+        "height": 243
+      },
+      {
+        "src": "assets/11_SigLIP2/table_05.png",
+        "ok": true,
+        "width": 1364,
+        "height": 833
+      },
+      {
+        "src": "assets/11_SigLIP2/table_04.png",
+        "ok": true,
+        "width": 801,
+        "height": 253
+      },
+      {
+        "src": "assets/11_SigLIP2/figure_05.png",
+        "ok": true,
+        "width": 822,
+        "height": 437
+      },
+      {
+        "src": "assets/11_SigLIP2/table_08.png",
+        "ok": true,
+        "width": 1645,
+        "height": 1076
+      },
+      {
+        "src": "assets/11_SigLIP2/figure_06.png",
+        "ok": true,
+        "width": 725,
+        "height": 389
+      },
+      {
+        "src": "assets/11_SigLIP2/table_09.png",
+        "ok": true,
+        "width": 788,
+        "height": 1017
+      }
+    ],
+    "mathCount": 88,
+    "displayCount": 26,
+    "displayOverflow": [],
+    "bodyWidth": 1440,
+    "viewport": 1440,
+    "documentHeight": 53928
+  }
+}

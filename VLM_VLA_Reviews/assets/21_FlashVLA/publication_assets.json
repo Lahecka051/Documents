@@ -1,0 +1,252 @@
+{
+  "paper_title": "FlashVLA: Streaming Action Decoding for Fast and Asynchronous VLA Inference",
+  "authors": [
+    "Zekai Li",
+    "Jiaming Tang",
+    "Zhijian Liu"
+  ],
+  "arxiv_version": "2608.27384v1",
+  "source_url": "https://arxiv.org/pdf/2608.27384v1",
+  "retrieved_date": "2026-09-09",
+  "source_pdf_sha256": "74d35658a10c7a57fdf06a59e4bc021bb8de1bb4ea9b882f38f45e94b3abfa66",
+  "physical_page_count": 17,
+  "source_pdf_bytes": 4875032,
+  "rights": "Original figures/equations belong to the authors and respective rights holders. Source arXiv PDF metadata identifies CC BY 4.0. Cropped for attributed scholarly commentary; no new license is granted.",
+  "transformation": "Poppler rasterization at 240 DPI followed by rectangular crop. No content redrawn or edited.",
+  "assets": [
+    {
+      "file": "figure_01.png",
+      "label": "Figure 1",
+      "physical_pdf_page": 2,
+      "bbox_pdf_points": [
+        105,
+        68,
+        508,
+        254
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        620
+      ],
+      "sha256": "cc569f6567b469f156934b526795b83d2ebcfa10336f00a9f36da409d784382a"
+    },
+    {
+      "file": "equation_01.png",
+      "label": "Eq. (1)",
+      "physical_pdf_page": 3,
+      "bbox_pdf_points": [
+        123,
+        521,
+        508,
+        548
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1283,
+        90
+      ],
+      "sha256": "6683e18538736c8c214baa0a4068a79ede9f8b28ec8c94ac0c29adfde28b7c57"
+    },
+    {
+      "file": "equation_02.png",
+      "label": "Eq. (2)",
+      "physical_pdf_page": 3,
+      "bbox_pdf_points": [
+        185,
+        628,
+        508,
+        675
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1076,
+        157
+      ],
+      "sha256": "ece589aee3c8abc662553ecc709ddb7b97fe979367004ca3938dcae00be25f6a"
+    },
+    {
+      "file": "figure_02.png",
+      "label": "Figure 2",
+      "physical_pdf_page": 4,
+      "bbox_pdf_points": [
+        105,
+        69,
+        508,
+        150
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        270
+      ],
+      "sha256": "eb92c7c80b0ee86885095d6f3308410565a388de0a9561bf0d7df697eaf37684"
+    },
+    {
+      "file": "equation_03.png",
+      "label": "Eq. (3)",
+      "physical_pdf_page": 5,
+      "bbox_pdf_points": [
+        172,
+        556,
+        508,
+        595
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1120,
+        130
+      ],
+      "sha256": "12861ba5304fcd58fd2fb16635eb180307e9df81f86b7b5c3a78ae8abe96850a"
+    },
+    {
+      "file": "figure_03.png",
+      "label": "Figure 3",
+      "physical_pdf_page": 6,
+      "bbox_pdf_points": [
+        105,
+        67,
+        508,
+        340
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        910
+      ],
+      "sha256": "49f533b889286f2dcc770f56ecccd593205893da0fd3f7fd5c06153f525a7652"
+    },
+    {
+      "file": "figure_04.png",
+      "label": "Figure 4",
+      "physical_pdf_page": 7,
+      "bbox_pdf_points": [
+        340,
+        69,
+        508,
+        159
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        560,
+        300
+      ],
+      "sha256": "a02a3ace00a36ffe79ba3ad66deef5172cf55950260a982bd505ebc51d984aab"
+    },
+    {
+      "file": "figure_05.png",
+      "label": "Figure 5",
+      "physical_pdf_page": 10,
+      "bbox_pdf_points": [
+        105,
+        67,
+        508,
+        208
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        470
+      ],
+      "sha256": "1672015017667a6903332e75ae731a408edd98f28958d43946bc62b735b9ff80"
+    },
+    {
+      "file": "figure_06.png",
+      "label": "Figure 6",
+      "physical_pdf_page": 15,
+      "bbox_pdf_points": [
+        124,
+        68,
+        490,
+        194
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1220,
+        420
+      ],
+      "sha256": "22185e121dd24ee47f6db59aa29f42d5da7d3b2681c2aa7bb819579528af3f17"
+    },
+    {
+      "file": "figure_07.png",
+      "label": "Figure 7",
+      "physical_pdf_page": 15,
+      "bbox_pdf_points": [
+        105,
+        237,
+        508,
+        361
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        413
+      ],
+      "sha256": "bf1af474d4a8eccd978959c1ce7aa491028e7b521bccb5dfd20a94dc07122bb6"
+    },
+    {
+      "file": "figure_08.png",
+      "label": "Figure 8",
+      "physical_pdf_page": 16,
+      "bbox_pdf_points": [
+        105,
+        68,
+        508,
+        190
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        406
+      ],
+      "sha256": "8d64ea524d87384b61b4f2e88ca281c779bae868b5bd1490ce7846ffd1eb6e15"
+    },
+    {
+      "file": "equation_buffer_config.png",
+      "label": "Appendix A.4 unnumbered buffer construction",
+      "physical_pdf_page": 16,
+      "bbox_pdf_points": [
+        146,
+        678,
+        488,
+        737
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1140,
+        197
+      ],
+      "sha256": "f4f2bb3c2046ea117b583df7d144b36bd99a47d504251d5d4a0e5be0a3a3be75"
+    },
+    {
+      "file": "algorithm_01.png",
+      "label": "Algorithm 1",
+      "physical_pdf_page": 17,
+      "bbox_pdf_points": [
+        105,
+        69,
+        508,
+        258
+      ],
+      "coordinate_system": "top-left origin, x right, y down; PDF points (1/72 inch)",
+      "render_dpi": 240,
+      "pixels": [
+        1343,
+        630
+      ],
+      "sha256": "c062c148d0442c9234d0ddc364de55beae8b16a6b04f207ad4227e8160326688"
+    }
+  ]
+}

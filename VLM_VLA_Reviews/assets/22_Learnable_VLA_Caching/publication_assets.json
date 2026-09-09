@@ -1,0 +1,600 @@
+{
+  "schema_version": 1,
+  "paper_title": "Learning to Accelerate Vision-Language-Action Models through Adaptive Visual Token Caching",
+  "arxiv_id": "2602.00686",
+  "version": "v2",
+  "revision_date": "2026-08-26",
+  "retrieved_date": "2026-09-09",
+  "source_url": "https://arxiv.org/pdf/2602.00686v2",
+  "bibliographic_url": "https://arxiv.org/abs/2602.00686v2",
+  "source_pdf_sha256": "891c33c439def12b48b564056067236fcc83b37452c2748ec3cb71196201bf49",
+  "physical_page_count": 15,
+  "pdf_page_size_pt": [
+    612,
+    792
+  ],
+  "coordinate_system": "[x0, top, x1, bottom], top-left origin, PDF points (1/72 inch)",
+  "render_engine": "Poppler pdftoppm; crop with Pillow; no redrawing",
+  "rights": "Original figures and equations remain the property of the original authors and rights holders. No additional license is granted.",
+  "official_repo": "https://github.com/JiahanFan/LAC",
+  "official_repo_commit": "fd191e0566944a3368be44909d36b535079e474b",
+  "official_repo_observation": "Only README.md (98 bytes) is present at the inspected commit.",
+  "assets": [
+    {
+      "file": "fig01_motivation.png",
+      "kind": "figure",
+      "source_label": "Figure 1",
+      "physical_pdf_page": 1,
+      "clip_bbox_pt": [
+        327,
+        251,
+        548,
+        468
+      ],
+      "clip_bbox_pixels": [
+        1090,
+        837,
+        1827,
+        1560
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        737,
+        723
+      ],
+      "sha256": "07e1d97a6ac1d20379d9de01d3f07f7a82719ae48f993c96331cbd0e51370e14"
+    },
+    {
+      "file": "fig02_training.png",
+      "kind": "figure",
+      "source_label": "Figure 2",
+      "physical_pdf_page": 3,
+      "clip_bbox_pt": [
+        60,
+        70,
+        551,
+        312
+      ],
+      "clip_bbox_pixels": [
+        200,
+        233,
+        1837,
+        1040
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1637,
+        807
+      ],
+      "sha256": "09e405a41bca710c15deb3de32aae9981339bf3dfd8415e4fcae220da9d7de92"
+    },
+    {
+      "file": "fig03_libero_comparison.png",
+      "kind": "figure",
+      "source_label": "Figure 3",
+      "physical_pdf_page": 7,
+      "clip_bbox_pt": [
+        58,
+        72,
+        553,
+        303
+      ],
+      "clip_bbox_pixels": [
+        193,
+        240,
+        1843,
+        1010
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1650,
+        770
+      ],
+      "sha256": "255a15b3f309e4a972b532312617df2c9efbcca7da4c136b6821d7cdd4db2a1e"
+    },
+    {
+      "file": "fig04_ratio_curves.png",
+      "kind": "figure",
+      "source_label": "Figure 4",
+      "physical_pdf_page": 7,
+      "clip_bbox_pt": [
+        59,
+        374,
+        294,
+        474
+      ],
+      "clip_bbox_pixels": [
+        197,
+        1247,
+        980,
+        1580
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        783,
+        333
+      ],
+      "sha256": "3104f7cb821984b6193efbbb40b5bc1c58b9c4d40defae55ef09eff221e3523b"
+    },
+    {
+      "file": "fig05_real_robot.png",
+      "kind": "figure",
+      "source_label": "Figure 5",
+      "physical_pdf_page": 8,
+      "clip_bbox_pt": [
+        58,
+        314,
+        553,
+        484
+      ],
+      "clip_bbox_pixels": [
+        193,
+        1047,
+        1843,
+        1613
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1650,
+        566
+      ],
+      "sha256": "9236b1d08435b702b38c35e25ca37a7c3d63c1aa2208cc9fb2f4eb9535a08290"
+    },
+    {
+      "file": "fig06_real_robot_appendix.png",
+      "kind": "figure",
+      "source_label": "Figure 6",
+      "physical_pdf_page": 13,
+      "clip_bbox_pt": [
+        58,
+        72,
+        553,
+        243
+      ],
+      "clip_bbox_pixels": [
+        193,
+        240,
+        1843,
+        810
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1650,
+        570
+      ],
+      "sha256": "9271ab1bc016341c02de2df1a3172d0e5419917c06a8f8dc1c676b947d66b450"
+    },
+    {
+      "file": "fig07_libero_appendix.png",
+      "kind": "figure",
+      "source_label": "Figure 7",
+      "physical_pdf_page": 14,
+      "clip_bbox_pt": [
+        71,
+        72,
+        542,
+        452
+      ],
+      "clip_bbox_pixels": [
+        237,
+        240,
+        1807,
+        1507
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1570,
+        1267
+      ],
+      "sha256": "b0ef85cf404e4e0455436666cfb189aae906056308adf199c759b835d9e20a45"
+    },
+    {
+      "file": "fig08_libero_appendix.png",
+      "kind": "figure",
+      "source_label": "Figure 8",
+      "physical_pdf_page": 15,
+      "clip_bbox_pt": [
+        71,
+        179,
+        542,
+        552
+      ],
+      "clip_bbox_pixels": [
+        237,
+        597,
+        1807,
+        1840
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1570,
+        1243
+      ],
+      "sha256": "49a23fe82685137394249543bceac9814b597a13d8c6bab3058bbcd71fb41486"
+    },
+    {
+      "file": "eq01_qkv.png",
+      "kind": "equation",
+      "source_label": "Eq. (1)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        72,
+        216,
+        298,
+        236
+      ],
+      "clip_bbox_pixels": [
+        240,
+        720,
+        993,
+        787
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        753,
+        67
+      ],
+      "sha256": "697a9fed6308e4e84da240e80336ddd25f970d8c673a6cb7cf9a0667c2ba7bb2"
+    },
+    {
+      "file": "eq02_attention.png",
+      "kind": "equation",
+      "source_label": "Eq. (2)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        79,
+        238,
+        298,
+        272
+      ],
+      "clip_bbox_pixels": [
+        263,
+        793,
+        993,
+        907
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        730,
+        114
+      ],
+      "sha256": "2eeba4e12f876f1ce84581d2d079f90415e24b0ceb90b54b59c590f1ebc9d49b"
+    },
+    {
+      "file": "eq03_ar_cache.png",
+      "kind": "equation",
+      "source_label": "Eq. (3)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        88,
+        305,
+        298,
+        326
+      ],
+      "clip_bbox_pixels": [
+        293,
+        1017,
+        993,
+        1087
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        700,
+        70
+      ],
+      "sha256": "09255022fa6da378275518d890c13fee001d455be28bcab7d254c3d631c7ae60"
+    },
+    {
+      "file": "eq04_selector.png",
+      "kind": "equation",
+      "source_label": "Eq. (4)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        393,
+        139,
+        557,
+        160
+      ],
+      "clip_bbox_pixels": [
+        1310,
+        463,
+        1857,
+        533
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        547,
+        70
+      ],
+      "sha256": "827a319127853222acac2568ac36d1a0b9b79aafe549803cf6e0a9626a0fe56f"
+    },
+    {
+      "file": "eq05_predictor.png",
+      "kind": "equation",
+      "source_label": "Eq. (5)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        389,
+        376,
+        557,
+        398
+      ],
+      "clip_bbox_pixels": [
+        1297,
+        1253,
+        1857,
+        1327
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        560,
+        74
+      ],
+      "sha256": "64f107f347b32e701a9a8a8663b03b4e1e27bc1894b95f67e8c117d242cfaa92"
+    },
+    {
+      "file": "eq06_alignment.png",
+      "kind": "equation",
+      "source_label": "Eq. (6)",
+      "physical_pdf_page": 4,
+      "clip_bbox_pt": [
+        357,
+        650,
+        557,
+        672
+      ],
+      "clip_bbox_pixels": [
+        1190,
+        2167,
+        1857,
+        2240
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        667,
+        73
+      ],
+      "sha256": "fa2e413d16f2ada42d28104d9a2103f1a77a64c72f1cd4ba6c0ff48a3d91baf9"
+    },
+    {
+      "file": "eq07_total_loss.png",
+      "kind": "equation",
+      "source_label": "Eq. (7)",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        123,
+        161,
+        298,
+        182
+      ],
+      "clip_bbox_pixels": [
+        410,
+        537,
+        993,
+        607
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        583,
+        70
+      ],
+      "sha256": "9b08f92cc30415088d0511326fd52a0048e182fcd86a6b6a9468b283a895738c"
+    },
+    {
+      "file": "eq08_ratio_loss.png",
+      "kind": "equation",
+      "source_label": "Eq. (8)",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        105,
+        200,
+        298,
+        239
+      ],
+      "clip_bbox_pixels": [
+        350,
+        667,
+        993,
+        797
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        643,
+        130
+      ],
+      "sha256": "cc5e57ddeea29f8f433f8a9d9a5ec7d7cb649709e7c748febed1fe264d213840"
+    },
+    {
+      "file": "eq09_gumbel_softmax.png",
+      "kind": "equation",
+      "source_label": "Eq. (9)",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        81,
+        573,
+        298,
+        613
+      ],
+      "clip_bbox_pixels": [
+        270,
+        1910,
+        993,
+        2043
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        723,
+        133
+      ],
+      "sha256": "b1b34363e4d6844c2eff1b3e63fbb8c51f1298ee40700ae0e7b48694b5800958"
+    },
+    {
+      "file": "eq10_hard_choice.png",
+      "kind": "equation",
+      "source_label": "Eq. (10)",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        92,
+        657,
+        298,
+        683
+      ],
+      "clip_bbox_pixels": [
+        307,
+        2190,
+        993,
+        2277
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        686,
+        87
+      ],
+      "sha256": "43800c93004594dd4a1e07bd8773fbae601f0231c8cc17266e1285e30ec6b2bf"
+    },
+    {
+      "file": "eq11_soft_mask.png",
+      "kind": "equation",
+      "source_label": "Eq. (11)",
+      "physical_pdf_page": 5,
+      "clip_bbox_pt": [
+        382,
+        127,
+        557,
+        162
+      ],
+      "clip_bbox_pixels": [
+        1273,
+        423,
+        1857,
+        540
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        584,
+        117
+      ],
+      "sha256": "e7f1024938692bd559d2a00129c387841a17305443e7842fe7adbf4a940d270d"
+    },
+    {
+      "file": "eq12_policy_cost.png",
+      "kind": "equation",
+      "source_label": "Eq. (12)",
+      "physical_pdf_page": 12,
+      "clip_bbox_pt": [
+        376,
+        215,
+        557,
+        236
+      ],
+      "clip_bbox_pixels": [
+        1253,
+        717,
+        1857,
+        787
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        604,
+        70
+      ],
+      "sha256": "2b67df60ceb75145098a5e30548fd01780f479f0780e2b045de9410b8f978d11"
+    },
+    {
+      "file": "eq13_baseline_cost.png",
+      "kind": "equation",
+      "source_label": "Eq. (13)",
+      "physical_pdf_page": 12,
+      "clip_bbox_pt": [
+        357,
+        328,
+        557,
+        368
+      ],
+      "clip_bbox_pixels": [
+        1190,
+        1093,
+        1857,
+        1227
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        667,
+        134
+      ],
+      "sha256": "e736a4f08c378a0a56a92b9defc5c96d7593ba21ce5262cd1103c7d5c1cffc7c"
+    },
+    {
+      "file": "eq14_lac_cost.png",
+      "kind": "equation",
+      "source_label": "Eq. (14)",
+      "physical_pdf_page": 12,
+      "clip_bbox_pt": [
+        329,
+        515,
+        557,
+        548
+      ],
+      "clip_bbox_pixels": [
+        1097,
+        1717,
+        1857,
+        1827
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        760,
+        110
+      ],
+      "sha256": "1262f0ab5fb78906a3fd20f40b21134bbf146d490e98063b1f4344fe5b385c3f"
+    },
+    {
+      "file": "eq15_layer_saving.png",
+      "kind": "equation",
+      "source_label": "Eq. (15)",
+      "physical_pdf_page": 12,
+      "clip_bbox_pt": [
+        369,
+        585,
+        557,
+        606
+      ],
+      "clip_bbox_pixels": [
+        1230,
+        1950,
+        1857,
+        2020
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        627,
+        70
+      ],
+      "sha256": "1f95099cbce342c1a2d759d32c6e89532bd2628a4a72dccbc68e9b9cb21620fa"
+    },
+    {
+      "file": "eq16_total_saving.png",
+      "kind": "equation",
+      "source_label": "Eq. (16)",
+      "physical_pdf_page": 12,
+      "clip_bbox_pt": [
+        347,
+        636,
+        557,
+        675
+      ],
+      "clip_bbox_pixels": [
+        1157,
+        2120,
+        1857,
+        2250
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        700,
+        130
+      ],
+      "sha256": "318143098e176c16fd4a76f003197a3c2d6ac651c631a3124cc3c38f7916f781"
+    }
+  ]
+}

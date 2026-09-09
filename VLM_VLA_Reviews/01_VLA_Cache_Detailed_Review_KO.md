@@ -1,5 +1,7 @@
 # VLA-Cache 상세 해설: 시간축 시각 토큰 KV 재사용의 원리, 구현, 수식, 실험을 끝까지 읽기
 
+> 저장소 원문: [주 PDF](papers/01_VLA_Cache.pdf) · [전체 목록](README.md)
+
 <a id="scope"></a>
 
 ## 0. 문서의 범위와 검증 기준

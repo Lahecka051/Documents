@@ -1,5 +1,7 @@
 # Prismatic VLMs 상세 학습 해설서
 
+> 저장소 원문: [주 PDF](papers/05_Prismatic_VLMs.pdf) · [전체 목록](README.md)
+
 > **대상 논문**: *Prismatic VLMs: Investigating the Design Space of Visually-Conditioned Language Models*  
 > **문서 성격**: 초록 요약이 아니라, 첨부 PDF의 본문·부록·수식·도표·실험 통제를 따라가는 한국어 학습용 해설서  
 > **검토 기준일**: 2026-09-07

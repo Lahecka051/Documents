@@ -1,0 +1,372 @@
+{
+  "paper": "Fast Inference from Transformers via Speculative Decoding",
+  "arxiv_id": "2211.17192",
+  "version": "v2",
+  "version_date": "2023-05-18",
+  "retrieved_date": "2026-09-09",
+  "source_url": "https://arxiv.org/pdf/2211.17192v2",
+  "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed",
+  "physical_page_count": 13,
+  "coordinate_system": "PDF points, origin top-left, [x0, top, x1, bottom], 72 points per inch",
+  "rendering": "Poppler pdftoppm 240 DPI; Pillow rectangular crop; no content retouching",
+  "rights": "Original figures, equations and tables remain with the original authors and rights holders; no new license is granted.",
+  "assets": [
+    {
+      "file": "fig01_token_trace.png",
+      "kind": "Figure",
+      "label": "Figure 1",
+      "physical_pdf_page": 2,
+      "bbox_pt": [
+        55,
+        65,
+        542,
+        196
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1624,
+        436
+      ],
+      "sha256": "9e30ce892c941be63a8008129562f5503dfe166f589004fbfb82fcb4bda3c3b5",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "fig02_expected_tokens.png",
+      "kind": "Figure",
+      "label": "Figure 2",
+      "physical_pdf_page": 3,
+      "bbox_pt": [
+        315,
+        286,
+        533,
+        458
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        727,
+        574
+      ],
+      "sha256": "b7bb863d31f160a1efab0b636fbade061714afb114079533623cae1a9cbb0d89",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "fig03_optimal_gamma.png",
+      "kind": "Figure",
+      "label": "Figure 3",
+      "physical_pdf_page": 5,
+      "bbox_pt": [
+        63,
+        95,
+        274,
+        262
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        703,
+        556
+      ],
+      "sha256": "641d45390bd39b0460e34ed6a136366ffda884b6a31c73d1a60ddc61b86da380",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "fig04_speed_operations.png",
+      "kind": "Figure",
+      "label": "Figure 4",
+      "physical_pdf_page": 5,
+      "bbox_pt": [
+        318,
+        95,
+        533,
+        262
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        717,
+        556
+      ],
+      "sha256": "031cf4667ecf4e00fad35c71aa05d395a156cbaa674667c4a95d7182bf80d824",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "fig05_encoder_decoder_timeline.png",
+      "kind": "Figure",
+      "label": "Figure 5",
+      "physical_pdf_page": 6,
+      "bbox_pt": [
+        55,
+        65,
+        542,
+        159
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1624,
+        313
+      ],
+      "sha256": "d945d60852c0acc2da2fdafc67cc755188f5978401eceaaf455e765aee6939a9",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "algorithm01.png",
+      "kind": "Algorithm",
+      "label": "Algorithm 1",
+      "physical_pdf_page": 3,
+      "bbox_pt": [
+        54,
+        370,
+        291,
+        635
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        790,
+        884
+      ],
+      "sha256": "6d1d19e595a0e3d8ae728666dd3e2ea5e2b31c600e7b3bf6f2ff9eadbf4c84e6",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq01_expected_tokens.png",
+      "kind": "Equation",
+      "label": "Equation (1)",
+      "physical_pdf_page": 3,
+      "bbox_pt": [
+        344,
+        230,
+        544,
+        262
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        666,
+        106
+      ],
+      "sha256": "3b0e8d8aba7193cfc0f8a591e36549e9921ad6fb30b1940405a80ecdfb9dab8d",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_residual.png",
+      "kind": "Equation",
+      "label": "Section 2.3 residual restated in Appendix A.1",
+      "physical_pdf_page": 11,
+      "bbox_pt": [
+        106,
+        135,
+        263,
+        151
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        524,
+        53
+      ],
+      "sha256": "d44f1953af9a63347feebfb662b9aa439fe2bccda2c35efd604b24d298e5aa4a",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_divergence.png",
+      "kind": "Equation",
+      "label": "Definition 3.2 and Lemma 3.3",
+      "physical_pdf_page": 3,
+      "bbox_pt": [
+        305,
+        563,
+        545,
+        662
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        800,
+        330
+      ],
+      "sha256": "055790c78c9968bbb39b467c95e20fc28fa5e9a94e0ce8c048e72187cac6b51b",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_acceptance.png",
+      "kind": "Equation",
+      "label": "Theorem 3.5 proof",
+      "physical_pdf_page": 4,
+      "bbox_pt": [
+        54,
+        106,
+        292,
+        179
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        793,
+        244
+      ],
+      "sha256": "e5e2c687398a12e47279146bd96d87c8c4d5d26211a1543312d665d4356d899b",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_walltime.png",
+      "kind": "Equation",
+      "label": "Theorem 3.8",
+      "physical_pdf_page": 4,
+      "bbox_pt": [
+        54,
+        530,
+        292,
+        560
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        793,
+        100
+      ],
+      "sha256": "2f15c0e99218553abd345fa66db3ee8dfe3b2310144a7a26f5edd7ee5eaa4d55",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_operations.png",
+      "kind": "Equation",
+      "label": "Theorem 3.11",
+      "physical_pdf_page": 4,
+      "bbox_pt": [
+        305,
+        363,
+        545,
+        393
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        800,
+        100
+      ],
+      "sha256": "9e9f8eb98452c0c7e4f9febebeb5fc65f8f2efd15ecbb9cb768e30a3d289fba5",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_correctness_proof.png",
+      "kind": "Equation",
+      "label": "Appendix A.1 probability decomposition",
+      "physical_pdf_page": 11,
+      "bbox_pt": [
+        146,
+        204,
+        495,
+        401
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1163,
+        657
+      ],
+      "sha256": "68f8cff9a04e3742973a65acc6144503cafa8e81dadc87439095e38b394b2757",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_lenience.png",
+      "kind": "Equation",
+      "label": "Appendix A.5 acceptance formula",
+      "physical_pdf_page": 12,
+      "bbox_pt": [
+        54,
+        519,
+        543,
+        569
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        1630,
+        167
+      ],
+      "sha256": "eb8098ff8d766825a6bbe393dea48238df41253dc8e2819cd70def2d0e7d63d1",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "eq_lenience_original_inequality.png",
+      "kind": "Equation",
+      "label": "Appendix A.5 original inequality (suspected typo)",
+      "physical_pdf_page": 13,
+      "bbox_pt": [
+        74,
+        91,
+        152,
+        105
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        260,
+        47
+      ],
+      "sha256": "b53dce491667e832cf3ad16fea62085a37e11b5071d25ddbb21aef60c39176b3",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "table02_empirical_speed.png",
+      "kind": "Table",
+      "label": "Table 2",
+      "physical_pdf_page": 6,
+      "bbox_pt": [
+        306,
+        398,
+        541,
+        550
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        783,
+        506
+      ],
+      "sha256": "272bdd10958ac4cd918555193af1fdc8eecebbc866e2820dd26fb3a9c3c5f256",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    },
+    {
+      "file": "table04_prediction_vs_measured.png",
+      "kind": "Table",
+      "label": "Table 4",
+      "physical_pdf_page": 12,
+      "bbox_pt": [
+        158,
+        94,
+        434,
+        245
+      ],
+      "dpi": 240,
+      "pixel_size": [
+        920,
+        504
+      ],
+      "sha256": "b89d2cf1f78cdb45f67fc258321c0aad93281e33f8b9b39f3559594acbd291b3",
+      "source_url": "https://arxiv.org/pdf/2211.17192v2",
+      "source_version": "v2",
+      "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed"
+    }
+  ]
+}

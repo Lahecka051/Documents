@@ -1,0 +1,244 @@
+{
+  "validated_on": "2026-09-09",
+  "document": "25_FlashAttention_2_Detailed_Review_KO.md",
+  "document_sha256": "1ee85d632d5558b54dd7920ed1b92c42d6c40edca8f679c27300e715671b99ba",
+  "utf8_byte_size": 114180,
+  "line_count": 1300,
+  "source_reading": {
+    "arxiv_pages": 14,
+    "iclr_pages": 14,
+    "iclr_appendices": [
+      "A",
+      "B"
+    ],
+    "numbered_equations_in_source": 0,
+    "review_equation_groups": [
+      "U1",
+      "U2",
+      "U3",
+      "U4",
+      "U5",
+      "U6",
+      "U7",
+      "U8",
+      "U9",
+      "U10",
+      "U11"
+    ],
+    "algorithm_1_rows_explained": 17,
+    "algorithm_2_rows_explained": 20
+  },
+  "structure": {
+    "utf8": "pass",
+    "fence_balance": "pass",
+    "display_source_single_physical_line": "pass",
+    "image_links": "pass",
+    "local_links": "pass",
+    "toc_anchors": "pass",
+    "explicit_anchor_count": 17,
+    "prohibited_math_syntax": "none"
+  },
+  "assets": {
+    "counts": {
+      "figure": 8,
+      "equation": 12,
+      "algorithm": 2,
+      "table": 1
+    },
+    "total": 23,
+    "dpi": 240,
+    "hash_dimensions_source_checks": "pass",
+    "all_crops_visually_inspected": true
+  },
+  "math": {
+    "docs": [
+      {
+        "name": "25_FlashAttention_2_Detailed_Review_KO.md",
+        "inline": 177,
+        "display": 58,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 177,
+      "display": 58,
+      "errors": 0,
+      "stray": 0
+    }
+  },
+  "local_browser_render": {
+    "images": [
+      {
+        "src": "assets/25_FlashAttention_2/u01_attention.png",
+        "loaded": true,
+        "width": 950,
+        "height": 70
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u02_backward.png",
+        "loaded": true,
+        "width": 511,
+        "height": 291
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u03_softmax_jacobian.png",
+        "loaded": true,
+        "width": 350,
+        "height": 41
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_01.png",
+        "loaded": true,
+        "width": 1541,
+        "height": 737
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u04_full_softmax.png",
+        "loaded": true,
+        "width": 1030,
+        "height": 294
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u05_online_normalized.png",
+        "loaded": true,
+        "width": 1407,
+        "height": 490
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u06_normalized_update.png",
+        "loaded": true,
+        "width": 831,
+        "height": 71
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u07_unnormalized_update.png",
+        "loaded": true,
+        "width": 658,
+        "height": 74
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u08_logsumexp.png",
+        "loaded": true,
+        "width": 331,
+        "height": 45
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u09_fa2_two_blocks.png",
+        "loaded": true,
+        "width": 1347,
+        "height": 484
+      },
+      {
+        "src": "assets/25_FlashAttention_2/algorithm_01.png",
+        "loaded": true,
+        "width": 1574,
+        "height": 998
+      },
+      {
+        "src": "assets/25_FlashAttention_2/iclr_algorithm1_corrected_update.png",
+        "loaded": true,
+        "width": 1067,
+        "height": 57
+      },
+      {
+        "src": "assets/25_FlashAttention_2/algorithm_02.png",
+        "loaded": true,
+        "width": 1574,
+        "height": 1194
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_02.png",
+        "loaded": true,
+        "width": 1507,
+        "height": 821
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_03.png",
+        "loaded": true,
+        "width": 1537,
+        "height": 571
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_iclr_05_decode.png",
+        "loaded": true,
+        "width": 804,
+        "height": 384
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u10_attention_flops.png",
+        "loaded": true,
+        "width": 681,
+        "height": 64
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_04.png",
+        "loaded": true,
+        "width": 1537,
+        "height": 1100
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_05.png",
+        "loaded": true,
+        "width": 1537,
+        "height": 1097
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_06.png",
+        "loaded": true,
+        "width": 1537,
+        "height": 1097
+      },
+      {
+        "src": "assets/25_FlashAttention_2/figure_07.png",
+        "loaded": true,
+        "width": 1537,
+        "height": 1097
+      },
+      {
+        "src": "assets/25_FlashAttention_2/table_01.png",
+        "loaded": true,
+        "width": 1444,
+        "height": 221
+      },
+      {
+        "src": "assets/25_FlashAttention_2/u11_model_flops.png",
+        "loaded": true,
+        "width": 1091,
+        "height": 64
+      }
+    ],
+    "mathRendered": 235,
+    "katexErrors": 0,
+    "unresolvedPlaceholders": false,
+    "missingAnchors": [],
+    "overflowingMath": [],
+    "pageOverflow": false,
+    "font": true,
+    "browserErrors": [],
+    "screenshots": [
+      "qa_top.png",
+      "qa_6_3.png",
+      "qa_6_4.png",
+      "qa_8_3.png",
+      "qa_9_2.png",
+      "qa_10_3.png",
+      "qa_11_6.png"
+    ],
+    "engine": "Headless Microsoft Edge; marked + KaTeX",
+    "visual_review": "Seven representative screenshots inspected; all individual source crops inspected."
+  },
+  "cpu_numerical": {
+    "cases": 8,
+    "max_forward_absolute_error": 4.440892098500626e-16,
+    "max_backward_absolute_error": 8.881784197001252e-16,
+    "max_finite_difference_absolute_error": 3.9291936371199654e-10
+  },
+  "limitations": [
+    "No publication to GitHub or verification of GitHub server rendering.",
+    "No CUDA tests, GPU benchmarks, model training, TensorRT engine build or robot experiments.",
+    "Local rendering is a syntax and layout check, not an independent scientific reproduction."
+  ]
+}

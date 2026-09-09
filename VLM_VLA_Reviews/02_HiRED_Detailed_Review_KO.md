@@ -1,5 +1,7 @@
 # HiRED 상세 해설: 고해상도 VLM을 위한 CLS-attention 기반 시각 토큰 예산 배분과 조기 제거
 
+> 저장소 원문: [주 PDF](papers/02_HiRED.pdf) · [전체 목록](README.md)
+
 > 대상 논문: Kazi Hasan Ibn Arif, JinYi Yoon, Dimitrios S. Nikolopoulos, Hans Vandierendonck, Deepu John, Bo Ji, **"HiRED: Attention-Guided Token Dropping for Efficient Inference of High-Resolution Vision-Language Models"**, AAAI-25.
 >
 > 이 문서는 초록을 줄여 쓴 서평이 아니라, 논문의 계산 흐름, 식, 알고리즘, 실험을 원문 순서에 맞춰 다시 가르치는 학습용 해설서다. 아래에서 **[저자 보고]**, **[리뷰어 재계산]**, **[리뷰어 해석]**, **[논문 미기재]**, **[공개 코드 확인]**을 의도적으로 구분한다.

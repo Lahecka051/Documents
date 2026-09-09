@@ -1,0 +1,67 @@
+{
+  "review_file": "18_FASTER_RealTime_Flow_Detailed_Review_KO.md",
+  "review_sha256": "d6317accd7a36c9fbadc8ade9efec964618529247a6a27dbc754c7d26389c960",
+  "verified_at": "2026-09-09",
+  "paper_version": "2603.19199v3",
+  "math": {
+    "documents": 1,
+    "inline": 38,
+    "display": 28,
+    "errors": 0,
+    "stray": 0
+  },
+  "integrity": {
+    "utf8RoundTrip": true,
+    "lines": 1149,
+    "bytes": 107226,
+    "images": 29,
+    "manifestAssets": 29,
+    "anchors": 12,
+    "numberedEquations": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "errors": []
+  },
+  "browser": {
+    "runtime": "headless Microsoft Edge, local Markdown plus KaTeX",
+    "loaded_images": 29,
+    "broken_images": 0,
+    "display_equations": 28,
+    "equation_overflow": 0,
+    "body_overflow": false,
+    "visually_reviewed_sections": 8
+  },
+  "source_arithmetic": {
+    "calvin_rows_checked": 17,
+    "known_reported_difference": [
+      {
+        "row": "0.9",
+        "sum": 3.92,
+        "reported": 3.921,
+        "ok": false
+      }
+    ],
+    "status": "Source numbers preserved; 0.001 discrepancy in Table 12 alpha=0.9 documented in review section 15.1"
+  },
+  "code_commits": {
+    "FASTER": "851be7837b885fb4c96459e81aa946f97daac75f",
+    "piper-aio": "49f83278181f82b36fa4724d329f8a91e76ac605"
+  },
+  "scope_limits": [
+    "No model training or GPU inference performed",
+    "No robot operation performed",
+    "No TensorRT build performed",
+    "Static official pi0.5 code review; separate X-VLA HAS implementation not audited",
+    "GitHub live rendering not checked; local browser rendering checked"
+  ]
+}

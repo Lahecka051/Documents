@@ -1,0 +1,284 @@
+{
+  "review_date": "2026-09-09",
+  "paper_version": "2602.00686v2",
+  "review_sha256": "e3234a73e877cfb2a7f4b17bbd9fc22aba673d97405b6e47be05b74c7611b574",
+  "static_validation": {
+    "sha256": "e3234a73e877cfb2a7f4b17bbd9fc22aba673d97405b6e47be05b74c7611b574",
+    "utf8_valid": true,
+    "bytes": 108061,
+    "lines": 1205,
+    "math": {
+      "docs": [
+        {
+          "name": "22_Learnable_VLA_Caching_Detailed_Review_KO.md",
+          "inline": 95,
+          "display": 38,
+          "stray": [],
+          "errors": [],
+          "wide": []
+        }
+      ],
+      "summary": {
+        "documents": 1,
+        "inline": 95,
+        "display": 38,
+        "errors": 0,
+        "stray": 0
+      }
+    },
+    "images": 24,
+    "figures": 8,
+    "equation_images": 16,
+    "asset_errors": [],
+    "source_pdf_hash_match": true,
+    "anchor_errors": [],
+    "style_errors": [],
+    "stray": [],
+    "scope": "Document/source/static checks only; no model training, GPU inference, or robot execution."
+  },
+  "browser_validation": {
+    "title": "LAC Review QA",
+    "document_height": 44548,
+    "images": [
+      {
+        "alt": "Figure 1: rule-based selector와 task-gradient로 학습하는 selector",
+        "loaded": true,
+        "width": 737,
+        "height": 723
+      },
+      {
+        "alt": "Figure 2: attention alignment 초기화와 frozen VLA를 통과하는 공동 최적화",
+        "loaded": true,
+        "width": 1637,
+        "height": 807
+      },
+      {
+        "alt": "Eq. (1)",
+        "loaded": true,
+        "width": 753,
+        "height": 67
+      },
+      {
+        "alt": "Eq. (2)",
+        "loaded": true,
+        "width": 730,
+        "height": 114
+      },
+      {
+        "alt": "Eq. (3)",
+        "loaded": true,
+        "width": 700,
+        "height": 70
+      },
+      {
+        "alt": "Eq. (4)",
+        "loaded": true,
+        "width": 547,
+        "height": 70
+      },
+      {
+        "alt": "Eq. (5)",
+        "loaded": true,
+        "width": 560,
+        "height": 74
+      },
+      {
+        "alt": "Eq. (6)",
+        "loaded": true,
+        "width": 667,
+        "height": 73
+      },
+      {
+        "alt": "Eq. (7)",
+        "loaded": true,
+        "width": 583,
+        "height": 70
+      },
+      {
+        "alt": "Eq. (8)",
+        "loaded": true,
+        "width": 643,
+        "height": 130
+      },
+      {
+        "alt": "Eq. (9)",
+        "loaded": true,
+        "width": 723,
+        "height": 133
+      },
+      {
+        "alt": "Eq. (10)",
+        "loaded": true,
+        "width": 686,
+        "height": 87
+      },
+      {
+        "alt": "Eq. (11)",
+        "loaded": true,
+        "width": 584,
+        "height": 117
+      },
+      {
+        "alt": "Figure 3: 기존 VLA-Cache의 cache mask와 LAC의 saliency 및 mask",
+        "loaded": true,
+        "width": 1650,
+        "height": 770
+      },
+      {
+        "alt": "Figure 4: LIBERO-Spatial의 성공률과 CUDA time 곡선",
+        "loaded": true,
+        "width": 783,
+        "height": 333
+      },
+      {
+        "alt": "Figure 5: 병 쓰러뜨리기와 바나나를 수건으로 덮기",
+        "loaded": true,
+        "width": 1650,
+        "height": 566
+      },
+      {
+        "alt": "Figure 6: 사과를 상자에 넣기와 crisp 쓰러뜨리기",
+        "loaded": true,
+        "width": 1650,
+        "height": 570
+      },
+      {
+        "alt": "Figure 7: bowl-to-plate와 cream-cheese-to-basket",
+        "loaded": true,
+        "width": 1570,
+        "height": 1267
+      },
+      {
+        "alt": "Figure 8: middle drawer 열기와 두 물체를 basket에 넣기",
+        "loaded": true,
+        "width": 1570,
+        "height": 1243
+      },
+      {
+        "alt": "Eq. (12)",
+        "loaded": true,
+        "width": 604,
+        "height": 70
+      },
+      {
+        "alt": "Eq. (13)",
+        "loaded": true,
+        "width": 667,
+        "height": 134
+      },
+      {
+        "alt": "Eq. (14)",
+        "loaded": true,
+        "width": 760,
+        "height": 110
+      },
+      {
+        "alt": "Eq. (15)",
+        "loaded": true,
+        "width": 627,
+        "height": 70
+      },
+      {
+        "alt": "Eq. (16)",
+        "loaded": true,
+        "width": 700,
+        "height": 130
+      }
+    ],
+    "katex_count": 133,
+    "math_errors": 0,
+    "wide_math": [],
+    "body_overflow": false,
+    "tables": 22,
+    "broken_anchors": []
+  },
+  "png_validation_errors": [],
+  "visual_qa": {
+    "source_figures": 8,
+    "source_equations": 16,
+    "all_crops_inspected": true,
+    "preview_screens_inspected": [
+      "title and contents",
+      "Figure 2 training",
+      "Eq. 9 Gumbel-Softmax",
+      "Table 3 SIMPLER",
+      "Eq. 13 complexity"
+    ]
+  },
+  "numeric_checks": {
+    "table_means": {
+      "table1": {
+        "OpenVLA": 74.95,
+        "SparseVLM": 64.7,
+        "FastV": 73.3,
+        "VLA-Cache": 74.7,
+        "LAC": 76.9
+      },
+      "table3": {
+        "VM CogAct": 74.75,
+        "VM VLA-Cache": 74.35,
+        "VM LAC": 75.5,
+        "VA CogAct": 61.324999999999996,
+        "VA VLA-Cache": 62.325,
+        "VA LAC": 62.975
+      },
+      "table4": {
+        "OpenVLA": 33.0,
+        "VLA-Cache": 30.0,
+        "LAC": 38.0
+      }
+    },
+    "comparisons": {
+      "LIBERO": {
+        "speedup": 1.7590647238224328,
+        "time_reduction_percent": 43.15160855326526,
+        "flops_reduction_percent": 25.32188841201718,
+        "success_mean_delta_pp": 1.9500000000000028
+      },
+      "LIBERO_vs_VLA_Cache": {
+        "speedup": 1.078617417824466,
+        "time_reduction_percent": 7.288721332076642,
+        "flops_reduction_percent": -2.730627306273048,
+        "success_mean_delta_pp": 2.200000000000003
+      },
+      "VM": {
+        "speedup": 1.435483870967742,
+        "time_reduction_percent": 30.33707865168539,
+        "flops_reduction_percent": 18.1916621548457,
+        "success_mean_delta_pp": 0.75
+      },
+      "VA": {
+        "speedup": 1.412664907651715,
+        "time_reduction_percent": 29.21180425849832,
+        "flops_reduction_percent": 16.65744327614831,
+        "success_mean_delta_pp": 1.6500000000000057
+      },
+      "real": {
+        "speedup": 1.1512165075454266,
+        "time_reduction_percent": 13.135366506153034,
+        "flops_reduction_percent": 17.115689381933443,
+        "success_mean_delta_pp": 5.0
+      }
+    },
+    "simpler_combined": {
+      "baseline_flops": 1.827,
+      "lac_flops": 1.5085,
+      "baseline_time": 53.915,
+      "lac_time": 37.86
+    },
+    "complexity_example": {
+      "N": 8,
+      "D": 4,
+      "M": 8,
+      "Nact": 4,
+      "base": 1536,
+      "lac": 768
+    }
+  },
+  "limitations": [
+    "Official repository contains README only at inspected commit; no forward/loss source code to audit.",
+    "No GPU training/inference, robot operation, TensorRT engine build, or E2E timing was performed.",
+    "Local KaTeX/MathJax and browser QA do not certify rendering on GitHub servers."
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

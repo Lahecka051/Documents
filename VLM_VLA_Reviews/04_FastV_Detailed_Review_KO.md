@@ -1,5 +1,7 @@
 # FastV 상세 해설: 왜 layer 2 뒤에서는 이미지 토큰 절반만으로도 충분한가
 
+> 저장소 원문: [주 PDF](papers/04_FastV.pdf) · [ECCV 2024 supplementary](papers/04_FastV_Supplement.pdf) · [전체 목록](README.md)
+
 > 대상 논문: Liang Chen, Haozhe Zhao, Tianyu Liu, Shuai Bai, Junyang Lin, Chang Zhou, Baobao Chang, **An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play Inference Acceleration for Large Vision-Language Models**, ECCV 2024.
 >
 > 이 문서는 초록 요약이나 짧은 서평이 아니다. 첨부된 ECCV 본문 PDF 18쪽과 ECVA가 별도로 공개한 공식 보충자료 3쪽을 절, 수식, 그림, 표 단위로 대응시키고, 한 샘플의 입력부터 출력까지 FastV의 계산을 학습용으로 풀어 쓴다. GPU 학습이나 추론은 실행하지 않았으며, 성능과 latency 수치는 모두 저자 보고값이다.

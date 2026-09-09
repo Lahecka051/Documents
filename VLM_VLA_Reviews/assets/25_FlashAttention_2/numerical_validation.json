@@ -1,0 +1,196 @@
+{
+  "execution": "CPU NumPy float64; not GPU benchmark",
+  "cases": [
+    {
+      "n": 3,
+      "d": 2,
+      "br": 2,
+      "bc": 2,
+      "causal": false,
+      "forward_maxabs": 1.1102230246251565e-16,
+      "lse_maxabs": 0.0,
+      "reverse_tile_maxabs": 1.1102230246251565e-16,
+      "backward_maxabs": 1.1102230246251565e-16
+    },
+    {
+      "n": 3,
+      "d": 2,
+      "br": 2,
+      "bc": 2,
+      "causal": true,
+      "forward_maxabs": 1.1102230246251565e-16,
+      "lse_maxabs": 0.0,
+      "reverse_tile_maxabs": 1.1102230246251565e-16,
+      "backward_maxabs": 2.220446049250313e-16
+    },
+    {
+      "n": 7,
+      "d": 3,
+      "br": 3,
+      "bc": 2,
+      "causal": false,
+      "forward_maxabs": 4.440892098500626e-16,
+      "lse_maxabs": 1.7763568394002505e-15,
+      "reverse_tile_maxabs": 4.440892098500626e-16,
+      "backward_maxabs": 8.881784197001252e-16
+    },
+    {
+      "n": 7,
+      "d": 3,
+      "br": 3,
+      "bc": 2,
+      "causal": true,
+      "forward_maxabs": 1.1102230246251565e-16,
+      "lse_maxabs": 4.440892098500626e-16,
+      "reverse_tile_maxabs": 1.249000902703301e-16,
+      "backward_maxabs": 4.440892098500626e-16
+    },
+    {
+      "n": 9,
+      "d": 4,
+      "br": 4,
+      "bc": 3,
+      "causal": false,
+      "forward_maxabs": 2.220446049250313e-16,
+      "lse_maxabs": 4.440892098500626e-16,
+      "reverse_tile_maxabs": 2.220446049250313e-16,
+      "backward_maxabs": 3.3306690738754696e-16
+    },
+    {
+      "n": 9,
+      "d": 4,
+      "br": 4,
+      "bc": 3,
+      "causal": true,
+      "forward_maxabs": 3.3306690738754696e-16,
+      "lse_maxabs": 0.0,
+      "reverse_tile_maxabs": 3.3306690738754696e-16,
+      "backward_maxabs": 2.220446049250313e-16
+    },
+    {
+      "n": 16,
+      "d": 8,
+      "br": 4,
+      "bc": 5,
+      "causal": false,
+      "forward_maxabs": 2.220446049250313e-16,
+      "lse_maxabs": 8.881784197001252e-16,
+      "reverse_tile_maxabs": 2.220446049250313e-16,
+      "backward_maxabs": 6.661338147750939e-16
+    },
+    {
+      "n": 16,
+      "d": 8,
+      "br": 4,
+      "bc": 5,
+      "causal": true,
+      "forward_maxabs": 4.440892098500626e-16,
+      "lse_maxabs": 4.440892098500626e-16,
+      "reverse_tile_maxabs": 4.440892098500626e-16,
+      "backward_maxabs": 4.440892098500626e-16
+    }
+  ],
+  "finite_difference": {
+    "shape": [
+      3,
+      2
+    ],
+    "step": 1e-06,
+    "maxabs_dq_dk_dv": [
+      3.9291936371199654e-10,
+      2.254667563761359e-10,
+      3.013136407048478e-10
+    ]
+  },
+  "example": {
+    "scores": [
+      0.0,
+      0.6931471805599453,
+      1.3862943611198906,
+      2.0794415416798357
+    ],
+    "values": [
+      [
+        1,
+        0
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        1,
+        4
+      ]
+    ],
+    "first": {
+      "m": 0.6931471805599453,
+      "ell": 1.5,
+      "numerator": [
+        0.5,
+        2
+      ]
+    },
+    "second": {
+      "m": 2.0794415416798357,
+      "alpha": 0.25,
+      "ell": 1.875,
+      "numerator": [
+        2.625,
+        5
+      ],
+      "output": [
+        1.4,
+        2.6666666666666665
+      ],
+      "L": 2.70805020110221
+    },
+    "printed_inverse_wrong_output": [
+      2.4,
+      6.666666666666667
+    ]
+  },
+  "table_1": [
+    {
+      "model": "1.3B 2k",
+      "base": 142,
+      "fa1": 189,
+      "fa2": 196,
+      "speedup_over_base": 1.380281690140845,
+      "speedup_over_fa1": 1.037037037037037,
+      "mfu_percent": 62.82051282051282
+    },
+    {
+      "model": "1.3B 8k",
+      "base": 72,
+      "fa1": 170,
+      "fa2": 220,
+      "speedup_over_base": 3.0555555555555554,
+      "speedup_over_fa1": 1.2941176470588236,
+      "mfu_percent": 70.51282051282051
+    },
+    {
+      "model": "2.7B 2k",
+      "base": 149,
+      "fa1": 189,
+      "fa2": 205,
+      "speedup_over_base": 1.3758389261744965,
+      "speedup_over_fa1": 1.0846560846560847,
+      "mfu_percent": 65.7051282051282
+    },
+    {
+      "model": "2.7B 8k",
+      "base": 80,
+      "fa1": 175,
+      "fa2": 225,
+      "speedup_over_base": 2.8125,
+      "speedup_over_fa1": 1.2857142857142858,
+      "mfu_percent": 72.11538461538461
+    }
+  ],
+  "implementation_script_sha256": "6ab07a07794e1d898feec05e0bc8d36ac042286f45cdbbc6f1da735e30761781"
+}

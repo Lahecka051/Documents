@@ -1,0 +1,229 @@
+{
+  "review_date": "2026-09-09",
+  "paper": "SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics",
+  "arxiv_version": "2506.01844v1",
+  "markdown_sha256": "333f9bef0abe6c84132d10dd4c0406cf504b52d5f4f478ee8ad5990233bcda38",
+  "checks": {
+    "assets": {
+      "utf8": true,
+      "markdown_bytes": 130271,
+      "lines": 1523,
+      "images": 24,
+      "manifest_assets": 24,
+      "anchors": 19,
+      "toc_links": 18,
+      "fence_lines": 70,
+      "errors": [],
+      "table_mean_rows_checked": 53,
+      "figure_images": 5,
+      "table_images": 13,
+      "equation_images": 5,
+      "algorithm_images": 1
+    },
+    "math": {
+      "inline_math": 113,
+      "display_math": 35,
+      "total_math": 148,
+      "parse_errors": [],
+      "stray_dollars": [],
+      "forbidden": [],
+      "wide_equations": [],
+      "engines": [
+        "KaTeX",
+        "MathJax TeX->SVG"
+      ],
+      "github_remote_render_tested": false
+    },
+    "browser": {
+      "title": "SmolVLA 상세 리뷰 검수",
+      "body_width": 1104,
+      "viewport": 1360,
+      "document_height": 62812,
+      "images": [
+        {
+          "src": "assets/19_SmolVLA/fig01_architecture.png",
+          "loaded": true,
+          "width": 1491,
+          "height": 857
+        },
+        {
+          "src": "assets/19_SmolVLA/math01_flow_loss.png",
+          "loaded": true,
+          "width": 871,
+          "height": 87
+        },
+        {
+          "src": "assets/19_SmolVLA/math02_flow_path.png",
+          "loaded": true,
+          "width": 1700,
+          "height": 137
+        },
+        {
+          "src": "assets/19_SmolVLA/table01_community_data.png",
+          "loaded": true,
+          "width": 698,
+          "height": 344
+        },
+        {
+          "src": "assets/19_SmolVLA/math03_action_chunk.png",
+          "loaded": true,
+          "width": 1700,
+          "height": 44
+        },
+        {
+          "src": "assets/19_SmolVLA/fig02_async_timeline.png",
+          "loaded": true,
+          "width": 1500,
+          "height": 777
+        },
+        {
+          "src": "assets/19_SmolVLA/math04_latency_threshold.png",
+          "loaded": true,
+          "width": 1704,
+          "height": 207
+        },
+        {
+          "src": "assets/19_SmolVLA/math05_update_interval.png",
+          "loaded": true,
+          "width": 1704,
+          "height": 130
+        },
+        {
+          "src": "assets/19_SmolVLA/fig03_queue_evolution.png",
+          "loaded": true,
+          "width": 1684,
+          "height": 498
+        },
+        {
+          "src": "assets/19_SmolVLA/algorithm01_async.png",
+          "loaded": true,
+          "width": 1694,
+          "height": 771
+        },
+        {
+          "src": "assets/19_SmolVLA/fig04_realworld_tasks.png",
+          "loaded": true,
+          "width": 1680,
+          "height": 727
+        },
+        {
+          "src": "assets/19_SmolVLA/table02_simulation.png",
+          "loaded": true,
+          "width": 1428,
+          "height": 914
+        },
+        {
+          "src": "assets/19_SmolVLA/table03_so100.png",
+          "loaded": true,
+          "width": 874,
+          "height": 334
+        },
+        {
+          "src": "assets/19_SmolVLA/table04_so101.png",
+          "loaded": true,
+          "width": 644,
+          "height": 234
+        },
+        {
+          "src": "assets/19_SmolVLA/table05_pretraining.png",
+          "loaded": true,
+          "width": 1114,
+          "height": 370
+        },
+        {
+          "src": "assets/19_SmolVLA/fig05_async_results.png",
+          "loaded": true,
+          "width": 1681,
+          "height": 284
+        },
+        {
+          "src": "assets/19_SmolVLA/table06_attention.png",
+          "loaded": true,
+          "width": 684,
+          "height": 284
+        },
+        {
+          "src": "assets/19_SmolVLA/table07_causal_mask.png",
+          "loaded": true,
+          "width": 644,
+          "height": 237
+        },
+        {
+          "src": "assets/19_SmolVLA/table08_depth.png",
+          "loaded": true,
+          "width": 621,
+          "height": 484
+        },
+        {
+          "src": "assets/19_SmolVLA/table09_width.png",
+          "loaded": true,
+          "width": 644,
+          "height": 364
+        },
+        {
+          "src": "assets/19_SmolVLA/table10_objective.png",
+          "loaded": true,
+          "width": 734,
+          "height": 274
+        },
+        {
+          "src": "assets/19_SmolVLA/table11_state_routing.png",
+          "loaded": true,
+          "width": 644,
+          "height": 324
+        },
+        {
+          "src": "assets/19_SmolVLA/table12_chunk_size.png",
+          "loaded": true,
+          "width": 564,
+          "height": 418
+        },
+        {
+          "src": "assets/19_SmolVLA/table13_execution_steps.png",
+          "loaded": true,
+          "width": 564,
+          "height": 364
+        }
+      ],
+      "math_nodes": 148,
+      "overflow_math": [],
+      "tables": 44,
+      "headings": 19,
+      "broken_local_anchors": [],
+      "visible_math_errors": 0,
+      "browser": "Headless Chrome; isolated process; local file preview",
+      "console_errors": [],
+      "github_ui_verified": false
+    }
+  },
+  "manual_visual_review": {
+    "full_paper_and_appendix_read": true,
+    "pdf_physical_pages": 24,
+    "asset_contact_sheets_reviewed": 4,
+    "browser_sections_reviewed": [
+      "overview",
+      "architecture",
+      "mask",
+      "flow_loss",
+      "flow_sign",
+      "flow_example",
+      "forward",
+      "async_math",
+      "algorithm",
+      "simulation",
+      "async_results",
+      "state_table"
+    ],
+    "edited_crop_boundaries_rechecked": [
+      "math03_action_chunk.png",
+      "math04_latency_threshold.png"
+    ]
+  },
+  "limitations": [
+    "Math parsed with KaTeX and MathJax and rendered with KaTeX in isolated local Chrome; actual GitHub UI and render API were not tested.",
+    "Official source was inspected statically. Full model weights were not loaded; training, GPU inference, benchmarks and robot control were not run.",
+    "2026 source and checkpoint settings do not establish complete equivalence to the 2025 paper experiments.",
+    "The appendix has 532 unique printed dataset IDs; the relationship to the reported 481 training datasets is not established."
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

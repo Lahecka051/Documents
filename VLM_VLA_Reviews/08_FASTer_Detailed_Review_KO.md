@@ -1,5 +1,7 @@
 # FASTer 상세 학습 해설서
 
+> 저장소 원문: [주 PDF](papers/08_FASTer.pdf) · [전체 목록](README.md)
+
 > **대상 논문:** *FASTer: Toward Efficient Autoregressive Vision Language Action Modeling via Neural Action Tokenization*  
 > **성격:** 초록 요약이 아니라, 본문과 동일 PDF에 포함된 Appendix를 섹션·수식·알고리즘·도표 단위로 따라가는 한국어 학습용 해설서  
 > **증거 표기:** `[저자 보고]`, `[리뷰어 재계산]`, `[리뷰어 해석]`, `[논문 미기재]`, `[후속 연구 제안]`을 의도적으로 구분한다.

@@ -1,0 +1,618 @@
+{
+  "title": "BEAST: Efficient Tokenization of B-Splines Encoded Action Sequences for Imitation Learning",
+  "arxiv_id": "2506.06072",
+  "version": "v3",
+  "version_date": "2025-10-24",
+  "retrieved_date": "2026-09-09",
+  "source_pdf_url": "https://arxiv.org/pdf/2506.06072v3",
+  "source_metadata_url": "https://arxiv.org/abs/2506.06072",
+  "source_pdf_sha256": "12d4d277eab11786f770207c99b1064e688e36461567806920d8a8a0683b3f87",
+  "source_pdf_bytes": 19690303,
+  "physical_pages": 19,
+  "rights": "Source excerpts belong to the paper authors/rightsholders; included for scholarly commentary. No new license is asserted.",
+  "code_git_commit": "0eb9de2bbeb9839f0ba37aebcc3e9f1c8f47131a",
+  "tokenizer_hf_commit": "ec3cb260baaa780d52785e3b64fdb2fb7690c1a9",
+  "assets": [
+    {
+      "file": "fig01_basis_degrees.png",
+      "label": "Figure 1",
+      "physical_pdf_page": 3,
+      "clip_bbox_points": [
+        107,
+        72,
+        505,
+        237
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        240,
+        1683,
+        790
+      ],
+      "pixel_size": [
+        1326,
+        550
+      ],
+      "sha256": "6928f063bd92a2ff9b5f6c76c875e7f02c90266bbfee7d44bc43eee62927b78d"
+    },
+    {
+      "file": "fig02_tokenizer.png",
+      "label": "Figure 2",
+      "physical_pdf_page": 4,
+      "clip_bbox_points": [
+        107,
+        71,
+        505,
+        230
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        237,
+        1683,
+        767
+      ],
+      "pixel_size": [
+        1326,
+        530
+      ],
+      "sha256": "dd6a7c0b5e18e0197e401019f144aa592b07323e3f47943cb6e0b9b67fca6e34"
+    },
+    {
+      "file": "fig03_beast_f.png",
+      "label": "Figure 3",
+      "physical_pdf_page": 5,
+      "clip_bbox_points": [
+        107,
+        71,
+        507,
+        280
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        237,
+        1690,
+        933
+      ],
+      "pixel_size": [
+        1333,
+        696
+      ],
+      "sha256": "3ec86dabf6bc7bbc45b7c3220e48ac8d9986da1772dbc0fb68f0541a3a36b67e"
+    },
+    {
+      "file": "fig04_benchmarks.png",
+      "label": "Figure 4",
+      "physical_pdf_page": 6,
+      "clip_bbox_points": [
+        107,
+        71,
+        505,
+        152
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        237,
+        1683,
+        507
+      ],
+      "pixel_size": [
+        1326,
+        270
+      ],
+      "sha256": "5533ce1e42ccd02ed2dcc3a5b91871d07ae045415618061ff5d9c16b09ba6baf"
+    },
+    {
+      "file": "fig05_toy_continuity.png",
+      "label": "Figure 5",
+      "physical_pdf_page": 6,
+      "clip_bbox_points": [
+        107,
+        163,
+        505,
+        287
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        543,
+        1683,
+        957
+      ],
+      "pixel_size": [
+        1326,
+        414
+      ],
+      "sha256": "54030f6458e28c23fc1761899912eba172bdc7ba357babd97751315200e2dd79"
+    },
+    {
+      "file": "fig06_aloha_sim.png",
+      "label": "Figure 6",
+      "physical_pdf_page": 7,
+      "clip_bbox_points": [
+        364,
+        390,
+        508,
+        519
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        1213,
+        1300,
+        1693,
+        1730
+      ],
+      "pixel_size": [
+        480,
+        430
+      ],
+      "sha256": "a372673cc4a018c04362ea2d16bf5695f27286876566a6dc4d455e06ef0554d4"
+    },
+    {
+      "file": "fig07_learning_curve.png",
+      "label": "Figure 7",
+      "physical_pdf_page": 8,
+      "clip_bbox_points": [
+        386,
+        480,
+        513,
+        600
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        1287,
+        1600,
+        1710,
+        2000
+      ],
+      "pixel_size": [
+        423,
+        400
+      ],
+      "sha256": "96991507021251bd940080ffcc61daf740c2a5c23c2f5f9d9fcf1f6358687971"
+    },
+    {
+      "file": "fig08_unified_backbone.png",
+      "label": "Figure 8",
+      "physical_pdf_page": 8,
+      "clip_bbox_points": [
+        365,
+        627,
+        509,
+        729
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        1217,
+        2090,
+        1697,
+        2430
+      ],
+      "pixel_size": [
+        480,
+        340
+      ],
+      "sha256": "cf1eca6473ce458b88bb3dcd6fed5dd7699d458096606045b67ea90f28c2587f"
+    },
+    {
+      "file": "fig09_real_results.png",
+      "label": "Figure 9",
+      "physical_pdf_page": 9,
+      "clip_bbox_points": [
+        107,
+        70,
+        505,
+        220
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        233,
+        1683,
+        733
+      ],
+      "pixel_size": [
+        1326,
+        500
+      ],
+      "sha256": "6cc211f340ef1fe46d0521155bd470feb27766900db1e73bb616a3d286eb5f6c"
+    },
+    {
+      "file": "fig10_beast_d.png",
+      "label": "Figure 10",
+      "physical_pdf_page": 15,
+      "clip_bbox_points": [
+        107,
+        382,
+        505,
+        523
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        1273,
+        1683,
+        1743
+      ],
+      "pixel_size": [
+        1326,
+        470
+      ],
+      "sha256": "b3d7ed78035bec6134c1bf413442737fa29c181083932b751dafba482e08f4cb"
+    },
+    {
+      "file": "fig11_flow.png",
+      "label": "Figure 11",
+      "physical_pdf_page": 16,
+      "clip_bbox_points": [
+        197,
+        160,
+        412,
+        313
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        657,
+        533,
+        1373,
+        1043
+      ],
+      "pixel_size": [
+        716,
+        510
+      ],
+      "sha256": "25a49c760710ec39fce28799847fae8bde67519ea27cef7f9b13457b84147f2e"
+    },
+    {
+      "file": "fig12_real_keyframes.png",
+      "label": "Figure 12",
+      "physical_pdf_page": 19,
+      "clip_bbox_points": [
+        107,
+        70,
+        505,
+        707
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        233,
+        1683,
+        2357
+      ],
+      "pixel_size": [
+        1326,
+        2124
+      ],
+      "sha256": "2b7b1736c3e13e4e33cdbc8e8a54af6dc9b2fe5e2823ce7c0190073d07cc00eb"
+    },
+    {
+      "file": "table01_calvin.png",
+      "label": "Table 1",
+      "physical_pdf_page": 7,
+      "clip_bbox_points": [
+        107,
+        70,
+        505,
+        237
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        233,
+        1683,
+        790
+      ],
+      "pixel_size": [
+        1326,
+        557
+      ],
+      "sha256": "f3afc2a268d4bdaec91b72f3876c210b510d6688d396be45eba190121663d234"
+    },
+    {
+      "file": "table02_libero.png",
+      "label": "Table 2",
+      "physical_pdf_page": 7,
+      "clip_bbox_points": [
+        107,
+        248,
+        508,
+        350
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        827,
+        1693,
+        1167
+      ],
+      "pixel_size": [
+        1336,
+        340
+      ],
+      "sha256": "fe6a982ecfafc784406cd83b6e790e470534a02a17e2a23de9cccb48365195b3"
+    },
+    {
+      "file": "table03_inference.png",
+      "label": "Table 3",
+      "physical_pdf_page": 8,
+      "clip_bbox_points": [
+        324,
+        342,
+        505,
+        422
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        1080,
+        1140,
+        1683,
+        1407
+      ],
+      "pixel_size": [
+        603,
+        267
+      ],
+      "sha256": "f4b1ce61a4281a9a4b013189bb17ec2713b438b9ebe2edbb458ef49598775eb3"
+    },
+    {
+      "file": "table04_ablation.png",
+      "label": "Table 4",
+      "physical_pdf_page": 9,
+      "clip_bbox_points": [
+        404,
+        587,
+        505,
+        740
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        1347,
+        1957,
+        1683,
+        2467
+      ],
+      "pixel_size": [
+        336,
+        510
+      ],
+      "sha256": "67918b3f0f0460ae11d13eeb1493029346fa3b3751219166c43f2a479205ab61"
+    },
+    {
+      "file": "table05_sim_hparams.png",
+      "label": "Table 5",
+      "physical_pdf_page": 16,
+      "clip_bbox_points": [
+        107,
+        370,
+        508,
+        503
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        1233,
+        1693,
+        1677
+      ],
+      "pixel_size": [
+        1336,
+        444
+      ],
+      "sha256": "32305c33fc8751dd95037e1e54cc4f93315ce8810ac81648efa1c039574cab7d"
+    },
+    {
+      "file": "table06_real_f_hparams.png",
+      "label": "Table 6",
+      "physical_pdf_page": 16,
+      "clip_bbox_points": [
+        178,
+        518,
+        434,
+        639
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        593,
+        1727,
+        1447,
+        2130
+      ],
+      "pixel_size": [
+        854,
+        403
+      ],
+      "sha256": "8680a0a4cca3589bfef35c62fd42ecf73bc291a5f2c5441f5f3d574baf3874fb"
+    },
+    {
+      "file": "table07_real_d_hparams.png",
+      "label": "Table 7",
+      "physical_pdf_page": 17,
+      "clip_bbox_points": [
+        177,
+        71,
+        435,
+        290
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        590,
+        237,
+        1450,
+        967
+      ],
+      "pixel_size": [
+        860,
+        730
+      ],
+      "sha256": "1b80ca5ce8dd193587198d6247ea9025171fbc39bed1584c1c6c46473cfe6f82"
+    },
+    {
+      "file": "table08_compute.png",
+      "label": "Table 8",
+      "physical_pdf_page": 18,
+      "clip_bbox_points": [
+        192,
+        633,
+        426,
+        694
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        640,
+        2110,
+        1420,
+        2313
+      ],
+      "pixel_size": [
+        780,
+        203
+      ],
+      "sha256": "700cba6b8b2ba0d8eac00d22a287c286ebb75890a4a65a6cb91d278e56faa0e6"
+    },
+    {
+      "file": "eq01_spline.png",
+      "label": "Eq. (1)",
+      "physical_pdf_page": 3,
+      "clip_bbox_points": [
+        117,
+        583,
+        505,
+        619
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        390,
+        1943,
+        1683,
+        2063
+      ],
+      "pixel_size": [
+        1293,
+        120
+      ],
+      "sha256": "79cba7e1e14ee1bf5e8b89b3f9fdb29d4fe88f2fb1ecb922e216501f6385deea"
+    },
+    {
+      "file": "eq02_03_recursion.png",
+      "label": "Eqs. (2), (3) and recursion weight",
+      "physical_pdf_page": 4,
+      "clip_bbox_points": [
+        107,
+        254,
+        507,
+        316
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        847,
+        1690,
+        1053
+      ],
+      "pixel_size": [
+        1333,
+        206
+      ],
+      "sha256": "784e6218a795cd5c11597ed09a73b64d14fdeaf38421ddb775ea1cb94ace32e9"
+    },
+    {
+      "file": "eq04_fitting.png",
+      "label": "Eq. (4)",
+      "physical_pdf_page": 4,
+      "clip_bbox_points": [
+        168,
+        700.5,
+        507,
+        722
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        560,
+        2335,
+        1690,
+        2407
+      ],
+      "pixel_size": [
+        1130,
+        72
+      ],
+      "sha256": "5a826c818aacc65e93a1d7c49155cbccea7fd4496f4f1c0d5a294e305f27b50f"
+    },
+    {
+      "file": "eq_ridge_unnumbered.png",
+      "label": "Unnumbered ridge closed form",
+      "physical_pdf_page": 5,
+      "clip_bbox_points": [
+        107,
+        331,
+        305,
+        343.65
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        1103,
+        1017,
+        1146
+      ],
+      "pixel_size": [
+        660,
+        43
+      ],
+      "sha256": "f91b9152e55d47e71938afde1ea6a8bd9003fceedc5357e0d2bc37c6c775b0f0"
+    },
+    {
+      "file": "eq_boundary_unnumbered.png",
+      "label": "Unnumbered boundary residual and fitting",
+      "physical_pdf_page": 5,
+      "clip_bbox_points": [
+        107,
+        666,
+        506,
+        701.1
+      ],
+      "coordinate_system": "PDF points (1/72 inch), origin top-left, [x0,y0,x1,y1]",
+      "raster_dpi": 240,
+      "pixel_bbox": [
+        357,
+        2220,
+        1687,
+        2337
+      ],
+      "pixel_size": [
+        1330,
+        117
+      ],
+      "sha256": "255bb8e2e34f444019c234d68c27120f28457897ed5b582f8ffcb1813672a267"
+    }
+  ],
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

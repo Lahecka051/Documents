@@ -1,0 +1,710 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-09",
+  "review": "25_FlashAttention_2_Detailed_Review_KO.md",
+  "coordinate_system": {
+    "origin": "top-left",
+    "units": "PDF points (1/72 inch)",
+    "bbox_order": [
+      "x0",
+      "y0",
+      "x1",
+      "y1"
+    ],
+    "page_size_points": [
+      612,
+      792
+    ]
+  },
+  "extraction": {
+    "renderer": "Poppler pdftoppm",
+    "dpi": 240,
+    "modification": "rectangular crop only; no redrawing or mathematical correction"
+  },
+  "rights": "Original figures, equations and algorithms remain the property of the paper authors and respective rights holders. No additional license is asserted.",
+  "sources": {
+    "arxiv": {
+      "url": "https://arxiv.org/pdf/2307.08691v1",
+      "version": "arXiv 2307.08691v1 (2023-07-17)",
+      "sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "byte_size": 1660578,
+      "physical_pages": 14
+    },
+    "iclr": {
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/98ed250b203d1ac6b24bbcf263e3d4a7-Paper-Conference.pdf",
+      "version": "ICLR 2024 proceedings, retrieved 2026-09-09",
+      "sha256": "bc43c98e82d353f344d8a6bdc1ff7931e09fb43e27309f2039c587d164da511f",
+      "byte_size": 1197098,
+      "physical_pages": 14
+    }
+  },
+  "assets": [
+    {
+      "id": "figure_01",
+      "kind": "figure",
+      "path": "figure_01.png",
+      "description": "Figure 1: tiled online softmax",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 4,
+      "bbox_points": [
+        76,
+        397,
+        538,
+        618
+      ],
+      "crop_pixel_bbox": [
+        253,
+        1323,
+        1794,
+        2060
+      ],
+      "pixel_size": [
+        1541,
+        737
+      ],
+      "dpi": 240,
+      "sha256": "297e134fe4a5a03222c5ae04f8af62ddf1b8dc40bf63a6ee61ce0dbaced26539"
+    },
+    {
+      "id": "figure_02",
+      "kind": "figure",
+      "path": "figure_02.png",
+      "description": "Figure 2: thread-block parallelism",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 8,
+      "bbox_points": [
+        82,
+        352,
+        534,
+        598
+      ],
+      "crop_pixel_bbox": [
+        273,
+        1173,
+        1780,
+        1994
+      ],
+      "pixel_size": [
+        1507,
+        821
+      ],
+      "dpi": 240,
+      "sha256": "284cd72ae8920cd5d05088e1bcf993b3000e9b5ad0910fe261b1b47cb6995e24"
+    },
+    {
+      "id": "figure_03",
+      "kind": "figure",
+      "path": "figure_03.png",
+      "description": "Figure 3: sliced-K and sliced-Q",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 9,
+      "bbox_points": [
+        75,
+        257,
+        536,
+        428
+      ],
+      "crop_pixel_bbox": [
+        250,
+        856,
+        1787,
+        1427
+      ],
+      "pixel_size": [
+        1537,
+        571
+      ],
+      "dpi": 240,
+      "sha256": "0b78fe8895547cea712e3fff7a984aca37f9d9f61d011f19bff63f96be783ce1"
+    },
+    {
+      "id": "figure_04",
+      "kind": "figure",
+      "path": "figure_04.png",
+      "description": "Figure 4: A100 forward and backward",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 10,
+      "bbox_points": [
+        75,
+        372,
+        536,
+        702
+      ],
+      "crop_pixel_bbox": [
+        250,
+        1240,
+        1787,
+        2340
+      ],
+      "pixel_size": [
+        1537,
+        1100
+      ],
+      "dpi": 240,
+      "sha256": "ec8936678da58d7a9644ca085f75743035efd847c780c5c3acc45a1304a17f68"
+    },
+    {
+      "id": "figure_05",
+      "kind": "figure",
+      "path": "figure_05.png",
+      "description": "Figure 5: A100 forward",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 11,
+      "bbox_points": [
+        75,
+        73,
+        536,
+        402
+      ],
+      "crop_pixel_bbox": [
+        250,
+        243,
+        1787,
+        1340
+      ],
+      "pixel_size": [
+        1537,
+        1097
+      ],
+      "dpi": 240,
+      "sha256": "a76230202aa63061dab3a9f876dd38a5128614014e89f138989fbc1d3df8efda"
+    },
+    {
+      "id": "figure_06",
+      "kind": "figure",
+      "path": "figure_06.png",
+      "description": "Figure 6: A100 backward",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 12,
+      "bbox_points": [
+        75,
+        73,
+        536,
+        402
+      ],
+      "crop_pixel_bbox": [
+        250,
+        243,
+        1787,
+        1340
+      ],
+      "pixel_size": [
+        1537,
+        1097
+      ],
+      "dpi": 240,
+      "sha256": "d21ab33682c7511c93509dbbefc25d26c9ec4fc3060f7a879a9fa7bf5ce5b350"
+    },
+    {
+      "id": "figure_07",
+      "kind": "figure",
+      "path": "figure_07.png",
+      "description": "Figure 7: H100 forward and backward",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 13,
+      "bbox_points": [
+        75,
+        73,
+        536,
+        402
+      ],
+      "crop_pixel_bbox": [
+        250,
+        243,
+        1787,
+        1340
+      ],
+      "pixel_size": [
+        1537,
+        1097
+      ],
+      "dpi": 240,
+      "sha256": "c71ef50f1d25629b40b20655c9746030c8b86e6204e07a915637306f807a4b9d"
+    },
+    {
+      "id": "figure_iclr_05_decode",
+      "kind": "figure",
+      "path": "figure_iclr_05_decode.png",
+      "description": "ICLR Figure 5: MQA decoding kernel",
+      "source_id": "iclr",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/98ed250b203d1ac6b24bbcf263e3d4a7-Paper-Conference.pdf",
+      "source_version": "ICLR 2024 proceedings, retrieved 2026-09-09",
+      "source_sha256": "bc43c98e82d353f344d8a6bdc1ff7931e09fb43e27309f2039c587d164da511f",
+      "physical_pdf_page": 9,
+      "bbox_points": [
+        183,
+        118,
+        424,
+        233
+      ],
+      "crop_pixel_bbox": [
+        610,
+        393,
+        1414,
+        777
+      ],
+      "pixel_size": [
+        804,
+        384
+      ],
+      "dpi": 240,
+      "sha256": "cd31d6beb62aafcb1ed2d9f0ded15c7e87595cc96578006c3093a3a3300986e1"
+    },
+    {
+      "id": "u01_attention",
+      "kind": "equation",
+      "path": "u01_attention.png",
+      "description": "U1: standard attention",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 3,
+      "bbox_points": [
+        162,
+        120,
+        447,
+        141
+      ],
+      "crop_pixel_bbox": [
+        540,
+        400,
+        1490,
+        470
+      ],
+      "pixel_size": [
+        950,
+        70
+      ],
+      "dpi": 240,
+      "sha256": "12f47daac02a8d1e7c78071b3bbb3c975ec49cfbbcf9785eed329e91b5ed9c0c"
+    },
+    {
+      "id": "u02_backward",
+      "kind": "equation",
+      "path": "u02_backward.png",
+      "description": "U2: backward, including printed dK error",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 3,
+      "bbox_points": [
+        239,
+        199,
+        392,
+        286
+      ],
+      "crop_pixel_bbox": [
+        796,
+        663,
+        1307,
+        954
+      ],
+      "pixel_size": [
+        511,
+        291
+      ],
+      "dpi": 240,
+      "sha256": "4e6f84738e53fd9ef5f5d9105be762fa2c6b085969db628488040f1b67eb8ac6"
+    },
+    {
+      "id": "u03_softmax_jacobian",
+      "kind": "equation",
+      "path": "u03_softmax_jacobian.png",
+      "description": "U3: softmax Jacobian",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 3,
+      "bbox_points": [
+        438,
+        304.75,
+        543,
+        316.68
+      ],
+      "crop_pixel_bbox": [
+        1460,
+        1015,
+        1810,
+        1056
+      ],
+      "pixel_size": [
+        350,
+        41
+      ],
+      "dpi": 240,
+      "sha256": "78533c5283e4daf8fb7529225a2393d24f2fc40a32788114189113b9ea33d94f"
+    },
+    {
+      "id": "u04_full_softmax",
+      "kind": "equation",
+      "path": "u04_full_softmax.png",
+      "description": "U4: two-block standard softmax",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 4,
+      "bbox_points": [
+        150,
+        90,
+        459,
+        178
+      ],
+      "crop_pixel_bbox": [
+        500,
+        300,
+        1530,
+        594
+      ],
+      "pixel_size": [
+        1030,
+        294
+      ],
+      "dpi": 240,
+      "sha256": "d199afdcfeb25c447da3916ebd5783274318d09e12bc7e0bf12eaa8c50b6b45e"
+    },
+    {
+      "id": "u05_online_normalized",
+      "kind": "equation",
+      "path": "u05_online_normalized.png",
+      "description": "U5: normalized online softmax",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 4,
+      "bbox_points": [
+        93,
+        213,
+        515,
+        360
+      ],
+      "crop_pixel_bbox": [
+        310,
+        710,
+        1717,
+        1200
+      ],
+      "pixel_size": [
+        1407,
+        490
+      ],
+      "dpi": 240,
+      "sha256": "8257ca41b51cd1eda014345dc2b751562cf779b9a0aafeb9860e7c6135992eda"
+    },
+    {
+      "id": "u06_normalized_update",
+      "kind": "equation",
+      "path": "u06_normalized_update.png",
+      "description": "U6: normalized update motivation",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 5,
+      "bbox_points": [
+        193,
+        520,
+        442,
+        541
+      ],
+      "crop_pixel_bbox": [
+        643,
+        1733,
+        1474,
+        1804
+      ],
+      "pixel_size": [
+        831,
+        71
+      ],
+      "dpi": 240,
+      "sha256": "ff98c2d870a990581c34fd3092684b15f6a01d54c8ee405c9b4ff103a61912ba"
+    },
+    {
+      "id": "u07_unnormalized_update",
+      "kind": "equation",
+      "path": "u07_unnormalized_update.png",
+      "description": "U7: unnormalized update motivation",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 5,
+      "bbox_points": [
+        230,
+        565,
+        427,
+        587
+      ],
+      "crop_pixel_bbox": [
+        766,
+        1883,
+        1424,
+        1957
+      ],
+      "pixel_size": [
+        658,
+        74
+      ],
+      "dpi": 240,
+      "sha256": "71d274f34bbf5f99d12b6160573af9f8da4dd0b7a6dfe6ed253eec1dbb7a0b3f"
+    },
+    {
+      "id": "u08_logsumexp",
+      "kind": "equation",
+      "path": "u08_logsumexp.png",
+      "description": "U8: logsumexp statistic",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 5,
+      "bbox_points": [
+        244,
+        623.3,
+        343,
+        636.5
+      ],
+      "crop_pixel_bbox": [
+        813,
+        2077,
+        1144,
+        2122
+      ],
+      "pixel_size": [
+        331,
+        45
+      ],
+      "dpi": 240,
+      "sha256": "18a194afe5ca11980141c5aa2007b931dbda8df073a38e5a7bde13c30fda1dcb"
+    },
+    {
+      "id": "u09_fa2_two_blocks",
+      "kind": "equation",
+      "path": "u09_fa2_two_blocks.png",
+      "description": "U9: FA2 two-block recurrence",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 6,
+      "bbox_points": [
+        123,
+        90,
+        527,
+        235
+      ],
+      "crop_pixel_bbox": [
+        410,
+        300,
+        1757,
+        784
+      ],
+      "pixel_size": [
+        1347,
+        484
+      ],
+      "dpi": 240,
+      "sha256": "f4c6ac1097d08bc0d503255b0dfdc1ba1898f1d92212e99f2f0011555f782acc"
+    },
+    {
+      "id": "u10_attention_flops",
+      "kind": "equation",
+      "path": "u10_attention_flops.png",
+      "description": "U10: attention FLOPs",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 10,
+      "bbox_points": [
+        203,
+        297,
+        407,
+        316
+      ],
+      "crop_pixel_bbox": [
+        676,
+        990,
+        1357,
+        1054
+      ],
+      "pixel_size": [
+        681,
+        64
+      ],
+      "dpi": 240,
+      "sha256": "cd479586e36d79856143d0eed963317be254597e2cabd960fa4b2d59a0ca30f3"
+    },
+    {
+      "id": "u11_model_flops",
+      "kind": "equation",
+      "path": "u11_model_flops.png",
+      "description": "U11: model FLOPs convention",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 11,
+      "bbox_points": [
+        142,
+        586,
+        469,
+        605
+      ],
+      "crop_pixel_bbox": [
+        473,
+        1953,
+        1564,
+        2017
+      ],
+      "pixel_size": [
+        1091,
+        64
+      ],
+      "dpi": 240,
+      "sha256": "bad62e08a12f6f1961f90986aa804dfe3a11fa77326b2290f5ef72944063ec1e"
+    },
+    {
+      "id": "iclr_algorithm1_corrected_update",
+      "kind": "equation",
+      "path": "iclr_algorithm1_corrected_update.png",
+      "description": "ICLR Algorithm 1 line 10: corrected rescale",
+      "source_id": "iclr",
+      "source_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/98ed250b203d1ac6b24bbcf263e3d4a7-Paper-Conference.pdf",
+      "source_version": "ICLR 2024 proceedings, retrieved 2026-09-09",
+      "source_sha256": "bc43c98e82d353f344d8a6bdc1ff7931e09fb43e27309f2039c587d164da511f",
+      "physical_pdf_page": 5,
+      "bbox_points": [
+        106,
+        471,
+        426,
+        488
+      ],
+      "crop_pixel_bbox": [
+        353,
+        1570,
+        1420,
+        1627
+      ],
+      "pixel_size": [
+        1067,
+        57
+      ],
+      "dpi": 240,
+      "sha256": "1307d4de1d8bc80cf84e2d21fc4452d56e032f38087461f09ec4d9a3213d8c37"
+    },
+    {
+      "id": "algorithm_01",
+      "kind": "algorithm",
+      "path": "algorithm_01.png",
+      "description": "Algorithm 1, all 17 lines",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 6,
+      "bbox_points": [
+        70,
+        263,
+        542,
+        562
+      ],
+      "crop_pixel_bbox": [
+        233,
+        876,
+        1807,
+        1874
+      ],
+      "pixel_size": [
+        1574,
+        998
+      ],
+      "dpi": 240,
+      "sha256": "224d5a0f580257bdd28200a73b507c56c1894cb31baf2e21310b5a1c3356f21e"
+    },
+    {
+      "id": "algorithm_02",
+      "kind": "algorithm",
+      "path": "algorithm_02.png",
+      "description": "Algorithm 2, all 20 lines",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 7,
+      "bbox_points": [
+        70,
+        198,
+        542,
+        556
+      ],
+      "crop_pixel_bbox": [
+        233,
+        660,
+        1807,
+        1854
+      ],
+      "pixel_size": [
+        1574,
+        1194
+      ],
+      "dpi": 240,
+      "sha256": "c4a47f0005fc5cc259c7be74dcb4a8fb4a5a1a0e5f6311dd792123b8fc406460"
+    },
+    {
+      "id": "table_01",
+      "kind": "table",
+      "path": "table_01.png",
+      "description": "Table 1: GPT training throughput",
+      "source_id": "arxiv",
+      "source_url": "https://arxiv.org/pdf/2307.08691v1",
+      "source_version": "arXiv 2307.08691v1 (2023-07-17)",
+      "source_sha256": "4aa8935dfacaf6ae8c68f772ca92f730154a0dd0e1bceeb59c7bc56c512d5868",
+      "physical_pdf_page": 12,
+      "bbox_points": [
+        87,
+        476,
+        520,
+        542
+      ],
+      "crop_pixel_bbox": [
+        290,
+        1586,
+        1734,
+        1807
+      ],
+      "pixel_size": [
+        1444,
+        221
+      ],
+      "dpi": 240,
+      "sha256": "7210877a4aeef4dd24f18c1838a0ecdaab436eb792a1eb73ff58f2f620d92dbf"
+    }
+  ]
+}

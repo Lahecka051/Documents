@@ -1,0 +1,611 @@
+{
+  "paper_title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models",
+  "arxiv_id": "2501.09747",
+  "version": "v1",
+  "source_url": "https://arxiv.org/pdf/2501.09747v1",
+  "source_pdf_sha256": "3739b31f5fecdde371509ff5bb13619979734e894a255a9b264253f4cc53934a",
+  "physical_page_count": 19,
+  "access_date": "2026-09-09",
+  "renderer": "Poppler pdftoppm, 240 dpi; Pillow rectangular crop",
+  "rights": "Original figures and equations belong to their authors and respective rights holders. Excerpts for critical educational review; no new license asserted.",
+  "assets": [
+    {
+      "file": "fig01.png",
+      "kind": "figure",
+      "label": "Figure 1",
+      "physical_pdf_page": 1,
+      "clip_bbox": [
+        312,
+        227,
+        564,
+        619
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1040,
+        757,
+        1880,
+        2063
+      ],
+      "width_px": 840,
+      "height_px": 1306,
+      "sha256": "f88efe55dff3ffad6a2ca78054d3821336124f150571cbd935c189b6076ae8ab"
+    },
+    {
+      "file": "fig02.png",
+      "kind": "figure",
+      "label": "Figure 2",
+      "physical_pdf_page": 2,
+      "clip_bbox": [
+        310,
+        56,
+        565,
+        296
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        187,
+        1883,
+        987
+      ],
+      "width_px": 850,
+      "height_px": 800,
+      "sha256": "8e0f14f9779d37be07a6a0b758b2224cea031ff6e05164c982d80ffae1412ce1"
+    },
+    {
+      "file": "fig03.png",
+      "kind": "figure",
+      "label": "Figure 3",
+      "physical_pdf_page": 3,
+      "clip_bbox": [
+        310,
+        52,
+        565,
+        365
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        173,
+        1883,
+        1217
+      ],
+      "width_px": 850,
+      "height_px": 1044,
+      "sha256": "301fbd2ff00982bc305f5f6e1638b3ceb04c5baf189ae095a538cf572731804a"
+    },
+    {
+      "file": "fig04.png",
+      "kind": "figure",
+      "label": "Figure 4",
+      "physical_pdf_page": 5,
+      "clip_bbox": [
+        51,
+        55,
+        563,
+        238
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        170,
+        183,
+        1877,
+        793
+      ],
+      "width_px": 1707,
+      "height_px": 610,
+      "sha256": "4282a11402c09cfd9efe9dcbaf40f9b85796127ba748ca567b13e6192270ab44"
+    },
+    {
+      "file": "fig05.png",
+      "kind": "figure",
+      "label": "Figure 5",
+      "physical_pdf_page": 6,
+      "clip_bbox": [
+        310,
+        53,
+        565,
+        457
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        177,
+        1883,
+        1523
+      ],
+      "width_px": 850,
+      "height_px": 1346,
+      "sha256": "325d4d35498903db41b4b02ea7999a2801b7b7e25eb591ed803a95718b16c53f"
+    },
+    {
+      "file": "fig06.png",
+      "kind": "figure",
+      "label": "Figure 6",
+      "physical_pdf_page": 8,
+      "clip_bbox": [
+        97,
+        58,
+        510,
+        198
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        323,
+        193,
+        1700,
+        660
+      ],
+      "width_px": 1377,
+      "height_px": 467,
+      "sha256": "906a9e2bdd1ef203877e5cefbde316d2ca184311cceff5af22de798b14e0d5e7"
+    },
+    {
+      "file": "fig07.png",
+      "kind": "figure",
+      "label": "Figure 7",
+      "physical_pdf_page": 8,
+      "clip_bbox": [
+        50,
+        274,
+        297,
+        491
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        167,
+        913,
+        990,
+        1637
+      ],
+      "width_px": 823,
+      "height_px": 724,
+      "sha256": "ab55a5c387e928cc68473eac3e28b585b70f46b4f404e70c020ed4c6d764d55f"
+    },
+    {
+      "file": "fig08.png",
+      "kind": "figure",
+      "label": "Figure 8",
+      "physical_pdf_page": 8,
+      "clip_bbox": [
+        310,
+        272,
+        563,
+        390
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        907,
+        1877,
+        1300
+      ],
+      "width_px": 844,
+      "height_px": 393,
+      "sha256": "21d22a737feadd0dd67111fb9f520ba07f5bd3e64f6dd601746b3c77cbe56d2b"
+    },
+    {
+      "file": "fig09.png",
+      "kind": "figure",
+      "label": "Figure 9",
+      "physical_pdf_page": 9,
+      "clip_bbox": [
+        310,
+        54,
+        559,
+        216
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        180,
+        1863,
+        720
+      ],
+      "width_px": 830,
+      "height_px": 540,
+      "sha256": "e8e3d9c3ad3511aae631d5d2aae128932146c305fb337275543ffc9d7fd6ca94"
+    },
+    {
+      "file": "fig10.png",
+      "kind": "figure",
+      "label": "Figure 10",
+      "physical_pdf_page": 10,
+      "clip_bbox": [
+        51,
+        55,
+        562,
+        213
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        170,
+        183,
+        1873,
+        710
+      ],
+      "width_px": 1703,
+      "height_px": 527,
+      "sha256": "56b479a8f4182855645c5df9d9d244af8634fabd8c427ade4eda6aa4b03b6925"
+    },
+    {
+      "file": "fig11.png",
+      "kind": "figure",
+      "label": "Figure 11",
+      "physical_pdf_page": 10,
+      "clip_bbox": [
+        49,
+        265,
+        294,
+        430
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        163,
+        883,
+        980,
+        1433
+      ],
+      "width_px": 817,
+      "height_px": 550,
+      "sha256": "96c430e3c268de182b0f81307110ee251598beea972018eda117ce5643b4f52b"
+    },
+    {
+      "file": "fig12.png",
+      "kind": "figure",
+      "label": "Figure 12",
+      "physical_pdf_page": 16,
+      "clip_bbox": [
+        309,
+        53,
+        563,
+        434
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1030,
+        177,
+        1877,
+        1447
+      ],
+      "width_px": 847,
+      "height_px": 1270,
+      "sha256": "aee763f9d1921245edaa34a59aa6417e2dd1eb98dc570506c93b3a157dd1c2a8"
+    },
+    {
+      "file": "fig13.png",
+      "kind": "figure",
+      "label": "Figure 13",
+      "physical_pdf_page": 17,
+      "clip_bbox": [
+        310,
+        50,
+        565,
+        605
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        167,
+        1883,
+        2017
+      ],
+      "width_px": 850,
+      "height_px": 1850,
+      "sha256": "69fff09f7bd5c0c299f5627bcf58ca09bcbcf39c7a920ea9c7f3d0ff47d38006"
+    },
+    {
+      "file": "fig14.png",
+      "kind": "figure",
+      "label": "Figure 14",
+      "physical_pdf_page": 18,
+      "clip_bbox": [
+        314,
+        306,
+        560,
+        423
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1047,
+        1020,
+        1867,
+        1410
+      ],
+      "width_px": 820,
+      "height_px": 390,
+      "sha256": "0653c3f2bfe6cd6734c9770e4dd201af5aff665a7fb055f179d6267458d2de5b"
+    },
+    {
+      "file": "fig15.png",
+      "kind": "figure",
+      "label": "Figure 15",
+      "physical_pdf_page": 18,
+      "clip_bbox": [
+        314,
+        474,
+        558,
+        643
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1047,
+        1580,
+        1860,
+        2143
+      ],
+      "width_px": 813,
+      "height_px": 563,
+      "sha256": "a9d706d97e6f4192d0c2b3419ff9f7efc70895d06e795b32ab0d278aa28933a8"
+    },
+    {
+      "file": "ablation_openvla.png",
+      "kind": "figure_unnumbered",
+      "label": "OpenVLA ablation",
+      "physical_pdf_page": 9,
+      "clip_bbox": [
+        203,
+        286,
+        295,
+        394
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        677,
+        953,
+        983,
+        1313
+      ],
+      "width_px": 306,
+      "height_px": 360,
+      "sha256": "73f97d4119004ee0fc629d0d45359dfd78d5a01accc5557d6b344af3f16e168a"
+    },
+    {
+      "file": "ablation_bpe.png",
+      "kind": "figure_unnumbered",
+      "label": "BPE ablation",
+      "physical_pdf_page": 9,
+      "clip_bbox": [
+        201,
+        480,
+        298,
+        605
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        670,
+        1600,
+        993,
+        2017
+      ],
+      "width_px": 323,
+      "height_px": 417,
+      "sha256": "f6b9d2cc6ed14144081dee83a881219fd2525df4c7b33ef720c91ce640f60aa1"
+    },
+    {
+      "file": "algorithm01.png",
+      "kind": "algorithm",
+      "label": "Algorithm 1",
+      "physical_pdf_page": 5,
+      "clip_bbox": [
+        310,
+        313,
+        565,
+        456
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        1043,
+        1883,
+        1520
+      ],
+      "width_px": 850,
+      "height_px": 477,
+      "sha256": "083d94a2856630a3c39ae75ada7ec6548d6806a6b74168403ece010609dc2884"
+    },
+    {
+      "file": "eq_tokenizer_mapping.png",
+      "kind": "equation",
+      "label": "Unnumbered tokenizer mapping in III",
+      "physical_pdf_page": 3,
+      "clip_bbox": [
+        48,
+        643,
+        302,
+        716
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        160,
+        2143,
+        1007,
+        2387
+      ],
+      "width_px": 847,
+      "height_px": 244,
+      "sha256": "f562e5427caa60bfab4b3290dfa9e0fb5b8fc9535f785895de6f62fe7606c7f4"
+    },
+    {
+      "file": "eq_naive_sequence.png",
+      "kind": "equation",
+      "label": "Unnumbered naive sequence in III; surrounding paragraph retained to avoid clipping inline math",
+      "physical_pdf_page": 3,
+      "clip_bbox": [
+        310,
+        525,
+        565,
+        668
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        1750,
+        1883,
+        2227
+      ],
+      "width_px": 850,
+      "height_px": 477,
+      "sha256": "3ab46b8f0692e2a5ddf283864fdd04b977015091c6b63f55aafe2dd5c595b0be"
+    },
+    {
+      "file": "eq_dct_quant_flatten.png",
+      "kind": "equation",
+      "label": "Algorithm 1 DCT quantization serialization with requirements and procedure header",
+      "physical_pdf_page": 5,
+      "clip_bbox": [
+        310,
+        330,
+        565,
+        393
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1033,
+        1100,
+        1883,
+        1310
+      ],
+      "width_px": 850,
+      "height_px": 210,
+      "sha256": "a5847c1ed4b4b75cc28fccaf78ea15294cdf855f6db7f1a54cfd796649ee06ee"
+    },
+    {
+      "file": "eq_bpe_fit_encode.png",
+      "kind": "equation",
+      "label": "Algorithm 1 BPE training and tokenization with return",
+      "physical_pdf_page": 5,
+      "clip_bbox": [
+        319,
+        392,
+        565,
+        452
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1063,
+        1307,
+        1883,
+        1507
+      ],
+      "width_px": 820,
+      "height_px": 200,
+      "sha256": "e237838926d5e4e6a31e5ca423d253312b779e4714293815205b12805741df31"
+    },
+    {
+      "file": "table01.png",
+      "kind": "table",
+      "label": "Table I",
+      "physical_pdf_page": 7,
+      "clip_bbox": [
+        311,
+        162,
+        568,
+        230
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1037,
+        540,
+        1893,
+        767
+      ],
+      "width_px": 856,
+      "height_px": 227,
+      "sha256": "52059b234f6bb3a8eee3a9707ac1a1b8cfe60a60bee959f7a58bcd8156079aec"
+    },
+    {
+      "file": "table02.png",
+      "kind": "table",
+      "label": "Table II",
+      "physical_pdf_page": 18,
+      "clip_bbox": [
+        314,
+        62,
+        561,
+        273
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        1047,
+        207,
+        1870,
+        910
+      ],
+      "width_px": 823,
+      "height_px": 703,
+      "sha256": "0c4d26a7b354998833ba5709ccb84bfb75300e47a23f86a59926d74ceb095bde"
+    },
+    {
+      "file": "table03.png",
+      "kind": "table",
+      "label": "Table III",
+      "physical_pdf_page": 19,
+      "clip_bbox": [
+        47,
+        276,
+        565,
+        504
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        157,
+        920,
+        1883,
+        1680
+      ],
+      "width_px": 1726,
+      "height_px": 760,
+      "sha256": "de6f4d3194203b5ec813bb7a01b834da3c4c54e15c842191933eaca462ff91ba"
+    },
+    {
+      "file": "table_app_a.png",
+      "kind": "table_unnumbered",
+      "label": "Appendix A tokenizer mixture",
+      "physical_pdf_page": 16,
+      "clip_bbox": [
+        50,
+        208,
+        299,
+        508
+      ],
+      "coordinate_system": "PDF points; top-left origin; [x0,top,x1,bottom]",
+      "render_dpi": 240,
+      "pixel_bbox": [
+        167,
+        693,
+        997,
+        1693
+      ],
+      "width_px": 830,
+      "height_px": 1000,
+      "sha256": "f2852b8faae936943d471aa941f634a148e6980230479e605d6c6682109aac1d"
+    }
+  ]
+}

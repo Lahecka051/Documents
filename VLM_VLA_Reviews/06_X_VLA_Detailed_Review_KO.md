@@ -1,5 +1,7 @@
 # X-VLA 상세 학습 해설
 
+> 저장소 원문: [주 PDF](papers/06_X_VLA.pdf) · [전체 목록](README.md)
+
 > **대상 논문**: *X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment Vision-Language-Action Model*  
 > **읽는 목적**: 초록 요약이 아니라, 문제 설정부터 수식, 텐서 흐름, 학습/추론, 실험 근거와 재현 한계까지 원문 순서대로 복원하는 학습용 해설
 

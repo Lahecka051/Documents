@@ -1,0 +1,496 @@
+{
+  "paper": "Fast Inference from Transformers via Speculative Decoding",
+  "review_date": "2026-09-09",
+  "markdown_sha256": "523a0b9284dba3a1667b22fb2062fe42625839f4d46e8b9ad427c87cbae3dd9d",
+  "source_pdf": {
+    "source_url": "https://arxiv.org/pdf/2211.17192v2",
+    "version": "v2",
+    "version_date": "2023-05-18",
+    "source_pdf_sha256": "8967e2daab74178b8a73a6f0b0780c5cbb40f9f6dcbd5c456b24a89c128c52ed",
+    "physical_page_count": 13
+  },
+  "coverage": {
+    "main_sections": "1-6",
+    "appendices": "A.1-A.5",
+    "figures": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "tables": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "algorithms": [
+      1
+    ],
+    "numbered_equations": [
+      1
+    ],
+    "definitions_lemmas_theorems_corollaries": "3.1-3.11"
+  },
+  "publication_assets": {
+    "total": 17,
+    "figure_crops": 5,
+    "equation_crops": 9,
+    "algorithm_crops": 1,
+    "table_crops": 2,
+    "all_sha256_and_dimensions_verified": true,
+    "visual_inspection": "All 17 clips inspected; residual excerpt moved to the identical formula in A.1 to avoid adjacent formula fragments."
+  },
+  "document": {
+    "docs": [
+      {
+        "name": "23_Speculative_Decoding_Detailed_Review_KO.md",
+        "inline": 302,
+        "display": 52,
+        "stray": [],
+        "errors": [],
+        "wide": []
+      }
+    ],
+    "summary": {
+      "documents": 1,
+      "inline": 302,
+      "display": 52,
+      "errors": 0,
+      "stray": 0
+    },
+    "structural": {
+      "utf8ReplacementChars": false,
+      "missingAnchors": [],
+      "missingImages": [],
+      "images": 17,
+      "manifestImages": 17,
+      "unreferencedManifest": [],
+      "multilineDisplay": [],
+      "nonFenceDisplay": [],
+      "unprotectedInline": [],
+      "forbiddenTex": [],
+      "mathPipesInTable": [],
+      "characters": 70028,
+      "lines": 1365
+    }
+  },
+  "cpu_arithmetic": {
+    "table1": [
+      {
+        "alpha": 0.6,
+        "gamma": 2,
+        "speed": 1.96,
+        "ops": 1.530612244897959
+      },
+      {
+        "alpha": 0.7,
+        "gamma": 3,
+        "speed": 2.533,
+        "ops": 1.5791551519936835
+      },
+      {
+        "alpha": 0.8,
+        "gamma": 2,
+        "speed": 2.4400000000000004,
+        "ops": 1.2295081967213113
+      },
+      {
+        "alpha": 0.8,
+        "gamma": 5,
+        "speed": 3.6892800000000006,
+        "ops": 1.626333593546708
+      },
+      {
+        "alpha": 0.9,
+        "gamma": 2,
+        "speed": 2.71,
+        "ops": 1.1070110701107012
+      },
+      {
+        "alpha": 0.9,
+        "gamma": 10,
+        "speed": 6.861894039100001,
+        "ops": 1.6030559401413824
+      }
+    ],
+    "table4": [
+      {
+        "task": "EnDe",
+        "draft": "Small",
+        "temperature": 0,
+        "gamma": 7,
+        "alpha": 0.75,
+        "c": 0.02,
+        "paper_exp": 3.2,
+        "paper_emp": 3.4,
+        "recomputed": 3.1574985437225873,
+        "emp_vs_exp_percent": 6.25
+      },
+      {
+        "task": "EnDe",
+        "draft": "Base",
+        "temperature": 0,
+        "gamma": 7,
+        "alpha": 0.8,
+        "c": 0.04,
+        "paper_exp": 3.3,
+        "paper_emp": 2.8,
+        "recomputed": 3.2508900000000005,
+        "emp_vs_exp_percent": -15.151515151515149
+      },
+      {
+        "task": "EnDe",
+        "draft": "Large",
+        "temperature": 0,
+        "gamma": 7,
+        "alpha": 0.82,
+        "c": 0.11,
+        "paper_exp": 2.5,
+        "paper_emp": 1.7,
+        "recomputed": 2.4971309294868247,
+        "emp_vs_exp_percent": -32.00000000000001
+      },
+      {
+        "task": "EnDe",
+        "draft": "Small",
+        "temperature": 1,
+        "gamma": 7,
+        "alpha": 0.62,
+        "c": 0.02,
+        "paper_exp": 2.3,
+        "paper_emp": 2.6,
+        "recomputed": 2.2580008989877896,
+        "emp_vs_exp_percent": 13.043478260869579
+      },
+      {
+        "task": "EnDe",
+        "draft": "Base",
+        "temperature": 1,
+        "gamma": 5,
+        "alpha": 0.68,
+        "c": 0.04,
+        "paper_exp": 2.4,
+        "paper_emp": 2.4,
+        "recomputed": 2.346699264,
+        "emp_vs_exp_percent": 0.0
+      },
+      {
+        "task": "EnDe",
+        "draft": "Large",
+        "temperature": 1,
+        "gamma": 3,
+        "alpha": 0.71,
+        "c": 0.11,
+        "paper_exp": 2.0,
+        "paper_emp": 1.4,
+        "recomputed": 1.933842857142857,
+        "emp_vs_exp_percent": -30.000000000000004
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Small",
+        "temperature": 0,
+        "gamma": 5,
+        "alpha": 0.65,
+        "c": 0.02,
+        "paper_exp": 2.4,
+        "paper_emp": 3.1,
+        "recomputed": 2.401509375,
+        "emp_vs_exp_percent": 29.166666666666675
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Base",
+        "temperature": 0,
+        "gamma": 5,
+        "alpha": 0.73,
+        "c": 0.04,
+        "paper_exp": 2.6,
+        "paper_emp": 3.0,
+        "recomputed": 2.6193388077499997,
+        "emp_vs_exp_percent": 15.384615384615374
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Large",
+        "temperature": 0,
+        "gamma": 3,
+        "alpha": 0.74,
+        "c": 0.11,
+        "paper_exp": 2.0,
+        "paper_emp": 2.2,
+        "recomputed": 2.02467969924812,
+        "emp_vs_exp_percent": 10.000000000000009
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Small",
+        "temperature": 1,
+        "gamma": 5,
+        "alpha": 0.53,
+        "c": 0.02,
+        "paper_exp": 1.9,
+        "paper_emp": 2.3,
+        "recomputed": 1.8913648720909089,
+        "emp_vs_exp_percent": 21.052631578947366
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Base",
+        "temperature": 1,
+        "gamma": 3,
+        "alpha": 0.55,
+        "c": 0.04,
+        "paper_exp": 1.8,
+        "paper_emp": 2.2,
+        "recomputed": 1.802566964285714,
+        "emp_vs_exp_percent": 22.222222222222232
+      },
+      {
+        "task": "CNNDM",
+        "draft": "Large",
+        "temperature": 1,
+        "gamma": 3,
+        "alpha": 0.56,
+        "c": 0.11,
+        "paper_exp": 1.6,
+        "paper_emp": 1.7,
+        "recomputed": 1.5407639097744363,
+        "emp_vs_exp_percent": 6.25
+      }
+    ],
+    "one_token_law": {
+      "cases": 1003,
+      "max_abs_error": 1.6653345369377348e-16
+    },
+    "toy": {
+      "p": [
+        0.1,
+        0.6,
+        0.3
+      ],
+      "q": [
+        0.5,
+        0.3,
+        0.2
+      ],
+      "accepted_mass": [
+        0.1,
+        0.3,
+        0.2
+      ],
+      "acceptance_rate": 0.6,
+      "residual": [
+        0,
+        0.75,
+        0.25
+      ],
+      "wrong_unadjusted_fallback": [
+        0.14,
+        0.54,
+        0.32
+      ]
+    },
+    "lenience_temp0": [
+      3.3032689775739392,
+      3.3032689775739392,
+      3.8650994285714293,
+      4.906976962616556
+    ],
+    "lenience_temp1_optimum": [
+      [
+        2.3295212894534663,
+        7
+      ],
+      [
+        2.939230030350603,
+        9
+      ],
+      [
+        3.4461610293993354,
+        10
+      ],
+      [
+        4.788558890853525,
+        15
+      ]
+    ]
+  },
+  "cpu_exact_sequence_enumeration": {
+    "method": "exact rational enumeration of proposals, acceptance/rejection branches, residual/bonus, and repeated rounds with prefix-dependent p and q",
+    "tests": [
+      {
+        "gamma": 1,
+        "sequence_length": 3,
+        "vocabulary": 3,
+        "strings_checked": 27,
+        "exact_fractional_equality": true,
+        "total_probability": "1"
+      },
+      {
+        "gamma": 2,
+        "sequence_length": 3,
+        "vocabulary": 3,
+        "strings_checked": 27,
+        "exact_fractional_equality": true,
+        "total_probability": "1"
+      },
+      {
+        "gamma": 3,
+        "sequence_length": 3,
+        "vocabulary": 3,
+        "strings_checked": 27,
+        "exact_fractional_equality": true,
+        "total_probability": "1"
+      }
+    ],
+    "gpu_or_model_execution": false
+  },
+  "local_browser": {
+    "title": "Speculative Decoding 한국어 상세 리뷰",
+    "images": [
+      {
+        "src": "assets/23_Speculative_Decoding/fig01_token_trace.png",
+        "loaded": true,
+        "width": 1624,
+        "height": 436
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_residual.png",
+        "loaded": true,
+        "width": 524,
+        "height": 53
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_correctness_proof.png",
+        "loaded": true,
+        "width": 1163,
+        "height": 657
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/algorithm01.png",
+        "loaded": true,
+        "width": 790,
+        "height": 884
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/fig05_encoder_decoder_timeline.png",
+        "loaded": true,
+        "width": 1624,
+        "height": 313
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq01_expected_tokens.png",
+        "loaded": true,
+        "width": 666,
+        "height": 106
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/fig02_expected_tokens.png",
+        "loaded": true,
+        "width": 727,
+        "height": 574
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_divergence.png",
+        "loaded": true,
+        "width": 800,
+        "height": 330
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_acceptance.png",
+        "loaded": true,
+        "width": 793,
+        "height": 244
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_walltime.png",
+        "loaded": true,
+        "width": 793,
+        "height": 100
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_operations.png",
+        "loaded": true,
+        "width": 800,
+        "height": 100
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/fig03_optimal_gamma.png",
+        "loaded": true,
+        "width": 703,
+        "height": 556
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/fig04_speed_operations.png",
+        "loaded": true,
+        "width": 717,
+        "height": 556
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/table02_empirical_speed.png",
+        "loaded": true,
+        "width": 783,
+        "height": 506
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/table04_prediction_vs_measured.png",
+        "loaded": true,
+        "width": 920,
+        "height": 504
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_lenience.png",
+        "loaded": true,
+        "width": 1630,
+        "height": 167
+      },
+      {
+        "src": "assets/23_Speculative_Decoding/eq_lenience_original_inequality.png",
+        "loaded": true,
+        "width": 260,
+        "height": 47
+      }
+    ],
+    "katex": 354,
+    "display": 52,
+    "tableCount": 32,
+    "tableRowMismatches": [],
+    "pageWidth": 1440,
+    "viewport": 1440,
+    "overflowDisplay": [],
+    "browserErrors": [],
+    "visualSamples": [
+      "bibliography",
+      "sampling",
+      "correctness",
+      "acceptance-analysis",
+      "experiments",
+      "appendix",
+      "coverage"
+    ],
+    "browser": "Microsoft Edge, isolated headless Playwright session",
+    "githubActualRender": false
+  },
+  "code_read": {
+    "repository": "https://github.com/google-research/t5x",
+    "commit": "2045b332cf19887885a74ef1bd6b2adb2a7ca634",
+    "role": "official baseline, not the original speculative patch",
+    "files": {
+      "decoding.py": "38b813aad8d092587db165f0e9e8f47cb348bfd50c9d3f8ea8595e48d15d4848",
+      "models.py": "0b7beca5f3fb859f9a2ce79b38f43abc2be53222cefc9466684b28e0667c26f1"
+    },
+    "executed": false
+  },
+  "limitations": [
+    "Original speculative T5X implementation commit not verified",
+    "No TPU/GPU model training, inference, or latency reproduction",
+    "No VLA/robot/Thor experiment",
+    "No GitHub render API or published-page visual verification"
+  ],
+  "memory_used_for": "Review depth and GitHub formula-format preference only; technical paper claims verified from current source.",
+  "publication_note": "Local filesystem paths omitted; source URLs, hashes and task-local validation results retained. Paths in these task-local validation records are not publication-time assertions."
+}

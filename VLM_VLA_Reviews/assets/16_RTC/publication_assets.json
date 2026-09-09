@@ -1,0 +1,477 @@
+{
+  "paper_title": "Real-Time Execution of Action Chunking Flow Policies",
+  "arxiv_id": "2506.07339",
+  "version": "v2",
+  "retrieved_on": "2026-09-09",
+  "source_url": "https://arxiv.org/pdf/2506.07339v2",
+  "bibliography_url": "https://arxiv.org/abs/2506.07339",
+  "source_pdf_sha256": "dd6d602be1f50b894d88517bf68916c4272885b2e29d96cffc426dacff41898f",
+  "source_pdf_pages": 25,
+  "page_size_points": [
+    612,
+    792
+  ],
+  "license": "CC BY 4.0 as linked by the official arXiv record; original rights remain with authors and rights holders",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "transform": "Direct PDF render and rectangular crop only, no content redrawing",
+  "renderer": "Poppler pdftoppm at 240 DPI; Pillow rectangular crop",
+  "coordinate_system": "PDF points, 72 points/inch, upper-left origin, [x0,y0,x1,y1]",
+  "assets": [
+    {
+      "file": "fig01.png",
+      "label": "Figure 1",
+      "physical_pdf_page": 1,
+      "printed_page": 1,
+      "clip_bbox_points": [
+        108,
+        450,
+        505,
+        631
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        360,
+        1500,
+        1683,
+        2103
+      ],
+      "pixel_size": [
+        1323,
+        603
+      ],
+      "sha256": "ce41e4de6a68135ac74a14ff2f89c603b537cccd9737e29195e56a0dfd7a362a"
+    },
+    {
+      "file": "fig02.png",
+      "label": "Figure 2",
+      "physical_pdf_page": 3,
+      "printed_page": 3,
+      "clip_bbox_points": [
+        309,
+        238,
+        505,
+        356
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        1030,
+        793,
+        1683,
+        1187
+      ],
+      "pixel_size": [
+        653,
+        394
+      ],
+      "sha256": "349597bf5505cbbc65c14837220fc2cffd3ce74a49aecfc73d97d5df9d7d299e"
+    },
+    {
+      "file": "fig03.png",
+      "label": "Figure 3",
+      "physical_pdf_page": 4,
+      "printed_page": 4,
+      "clip_bbox_points": [
+        123,
+        70,
+        488,
+        212
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        410,
+        233,
+        1627,
+        707
+      ],
+      "pixel_size": [
+        1217,
+        474
+      ],
+      "sha256": "7dcc0b5152a9485724b8b4a626925568f4d494276120f116046478dbafb8dd31"
+    },
+    {
+      "file": "fig04.png",
+      "label": "Figure 4",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox_points": [
+        374,
+        142,
+        503,
+        247
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        1247,
+        473,
+        1677,
+        823
+      ],
+      "pixel_size": [
+        430,
+        350
+      ],
+      "sha256": "938fb9637014dbdfb348ced95af8d59f184b9eef605f0742c006ce89b76e8aa5"
+    },
+    {
+      "file": "fig05.png",
+      "label": "Figure 5",
+      "physical_pdf_page": 7,
+      "printed_page": 7,
+      "clip_bbox_points": [
+        108,
+        72,
+        505,
+        272
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        360,
+        240,
+        1683,
+        907
+      ],
+      "pixel_size": [
+        1323,
+        667
+      ],
+      "sha256": "f742980f3d3764a19786730414fe2c1bd16342461405fbbba5d09f7cfbc5ce2b"
+    },
+    {
+      "file": "fig06.png",
+      "label": "Figure 6",
+      "physical_pdf_page": 8,
+      "printed_page": 8,
+      "clip_bbox_points": [
+        113,
+        384,
+        501,
+        590
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        377,
+        1280,
+        1670,
+        1967
+      ],
+      "pixel_size": [
+        1293,
+        687
+      ],
+      "sha256": "69864f15c8d3b9c26d62f752094520292e2f2182bf58ed6a5f346eb16bcf1269"
+    },
+    {
+      "file": "fig07.png",
+      "label": "Figure 7",
+      "physical_pdf_page": 23,
+      "printed_page": 23,
+      "clip_bbox_points": [
+        116,
+        80,
+        487,
+        344
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        387,
+        267,
+        1623,
+        1147
+      ],
+      "pixel_size": [
+        1236,
+        880
+      ],
+      "sha256": "9795d794f5b2d0ac5403d596d7e02dd13831666b536e3b3d7c6ffb2bb1343f3a"
+    },
+    {
+      "file": "fig08.png",
+      "label": "Figure 8",
+      "physical_pdf_page": 25,
+      "printed_page": 25,
+      "clip_bbox_points": [
+        112,
+        98,
+        502,
+        261
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        373,
+        327,
+        1673,
+        870
+      ],
+      "pixel_size": [
+        1300,
+        543
+      ],
+      "sha256": "b564bc1fa456856da8f070e4ea130c73af899101a522c7eb6694a067fb6648b1"
+    },
+    {
+      "file": "eq01.png",
+      "label": "Equation (1)",
+      "physical_pdf_page": 3,
+      "printed_page": 3,
+      "clip_bbox_points": [
+        231,
+        181,
+        506,
+        209
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        770,
+        603,
+        1687,
+        697
+      ],
+      "pixel_size": [
+        917,
+        94
+      ],
+      "sha256": "638941fdd85a7297a2a90bf11e23d182e35dc1c2432110f9f7beadbe6f264821"
+    },
+    {
+      "file": "eq02.png",
+      "label": "Equation (2)",
+      "physical_pdf_page": 4,
+      "printed_page": 4,
+      "clip_bbox_points": [
+        134,
+        604,
+        506,
+        637
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        447,
+        2013,
+        1687,
+        2123
+      ],
+      "pixel_size": [
+        1240,
+        110
+      ],
+      "sha256": "d8fdd8651fab048a03739a7cb37ca11ee994e7fbe6f0af84d687ea3649475ec7"
+    },
+    {
+      "file": "eq03.png",
+      "label": "Equation (3)",
+      "physical_pdf_page": 4,
+      "printed_page": 4,
+      "clip_bbox_points": [
+        169,
+        637,
+        506,
+        653
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        563,
+        2123,
+        1687,
+        2177
+      ],
+      "pixel_size": [
+        1124,
+        54
+      ],
+      "sha256": "9231f9944d3be689af2225798c9f62e1969146777a08945bf4eca3405445a57b"
+    },
+    {
+      "file": "eq04.png",
+      "label": "Equation (4)",
+      "physical_pdf_page": 4,
+      "printed_page": 4,
+      "clip_bbox_points": [
+        191,
+        653,
+        506,
+        685
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        637,
+        2177,
+        1687,
+        2283
+      ],
+      "pixel_size": [
+        1050,
+        106
+      ],
+      "sha256": "7123acccd16ef748745908871a2596890be03d1953ed1a12bd78df7a73437990"
+    },
+    {
+      "file": "eq05.png",
+      "label": "Equation (5)",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox_points": [
+        113,
+        320,
+        506,
+        363
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        377,
+        1067,
+        1687,
+        1210
+      ],
+      "pixel_size": [
+        1310,
+        143
+      ],
+      "sha256": "3416c51a559745ce1a1ebd31bd887f78d718f02d313d083acec4232a9be7655f"
+    },
+    {
+      "file": "algorithm01a.png",
+      "label": "Algorithm 1, require and lines 1-8",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox_points": [
+        107,
+        532,
+        505,
+        692
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        357,
+        1773,
+        1683,
+        2307
+      ],
+      "pixel_size": [
+        1326,
+        534
+      ],
+      "sha256": "7e2817d5d97f05d3c66ec3802e24cf7d274d71f6a490bc8d48e14a4957780289"
+    },
+    {
+      "file": "algorithm01b.png",
+      "label": "Algorithm 1, lines 9-29 and return",
+      "physical_pdf_page": 6,
+      "printed_page": 6,
+      "clip_bbox_points": [
+        107,
+        70,
+        505,
+        367
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        357,
+        233,
+        1683,
+        1223
+      ],
+      "pixel_size": [
+        1326,
+        990
+      ],
+      "sha256": "81ac9a831c59629f3b108ec40c4852c8e8b27cc43a7c3e50ee275536f49a8f9d"
+    },
+    {
+      "file": "table01.png",
+      "label": "Table 1",
+      "physical_pdf_page": 24,
+      "printed_page": 24,
+      "clip_bbox_points": [
+        199,
+        98,
+        413,
+        184
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        663,
+        327,
+        1377,
+        613
+      ],
+      "pixel_size": [
+        714,
+        286
+      ],
+      "sha256": "d64d27eb30e0b8c045d38983d30fa7526b936cf08c8225f420013f5227f9bf14"
+    },
+    {
+      "file": "table02.png",
+      "label": "Table 2",
+      "physical_pdf_page": 24,
+      "printed_page": 24,
+      "clip_bbox_points": [
+        188,
+        304,
+        424,
+        391
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        627,
+        1013,
+        1413,
+        1303
+      ],
+      "pixel_size": [
+        786,
+        290
+      ],
+      "sha256": "2f524fee57028e5b4cb8ab023acc4b85c2bae0fe810f7b4df22fc40662b37dfb"
+    },
+    {
+      "file": "table03.png",
+      "label": "Table 3",
+      "physical_pdf_page": 24,
+      "printed_page": 24,
+      "clip_bbox_points": [
+        167,
+        502,
+        446,
+        577
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        557,
+        1673,
+        1487,
+        1923
+      ],
+      "pixel_size": [
+        930,
+        250
+      ],
+      "sha256": "775938e45f03e902dcfd25305b47ee9b77bff8e077f324b800adfce6632a4691"
+    },
+    {
+      "file": "table04.png",
+      "label": "Table 4",
+      "physical_pdf_page": 25,
+      "printed_page": 25,
+      "clip_bbox_points": [
+        140,
+        362,
+        472,
+        442
+      ],
+      "dpi": 240,
+      "pixel_crop_box": [
+        467,
+        1207,
+        1573,
+        1473
+      ],
+      "pixel_size": [
+        1106,
+        266
+      ],
+      "sha256": "c0fc5948fa351cd69cbabb7af034fb68ac06d59f04187dfa6f526f9d2b759033"
+    }
+  ]
+}

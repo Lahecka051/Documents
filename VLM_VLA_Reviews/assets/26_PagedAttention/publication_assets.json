@@ -1,0 +1,572 @@
+{
+  "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+  "accessed_date": "2026-09-09",
+  "source": {
+    "url": "https://arxiv.org/pdf/2309.06180v1",
+    "version": "v1",
+    "version_date": "2023-09-12",
+    "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+    "bytes": 1459631,
+    "physical_pages": 16
+  },
+  "extraction": {
+    "renderer": "pypdfium2 / PDFium",
+    "dpi": 240,
+    "page_inspection": "All 16 pages rendered separately with Poppler at 100 DPI and visually inspected; key cropped regions also inspected at 240 DPI.",
+    "rights": "Copyright remains with the paper authors and respective rightsholders. Excerpts accompany independent Korean analysis. No new license is asserted."
+  },
+  "assets": [
+    {
+      "id": "fig01_memory_batch",
+      "kind": "figure",
+      "file": "fig01_memory_batch.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 1,
+      "printed_page": 1,
+      "clip_bbox": [
+        318,
+        180,
+        564,
+        410
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        767
+      ],
+      "sha256": "a7ee7ab36df1be83991f601678681bf685a19580d1f1f0ed9caef7be27c7ad9a",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig02_memory_waste",
+      "kind": "figure",
+      "file": "fig02_memory_waste.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 2,
+      "printed_page": 2,
+      "clip_bbox": [
+        54,
+        75,
+        300,
+        249
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        580
+      ],
+      "sha256": "5110914a6c43a085ef3c0b88d309bb51adddb277959888f3919943157b145540",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig03_fragmentation",
+      "kind": "figure",
+      "file": "fig03_fragmentation.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 4,
+      "printed_page": 4,
+      "clip_bbox": [
+        54,
+        70,
+        564,
+        181
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        1700,
+        370
+      ],
+      "sha256": "2fedb6d9d154db50c3ff604d9e4c89eb96de3a6f643e0a22f89618d695d0fd47",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig04_system",
+      "kind": "figure",
+      "file": "fig04_system.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox": [
+        54,
+        68,
+        300,
+        208
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        466
+      ],
+      "sha256": "2299a5659298bd603eea46ae74a4b45a6923006c28b35ea853e2653ca2d53bd4",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig05_paged_attention",
+      "kind": "figure",
+      "file": "fig05_paged_attention.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox": [
+        318,
+        70,
+        564,
+        205
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        450
+      ],
+      "sha256": "4cbb5ae3aa11ec95adb66104c799b7bdd60b377fd59e762bac0b08c28f07a40d",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig06_block_table",
+      "kind": "figure",
+      "file": "fig06_block_table.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 6,
+      "printed_page": 6,
+      "clip_bbox": [
+        54,
+        68,
+        300,
+        211
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        476
+      ],
+      "sha256": "0412b763d0abfe62edc5eb868b2b79f88d25251354a436fd2284b5de22c17516",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig07_two_requests",
+      "kind": "figure",
+      "file": "fig07_two_requests.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 6,
+      "printed_page": 6,
+      "clip_bbox": [
+        318,
+        68,
+        564,
+        203
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        450
+      ],
+      "sha256": "5c8b86fe1a994553ea0dc52bff9d4905514d3db11ebdfced4199d1e48914ed5f",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig08_parallel_sampling",
+      "kind": "figure",
+      "file": "fig08_parallel_sampling.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 7,
+      "printed_page": 7,
+      "clip_bbox": [
+        54,
+        68,
+        300,
+        192
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        413
+      ],
+      "sha256": "4b508dad913e6498cbcc9be9cc2ca6919da4d00ea243a6add03623aa1f9853a6",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig09_beam_search",
+      "kind": "figure",
+      "file": "fig09_beam_search.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 7,
+      "printed_page": 7,
+      "clip_bbox": [
+        318,
+        68,
+        564,
+        169
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        336
+      ],
+      "sha256": "8d9cb1389df84e5c20299147f2f041b642d59f06b2209a85eaa4775f0aaab2d9",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig10_shared_prefix",
+      "kind": "figure",
+      "file": "fig10_shared_prefix.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 8,
+      "printed_page": 8,
+      "clip_bbox": [
+        54,
+        70,
+        300,
+        183
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        377
+      ],
+      "sha256": "c9d111124c2786bc936db417fe2096925cad8d9688ad12d3a0f37e16d69762dd",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig11_length_distributions",
+      "kind": "figure",
+      "file": "fig11_length_distributions.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 9,
+      "printed_page": 9,
+      "clip_bbox": [
+        318,
+        68,
+        564,
+        204
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        453
+      ],
+      "sha256": "993385ebb1b4fac677ef6c0166e94a3cd8729709600b2ea21f2f548f3e58d8ac",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig12_basic_sampling",
+      "kind": "figure",
+      "file": "fig12_basic_sampling.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 10,
+      "printed_page": 10,
+      "clip_bbox": [
+        54,
+        68,
+        564,
+        284
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        1700,
+        720
+      ],
+      "sha256": "31d16217aaf4eeff29682f7fc2ec10fe5db4cd60195c8994f15fb79488e46621",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig13_batch_sizes",
+      "kind": "figure",
+      "file": "fig13_batch_sizes.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 10,
+      "printed_page": 10,
+      "clip_bbox": [
+        54,
+        283,
+        300,
+        423
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        467
+      ],
+      "sha256": "754363dab5a4c5667f46067840c74f07ac071c9b2a1b5dcf15b4616500c45ac2",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig14_sampling_beams",
+      "kind": "figure",
+      "file": "fig14_sampling_beams.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 11,
+      "printed_page": 11,
+      "clip_bbox": [
+        54,
+        68,
+        564,
+        293
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        1700,
+        750
+      ],
+      "sha256": "67814fd4dcf20e3c17f93966c861ab7ef6601cedeb9f3fbc44550efcff717c24",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig15_sharing_savings",
+      "kind": "figure",
+      "file": "fig15_sharing_savings.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 11,
+      "printed_page": 11,
+      "clip_bbox": [
+        318,
+        300,
+        564,
+        410
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        367
+      ],
+      "sha256": "06c76494fc540f15c14a8471d617d7bd1b744161f83f849c9513020fae966e05",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig16_translation",
+      "kind": "figure",
+      "file": "fig16_translation.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 12,
+      "printed_page": 12,
+      "clip_bbox": [
+        54,
+        68,
+        300,
+        239
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        570
+      ],
+      "sha256": "2d1b49334a304ab0767f939c3fc7463d78c389b1576eea677a11dd7eafff9cc8",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig17_chatbot",
+      "kind": "figure",
+      "file": "fig17_chatbot.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 12,
+      "printed_page": 12,
+      "clip_bbox": [
+        54,
+        245,
+        300,
+        349
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        346
+      ],
+      "sha256": "5c24fef7ecd0e79a21059b95a10c4956662de181028f6e9599c6b5a7f56413dd",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig18_kernel_block_ablation",
+      "kind": "figure",
+      "file": "fig18_kernel_block_ablation.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 12,
+      "printed_page": 12,
+      "clip_bbox": [
+        318,
+        68,
+        564,
+        205
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        456
+      ],
+      "sha256": "f40903c782c10688a74417ba26564a8867d640cf8d7c032ee27e4255069fec5c",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "fig19_swap_recompute",
+      "kind": "figure",
+      "file": "fig19_swap_recompute.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 13,
+      "printed_page": 13,
+      "clip_bbox": [
+        54,
+        68,
+        300,
+        215
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        820,
+        490
+      ],
+      "sha256": "0063fc33095e10b066534f39e381bbad90b184a43fde8f09be2976124207f180",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "table01_configurations",
+      "kind": "table",
+      "file": "table01_configurations.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 9,
+      "printed_page": 9,
+      "clip_bbox": [
+        72,
+        69,
+        286,
+        165
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        713,
+        320
+      ],
+      "sha256": "13e278a38c95f372d38c981d1cd8a98f5ed11edc05a635a3750e8af8e495c5a7",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "eq01_autoregression",
+      "kind": "equation",
+      "file": "eq01_autoregression.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 3,
+      "printed_page": 3,
+      "clip_bbox": [
+        72,
+        154,
+        300,
+        179
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        760,
+        84
+      ],
+      "sha256": "9eb7595777c92529534e1369292870b343297c726d76af4b8faf257822b66459",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "eq02_qkv_projection",
+      "kind": "equation",
+      "file": "eq02_qkv_projection.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 3,
+      "printed_page": 3,
+      "clip_bbox": [
+        99,
+        275,
+        300,
+        299
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        670,
+        80
+      ],
+      "sha256": "f8cbe1f5e86045a482aa7032fe9123775ec2a10aa78038d6fb45ca0628a5240a",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "eq03_attention",
+      "kind": "equation",
+      "file": "eq03_attention.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 3,
+      "printed_page": 3,
+      "clip_bbox": [
+        88,
+        357,
+        300,
+        400
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        707,
+        143
+      ],
+      "sha256": "c3484acf3a91217cf773ee9cff9ba350e529fc775e704b594b079cf8e4109045",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    },
+    {
+      "id": "eq04_block_attention_as_printed",
+      "kind": "equation",
+      "file": "eq04_block_attention_as_printed.png",
+      "source_url": "https://arxiv.org/pdf/2309.06180v1",
+      "source_version": "arXiv:2309.06180v1",
+      "physical_pdf_page": 5,
+      "printed_page": 5,
+      "clip_bbox": [
+        342,
+        263,
+        564,
+        301
+      ],
+      "coordinate_system": "PDF points, origin top-left, x right, y down, [x0,y0,x1,y1], page 612x792 pt",
+      "dpi": 240,
+      "pixel_size": [
+        740,
+        126
+      ],
+      "sha256": "a7b86d4e998fc3269448cb456584fcace602283dab96ae48288e633c1e2884cf",
+      "visual_qa": "passed: inspected original page and 240-DPI excerpt; caption, equation number, axes, legends preserved; crops 13/15/17 adjusted and re-inspected"
+    }
+  ]
+}
